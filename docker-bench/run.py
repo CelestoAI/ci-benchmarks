@@ -231,14 +231,15 @@ def image_cache(scenario):
     for name in ['postgres', 'azurite']:
         if scenario == 'image-seed':
             command(name + '-direct-pull', ['docker', 'pull', '--platform=linux/amd64', IMAGES[name]])
-            command(name + '-cache-save-tar', ['docker', 'save', '-o', str(cache / f'{name}.tar'), IMAGES[name]])
+            subprocess.run(['docker', 'tag', IMAGES[name], f'bench-transfer-{name}:locked'], check=True)
+            command(name + '-cache-save-tar', ['docker', 'save', '-o', str(cache / f'{name}.tar'), f'bench-transfer-{name}:locked'])
             emit(name + '-cache-size', bytes=(cache / f'{name}.tar').stat().st_size)
             metadata = subprocess.check_output(['docker', 'image', 'inspect', '--format', '{{.Id}}', IMAGES[name]], text=True).strip()
             (cache / f'{name}.id').write_text(metadata)
         else:
             assert (cache / f'{name}.tar').is_file(), 'Expected exact cache hit, not a fallback pull'
             command(name + '-cache-load-tar', ['docker', 'load', '-i', str(cache / f'{name}.tar')])
-            metadata = command(name + '-cache-image-verify', ['docker', 'image', 'inspect', '--format', '{{.Id}}', IMAGES[name].split('@')[0]]).strip()
+            metadata = command(name + '-cache-image-verify', ['docker', 'image', 'inspect', '--format', '{{.Id}}', f'bench-transfer-{name}:locked']).strip()
             assert metadata == (cache / f'{name}.id').read_text(), 'Restored image content differs from the pulled digest'
 
 def main():
