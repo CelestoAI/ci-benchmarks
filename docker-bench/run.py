@@ -204,11 +204,13 @@ def integration():
 def cpu():
     work = Path('/tmp/docker-benchmark-rust')
     shutil.copytree(ROOT / 'rust', work)
-    args = ['docker', 'run', '--rm', '--cpus=4', '--memory=16g', '-v', f'{work}:/app', '-w', '/app',
+    # Both VMs already enforce the matched 4-vCPU / 16-GiB envelope.
+    # Do not require nested CPU/memory cgroup controllers for an uncapped build.
+    args = ['docker', 'run', '--rm', '-v', f'{work}:/app', '-w', '/app',
             '-e', 'CARGO_HOME=/app/.cargo']
     command('rust-fetch', args + [IMAGES['rust'], 'cargo', 'fetch', '--locked'])
     output = command('rust-compile', args + ['--network=none', IMAGES['rust'], 'bash', '-ec',
-        'TIMEFORMAT="COMPILE_TIME real=%R user=%U sys=%S"; time cargo build --frozen --release -j4; cat /sys/fs/cgroup/memory.peak; ./target/release/ci-compile-fixture --rows 1000'])
+        'test "$(nproc)" -eq 4; TIMEFORMAT="COMPILE_TIME real=%R user=%U sys=%S"; time cargo build --frozen --release -j4; if test -r /sys/fs/cgroup/memory.peak; then cat /sys/fs/cgroup/memory.peak; fi; ./target/release/ci-compile-fixture --rows 1000'])
     timing = re.search(r'COMPILE_TIME real=([\d.]+) user=([\d.]+) sys=([\d.]+)', output)
     assert timing and '"matched":1000' in output
     emit('rust-cpu', compile_seconds=float(timing[1]), user_seconds=float(timing[2]), system_seconds=float(timing[3]))
