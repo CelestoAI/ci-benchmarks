@@ -31,7 +31,7 @@ if (!isMainThread) {
 
   for (let index = 0; index < workerData.iterations; index += 1) {
     accumulator = Math.imul(accumulator ^ index, 0x45d9f3b) >>> 0;
-    accumulator = (acculator ^ (accumulator >>> 16)) >>> 0;
+    accumulator = (accumulator ^ (accumulator >>> 16)) >>> 0;
     checksum = (checksum + accumulator) >>> 0;
   }
 
