@@ -14,6 +14,11 @@ try {
   data = { value: rawData };
 }
 
+if (phase === 'host_fingerprint') {
+  data = { provider: process.env.BENCHMARK_PROVIDER, runner_name: process.env.RUNNER_NAME, os: process.platform, arch: process.arch, node: process.version };
+}
+if (phase === 'cache_restore_end') data.cache_hit ||= 'false';
+
 const event = {
   phase,
   timestamp_ms: Date.now(),
