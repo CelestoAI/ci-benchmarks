@@ -1,31 +1,68 @@
-name: Benchmark on Celesto CI
+name: Docker production smoke on Celesto CI
 
 on:
   workflow_dispatch:
-    inputs:
-      cache_namespace:
-        description: New value for a cold run; reuse unchanged for a warm run.
-        required: true
-        default: run-1
-        type: string
-      cache_mb:
-        description: Incompressible cache payload in MiB.
-        required: true
-        default: '512'
-        type: choice
-        options: ['256', '512', '1024', '2304']
-      cpu_iterations:
-        description: Iterations per CPU worker; match the GitHub-hosted run.
-        required: true
-        default: '250000000'
-        type: string
+
+permissions:
+  contents: read
 
 jobs:
-  benchmark:
-    uses: ./.github/workflows/benchmark.yml
-    with:
-      provider: celesto-ci
-      runs_on: '["self-hosted", "celesto-large"]'
-      cache_namespace: ${{ inputs.cache_namespace }}
-      cache_mb: ${{ inputs.cache_mb }}
-      cpu_iterations: ${{ inputs.cpu_iterations }}
+  docker:
+    runs-on: [self-hosted, celesto-small]
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: smoke-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 30
+    steps:
+      - name: Verify baked-in Docker and native GitHub service
+        run: |
+          set -euxo pipefail
+          docker version
+          docker info --format 'storage={{.Driver}} cgroup={{.CgroupDriver}}'
+          docker buildx version
+          docker compose version
+          test "$(docker exec '${{ job.services.postgres.id }}' psql -U postgres -tAc 'select 6*7')" = 42
+      - name: Build, load and execute an image
+        run: |
+          set -euxo pipefail
+          mkdir -p /tmp/docker-live-build
+          printf 'FROM alpine:3.20\nRUN echo built-on-celesto > /proof\nCMD ["cat", "/proof"]\n' > /tmp/docker-live-build/Dockerfile
+          docker buildx build --load -t celesto-live-proof /tmp/docker-live-build
+          test "$(docker run --rm celesto-live-proof)" = built-on-celesto
+      - name: Verify Compose with Azurite and PostgreSQL
+        run: |
+          set -euxo pipefail
+          cat > /tmp/compose-live.yml <<'YAML'
+          services:
+            azurite:
+              image: mcr.microsoft.com/azure-storage/azurite:3.35.0
+              ports: ["10000:10000"]
+            postgres:
+              image: postgres:16-alpine
+              environment:
+                POSTGRES_PASSWORD: smoke-only-password
+              healthcheck:
+                test: ["CMD-SHELL", "pg_isready -U postgres"]
+                interval: 2s
+                timeout: 5s
+                retries: 30
+          YAML
+          trap 'docker compose -f /tmp/compose-live.yml down -v' EXIT
+          docker compose -f /tmp/compose-live.yml up -d --wait --wait-timeout 120
+          test "$(docker compose -f /tmp/compose-live.yml exec -T postgres psql -U postgres -tAc 'select 6*7')" = 42
+          for attempt in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:10000/ || true)
+            if [ "$code" = 400 ]; then break; fi
+            sleep 2
+          done
+          test "$code" = 400
+          echo 'PASS: native GitHub service, Buildx build/load/run, Compose PostgreSQL, Azurite port access'
