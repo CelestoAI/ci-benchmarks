@@ -54,8 +54,69 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build cache restore boundary start
+        if: inputs.backend == 'portable' && inputs.scenario != 'seed'
+        run: python3 docker-bench/run.py event --phase build-cache-restore-start
+      - name: Restore portable BuildKit layer cache
+        if: inputs.backend == 'portable' && inputs.scenario != 'seed'
+        id: layers
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .docker-build-output
+          key: docker-layers-${{ inputs.namespace }}-${{ inputs.provider }}-${{ inputs.repetition }}-seed
+          fail-on-cache-miss: true
+      - name: Build cache restore boundary end
+        if: inputs.backend == 'portable' && inputs.scenario != 'seed'
+        env:
+          CACHE_HIT: ${{ steps.layers.outputs.cache-hit }}
+        run: python3 docker-bench/run.py event --phase build-cache-restore-end
       - name: Run Docker workloads with correctness assertions
+        id: workload
+        if: startsWith(inputs.scenario, 'image-') == false
         run: python3 docker-bench/run.py ${{ inputs.scenario == 'runtime' && 'runtime' || 'build' }}
+      - name: Build cache save boundary start
+        if: inputs.backend == 'portable'
+        run: python3 docker-bench/run.py event --phase build-cache-save-start
+      - name: Save portable BuildKit layer cache
+        if: inputs.backend == 'portable'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ${{ inputs.scenario == 'seed' && '.docker-build-output' || '.docker-build-next' }}
+          key: docker-layers-${{ inputs.namespace }}-${{ inputs.provider }}-${{ inputs.repetition }}-${{ inputs.scenario }}
+      - name: Build cache save boundary end
+        if: inputs.backend == 'portable'
+        run: python3 docker-bench/run.py event --phase build-cache-save-end
+      - name: Cache restore boundary start
+        if: inputs.scenario == 'image-warm'
+        run: python3 docker-bench/run.py event --phase image-cache-restore-start
+      - name: Restore image tar cache
+        if: inputs.scenario == 'image-warm'
+        id: images
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .docker-image-cache
+          key: docker-images-${{ inputs.namespace }}-${{ inputs.provider }}-${{ inputs.repetition }}
+          fail-on-cache-miss: true
+      - name: Cache restore boundary end
+        if: inputs.scenario == 'image-warm'
+        env:
+          CACHE_HIT: ${{ steps.images.outputs.cache-hit }}
+        run: python3 docker-bench/run.py event --phase image-cache-restore-end
+      - name: Measure image tar creation or loading
+        if: startsWith(inputs.scenario, 'image-')
+        run: python3 docker-bench/run.py image-cache
+      - name: Cache save boundary start
+        if: inputs.scenario == 'image-seed'
+        run: python3 docker-bench/run.py event --phase image-cache-save-start
+      - name: Save image tar cache
+        if: inputs.scenario == 'image-seed'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .docker-image-cache
+          key: docker-images-${{ inputs.namespace }}-${{ inputs.provider }}-${{ inputs.repetition }}
+      - name: Cache save boundary end
+        if: inputs.scenario == 'image-seed'
+        run: python3 docker-bench/run.py event --phase image-cache-save-end
       - name: Upload raw measurements and logs
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

@@ -1,0 +1,35 @@
+name: Paired direct pull versus image tar cache
+on:
+  workflow_call:
+    inputs:
+      repetition: {required: true, type: number}
+      namespace: {required: true, type: string}
+permissions:
+  contents: read
+  packages: write
+jobs:
+  seed:
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [github, celesto]
+    uses: ./.github/workflows/docker-job.yml
+    with:
+      provider: ${{ matrix.provider }}
+      backend: none
+      scenario: image-seed
+      repetition: ${{ inputs.repetition }}
+      namespace: ${{ inputs.namespace }}
+  restore:
+    needs: seed
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [celesto, github]
+    uses: ./.github/workflows/docker-job.yml
+    with:
+      provider: ${{ matrix.provider }}
+      backend: none
+      scenario: image-warm
+      repetition: ${{ inputs.repetition }}
+      namespace: ${{ inputs.namespace }}

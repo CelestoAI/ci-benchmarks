@@ -5,7 +5,7 @@ on:
       mode:
         description: Pilot validates cache and workloads; full runs five repetitions.
         type: choice
-        options: [pilot, full]
+        options: [pilot, full, native-probe]
         default: pilot
       namespace:
         description: Unique lowercase prefix; never reuse for a new experiment.
@@ -15,46 +15,27 @@ permissions:
   contents: read
   packages: write
 jobs:
-  seed:
+  builds:
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 1
       matrix:
-        provider: [github, celesto]
-        backend: [native, registry]
+        backend: ${{ fromJSON(inputs.mode == 'native-probe' && '["native"]' || '["portable","registry"]') }}
         repetition: ${{ fromJSON(inputs.mode == 'full' && '[1,2,3,4,5]' || '[1]') }}
-    uses: ./.github/workflows/docker-job.yml
+    uses: ./.github/workflows/docker-build-pair.yml
     with:
-      provider: ${{ matrix.provider }}
       backend: ${{ matrix.backend }}
-      scenario: seed
       repetition: ${{ matrix.repetition }}
       namespace: ${{ inputs.namespace }}
-  warm:
-    needs: seed
-    strategy:
-      fail-fast: false
-      max-parallel: 2
-      matrix:
-        provider: [celesto, github]
-        backend: [native, registry]
-        scenario: ${{ fromJSON(inputs.mode == 'full' && '["unchanged","source","dependency"]' || '["unchanged"]') }}
-        repetition: ${{ fromJSON(inputs.mode == 'full' && '[1,2,3,4,5]' || '[1]') }}
-    uses: ./.github/workflows/docker-job.yml
-    with:
-      provider: ${{ matrix.provider }}
-      backend: ${{ matrix.backend }}
-      scenario: ${{ matrix.scenario }}
-      repetition: ${{ matrix.repetition }}
-      namespace: ${{ inputs.namespace }}
+      mode: ${{ inputs.mode }}
   no-cache:
-    needs: warm
+    needs: builds
     strategy:
       fail-fast: false
       max-parallel: 2
       matrix:
-        provider: [github, celesto]
         repetition: ${{ fromJSON(inputs.mode == 'full' && '[1,2,3,4,5]' || '[1]') }}
+        provider: [github, celesto]
     uses: ./.github/workflows/docker-job.yml
     with:
       provider: ${{ matrix.provider }}
@@ -68,12 +49,23 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        provider: [celesto, github]
         repetition: ${{ fromJSON(inputs.mode == 'full' && '[1,2,3,4,5]' || '[1]') }}
+        provider: [celesto, github]
     uses: ./.github/workflows/docker-job.yml
     with:
       provider: ${{ matrix.provider }}
       backend: none
       scenario: runtime
+      repetition: ${{ matrix.repetition }}
+      namespace: ${{ inputs.namespace }}
+  images:
+    needs: runtime
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        repetition: ${{ fromJSON(inputs.mode == 'full' && '[1,2,3,4,5]' || '[1]') }}
+    uses: ./.github/workflows/docker-image-pair.yml
+    with:
       repetition: ${{ matrix.repetition }}
       namespace: ${{ inputs.namespace }}

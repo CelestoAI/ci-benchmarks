@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import time
 import urllib.request
+from urllib.parse import urlsplit, urlunsplit
 
 ROOT = Path(__file__).resolve().parent
 OUT = Path('docker-results')
@@ -30,6 +31,16 @@ def command(phase, args, *, cwd=None, env=None):
     with log.open('w') as f:
         result = subprocess.run(args, cwd=cwd, env=env, stdout=f, stderr=subprocess.STDOUT, text=True)
     output = log.read_text()
+    # Keep useful endpoints, never persist signed URL queries or credentials.
+    def safe_url(match):
+        value = urlsplit(match.group(0))
+        return urlunsplit((value.scheme, value.netloc.rsplit('@', 1)[-1], value.path, '', ''))
+    output = re.sub(r'https?://[^\s<>"\']+', safe_url, output)
+    for name in ['ACTIONS_RUNTIME_TOKEN', 'GITHUB_TOKEN', 'GH_TOKEN']:
+        secret = os.environ.get(name)
+        if secret:
+            output = output.replace(secret, '[REDACTED]')
+    log.write_text(output)
     emit(phase, seconds=time.monotonic() - started, exit_code=result.returncode,
          log=str(log), log_sha256=hashlib.sha256(output.encode()).hexdigest())
     print(output[-4000:], flush=True)
@@ -47,7 +58,8 @@ def fingerprint():
          os_release=Path('/etc/os-release').read_text(), disk_free_bytes=shutil.disk_usage('.').free,
          provider=os.environ['PROVIDER'], scenario=os.environ['SCENARIO'], backend=os.environ['BACKEND'],
          repetition=os.environ['REPETITION'], run_id=os.environ['GITHUB_RUN_ID'], commit=os.environ['GITHUB_SHA'],
-         runner=os.environ['RUNNER_NAME'])
+         runner=os.environ['RUNNER_NAME'],
+         cache_endpoint=urlsplit(os.environ.get('ACTIONS_RESULTS_URL', '')).netloc)
     version = command('docker-version', ['docker', 'version', '--format', '{{json .}}'])
     assert json.loads(version)['Server']['Version'] == '29.1.3'
     command('docker-info', ['docker', 'info'])
@@ -91,7 +103,14 @@ def cache_options(app, scenario):
     result = []
     if scenario == 'nocache':
         return ['--no-cache']
-    if backend == 'registry':
+    if backend == 'portable':
+        source = Path('.docker-build-output') / app
+        if scenario != 'seed':
+            assert (source / 'index.json').is_file(), 'BuildKit layer cache was not restored'
+            result += ['--cache-from', f'type=local,src={source}']
+        destination = (Path('.docker-build-output') if scenario == 'seed' else Path('.docker-build-next')) / app
+        result += ['--cache-to', f'type=local,dest={destination},mode=max']
+    elif backend == 'registry':
         ref = 'ghcr.io/celestoai/ci-benchmarks-cache:' + scope
         if scenario != 'seed':
             result += ['--cache-from', 'type=registry,ref=' + ref]
@@ -113,6 +132,20 @@ def build(app, scenario, *, use_cache=True):
     emit(app + '-cache-observation', cached_steps=cached,
          importing_cache='importing cache manifest' in output,
          exporting_cache=('exporting cache' in output or 'exporting to GitHub Actions Cache' in output))
+    vertices = {}
+    for line in output.splitlines():
+        match = re.match(r'^#(\d+) (.+)$', line)
+        if not match:
+            continue
+        number, detail = match.groups()
+        if number not in vertices:
+            vertices[number] = {'description': detail}
+        if detail == 'CACHED':
+            vertices[number]['cached'] = True
+        done = re.match(r'DONE ([\d.]+)s', detail)
+        if done:
+            vertices[number]['seconds'] = float(done[1])
+    emit(app + '-buildkit-vertices', vertices=vertices)
     if use_cache and scenario in ['unchanged', 'source']:
         assert cached >= 2, f'{app}: expected reusable dependency layers, saw {cached} cached steps'
     check = ['docker', 'run', '--rm', f'bench-{app}:run']
@@ -188,21 +221,44 @@ def runtime():
         command(name + '-load', ['docker', 'load', '-i', str(OUT / f'{name}.tar')])
     command('disk-end', ['docker', 'system', 'df', '-v'])
 
+def image_cache(scenario):
+    cache = Path('.docker-image-cache')
+    cache.mkdir(exist_ok=True)
+    for name in ['postgres', 'azurite']:
+        if scenario == 'image-seed':
+            command(name + '-direct-pull', ['docker', 'pull', '--platform=linux/amd64', IMAGES[name]])
+            command(name + '-cache-save-tar', ['docker', 'save', '-o', str(cache / f'{name}.tar'), IMAGES[name]])
+            emit(name + '-cache-size', bytes=(cache / f'{name}.tar').stat().st_size)
+        else:
+            assert (cache / f'{name}.tar').is_file(), 'Expected exact cache hit, not a fallback pull'
+            command(name + '-cache-load-tar', ['docker', 'load', '-i', str(cache / f'{name}.tar')])
+            command(name + '-cache-image-verify', ['docker', 'image', 'inspect', IMAGES[name]])
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('task', choices=['build', 'runtime'])
+    parser.add_argument('task', choices=['build', 'runtime', 'image-cache', 'event'])
+    parser.add_argument('--phase')
     args = parser.parse_args()
+    if args.task == 'event':
+        emit(args.phase, cache_hit=os.environ.get('CACHE_HIT'))
+        return
     fingerprint()
     started = time.monotonic()
     try:
         if args.task == 'build':
             for app in ['node', 'python']:
                 build(app, os.environ['SCENARIO'])
-        else:
+        elif args.task == 'runtime':
             runtime()
+        else:
+            image_cache(os.environ['SCENARIO'])
         emit('suite-complete', seconds=time.monotonic() - started, success=True)
     except Exception:
         emit('suite-complete', seconds=time.monotonic() - started, success=False)
+        containers = subprocess.check_output(['docker', 'ps', '-aq', '--filter', 'name=buildx_buildkit'], text=True).split()
+        for index, container in enumerate(containers):
+            command(f'buildkit-state-{index}', ['docker', 'inspect', '--format', '{{json .State}}', container])
+            command(f'buildkit-logs-{index}', ['docker', 'logs', '--tail', '200', container])
         raise
 
 if __name__ == '__main__':
