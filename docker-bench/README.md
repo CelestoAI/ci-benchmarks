@@ -72,6 +72,8 @@ gh workflow run celesto.yml --repo CelestoAI/ci-benchmarks \
 
 # Once the full run completes (Python 3.10+ and authenticated gh):
 python3 docker-bench/collect.py RUN_ID --output results/docker-DATE
+node docker-bench/validate.mjs results/docker-DATE
+node docker-bench/render.mjs results/docker-DATE
 ```
 
 Full mode schedules 120 concrete jobs: 80 layer-cache builds, 10 uncached

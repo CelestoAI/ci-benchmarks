@@ -16,6 +16,16 @@ repo = 'CelestoAI/ci-benchmarks'
 run = json.loads(subprocess.check_output(['gh', 'run', 'view', args.run_id, '--repo', repo, '--json', 'status,conclusion,jobs,url,headSha,createdAt,updatedAt'], text=True))
 assert run['status'] == 'completed', 'Do not summarize an incomplete experiment as final'
 (out / 'run.json').write_text(json.dumps(run, indent=2) + '\n')
+pages = json.loads(subprocess.check_output(['gh', 'api', '--paginate', '--slurp',
+    f'repos/{repo}/actions/runs/{args.run_id}/jobs?per_page=100'], text=True))
+run['jobs'] = [{
+    'databaseId': job['id'], 'name': job['name'], 'url': job['html_url'],
+    'status': job['status'], 'conclusion': job['conclusion'],
+    'startedAt': job['started_at'], 'completedAt': job['completed_at'],
+    'runnerName': job['runner_name'],
+    'steps': job['steps'],
+} for page in pages for job in page['jobs']]
+(out / 'run.json').write_text(json.dumps(run, indent=2) + '\n')
 subprocess.run(['gh', 'run', 'download', args.run_id, '--repo', repo, '--dir', str(out / 'raw')], check=True)
 samples = []
 failures = []
