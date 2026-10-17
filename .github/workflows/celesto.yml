@@ -5,7 +5,7 @@ on:
       mode:
         description: Pilot validates cache and workloads; full runs five repetitions.
         type: choice
-        options: [pilot, full, native-probe, runtime-pilot, image-pilot, continuation, image-full, portable-pair, image-pair]
+        options: [pilot, full, native-probe, runtime-pilot, image-pilot, continuation, image-full, portable-pair, registry-pair, image-pair]
         default: pilot
       repetition:
         description: Repetition number for a quota-controlled paired experiment.
@@ -26,9 +26,12 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        backend: ${{ fromJSON(inputs.mode == 'native-probe' && '["native"]' || inputs.mode == 'portable-pair' && '["portable"]' || '["portable","registry"]') }}
-        repetition: ${{ fromJSON(inputs.mode == 'full' && '[1,2,3,4,5]' || inputs.mode == 'portable-pair' && format('[{0}]', inputs.repetition) || '[1]') }}
+        backend: ${{ fromJSON(inputs.mode == 'native-probe' && '["native"]' || inputs.mode == 'portable-pair' && '["portable"]' || inputs.mode == 'registry-pair' && '["registry"]' || '["portable","registry"]') }}
+        repetition: ${{ fromJSON(inputs.mode == 'full' && '[1,2,3,4,5]' || (inputs.mode == 'portable-pair' || inputs.mode == 'registry-pair') && format('[{0}]', inputs.repetition) || '[1]') }}
     uses: ./.github/workflows/docker-build-pair.yml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
     with:
       backend: ${{ matrix.backend }}
       repetition: ${{ matrix.repetition }}
@@ -36,7 +39,7 @@ jobs:
       mode: ${{ inputs.mode }}
   no-cache:
     needs: builds
-    if: always() && (inputs.mode == 'continuation' || (inputs.mode != 'portable-pair' && needs.builds.result == 'success'))
+    if: always() && (inputs.mode == 'continuation' || (inputs.mode != 'portable-pair' && inputs.mode != 'registry-pair' && needs.builds.result == 'success'))
     strategy:
       fail-fast: false
       max-parallel: 4
@@ -44,6 +47,9 @@ jobs:
         repetition: ${{ fromJSON((inputs.mode == 'full' || inputs.mode == 'continuation') && '[1,2,3,4,5]' || '[1]') }}
         provider: [github, celesto]
     uses: ./.github/workflows/docker-job.yml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
     with:
       provider: ${{ matrix.provider }}
       backend: none
@@ -60,6 +66,9 @@ jobs:
         repetition: ${{ fromJSON((inputs.mode == 'full' || inputs.mode == 'continuation') && '[1,2,3,4,5]' || '[1]') }}
         provider: [celesto, github]
     uses: ./.github/workflows/docker-job.yml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
     with:
       provider: ${{ matrix.provider }}
       backend: none
@@ -75,6 +84,9 @@ jobs:
       matrix:
         repetition: ${{ fromJSON((inputs.mode == 'full' || inputs.mode == 'image-full') && '[1,2,3,4,5]' || inputs.mode == 'image-pair' && format('[{0}]', inputs.repetition) || '[1]') }}
     uses: ./.github/workflows/docker-image-pair.yml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
     with:
       repetition: ${{ matrix.repetition }}
       namespace: ${{ inputs.namespace }}

@@ -1,6 +1,9 @@
 name: One paired cache experiment
 on:
   workflow_call:
+    secrets:
+      DOCKERHUB_USERNAME: {required: true}
+      DOCKERHUB_TOKEN: {required: true}
     inputs:
       backend: {required: true, type: string}
       repetition: {required: true, type: number}
@@ -17,6 +20,9 @@ jobs:
       matrix:
         provider: ${{ fromJSON((inputs.repetition == 2 || inputs.repetition == 4) && '["celesto","github"]' || '["github","celesto"]') }}
     uses: ./.github/workflows/docker-job.yml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
     with:
       provider: ${{ matrix.provider }}
       backend: ${{ inputs.backend }}
@@ -29,9 +35,12 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        scenario: ${{ fromJSON((inputs.mode == 'full' || inputs.mode == 'portable-pair') && '["unchanged","source","dependency"]' || '["unchanged"]') }}
+        scenario: ${{ fromJSON((inputs.mode == 'full' || inputs.mode == 'portable-pair' || inputs.mode == 'registry-pair') && '["unchanged","source","dependency"]' || '["unchanged"]') }}
         provider: [celesto, github]
     uses: ./.github/workflows/docker-job.yml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
     with:
       provider: ${{ matrix.provider }}
       backend: ${{ inputs.backend }}

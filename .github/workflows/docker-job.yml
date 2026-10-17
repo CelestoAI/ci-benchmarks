@@ -1,6 +1,9 @@
 name: Matched Docker benchmark job
 on:
   workflow_call:
+    secrets:
+      DOCKERHUB_USERNAME: {required: true}
+      DOCKERHUB_TOKEN: {required: true}
     inputs:
       provider: {required: true, type: string}
       backend: {required: true, type: string}
@@ -29,6 +32,11 @@ jobs:
         with:
           version: v29.1.3
           daemon-config: '{"features":{"containerd-snapshotter":true},"exec-opts":["native.cgroupdriver=cgroupfs"]}'
+      - name: Log in to Docker Hub on both providers
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Match Compose version
         run: |
           mkdir -p "$HOME/.docker/cli-plugins"
