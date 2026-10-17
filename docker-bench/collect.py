@@ -5,10 +5,14 @@ import json
 from pathlib import Path
 import statistics
 import subprocess
+import re
+import io
+import zipfile
 
 parser = argparse.ArgumentParser()
 parser.add_argument('run_id')
 parser.add_argument('--output', required=True)
+parser.add_argument('--reuse-artifacts', action='store_true', help='Reuse an already downloaded complete artifact directory after a log-audit retry')
 args = parser.parse_args()
 out = Path(args.output)
 out.mkdir(parents=True, exist_ok=True)
@@ -26,7 +30,23 @@ run['jobs'] = [{
     'steps': job['steps'],
 } for page in pages for job in page['jobs']]
 (out / 'run.json').write_text(json.dumps(run, indent=2) + '\n')
-subprocess.run(['gh', 'run', 'download', args.run_id, '--repo', repo, '--dir', str(out / 'raw')], check=True)
+if not args.reuse_artifacts:
+    subprocess.run(['gh', 'run', 'download', args.run_id, '--repo', repo, '--dir', str(out / 'raw')], check=True)
+archive = zipfile.ZipFile(io.BytesIO(subprocess.check_output(['gh','api',f'repos/{repo}/actions/runs/{args.run_id}/logs'])))
+cache_warnings = []
+audited = []
+for job in run['jobs']:
+    suffix = job['name'].split('/')[-1].strip()
+    if not suffix.startswith(('github-', 'celesto-')) or job['conclusion']=='skipped':
+        continue
+    candidates = [n for n in archive.namelist() if '/' not in n and n.endswith(suffix+'.txt')]
+    assert len(candidates)==1, f'Missing/ambiguous job log: {job["name"]}'
+    audited.append(job['url'])
+    for line in archive.read(candidates[0]).decode('utf-8',errors='replace').splitlines():
+        if re.search(r'Cache reservation failed|Failed to save:|Cache save failed|Failed to save cache', line):
+            cache_warnings.append({'job_name': job['name'], 'job_url':job['url'], 'message': line})
+(out / 'cache-log-audit.json').write_text(json.dumps({'audited_jobs':audited,'warning_lines':len(cache_warnings)},indent=2)+'\n')
+(out / 'cache-warnings.json').write_text(json.dumps(cache_warnings, indent=2) + '\n')
 samples = []
 failures = []
 cache_observations = []
@@ -40,15 +60,24 @@ for file in sorted((out / 'raw').glob('*/events.jsonl')):
     events = [json.loads(line) for line in file.read_text().splitlines()]
     host = next((e['data'] for e in events if e['phase'] == 'host'), None)
     if not host:
-        failures.append({'artifact': str(file), 'reason': 'missing host fingerprint'})
+        suffix = file.parent.name.removeprefix('docker-')
+        job = next((j for j in run['jobs'] if j['name'].endswith(suffix)), None)
+        if job:
+            observed_jobs.add(job['databaseId'])
+        failures.append({'artifact': str(file.relative_to(out)), 'job_url': job['url'] if job else None,
+                         'conclusion': job['conclusion'] if job else None, 'reason': 'missing host fingerprint; workload did not start'})
         continue
     suffix = '{provider}-{backend}-{scenario}-{repetition}'.format(**host)
     job = next(j for j in run['jobs'] if j['name'].endswith(suffix))
     observed_jobs.add(job['databaseId'])
+    if any(w['job_name'] == job['name'] for w in cache_warnings):
+        failures.append({'artifact': str(file.relative_to(out)), 'job_url': job['url'], 'conclusion': job['conclusion'],
+                         'reason': 'Cache save warned despite a green Actions job; excluded from successful measurements'})
+        continue
     by_phase = {e['phase']: e for e in events}
     complete = by_phase.get('suite-complete', {}).get('data', {})
     if not complete.get('success') or job['conclusion'] != 'success':
-        failures.append({'artifact': str(file), 'job_url': job['url'], 'conclusion': job['conclusion']})
+        failures.append({'artifact': str(file.relative_to(out)), 'job_url': job['url'], 'conclusion': job['conclusion']})
         continue
     assert host['cpus'] == 4 and 14 * 1024**3 <= host['memory_bytes'] <= 17 * 1024**3
     assert host['commit'] == run['headSha']

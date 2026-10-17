@@ -10,6 +10,12 @@ const json = file => JSON.parse(readFileSync(join(dir, file)));
 const run = json('run.json'), samples = json('samples.json'), summary = json('summary.json');
 assert.equal(run.conclusion, 'success');
 assert.deepEqual(json('failures.json'), []);
+if (run.cohorts) {
+  const audit = json('cache-log-audit.json');
+  assert.equal(new Set(audit.audited_jobs).size, 120);
+  assert.equal(audit.selected_job_cache_save_warnings, 0);
+  assert(run.jobs.every(j => audit.audited_jobs.includes(j.url)));
+}
 const expected = new Set();
 for (let repetition = 1; repetition <= 5; repetition++) {
   for (const provider of ['github', 'celesto']) {
@@ -25,15 +31,24 @@ for (let repetition = 1; repetition <= 5; repetition++) {
 }
 const actual = new Set();
 let logHashes = 0;
+let exactArchiveHits = 0;
 for (const folder of readdirSync(join(dir, 'raw'))) {
   const events = readFileSync(join(dir, 'raw', folder, 'events.jsonl'), 'utf8').trim().split('\n').map(JSON.parse);
   const host = events.find(e => e.phase === 'host').data;
   const key = `${host.provider}/${host.backend}/${host.scenario}/${host.repetition}`;
   assert(!actual.has(key), `Duplicate sample ${key}`);
   actual.add(key);
-  assert.equal(host.commit, run.headSha);
+  const suffix = `${host.provider}-${host.backend}-${host.scenario}-${host.repetition}`;
+  const job = run.jobs.find(j => j.name.endsWith(suffix));
+  assert(job && job.conclusion === 'success');
+  assert.equal(host.commit, job.headSha ?? run.headSha);
   assert.equal(host.cpus, 4);
   assert(host.memory_bytes >= 14 * 1024 ** 3 && host.memory_bytes <= 17 * 1024 ** 3);
+  const docker = JSON.parse(readFileSync(join(dir, 'raw', folder, 'docker-version.log'), 'utf8'));
+  assert.equal(docker.Server.Version, '29.1.3');
+  assert.equal(docker.Server.Arch, 'amd64');
+  assert(readFileSync(join(dir, 'raw', folder, 'buildx-version.log'), 'utf8').includes('v0.30.1'));
+  assert(readFileSync(join(dir, 'raw', folder, 'compose-version.log'), 'utf8').includes('v2.40.3'));
   assert.equal(events.find(e => e.phase === 'suite-complete').data.success, true);
   for (const event of events) {
     if (!event.data.log_sha256) continue;
@@ -43,8 +58,14 @@ for (const folder of readdirSync(join(dir, 'raw'))) {
   }
   if (host.scenario === 'image-warm') {
     assert.equal(events.find(e => e.phase === 'image-cache-restore-end').data.cache_hit, 'true');
+    exactArchiveHits++;
+  }
+  if (host.backend === 'portable' && host.scenario !== 'seed') {
+    assert.equal(events.find(e => e.phase === 'build-cache-restore-end').data.cache_hit, 'true');
+    exactArchiveHits++;
   }
 }
+assert.equal(exactArchiveHits, 40);
 assert.deepEqual([...actual].sort(), [...expected].sort());
 for (const row of summary) {
   for (const provider of ['github', 'celesto']) {
@@ -65,8 +86,10 @@ const hits = json('cache-observations.json').filter(o => ['unchanged', 'source']
 assert.equal(hits.length, 80);
 assert(hits.every(o => o.install_layer_cached));
 const receipt = { run: run.url, source_commit: run.headSha, concrete_jobs: actual.size,
+  cohorts: run.cohorts ?? null,
   repetitions_per_provider_scenario: 5, verified_log_hashes: logHashes,
   expected_dependency_layer_hits: 80, observed_dependency_layer_hits: hits.length,
+  expected_exact_archive_hits: 40, observed_exact_archive_hits: exactArchiveHits,
   independently_recomputed_summary_rows: summary.length, result: 'passed' };
 writeFileSync(join(dir, 'validation.json'), JSON.stringify(receipt, null, 2) + '\n');
 console.log(JSON.stringify(receipt, null, 2));

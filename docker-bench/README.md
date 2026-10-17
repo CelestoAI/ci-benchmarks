@@ -3,6 +3,17 @@
 Same workloads, fresh runners, **4 vCPU / 16 GiB RAM** on each provider.
 This suite measures representative fixtures, not a customer's private application.
 
+**Execution status:** the full repeated report is not complete. The original
+shared-registry cohort passed all 40 jobs, but portable caching reached storage
+quota. After approved task-only cleanup, the uncached continuation hit Docker
+Hub's anonymous pull limit on Celesto (HTTP 429), so its dependent runtime phase
+was skipped and further dispatches stopped. No Docker Hub credentials are
+configured in this repository. Authenticate both providers before continuing;
+do not silently replace the registry or count the failed attempt as a timing.
+
+- [Original quota-limited run](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39073691950)
+- [Continuation with registry-rate-limit failure](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39075713994)
+
 ## What runs
 
 | Workload | What it checks |
@@ -45,6 +56,7 @@ Evidence:
 - GitHub `ubuntu-24.04` versus Celesto `celesto-large`; abort unless each exposes four CPUs and approximately 16 GiB nominal RAM.
 - Docker Engine 29.1.3, Buildx 0.30.1, Compose 2.40.3, BuildKit 0.26.2, `docker-container` driver, host-networked builder, maximum four parallel BuildKit operations. Base/service/builder images are pinned in [images.json](images.json).
 - GitHub's Docker Engine is normalized using `setup-docker-action`; Celesto's Engine is baked in. Setup and post-job cleanup are reported separately from workload numbers so normalization overhead does not become a provider advantage.
+- Engine **semantic versions**, not distribution binaries, match: Celesto uses Ubuntu's 29.1.3 build (containerd 2.2.1 in preflight); GitHub uses the upstream 29.1.3 bundle (containerd v2.4.1 in preflight). Go builds/package patches, kernels, and supporting runtime packages can differ. Their full versions are in every job's raw logs; this is a matched-resource service comparison, not bit-identical host images.
 - CPU model, kernel, OS, usable memory, free disk, image preexistence, runner identity, source revision, and cache endpoint hostname are recorded. Equal resource counts do not mean identical physical CPUs or storage.
 - Provider-specific cache keys/refs. Each scenario consumes the unchanged seed on a fresh runner and exports to its own destination. No cross-provider cache reuse; no same-machine warm-cache shortcut.
 - A warm source/unchanged build must prove the **dependency-install vertex** was cached. A dependency change must prove the install executes. A cache archive's presence alone is insufficient.
@@ -81,9 +93,40 @@ baselines, 10 runtime/CPU jobs, and 20 image-cache seed/restore jobs. Each build
 job builds both the Node and Python image. Use pilot mode first; don't mistake
 these jobs for 120 independent CPU samples.
 
-`runtime-pilot` runs only runtime and image-cache checks. `native-probe` tests
+`runtime-pilot` runs one runtime pair; `image-pilot` runs one image-cache pair.
+`continuation` runs five uncached/runtime repetitions without cache builds;
+`image-full` runs five image-cache pairs. `native-probe` tests
 the direct BuildKit GHA protocol and is expected to fail until compatibility
 is repaired; it is not part of the repeated portable/registry comparison.
+
+### Storage headroom matters
+
+The first full run filled Celesto's existing cache quota. Some saves emitted
+warnings while their Actions jobs stayed green; later exact seed restores
+failed. The collector audits cache-save warnings and excludes those jobs from
+successful measurements. Missing/failed measurements are never zero.
+
+After explicit approval, only task-owned Docker benchmark/pilot caches were
+removed; quotas and unrelated caches were unchanged. The selected report uses
+the original shared-registry cohort, a separate uncached/runtime continuation,
+**all five portable repetitions rerun** under available quota, and a separate
+five-repeat image-cache cohort. The workload implementation and fixtures are
+byte-identical across these orchestration revisions (`combine.py` checks git).
+The complete original quota-limited run is retained as diagnostic evidence.
+
+For quota-controlled reproduction, use a fresh namespace and one pair at a time:
+
+```sh
+gh workflow run celesto.yml --repo CelestoAI/ci-benchmarks \
+  --ref codex/docker-benchmarks-20261017 \
+  -f mode=portable-pair -f repetition=1 -f namespace=docker-clean-UNIQUE
+```
+
+Repeat with repetitions 2–5. Ensure storage headroom before each pair; retain
+the seed until its three warm cases finish. Only remove completed task-owned
+caches with owner approval. Normal-operation results with this intervention
+do **not** demonstrate retention or hit rates under storage pressure. Direct
+BuildKit GHA compatibility and Docker CPU-limit flags remain separate caveats.
 
 ## How to read results
 
