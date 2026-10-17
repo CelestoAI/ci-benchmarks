@@ -39,7 +39,8 @@ const panels = metrics.map((metric, index) => {
   const bars = providers.map((provider, i) => {
     const by = barY + i * 56;
     const width = values[i] / metric.max * plotWidth;
-    return `<text x="${plotX}" y="${by - 10}" class="label">${provider.label}</text><rect x="${plotX}" y="${by}" width="${width}" height="24" rx="4" fill="${provider.color}"/><text x="${plotX + width + 9}" y="${by + 19}" class="value">${values[i].toFixed(metric.digits)}</text>`;
+    const rounded = Math.round(values[i] * 10 ** metric.digits) / 10 ** metric.digits;
+    return `<text x="${plotX}" y="${by - 10}" class="label">${provider.label}</text><rect x="${plotX}" y="${by}" width="${width}" height="24" rx="4" fill="${provider.color}"/><text x="${plotX + width + 9}" y="${by + 19}" class="value">${rounded.toFixed(metric.digits)}</text>`;
   }).join('');
   return `<g><rect x="${x}" y="${y}" width="516" height="252" rx="16" fill="#ffffff" stroke="#e2e8f0"/><text x="${x + 28}" y="${y + 36}" class="panel-title">${metric.title}</text><text x="${x + 488}" y="${y + 36}" text-anchor="end" class="direction">${metric.direction}</text><text x="${x + 28}" y="${y + 65}" class="subtitle">${metric.unit}</text>${ticks}${bars}</g>`;
 }).join('\n');
