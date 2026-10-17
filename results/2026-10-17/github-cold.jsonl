@@ -1,0 +1,13 @@
+{"phase":"host_fingerprint","timestamp_ms":1792251495718,"timestamp_iso":"2026-10-17T15:38:15.718Z","data":{"provider":"github-hosted","runner_name":"GitHub Actions 1000003650","os":"linux","arch":"x64","node":"v22.23.3"}}
+{"phase":"job_start","timestamp_ms":1792251495750,"timestamp_iso":"2026-10-17T15:38:15.750Z","data":{}}
+{"phase":"cache_restore_start","timestamp_ms":1792251495809,"timestamp_iso":"2026-10-17T15:38:15.809Z","data":{}}
+{"phase":"cache_restore_end","timestamp_ms":1792251496247,"timestamp_iso":"2026-10-17T15:38:16.247Z","data":{"cache_hit":"false","cache_primary_key":"celesto-ci-benchmarks-v1-bench-20261017-b-linux-x64-512MiB"}}
+{"phase":"cache_payload_start","timestamp_ms":1792251496309,"timestamp_iso":"2026-10-17T15:38:16.309Z","data":{}}
+{"phase":"cache_payload_end","timestamp_ms":1792251496599,"timestamp_iso":"2026-10-17T15:38:16.599Z","data":{}}
+{"phase":"cpu_single_core_start","timestamp_ms":1792251496659,"timestamp_iso":"2026-10-17T15:38:16.659Z","data":{"node":"v22.23.3","platform":"linux","arch":"x64","logical_cpus":4,"available_cpus":4,"workers":1,"iterations_per_worker":250000000}}
+{"phase":"cpu_single_core_end","timestamp_ms":1792251497969,"timestamp_iso":"2026-10-17T15:38:17.969Z","data":{"workers":1,"iterations_per_worker":250000000,"total_iterations":250000000,"wall_ms":1308,"aggregate_cpu_ms":1260,"iterations_per_second":191190584,"checksums":[2775414133]}}
+{"phase":"cpu_all_cores_start","timestamp_ms":1792251498053,"timestamp_iso":"2026-10-17T15:38:18.053Z","data":{"node":"v22.23.3","platform":"linux","arch":"x64","logical_cpus":4,"available_cpus":4,"workers":4,"iterations_per_worker":250000000}}
+{"phase":"cpu_all_cores_end","timestamp_ms":1792251499602,"timestamp_iso":"2026-10-17T15:38:19.602Z","data":{"workers":4,"iterations_per_worker":250000000,"total_iterations":1000000000,"wall_ms":1546,"aggregate_cpu_ms":19566,"iterations_per_second":646746114,"checksums":[2775414133,1791022837,2436017810,1583552857]}}
+{"phase":"cache_save_start","timestamp_ms":1792251499667,"timestamp_iso":"2026-10-17T15:38:19.667Z","data":{}}
+{"phase":"cache_save_end","timestamp_ms":1792251503305,"timestamp_iso":"2026-10-17T15:38:23.305Z","data":{}}
+{"phase":"job_end","timestamp_ms":1792251503356,"timestamp_iso":"2026-10-17T15:38:23.356Z","data":{}}
