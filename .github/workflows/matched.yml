@@ -1,0 +1,51 @@
+name: Matched 4-core benchmark
+on:
+  workflow_dispatch:
+    inputs:
+      cache_namespace:
+        description: Unique experiment namespace; cold and warm phases share it.
+        required: true
+        default: matched-20261017-a
+        type: string
+permissions:
+  contents: read
+jobs:
+  cold:
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        sample: [1, 2, 3]
+        runner:
+          - provider: github-hosted
+            labels: '["ubuntu-24.04"]'
+          - provider: celesto-large
+            labels: '["self-hosted","celesto-large"]'
+    uses: ./.github/workflows/benchmark.yml
+    with:
+      phase: cold
+      provider: ${{ matrix.runner.provider }}
+      runs_on: ${{ matrix.runner.labels }}
+      cache_namespace: ${{ inputs.cache_namespace }}-sample-${{ matrix.sample }}-cold
+      cache_mb: '512'
+      cpu_iterations: '2000000000'
+  warm:
+    needs: cold
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        sample: [1, 2, 3]
+        runner:
+          - provider: github-hosted
+            labels: '["ubuntu-24.04"]'
+          - provider: celesto-large
+            labels: '["self-hosted","celesto-large"]'
+    uses: ./.github/workflows/benchmark.yml
+    with:
+      phase: warm
+      provider: ${{ matrix.runner.provider }}
+      runs_on: ${{ matrix.runner.labels }}
+      cache_namespace: ${{ inputs.cache_namespace }}-sample-${{ matrix.sample }}-cold
+      cache_mb: '512'
+      cpu_iterations: '2000000000'
