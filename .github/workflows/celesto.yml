@@ -5,8 +5,13 @@ on:
       mode:
         description: Pilot validates cache and workloads; full runs five repetitions.
         type: choice
-        options: [pilot, full, native-probe, runtime-pilot, image-pilot, continuation, image-full]
+        options: [pilot, full, native-probe, runtime-pilot, image-pilot, continuation, image-full, portable-pair, image-pair]
         default: pilot
+      repetition:
+        description: Repetition number for a quota-controlled paired experiment.
+        type: choice
+        options: ['1', '2', '3', '4', '5']
+        default: '1'
       namespace:
         description: Unique lowercase prefix; never reuse for a new experiment.
         type: string
@@ -16,13 +21,13 @@ permissions:
   packages: write
 jobs:
   builds:
-    if: inputs.mode != 'runtime-pilot' && inputs.mode != 'image-pilot' && inputs.mode != 'continuation' && inputs.mode != 'image-full'
+    if: inputs.mode != 'runtime-pilot' && inputs.mode != 'image-pilot' && inputs.mode != 'continuation' && inputs.mode != 'image-full' && inputs.mode != 'image-pair'
     strategy:
       fail-fast: false
       max-parallel: 2
       matrix:
-        backend: ${{ fromJSON(inputs.mode == 'native-probe' && '["native"]' || '["portable","registry"]') }}
-        repetition: ${{ fromJSON(inputs.mode == 'full' && '[1,2,3,4,5]' || '[1]') }}
+        backend: ${{ fromJSON(inputs.mode == 'native-probe' && '["native"]' || inputs.mode == 'portable-pair' && '["portable"]' || '["portable","registry"]') }}
+        repetition: ${{ fromJSON(inputs.mode == 'full' && '[1,2,3,4,5]' || inputs.mode == 'portable-pair' && format('[{0}]', inputs.repetition) || '[1]') }}
     uses: ./.github/workflows/docker-build-pair.yml
     with:
       backend: ${{ matrix.backend }}
@@ -31,7 +36,7 @@ jobs:
       mode: ${{ inputs.mode }}
   no-cache:
     needs: builds
-    if: always() && (inputs.mode == 'continuation' || needs.builds.result == 'success')
+    if: always() && (inputs.mode == 'continuation' || (inputs.mode != 'portable-pair' && needs.builds.result == 'success'))
     strategy:
       fail-fast: false
       max-parallel: 4
@@ -63,12 +68,12 @@ jobs:
       namespace: ${{ inputs.namespace }}
   images:
     needs: runtime
-    if: always() && (inputs.mode == 'image-pilot' || inputs.mode == 'image-full' || (inputs.mode != 'continuation' && needs.runtime.result == 'success'))
+    if: always() && (inputs.mode == 'image-pilot' || inputs.mode == 'image-full' || inputs.mode == 'image-pair' || (inputs.mode != 'continuation' && needs.runtime.result == 'success'))
     strategy:
       fail-fast: false
       max-parallel: 2
       matrix:
-        repetition: ${{ fromJSON((inputs.mode == 'full' || inputs.mode == 'image-full') && '[1,2,3,4,5]' || '[1]') }}
+        repetition: ${{ fromJSON((inputs.mode == 'full' || inputs.mode == 'image-full') && '[1,2,3,4,5]' || inputs.mode == 'image-pair' && format('[{0}]', inputs.repetition) || '[1]') }}
     uses: ./.github/workflows/docker-image-pair.yml
     with:
       repetition: ${{ matrix.repetition }}
