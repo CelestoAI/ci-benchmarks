@@ -1,0 +1,101 @@
+name: Benchmark harness
+
+on:
+  workflow_call:
+    inputs:
+      provider:
+        required: true
+        type: string
+      runs_on:
+        required: true
+        type: string
+      cache_namespace:
+        required: true
+        type: string
+      cache_mb:
+        required: true
+        type: string
+      cpu_iterations:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    name: 
+disabled
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    timeout-minutes: 90
+    env:
+      BENCHMARK_EVENT_FILE: benchmark-events.jsonl
+      BENCHMARK_CACHE_DIR: .benchmark-cache
+      BENCHMARK_PROVIDER: ${{ inputs.provider }}
+      BENCHMARK_CACHE_MIB: ${{ inputs.cache_mb }}
+      BENCHMARK_CPU_ITERATIONS: ${{ inputs.cpu_iterations }}
+      BENCHMARK_CACHE_KEY: celesto-ci-benchmarks-v1-${{ inputs.cache_namespace }}-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache_mb }}MiB
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Record host and start
+        run: |
+          node scripts/record-event.mjs host_fingerprint '{"provider":"'$BENCHMARK_PROVIDER'","runner":"'$RUNNER_NAME'","os":"'$RUNNER_OS'","arch":"'$RUNNER_ARCH'"}'
+          node scripts/record-event.mjs job_start '{}'
+      - name: Mark cache restore start
+        run: node scripts/record-event.mjs cache_restore_start '{}'
+      - name: Restore benchmark cache
+        id: cache_restore
+        uses: actions/cache/restore@v4
+        with:
+          path: .benchmark-cache
+          key: ${{ env.BENCHMARK_CACHE_KEY }}
+      - name: Mark cache restore end
+        if: always()
+        env:
+          CACHE_HIT: ${{ steps.cache_restore.outputs.cache-hit }}
+          CACHE_KEY: ${{ steps.cache_restore.outputs.cache-primary-key }}
+        run: node scripts/record-event.mjs cache_restore_end '{"cache_hit":"'$CACHE_HIT'","cache_primary_key":"'$CACHE_KEY'"}'
+      - name: Seed cache on a miss
+        if: ${{ steps.cache_restore.outputs.cache-hit != 'true' }}
+        run: |
+          node scripts/record-event.mjs cache_payload_start '{}'
+          node scripts/seed-cache.mjs
+          node scripts/record-event.mjs cache_payload_end '{}'
+      - name: CPU benchmark single core
+        env:
+          BENCHMARK_CPU_LABEL: single_core
+          BENCHMARK_CPU_WORKERS: 1
+        run: node scripts/cpu-benchmark.mjs
+      - name: CPU benchmark all cores
+        env:
+          BENCHMARK_CPU_LABEL: all_cores
+          BENCHMARK_CPU_WORKERS: all
+        run: node scripts/cpu-benchmark.mjs
+      - name: Mark cache save start
+        if: ${{ steps.cache_restore.outputs.cache-hit != 'true' }}
+        run: node scripts/record-event.mjs cache_save_start '{}'
+      - name: Save cache on a miss
+        if: ${{ steps.cache_restore.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: .benchmark-cache
+          key: ${{ steps.cache_restore.outputs.cache-primary-key }}
+      - name: Mark cache save end
+        if: ${{ always() && steps.cache_restore.outputs.cache-hit != 'true' }}
+        run: node scripts/record-event.mjs cache_save_end '{}'
+      - name: Render benchmark report
+        if: always()
+        run: |
+          node scripts/record-event.mjs job_end '{}'
+          node scripts/render-summary.mjs
+      - name: Upload benchmark evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.provider }}-benchmark-${{ github.run_id }}
+          path: |
+            benchmark-events.jsonl
+            benchmark-summary.md
