@@ -20,6 +20,7 @@ subprocess.run(['gh', 'run', 'download', args.run_id, '--repo', repo, '--dir', s
 samples = []
 failures = []
 cache_observations = []
+observed_jobs = set()
 
 def add(host, metric, seconds, job):
     samples.append({**{k: host[k] for k in ['provider', 'backend', 'scenario', 'repetition', 'commit', 'runner']},
@@ -33,6 +34,7 @@ for file in sorted((out / 'raw').glob('*/events.jsonl')):
         continue
     suffix = '{provider}-{backend}-{scenario}-{repetition}'.format(**host)
     job = next(j for j in run['jobs'] if j['name'].endswith(suffix))
+    observed_jobs.add(job['databaseId'])
     by_phase = {e['phase']: e for e in events}
     complete = by_phase.get('suite-complete', {}).get('data', {})
     if not complete.get('success') or job['conclusion'] != 'success':
@@ -63,7 +65,8 @@ for file in sorted((out / 'raw').glob('*/events.jsonl')):
             exports = [v for v in vertices if v['description'].startswith(('exporting cache', 'exporting to GitHub Actions Cache'))]
             if exports:
                 assert len(exports) == 1
-                add(host, app + ' BuildKit cache export', exports[0].get('seconds', 0), job)
+                if 'seconds' in exports[0]:
+                    add(host, app + ' BuildKit cache export', exports[0]['seconds'], job)
         restore, save = boundary('build-cache-restore'), boundary('build-cache-save')
         add(host, 'two-image workload incl cache transfer', complete['seconds'] + restore + save, job)
         if host['backend'] == 'portable':
@@ -95,6 +98,11 @@ for file in sorted((out / 'raw').glob('*/events.jsonl')):
     add(host, 'Actions job including setup and post-cleanup',
         (__import__('datetime').datetime.fromisoformat(job['completedAt'].replace('Z', '+00:00')) - __import__('datetime').datetime.fromisoformat(job['startedAt'].replace('Z', '+00:00'))).total_seconds(), job)
 
+for job in run['jobs']:
+    concrete = job['name'].split('/')[-1].strip().startswith(('github-', 'celesto-'))
+    if concrete and job['databaseId'] not in observed_jobs:
+        failures.append({'job_url': job['url'], 'conclusion': job['conclusion'], 'reason': 'no usable host artifact'})
+
 (out / 'samples.json').write_text(json.dumps(samples, indent=2) + '\n')
 (out / 'failures.json').write_text(json.dumps(failures, indent=2) + '\n')
 (out / 'cache-observations.json').write_text(json.dumps(cache_observations, indent=2) + '\n')
@@ -115,4 +123,4 @@ for (backend, scenario, metric), providers in sorted(groups.items()):
         row['github_over_celesto'] = row['github']['median'] / row['celesto']['median']
     summary.append(row)
 (out / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n')
-print(json.dumps({'run': run['url'], 'conclusion': run['conclusion'], 'samples': len(samples), 'failures': failures, 'summary': summary}, indent=2))
+print(json.dumps({'run': run['url'], 'conclusion': run['conclusion'], 'observed_jobs': len(observed_jobs), 'samples': len(samples), 'failures': failures, 'summary_rows': len(summary)}, indent=2))

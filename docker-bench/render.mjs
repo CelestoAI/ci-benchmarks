@@ -17,6 +17,8 @@ const headline = [
   ['Python CI: pulls, build, Compose tests', find('none', 'runtime', 'Python CI: pulls + image build + Compose tests')],
 ];
 const valid = headline.filter(([, row]) => row?.github && row?.celesto);
+const countLabel = valid.every(([, row]) => row.github.n === 5 && row.celesto.n === 5)
+  ? 'five repetitions per provider' : 'sample counts in result table';
 const max = Math.max(...valid.flatMap(([, row]) => [row.github.max, row.celesto.max])) * 1.15;
 const plotX = 430, plotWidth = 600, height = 160 + valid.length * 114;
 const elements = [`<svg xmlns="http://www.w3.org/2000/svg" width="1250" height="${height}" viewBox="0 0 1250 ${height}" role="img" aria-labelledby="title desc">`,
@@ -25,7 +27,7 @@ const elements = [`<svg xmlns="http://www.w3.org/2000/svg" width="1250" height="
   '<rect width="100%" height="100%" fill="white"/>',
   '<g font-family="Arial, sans-serif" fill="#172033">',
   '<text x="30" y="40" font-size="25" font-weight="700">Docker CI · 4 vCPU / 16 GiB on both providers</text>',
-  '<text x="30" y="69" font-size="16">Seconds · lower is better · median with observed min–max · five repetitions per provider</text>',
+  `<text x="30" y="69" font-size="16">Seconds · lower is better · median with observed min–max · ${countLabel}</text>`,
   '<text x="30" y="96" font-size="14" fill="#475569">Workloads exclude tool normalization and runner setup; no ARM emulation or persistent-runner shortcut.</text>'];
 for (let tick = 0; tick <= 5; tick++) {
   const x = plotX + plotWidth * tick / 5;

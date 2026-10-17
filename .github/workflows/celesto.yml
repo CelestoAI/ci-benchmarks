@@ -5,7 +5,7 @@ on:
       mode:
         description: Pilot validates cache and workloads; full runs five repetitions.
         type: choice
-        options: [pilot, full, native-probe, runtime-pilot]
+        options: [pilot, full, native-probe, runtime-pilot, image-pilot]
         default: pilot
       namespace:
         description: Unique lowercase prefix; never reuse for a new experiment.
@@ -16,7 +16,7 @@ permissions:
   packages: write
 jobs:
   builds:
-    if: inputs.mode != 'runtime-pilot'
+    if: inputs.mode != 'runtime-pilot' && inputs.mode != 'image-pilot'
     strategy:
       fail-fast: false
       max-parallel: 2
@@ -62,6 +62,7 @@ jobs:
       namespace: ${{ inputs.namespace }}
   images:
     needs: runtime
+    if: always() && (inputs.mode == 'image-pilot' || needs.runtime.result == 'success')
     strategy:
       fail-fast: false
       max-parallel: 1
