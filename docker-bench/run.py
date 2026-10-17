@@ -146,8 +146,11 @@ def build(app, scenario, *, use_cache=True):
         if done:
             vertices[number]['seconds'] = float(done[1])
     emit(app + '-buildkit-vertices', vertices=vertices)
+    install = next(v for v in vertices.values() if ('RUN npm ci' if app == 'node' else 'RUN pip install') in v['description'])
     if use_cache and scenario in ['unchanged', 'source']:
-        assert cached >= 2, f'{app}: expected reusable dependency layers, saw {cached} cached steps'
+        assert install.get('cached'), f'{app}: dependency install was not actually a layer-cache hit'
+    if use_cache and scenario in ['seed', 'nocache', 'dependency']:
+        assert not install.get('cached'), f'{app}: expected dependency install to execute'
     check = ['docker', 'run', '--rm', f'bench-{app}:run']
     if app == 'python':
         check += ['python', 'app.py', '--self-test']
@@ -160,10 +163,11 @@ def integration():
             'postgres': {'image': IMAGES['postgres'], 'environment': {'POSTGRES_PASSWORD': 'benchmark-only'},
                          'healthcheck': {'test': ['CMD-SHELL', 'pg_isready -U postgres'], 'interval': '1s', 'timeout': '3s', 'retries': 60}},
             'azurite': {'image': IMAGES['azurite'], 'environment': {'AZURITE_ACCOUNTS': 'benchmark:' + key},
-                        'command': 'azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --skipApiVersionCheck'},
+                        'command': 'azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --skipApiVersionCheck',
+                        'healthcheck': {'test': ['CMD', 'node', '-e', "require('http').get('http://127.0.0.1:10000/',r=>process.exit(r.statusCode===400?0:1)).on('error',()=>process.exit(1))"], 'interval': '1s', 'timeout': '3s', 'retries': 60}},
             'api': {'image': 'bench-python:run', 'ports': ['8080:8080'],
                     'environment': {'DATABASE_URL': 'postgresql://postgres:benchmark-only@postgres/postgres', 'AZURITE_KEY': key},
-                    'depends_on': {'postgres': {'condition': 'service_healthy'}, 'azurite': {'condition': 'service_started'}}}
+                    'depends_on': {'postgres': {'condition': 'service_healthy'}, 'azurite': {'condition': 'service_healthy'}}}
         }
     }
     path = OUT / 'compose.json'
@@ -229,10 +233,13 @@ def image_cache(scenario):
             command(name + '-direct-pull', ['docker', 'pull', '--platform=linux/amd64', IMAGES[name]])
             command(name + '-cache-save-tar', ['docker', 'save', '-o', str(cache / f'{name}.tar'), IMAGES[name]])
             emit(name + '-cache-size', bytes=(cache / f'{name}.tar').stat().st_size)
+            metadata = subprocess.check_output(['docker', 'image', 'inspect', '--format', '{{.Id}}', IMAGES[name]], text=True).strip()
+            (cache / f'{name}.id').write_text(metadata)
         else:
             assert (cache / f'{name}.tar').is_file(), 'Expected exact cache hit, not a fallback pull'
             command(name + '-cache-load-tar', ['docker', 'load', '-i', str(cache / f'{name}.tar')])
-            command(name + '-cache-image-verify', ['docker', 'image', 'inspect', IMAGES[name]])
+            metadata = command(name + '-cache-image-verify', ['docker', 'image', 'inspect', '--format', '{{.Id}}', IMAGES[name].split('@')[0]]).strip()
+            assert metadata == (cache / f'{name}.id').read_text(), 'Restored image content differs from the pulled digest'
 
 def main():
     parser = argparse.ArgumentParser()
