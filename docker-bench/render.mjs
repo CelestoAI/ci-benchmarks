@@ -6,6 +6,7 @@ if (!dir) throw new Error('Usage: node docker-bench/render.mjs RESULTS_DIR');
 const summary = JSON.parse(readFileSync(join(dir, 'summary.json')));
 const run = JSON.parse(readFileSync(join(dir, 'run.json')));
 const failures = JSON.parse(readFileSync(join(dir, 'failures.json')));
+const observations = JSON.parse(readFileSync(join(dir, 'cache-observations.json')));
 const find = (backend, scenario, metric) => summary.find(r => r.backend === backend && r.scenario === scenario && r.metric === metric);
 const seconds = p => p ? `${p.median.toFixed(2)} (${p.min.toFixed(2)}–${p.max.toFixed(2)}; n=${p.n})` : 'Unavailable';
 const escape = value => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
@@ -53,6 +54,7 @@ writeFileSync(join(dir, 'benchmark.svg'), elements.join('\n') + '\n');
 
 let md = `# Docker CI benchmark results\n\n[Full run](${run.url}) · source \`${run.headSha}\` · status: **${run.conclusion}**.\n\n`;
 md += `Both providers: **4 vCPU, 16 GiB nominal RAM, Ubuntu 24.04, x86-64**. Pinned Docker/BuildKit/tool versions and workloads; fresh runner for every cache scenario.\n\n`;
+md += `**Known Celesto limits:** direct BuildKit \`type=gha,version=2\` export and Docker's explicit \`--cpus\` flag failed preflight. Results below use clearly labeled registry/portable caching and the VM's existing CPU allocation. These are not claims that those compatibility issues are fixed.\n\n`;
 md += `![Matched Docker CI workload timings](benchmark.svg)\n\n`;
 md += `## Main results\n\nSeconds: **median (observed min–max; sample count)**. These are workload times, not queue-to-result times.\n\n| Workload | GitHub | Celesto | GitHub / Celesto time |\n| --- | ---: | ---: | ---: |\n`;
 for (const [label, row] of headline) {
@@ -65,6 +67,8 @@ for (const backend of ['portable', 'registry']) for (const scenario of ['seed', 
   md += `| ${backend} | ${scenario} | ${seconds(row?.github)} | ${seconds(row?.celesto)} |\n`;
 }
 md += `\nPortable = BuildKit layer export transferred through each provider's actions/cache endpoint. Registry = identical GHCR cache backend on both providers. BuildKit vertex durations can overlap and are not added to produce these totals.\n\n`;
+const reusable = observations.filter(o => ['unchanged', 'source'].includes(o.scenario));
+md += `Dependency-install layer hits in expected-reuse cases: **${reusable.filter(o => o.install_layer_cached).length}/${reusable.length}** across both apps/providers/backends. Cold/dependency-change installs are independently checked to execute. This is a layer-hit count, not a byte-weighted cache hit ratio.\n\n`;
 md += `## Image pull versus tar cache\n\nPostgreSQL + Azurite, together. Cache restore alone is not enough: docker load must finish too.\n\n| Operation | GitHub | Celesto |\n| --- | ---: | ---: |\n`;
 for (const [scenario, metric] of [['image-seed', 'two images: direct pull'], ['image-seed', 'two images: cache save'], ['image-warm', 'two images: cache restore'], ['image-warm', 'two images: cache restore + docker load']]) {
   const row = find('none', scenario, metric);

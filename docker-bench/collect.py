@@ -53,8 +53,11 @@ for file in sorted((out / 'raw').glob('*/events.jsonl')):
         for app in ['node', 'python']:
             add(host, app + ' image build/load', sec(app + '-build'), job)
             observation = by_phase[app + '-cache-observation']['data']
-            cache_observations.append({**host, 'app': app, **observation, 'job_url': job['url']})
             vertices = by_phase[app + '-buildkit-vertices']['data']['vertices'].values()
+            install_vertex = next(v for v in vertices if ('RUN npm ci' if app == 'node' else 'RUN pip install') in v['description'])
+            install_cached = bool(install_vertex.get('cached'))
+            assert install_cached == (scenario in ['unchanged', 'source']), 'Observed layer reuse does not match the declared scenario'
+            cache_observations.append({**host, 'app': app, **observation, 'install_layer_cached': install_cached, 'job_url': job['url']})
             for vertex in vertices:
                 desc = vertex['description']
                 if 'RUN npm ci' in desc or 'RUN pip install' in desc:
