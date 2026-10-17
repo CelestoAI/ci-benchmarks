@@ -6,13 +6,15 @@ This suite measures representative fixtures, not a customer's private applicatio
 **Execution status:** the full repeated report is not complete. The original
 shared-registry cohort passed all 40 jobs, but portable caching reached storage
 quota. After approved task-only cleanup, the uncached continuation hit Docker
-Hub's anonymous pull limit on Celesto (HTTP 429), so its dependent runtime phase
-was skipped and further dispatches stopped. No Docker Hub credentials are
-configured in this repository. Authenticate both providers before continuing;
-do not silently replace the registry or count the failed attempt as a timing.
+Hub's anonymous pull limit on Celesto (HTTP 429). Docker Hub login is now wired
+equally into both providers, but the supplied credentials were rejected before
+workload measurements on both providers. A separate direct registry-auth check
+also returned HTTP 401. Further dispatches are stopped pending valid credentials.
+Do not silently replace the registry or count failed attempts as timings.
 
 - [Original quota-limited run](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39073691950)
 - [Continuation with registry-rate-limit failure](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39075713994)
+- [Authentication attempt, before workload measurements](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39076674071)
 
 ## What runs
 
@@ -72,6 +74,11 @@ The registry job needs `packages: write`; the workflow grants it only to this
 benchmark. Existing workflows on `main` are unchanged: dispatch the benchmark
 branch explicitly.
 
+Configure repository Actions secrets `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`
+using a valid Docker Hub personal access token with read permission. The same
+login is required on both providers, including before the BuildKit image pull.
+Never put a token in a workflow, command argument, commit, or benchmark log.
+
 ```sh
 gh workflow run celesto.yml --repo CelestoAI/ci-benchmarks \
   --ref codex/docker-benchmarks-20261017 \
@@ -107,10 +114,10 @@ failed. The collector audits cache-save warnings and excludes those jobs from
 successful measurements. Missing/failed measurements are never zero.
 
 After explicit approval, only task-owned Docker benchmark/pilot caches were
-removed; quotas and unrelated caches were unchanged. The selected report uses
-the original shared-registry cohort, a separate uncached/runtime continuation,
-**all five portable repetitions rerun** under available quota, and a separate
-five-repeat image-cache cohort. The workload implementation and fixtures are
+removed; quotas and unrelated caches were unchanged. The planned final report
+will use **a complete new 120-job matrix with authenticated pulls on both
+providers**, including all five registry and portable repetitions. No earlier
+success or failure will be pooled into those timings. The workload and fixtures are
 byte-identical across these orchestration revisions (`combine.py` checks git).
 The complete original quota-limited run is retained as diagnostic evidence.
 

@@ -22,7 +22,8 @@ selected = set()
 audited_jobs=[]
 environments={p:{'cpu_models':{},'kernels':{},'containerd_versions':{},'jobs':0} for p in ['github','celesto']}
 source = '80cabc32e3888c5dadb9b177c94a35829f5b75cf'
-entries = [{'databaseId':journal['primary'], 'mode':'original-registry'}] + journal['runs']
+assert journal['authentication']=='Docker Hub login on both providers'
+entries = journal['runs']
 
 for entry in entries:
     folder = reports / str(entry['databaseId'])
@@ -33,22 +34,20 @@ for entry in entries:
         'docker-bench/run.py','docker-bench/images.json','docker-bench/node',
         'docker-bench/python','docker-bench/rust'], text=True)
     assert not unchanged, 'Do not pool different workload implementations'
-    original = entry['mode']=='original-registry'
-    keep = lambda row: row['backend']=='registry' if original else True
-    these = [s for s in read('samples.json') if keep(s)]
+    these = read('samples.json')
     urls = {s['job_url'] for s in these}
     these_jobs = [j for j in run['jobs'] if j['url'] in urls]
     assert all(j['conclusion']=='success' for j in these_jobs)
+    assert all(any(s['name']=='Log in to Docker Hub on both providers' and s['conclusion']=='success' for s in j['steps']) for j in these_jobs)
     audit = read('cache-log-audit.json')
     assert urls.issubset(set(audit['audited_jobs']))
     audited_jobs += sorted(urls)
     assert not any(w['job_name'] in {j['name'] for j in these_jobs} for w in read('cache-warnings.json'))
-    if not original:
-        assert run['conclusion']=='success' and not read('failures.json')
+    assert run['conclusion']=='success' and not read('failures.json')
     for path in sorted((folder/'raw').glob('*/events.jsonl')):
         events = [json.loads(line) for line in path.read_text().splitlines()]
         host = next((e['data'] for e in events if e['phase']=='host'),None)
-        if not host or not keep(host):
+        if not host:
             continue
         key = tuple(host[k] for k in ['provider','backend','scenario','repetition'])
         assert key not in selected, f'Duplicate selected sample: {key}'
@@ -61,7 +60,7 @@ for entry in entries:
             environment[field][value]=environment[field].get(value,0)+1
         shutil.copytree(path.parent, out/'raw'/f'{entry["databaseId"]}--{path.parent.name}')
     samples += these
-    observations += [o for o in read('cache-observations.json') if keep(o)]
+    observations += read('cache-observations.json')
     jobs += [{**j,'headSha':run['headSha'],'run_id':entry['databaseId']} for j in these_jobs]
     cohorts.append({**entry,'url':run['url'],'headSha':run['headSha'],
                     'whole_run_conclusion':run['conclusion'], 'selected_jobs':len(these_jobs)})
@@ -80,6 +79,7 @@ for (backend,scenario,metric),providers in sorted(groups.items()):
         row['github_over_celesto']=row['github']['median']/row['celesto']['median']
     summary.append(row)
 run={'status':'completed','conclusion':'success','selection':'quota-controlled 120-job matrix across documented cohorts',
+     'authentication':journal['authentication'],
      'url':cohorts[0]['url'],'headSha':source,'jobs':jobs,'cohorts':cohorts}
 for name,data in [('run',run),('samples',samples),('summary',summary),('failures',[]),('cache-observations',observations)]:
     (out/f'{name}.json').write_text(json.dumps(data,indent=2)+'\n')
@@ -89,15 +89,16 @@ with (out/'samples.csv').open('w') as f:
     writer=csv.DictWriter(f,fieldnames=list(samples[0]))
     writer.writeheader()
     writer.writerows(samples)
-diagnostic=out/'diagnostics'/'original-quota-run'
-shutil.copytree(reports/str(journal['primary']),diagnostic)
-original_failures=json.loads((diagnostic/'failures.json').read_text())
-for failure in original_failures:
-    if failure.get('artifact'):
-        failure['artifact']='/'.join(Path(failure['artifact']).parts[-3:])
-(diagnostic/'failures.json').write_text(json.dumps(original_failures,indent=2)+'\n')
+for run_id,name in zip(journal['diagnostic_runs'],['original-quota-run','unauthenticated-rate-limit-run']):
+    diagnostic=out/'diagnostics'/name
+    shutil.copytree(reports/str(run_id),diagnostic)
+    original_failures=json.loads((diagnostic/'failures.json').read_text())
+    for failure in original_failures:
+        if failure.get('artifact'):
+            failure['artifact']='/'.join(Path(failure['artifact']).parts[-3:])
+    (diagnostic/'failures.json').write_text(json.dumps(original_failures,indent=2)+'\n')
 (out/'interventions.json').write_text(json.dumps({
-    'reason':'Original run reached cache quota. Original portable samples are diagnostics only; all five portable repetitions were rerun.',
+    'reason':'Original run reached cache quota; the unauthenticated continuation reached Docker Hub pull limits. All 120 selected jobs were rerun with Docker Hub login on both providers. Earlier samples are diagnostics only.',
     'scope':'Only task-owned Docker benchmark/pilot cache entries; unrelated caches and quotas unchanged.',
     'initial_cleanup_entries':18,'initial_cleanup_bytes':3295576525,
     'between_pair_cleanup':[{'repetition':c['repetition'],'entries':len(c['entries']),'bytes':sum(r['size_bytes'] for r in c['entries'])} for c in journal['cleanups']],

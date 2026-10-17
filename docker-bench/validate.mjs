@@ -41,6 +41,7 @@ for (const folder of readdirSync(join(dir, 'raw'))) {
   const suffix = `${host.provider}-${host.backend}-${host.scenario}-${host.repetition}`;
   const job = run.jobs.find(j => j.name.endsWith(suffix));
   assert(job && job.conclusion === 'success');
+  if (run.cohorts) assert(job.steps.some(s => s.name === 'Log in to Docker Hub on both providers' && s.conclusion === 'success'));
   assert.equal(host.commit, job.headSha ?? run.headSha);
   assert.equal(host.cpus, 4);
   assert(host.memory_bytes >= 14 * 1024 ** 3 && host.memory_bytes <= 17 * 1024 ** 3);
@@ -50,6 +51,21 @@ for (const folder of readdirSync(join(dir, 'raw'))) {
   assert(readFileSync(join(dir, 'raw', folder, 'buildx-version.log'), 'utf8').includes('v0.30.1'));
   assert(readFileSync(join(dir, 'raw', folder, 'compose-version.log'), 'utf8').includes('v2.40.3'));
   assert.equal(events.find(e => e.phase === 'suite-complete').data.success, true);
+  const phases = new Map(events.map(e => [e.phase, e]));
+  const seconds = phase => phases.get(phase).data.seconds;
+  const boundary = name => phases.has(name + '-start')
+    ? (phases.get(name + '-end').timestamp_ms - phases.get(name + '-start').timestamp_ms) / 1000 : 0;
+  const measured = metric => samples.find(s => s.job_url === job.url && s.metric === metric)?.seconds;
+  const close = (metric, value) => assert(Math.abs(measured(metric) - value) < 1e-8, `Raw event mismatch ${key}/${metric}`);
+  if (['seed','unchanged','source','dependency','nocache'].includes(host.scenario)) {
+    close('two-image workload incl cache transfer', seconds('suite-complete') + boundary('build-cache-restore') + boundary('build-cache-save'));
+  }
+  if (host.scenario === 'runtime') {
+    close('Rust offline compilation', phases.get('rust-cpu').data.compile_seconds);
+    close('Python CI: pulls + image build + Compose tests',
+      ['compose-up','api-ready','integration-tests','compose-down','postgres-pull','azurite-pull','python-pull','python-build','python-verify'].reduce((sum, phase) => sum + seconds(phase), 0));
+  }
+  if (host.scenario === 'image-warm') close('two images: cache restore + docker load', boundary('image-cache-restore') + seconds('postgres-cache-load-tar') + seconds('azurite-cache-load-tar'));
   for (const event of events) {
     if (!event.data.log_sha256) continue;
     const content = readFileSync(join(dir, 'raw', folder, basename(event.data.log)));
