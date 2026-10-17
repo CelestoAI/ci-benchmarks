@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import time
 import urllib.request
+import urllib.error
 from urllib.parse import urlsplit, urlunsplit
 
 ROOT = Path(__file__).resolve().parent
@@ -189,8 +190,12 @@ def integration():
         emit('api-ready', seconds=time.monotonic() - started)
         started = time.monotonic()
         for _ in range(5):
-            with urllib.request.urlopen('http://127.0.0.1:8080/exercise', timeout=30) as response:
-                assert json.load(response) == {'rows': 1000, 'sum': 499500, 'blob_bytes': 1048576}
+            try:
+                with urllib.request.urlopen('http://127.0.0.1:8080/exercise', timeout=30) as response:
+                    assert json.load(response) == {'rows': 1000, 'sum': 499500, 'blob_bytes': 1048576}
+            except urllib.error.HTTPError as exc:
+                print(exc.read().decode(), flush=True)
+                raise
         emit('integration-tests', seconds=time.monotonic() - started, rounds=5, assertions='SQL migration + 1000 inserts + aggregate + 1 MiB Azure blob roundtrip + API')
     finally:
         command('compose-logs', prefix + ['logs', '--no-color'])

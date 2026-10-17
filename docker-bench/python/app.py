@@ -2,6 +2,7 @@
 import json
 import os
 import sys
+import traceback
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import psycopg
 from azure.storage.blob import BlobServiceClient
@@ -32,6 +33,7 @@ class Handler(BaseHTTPRequestHandler):
             body = json.dumps(result).encode()
             self.send_response(200)
         except Exception as exc:
+            traceback.print_exc()
             body = str(exc).encode()
             self.send_response(500)
         self.end_headers()
