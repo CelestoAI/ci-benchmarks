@@ -24,8 +24,7 @@ permissions:
 
 jobs:
   benchmark:
-    name: 
-disabled
+    name: ${{ inputs.provider }} benchmark
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     timeout-minutes: 90
     env:
