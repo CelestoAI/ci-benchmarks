@@ -1,0 +1,9 @@
+{"phase":"host_fingerprint","timestamp_ms":1792251546415,"timestamp_iso":"2026-10-17T15:39:06.415Z","data":{"provider":"github-hosted","runner_name":"GitHub Actions 1000003651","os":"linux","arch":"x64","node":"v22.23.3"}}
+{"phase":"job_start","timestamp_ms":1792251546444,"timestamp_iso":"2026-10-17T15:39:06.444Z","data":{}}
+{"phase":"cache_restore_start","timestamp_ms":1792251546495,"timestamp_iso":"2026-10-17T15:39:06.495Z","data":{}}
+{"phase":"cache_restore_end","timestamp_ms":1792251550681,"timestamp_iso":"2026-10-17T15:39:10.681Z","data":{"cache_hit":"true","cache_primary_key":"celesto-ci-benchmarks-v1-bench-20261017-b-linux-x64-512MiB"}}
+{"phase":"cpu_single_core_start","timestamp_ms":1792251550865,"timestamp_iso":"2026-10-17T15:39:10.865Z","data":{"node":"v22.23.3","platform":"linux","arch":"x64","logical_cpus":4,"available_cpus":4,"workers":1,"iterations_per_worker":250000000}}
+{"phase":"cpu_single_core_end","timestamp_ms":1792251552341,"timestamp_iso":"2026-10-17T15:39:12.341Z","data":{"workers":1,"iterations_per_worker":250000000,"total_iterations":250000000,"wall_ms":1474,"aggregate_cpu_ms":1417,"iterations_per_second":169629727,"checksums":[2775414133]}}
+{"phase":"cpu_all_cores_start","timestamp_ms":1792251552494,"timestamp_iso":"2026-10-17T15:39:12.494Z","data":{"node":"v22.23.3","platform":"linux","arch":"x64","logical_cpus":4,"available_cpus":4,"workers":4,"iterations_per_worker":250000000}}
+{"phase":"cpu_all_cores_end","timestamp_ms":1792251554114,"timestamp_iso":"2026-10-17T15:39:14.114Z","data":{"workers":4,"iterations_per_worker":250000000,"total_iterations":1000000000,"wall_ms":1619,"aggregate_cpu_ms":23233,"iterations_per_second":617852065,"checksums":[2775414133,1791022837,2436017810,1583552857]}}
+{"phase":"job_end","timestamp_ms":1792251554173,"timestamp_iso":"2026-10-17T15:39:14.173Z","data":{}}
