@@ -1,0 +1,13 @@
+{"phase":"host_fingerprint","timestamp_ms":1792251931462,"timestamp_iso":"2026-10-17T15:45:31.462Z","data":{"provider":"celesto-ci","runner_name":"celesto-117435905455","os":"linux","arch":"x64","node":"v22.23.3"}}
+{"phase":"job_start","timestamp_ms":1792251931490,"timestamp_iso":"2026-10-17T15:45:31.490Z","data":{}}
+{"phase":"cache_restore_start","timestamp_ms":1792251931535,"timestamp_iso":"2026-10-17T15:45:31.535Z","data":{}}
+{"phase":"cache_restore_end","timestamp_ms":1792251931935,"timestamp_iso":"2026-10-17T15:45:31.935Z","data":{"cache_hit":"false","cache_primary_key":"celesto-ci-benchmarks-v1-bench-20261017-b-linux-x64-512MiB"}}
+{"phase":"cache_payload_start","timestamp_ms":1792251931988,"timestamp_iso":"2026-10-17T15:45:31.988Z","data":{}}
+{"phase":"cache_payload_end","timestamp_ms":1792251932498,"timestamp_iso":"2026-10-17T15:45:32.498Z","data":{}}
+{"phase":"cpu_single_core_start","timestamp_ms":1792251932542,"timestamp_iso":"2026-10-17T15:45:32.542Z","data":{"node":"v22.23.3","platform":"linux","arch":"x64","logical_cpus":1,"available_cpus":1,"workers":1,"iterations_per_worker":250000000}}
+{"phase":"cpu_single_core_end","timestamp_ms":1792251933654,"timestamp_iso":"2026-10-17T15:45:33.654Z","data":{"workers":1,"iterations_per_worker":250000000,"total_iterations":250000000,"wall_ms":1109,"aggregate_cpu_ms":1061,"iterations_per_second":225347844,"checksums":[2775414133]}}
+{"phase":"cpu_all_cores_start","timestamp_ms":1792251933714,"timestamp_iso":"2026-10-17T15:45:33.714Z","data":{"node":"v22.23.3","platform":"linux","arch":"x64","logical_cpus":1,"available_cpus":1,"workers":1,"iterations_per_worker":250000000}}
+{"phase":"cpu_all_cores_end","timestamp_ms":1792251934896,"timestamp_iso":"2026-10-17T15:45:34.896Z","data":{"workers":1,"iterations_per_worker":250000000,"total_iterations":250000000,"wall_ms":1181,"aggregate_cpu_ms":1070,"iterations_per_second":211751099,"checksums":[2775414133]}}
+{"phase":"cache_save_start","timestamp_ms":1792251934945,"timestamp_iso":"2026-10-17T15:45:34.946Z","data":{}}
+{"phase":"cache_save_end","timestamp_ms":1792251942676,"timestamp_iso":"2026-10-17T15:45:42.676Z","data":{}}
+{"phase":"job_end","timestamp_ms":1792251942715,"timestamp_iso":"2026-10-17T15:45:42.715Z","data":{}}
