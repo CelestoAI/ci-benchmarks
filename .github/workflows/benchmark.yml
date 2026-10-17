@@ -33,7 +33,7 @@ jobs:
       BENCHMARK_PROVIDER: ${{ inputs.provider }}
       BENCHMARK_CACHE_MIB: ${{ inputs.cache_mb }}
       BENCHMARK_CPU_ITERATIONS: ${{ inputs.cpu_iterations }}
-      BENCHMARK_CACHE_KEY: celesto-ci-benchmarks-v1-${{ inputs.cache_namespace }}-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache_mb }}MiB
+      BENCHMARK_CACHE_KEY: celesto-ci-benchmarks-v1-${{ inputs.cache_namespace }}-linux-x64-${{ inputs.cache_mb }}MiB
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
