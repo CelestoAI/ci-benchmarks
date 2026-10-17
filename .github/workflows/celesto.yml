@@ -5,7 +5,7 @@ on:
       mode:
         description: Pilot validates cache and workloads; full runs five repetitions.
         type: choice
-        options: [pilot, full, native-probe, runtime-pilot, image-pilot, continuation, image-full, portable-pair, registry-pair, image-pair, auth-probe]
+        options: [pilot, full, native-probe, runtime-pilot, image-pilot, continuation, image-full, portable-pair, registry-pair, image-pair, auth-probe, quota-probe]
         default: pilot
       repetition:
         description: Repetition number for a quota-controlled paired experiment.
@@ -21,11 +21,11 @@ permissions:
   packages: write
 jobs:
   auth:
-    if: inputs.mode == 'auth-probe'
+    if: inputs.mode == 'auth-probe' || inputs.mode == 'quota-probe'
     strategy:
       fail-fast: false
       matrix:
-        provider: [github, celesto]
+        provider: ${{ fromJSON(inputs.mode == 'quota-probe' && '["github"]' || '["github","celesto"]') }}
     runs-on: ${{ fromJSON(matrix.provider == 'github' && '["ubuntu-24.04"]' || '["self-hosted","celesto-large"]') }}
     timeout-minutes: 5
     steps:
@@ -51,14 +51,21 @@ jobs:
           data=json.load(response)
           assert data.get('token') or data.get('access_token')
           print(json.dumps({'docker_hub_auth_http_status':response.status,'registry_access_token_issued':True}))
+          request=urllib.request.Request('https://registry-1.docker.io/v2/library/python/manifests/3.12-slim-bookworm',
+              method='HEAD',headers={'Authorization':'Bearer '+(data.get('token') or data.get('access_token')),
+              'Accept':'application/vnd.oci.image.index.v1+json,application/vnd.docker.distribution.manifest.list.v2+json'})
+          with urllib.request.urlopen(request,timeout=20) as response:
+              print(json.dumps({'registry_quota':{'http_status':response.status,'limit':response.headers.get('ratelimit-limit'),
+                  'remaining':response.headers.get('ratelimit-remaining')}}))
           PY
       - name: Verify Docker CLI login
+        if: inputs.mode == 'auth-probe'
         uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
   builds:
-    if: inputs.mode != 'runtime-pilot' && inputs.mode != 'image-pilot' && inputs.mode != 'continuation' && inputs.mode != 'image-full' && inputs.mode != 'image-pair' && inputs.mode != 'auth-probe'
+    if: inputs.mode != 'runtime-pilot' && inputs.mode != 'image-pilot' && inputs.mode != 'continuation' && inputs.mode != 'image-full' && inputs.mode != 'image-pair' && inputs.mode != 'auth-probe' && inputs.mode != 'quota-probe'
     strategy:
       fail-fast: false
       max-parallel: 2
