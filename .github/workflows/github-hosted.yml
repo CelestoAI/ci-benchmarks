@@ -25,7 +25,7 @@ jobs:
     uses: ./.github/workflows/benchmark.yml
     with:
       provider: github-hosted
-      runs_on: '["ubuntu-latest"]'
+      runs_on: '["ubuntu-24.04"]'
       cache_namespace: ${{ inputs.cache_namespace }}
       cache_mb: ${{ inputs.cache_mb }}
       cpu_iterations: ${{ inputs.cpu_iterations }}
