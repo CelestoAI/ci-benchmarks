@@ -1,31 +1,79 @@
-name: Benchmark on Celesto CI
-
+name: Docker benchmarks — matched GitHub vs Celesto
 on:
   workflow_dispatch:
     inputs:
-      cache_namespace:
-        description: New value for a cold run; reuse unchanged for a warm run.
-        required: true
-        default: run-1
-        type: string
-      cache_mb:
-        description: Incompressible cache payload in MiB.
-        required: true
-        default: '512'
+      mode:
+        description: Pilot validates cache and workloads; full runs five repetitions.
         type: choice
-        options: ['256', '512', '1024', '2304']
-      cpu_iterations:
-        description: Iterations per CPU worker; match the GitHub-hosted run.
-        required: true
-        default: '250000000'
+        options: [pilot, full]
+        default: pilot
+      namespace:
+        description: Unique lowercase prefix; never reuse for a new experiment.
         type: string
-
+        required: true
+permissions:
+  contents: read
+  packages: write
 jobs:
-  benchmark:
-    uses: ./.github/workflows/benchmark.yml
+  seed:
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        provider: [github, celesto]
+        backend: [native, registry]
+        repetition: ${{ fromJSON(inputs.mode == 'full' && '[1,2,3,4,5]' || '[1]') }}
+    uses: ./.github/workflows/docker-job.yml
     with:
-      provider: celesto-ci
-      runs_on: '["self-hosted", "celesto-large"]'
-      cache_namespace: ${{ inputs.cache_namespace }}
-      cache_mb: ${{ inputs.cache_mb }}
-      cpu_iterations: ${{ inputs.cpu_iterations }}
+      provider: ${{ matrix.provider }}
+      backend: ${{ matrix.backend }}
+      scenario: seed
+      repetition: ${{ matrix.repetition }}
+      namespace: ${{ inputs.namespace }}
+  warm:
+    needs: seed
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        provider: [celesto, github]
+        backend: [native, registry]
+        scenario: ${{ fromJSON(inputs.mode == 'full' && '["unchanged","source","dependency"]' || '["unchanged"]') }}
+        repetition: ${{ fromJSON(inputs.mode == 'full' && '[1,2,3,4,5]' || '[1]') }}
+    uses: ./.github/workflows/docker-job.yml
+    with:
+      provider: ${{ matrix.provider }}
+      backend: ${{ matrix.backend }}
+      scenario: ${{ matrix.scenario }}
+      repetition: ${{ matrix.repetition }}
+      namespace: ${{ inputs.namespace }}
+  no-cache:
+    needs: warm
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        provider: [github, celesto]
+        repetition: ${{ fromJSON(inputs.mode == 'full' && '[1,2,3,4,5]' || '[1]') }}
+    uses: ./.github/workflows/docker-job.yml
+    with:
+      provider: ${{ matrix.provider }}
+      backend: none
+      scenario: nocache
+      repetition: ${{ matrix.repetition }}
+      namespace: ${{ inputs.namespace }}
+  runtime:
+    needs: no-cache
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        provider: [celesto, github]
+        repetition: ${{ fromJSON(inputs.mode == 'full' && '[1,2,3,4,5]' || '[1]') }}
+    uses: ./.github/workflows/docker-job.yml
+    with:
+      provider: ${{ matrix.provider }}
+      backend: none
+      scenario: runtime
+      repetition: ${{ matrix.repetition }}
+      namespace: ${{ inputs.namespace }}

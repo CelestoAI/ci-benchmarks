@@ -1,0 +1,69 @@
+name: Matched Docker benchmark job
+on:
+  workflow_call:
+    inputs:
+      provider: {required: true, type: string}
+      backend: {required: true, type: string}
+      scenario: {required: true, type: string}
+      repetition: {required: true, type: number}
+      namespace: {required: true, type: string}
+permissions:
+  contents: read
+  packages: write
+jobs:
+  benchmark:
+    name: ${{ inputs.provider }}-${{ inputs.backend }}-${{ inputs.scenario }}-${{ inputs.repetition }}
+    runs-on: ${{ fromJSON(inputs.provider == 'github' && '["ubuntu-24.04"]' || '["self-hosted","celesto-large"]') }}
+    timeout-minutes: 20
+    env:
+      PROVIDER: ${{ inputs.provider }}
+      BACKEND: ${{ inputs.backend }}
+      SCENARIO: ${{ inputs.scenario }}
+      REPETITION: ${{ inputs.repetition }}
+      NAMESPACE: ${{ inputs.namespace }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Match Docker Engine on GitHub to baked Celesto Engine
+        if: inputs.provider == 'github'
+        uses: docker/setup-docker-action@e43656e248c0bd0647d3f5c195d116aacf6fcaf4 # v4
+        with:
+          version: v29.1.3
+          daemon-config: '{"features":{"containerd-snapshotter":true},"exec-opts":["native.cgroupdriver=cgroupfs"]}'
+      - name: Match Compose version
+        run: |
+          mkdir -p "$HOME/.docker/cli-plugins"
+          curl -fsSL --retry 3 https://github.com/docker/compose/releases/download/v2.40.3/docker-compose-linux-x86_64 -o "$HOME/.docker/cli-plugins/docker-compose"
+          chmod +x "$HOME/.docker/cli-plugins/docker-compose"
+      - name: Prepare matched BuildKit builder
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+        with:
+          version: v0.30.1
+          driver: docker-container
+          driver-opts: |
+            image=moby/buildkit:v0.26.2@sha256:de10faf919fc71ba4eb1dd7bd6449566d012b0c9436b1c61bfee21d621b009aa
+            network=host
+          buildkitd-config-inline: |
+            [worker.oci]
+              max-parallelism = 4
+      - name: Expose runtime cache environment
+        uses: crazy-max/ghaction-github-runtime@3cb05d89e1f492524af3d41a1c98c83bc3025124 # v3
+      - name: Log in to shared registry
+        if: inputs.backend == 'registry'
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run Docker workloads with correctness assertions
+        run: python3 docker-bench/run.py ${{ inputs.scenario == 'runtime' && 'runtime' || 'build' }}
+      - name: Upload raw measurements and logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: docker-${{ inputs.provider }}-${{ inputs.backend }}-${{ inputs.scenario }}-${{ inputs.repetition }}
+          path: |
+            docker-results/*.jsonl
+            docker-results/*.log
+            docker-results/compose.json
+          if-no-files-found: error
+          retention-days: 30
