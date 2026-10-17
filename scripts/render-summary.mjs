@@ -25,4 +25,5 @@ const lines = [
   '| All-core workers | ' + (all.workers ?? 'n/a') + ' |',
 ].join('\n') + '\n';
 writeFileSync(outputFile, lines);
+if (outputFile !== 'benchmark-summary.md') writeFileSync('benchmark-summary.md', lines);
 console.log(lines);
