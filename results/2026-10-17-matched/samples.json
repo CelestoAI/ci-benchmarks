@@ -1,0 +1,1912 @@
+{
+  "run_id": 39048833058,
+  "revision": "b1fbc9fe52fbcee35f44151d18310ef5b7564777",
+  "cache_mib": 512,
+  "cpu_iterations_per_worker": 2000000000,
+  "statistics": {
+    "github-hosted": {
+      "single": 199372003,
+      "all": 786689857.5,
+      "restore_ms": 3295,
+      "save_ms": 2495,
+      "cold_lookup_ms": 273,
+      "cold_wall_ms": 21607,
+      "warm_wall_ms": 23787,
+      "single_range": [
+        186810052,
+        256244370
+      ],
+      "all_range": [
+        681597060,
+        980271768
+      ],
+      "cpu_models": [
+        "AMD EPYC 9V45 96-Core Processor",
+        "AMD EPYC 7763 64-Core Processor",
+        "AMD EPYC 9V74 80-Core Processor"
+      ]
+    },
+    "celesto-large": {
+      "single": 233163848,
+      "all": 927536852,
+      "restore_ms": 6230,
+      "save_ms": 5179,
+      "cold_lookup_ms": 439,
+      "cold_wall_ms": 23552,
+      "warm_wall_ms": 23634,
+      "single_range": [
+        232797135,
+        233738385
+      ],
+      "all_range": [
+        923658213,
+        931117488
+      ],
+      "cpu_models": [
+        "AMD EPYC-Milan Processor"
+      ]
+    }
+  },
+  "samples": [
+    {
+      "job_id": 117442962258,
+      "phase": "cold",
+      "sample": 1,
+      "provider": "celesto-large",
+      "host": {
+        "provider": "celesto-large",
+        "runner_name": "celesto-117442962258",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v22.23.3",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16776605696,
+        "kernel": "6.12.85",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63319519232 2890235904 57191329792   5% /"
+      },
+      "cache_hit": "false",
+      "restore_ms": 458,
+      "save_ms": 5179,
+      "wall_ms": 23552,
+      "single": 233129644,
+      "all": 929942506,
+      "checksums": [
+        185327476,
+        3640110164,
+        3127122957,
+        1364301344
+      ],
+      "events": [
+        {
+          "phase": "host_fingerprint",
+          "timestamp_ms": 1792253947915,
+          "timestamp_iso": "2026-10-17T16:19:07.915Z",
+          "data": {
+            "provider": "celesto-large",
+            "runner_name": "celesto-117442962258",
+            "os": "linux",
+            "arch": "x64",
+            "node": "v22.23.3",
+            "cpu_model": "AMD EPYC-Milan Processor",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "memory_bytes": 16776605696,
+            "kernel": "6.12.85",
+            "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+            "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63319519232 2890235904 57191329792   5% /"
+          }
+        },
+        {
+          "phase": "job_start",
+          "timestamp_ms": 1792253947947,
+          "timestamp_iso": "2026-10-17T16:19:07.947Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_start",
+          "timestamp_ms": 1792253947987,
+          "timestamp_iso": "2026-10-17T16:19:07.987Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_end",
+          "timestamp_ms": 1792253948445,
+          "timestamp_iso": "2026-10-17T16:19:08.445Z",
+          "data": {
+            "cache_hit": "false",
+            "cache_primary_key": "celesto-ci-benchmarks-v1-matched-20261017-a-sample-1-cold-linux-x64-512MiB"
+          }
+        },
+        {
+          "phase": "cache_payload_start",
+          "timestamp_ms": 1792253948496,
+          "timestamp_iso": "2026-10-17T16:19:08.496Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_payload_end",
+          "timestamp_ms": 1792253948937,
+          "timestamp_iso": "2026-10-17T16:19:08.937Z",
+          "data": {}
+        },
+        {
+          "phase": "cpu_single_core_start",
+          "timestamp_ms": 1792253948977,
+          "timestamp_iso": "2026-10-17T16:19:08.977Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 1,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_single_core_end",
+          "timestamp_ms": 1792253957558,
+          "timestamp_iso": "2026-10-17T16:19:17.558Z",
+          "data": {
+            "workers": 1,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 2000000000,
+            "wall_ms": 8579,
+            "aggregate_cpu_ms": 8583,
+            "iterations_per_second": 233129644,
+            "checksums": [
+              185327476
+            ]
+          }
+        },
+        {
+          "phase": "cpu_all_cores_start",
+          "timestamp_ms": 1792253957621,
+          "timestamp_iso": "2026-10-17T16:19:17.621Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 4,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_all_cores_end",
+          "timestamp_ms": 1792253966226,
+          "timestamp_iso": "2026-10-17T16:19:26.226Z",
+          "data": {
+            "workers": 4,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 8000000000,
+            "wall_ms": 8603,
+            "aggregate_cpu_ms": 34214,
+            "iterations_per_second": 929942506,
+            "checksums": [
+              185327476,
+              3640110164,
+              3127122957,
+              1364301344
+            ]
+          }
+        },
+        {
+          "phase": "cache_save_start",
+          "timestamp_ms": 1792253966280,
+          "timestamp_iso": "2026-10-17T16:19:26.280Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_save_end",
+          "timestamp_ms": 1792253971459,
+          "timestamp_iso": "2026-10-17T16:19:31.459Z",
+          "data": {}
+        },
+        {
+          "phase": "job_end",
+          "timestamp_ms": 1792253971499,
+          "timestamp_iso": "2026-10-17T16:19:31.499Z",
+          "data": {}
+        }
+      ]
+    },
+    {
+      "job_id": 117442962506,
+      "phase": "cold",
+      "sample": 1,
+      "provider": "github-hosted",
+      "host": {
+        "provider": "github-hosted",
+        "runner_name": "GitHub Actions 1000003674",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v22.23.3",
+        "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16766414848,
+        "kernel": "6.17.0-1022-azure",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem        1B-blocks        Used   Available Use% Mounted on\n/dev/root      154894188544 62790574080 92086837248  41% /"
+      },
+      "cache_hit": "false",
+      "restore_ms": 273,
+      "save_ms": 2322,
+      "wall_ms": 19015,
+      "single": 256244370,
+      "all": 980271768,
+      "checksums": [
+        185327476,
+        3640110164,
+        3127122957,
+        1364301344
+      ],
+      "events": [
+        {
+          "phase": "host_fingerprint",
+          "timestamp_ms": 1792253916182,
+          "timestamp_iso": "2026-10-17T16:18:36.182Z",
+          "data": {
+            "provider": "github-hosted",
+            "runner_name": "GitHub Actions 1000003674",
+            "os": "linux",
+            "arch": "x64",
+            "node": "v22.23.3",
+            "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "memory_bytes": 16766414848,
+            "kernel": "6.17.0-1022-azure",
+            "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+            "disk": "Filesystem        1B-blocks        Used   Available Use% Mounted on\n/dev/root      154894188544 62790574080 92086837248  41% /"
+          }
+        },
+        {
+          "phase": "job_start",
+          "timestamp_ms": 1792253916207,
+          "timestamp_iso": "2026-10-17T16:18:36.207Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_start",
+          "timestamp_ms": 1792253916251,
+          "timestamp_iso": "2026-10-17T16:18:36.251Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_end",
+          "timestamp_ms": 1792253916524,
+          "timestamp_iso": "2026-10-17T16:18:36.524Z",
+          "data": {
+            "cache_hit": "false",
+            "cache_primary_key": "celesto-ci-benchmarks-v1-matched-20261017-a-sample-1-cold-linux-x64-512MiB"
+          }
+        },
+        {
+          "phase": "cache_payload_start",
+          "timestamp_ms": 1792253916563,
+          "timestamp_iso": "2026-10-17T16:18:36.563Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_payload_end",
+          "timestamp_ms": 1792253916761,
+          "timestamp_iso": "2026-10-17T16:18:36.761Z",
+          "data": {}
+        },
+        {
+          "phase": "cpu_single_core_start",
+          "timestamp_ms": 1792253916798,
+          "timestamp_iso": "2026-10-17T16:18:36.798Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 1,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_single_core_end",
+          "timestamp_ms": 1792253924605,
+          "timestamp_iso": "2026-10-17T16:18:44.605Z",
+          "data": {
+            "workers": 1,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 2000000000,
+            "wall_ms": 7805,
+            "aggregate_cpu_ms": 7804,
+            "iterations_per_second": 256244370,
+            "checksums": [
+              185327476
+            ]
+          }
+        },
+        {
+          "phase": "cpu_all_cores_start",
+          "timestamp_ms": 1792253924654,
+          "timestamp_iso": "2026-10-17T16:18:44.654Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 4,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_all_cores_end",
+          "timestamp_ms": 1792253932816,
+          "timestamp_iso": "2026-10-17T16:18:52.816Z",
+          "data": {
+            "workers": 4,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 8000000000,
+            "wall_ms": 8161,
+            "aggregate_cpu_ms": 31593,
+            "iterations_per_second": 980271768,
+            "checksums": [
+              185327476,
+              3640110164,
+              3127122957,
+              1364301344
+            ]
+          }
+        },
+        {
+          "phase": "cache_save_start",
+          "timestamp_ms": 1792253932864,
+          "timestamp_iso": "2026-10-17T16:18:52.864Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_save_end",
+          "timestamp_ms": 1792253935186,
+          "timestamp_iso": "2026-10-17T16:18:55.186Z",
+          "data": {}
+        },
+        {
+          "phase": "job_end",
+          "timestamp_ms": 1792253935222,
+          "timestamp_iso": "2026-10-17T16:18:55.222Z",
+          "data": {}
+        }
+      ]
+    },
+    {
+      "job_id": 117443058607,
+      "phase": "cold",
+      "sample": 2,
+      "provider": "github-hosted",
+      "host": {
+        "provider": "github-hosted",
+        "runner_name": "GitHub Actions 1000003675",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v22.23.3",
+        "cpu_model": "AMD EPYC 7763 64-Core Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16766414848,
+        "kernel": "6.17.0-1022-azure",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem        1B-blocks        Used   Available Use% Mounted on\n/dev/root      154894188544 62790488064 92086923264  41% /"
+      },
+      "cache_hit": "false",
+      "restore_ms": 241,
+      "save_ms": 2495,
+      "wall_ms": 23647,
+      "single": 199306815,
+      "all": 781927285,
+      "checksums": [
+        185327476,
+        3640110164,
+        3127122957,
+        1364301344
+      ],
+      "events": [
+        {
+          "phase": "host_fingerprint",
+          "timestamp_ms": 1792253943611,
+          "timestamp_iso": "2026-10-17T16:19:03.611Z",
+          "data": {
+            "provider": "github-hosted",
+            "runner_name": "GitHub Actions 1000003675",
+            "os": "linux",
+            "arch": "x64",
+            "node": "v22.23.3",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "memory_bytes": 16766414848,
+            "kernel": "6.17.0-1022-azure",
+            "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+            "disk": "Filesystem        1B-blocks        Used   Available Use% Mounted on\n/dev/root      154894188544 62790488064 92086923264  41% /"
+          }
+        },
+        {
+          "phase": "job_start",
+          "timestamp_ms": 1792253943642,
+          "timestamp_iso": "2026-10-17T16:19:03.642Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_start",
+          "timestamp_ms": 1792253943696,
+          "timestamp_iso": "2026-10-17T16:19:03.696Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_end",
+          "timestamp_ms": 1792253943937,
+          "timestamp_iso": "2026-10-17T16:19:03.937Z",
+          "data": {
+            "cache_hit": "false",
+            "cache_primary_key": "celesto-ci-benchmarks-v1-matched-20261017-a-sample-2-cold-linux-x64-512MiB"
+          }
+        },
+        {
+          "phase": "cache_payload_start",
+          "timestamp_ms": 1792253943991,
+          "timestamp_iso": "2026-10-17T16:19:03.991Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_payload_end",
+          "timestamp_ms": 1792253944281,
+          "timestamp_iso": "2026-10-17T16:19:04.281Z",
+          "data": {}
+        },
+        {
+          "phase": "cpu_single_core_start",
+          "timestamp_ms": 1792253944332,
+          "timestamp_iso": "2026-10-17T16:19:04.332Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 1,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_single_core_end",
+          "timestamp_ms": 1792253954369,
+          "timestamp_iso": "2026-10-17T16:19:14.369Z",
+          "data": {
+            "workers": 1,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 2000000000,
+            "wall_ms": 10035,
+            "aggregate_cpu_ms": 10033,
+            "iterations_per_second": 199306815,
+            "checksums": [
+              185327476
+            ]
+          }
+        },
+        {
+          "phase": "cpu_all_cores_start",
+          "timestamp_ms": 1792253954441,
+          "timestamp_iso": "2026-10-17T16:19:14.441Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 4,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_all_cores_end",
+          "timestamp_ms": 1792253964675,
+          "timestamp_iso": "2026-10-17T16:19:24.675Z",
+          "data": {
+            "workers": 4,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 8000000000,
+            "wall_ms": 10231,
+            "aggregate_cpu_ms": 40422,
+            "iterations_per_second": 781927285,
+            "checksums": [
+              185327476,
+              3640110164,
+              3127122957,
+              1364301344
+            ]
+          }
+        },
+        {
+          "phase": "cache_save_start",
+          "timestamp_ms": 1792253964742,
+          "timestamp_iso": "2026-10-17T16:19:24.742Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_save_end",
+          "timestamp_ms": 1792253967237,
+          "timestamp_iso": "2026-10-17T16:19:27.237Z",
+          "data": {}
+        },
+        {
+          "phase": "job_end",
+          "timestamp_ms": 1792253967289,
+          "timestamp_iso": "2026-10-17T16:19:27.289Z",
+          "data": {}
+        }
+      ]
+    },
+    {
+      "job_id": 117443169521,
+      "phase": "cold",
+      "sample": 2,
+      "provider": "celesto-large",
+      "host": {
+        "provider": "celesto-large",
+        "runner_name": "celesto-117443169521",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v22.23.3",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16776605696,
+        "kernel": "6.12.85",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63319519232 2890235904 57191329792   5% /"
+      },
+      "cache_hit": "false",
+      "restore_ms": 419,
+      "save_ms": 20274,
+      "wall_ms": 38600,
+      "single": 233014434,
+      "all": 925570572,
+      "checksums": [
+        185327476,
+        3640110164,
+        3127122957,
+        1364301344
+      ],
+      "events": [
+        {
+          "phase": "host_fingerprint",
+          "timestamp_ms": 1792254004208,
+          "timestamp_iso": "2026-10-17T16:20:04.208Z",
+          "data": {
+            "provider": "celesto-large",
+            "runner_name": "celesto-117443169521",
+            "os": "linux",
+            "arch": "x64",
+            "node": "v22.23.3",
+            "cpu_model": "AMD EPYC-Milan Processor",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "memory_bytes": 16776605696,
+            "kernel": "6.12.85",
+            "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+            "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63319519232 2890235904 57191329792   5% /"
+          }
+        },
+        {
+          "phase": "job_start",
+          "timestamp_ms": 1792254004241,
+          "timestamp_iso": "2026-10-17T16:20:04.241Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_start",
+          "timestamp_ms": 1792254004281,
+          "timestamp_iso": "2026-10-17T16:20:04.281Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_end",
+          "timestamp_ms": 1792254004700,
+          "timestamp_iso": "2026-10-17T16:20:04.700Z",
+          "data": {
+            "cache_hit": "false",
+            "cache_primary_key": "celesto-ci-benchmarks-v1-matched-20261017-a-sample-2-cold-linux-x64-512MiB"
+          }
+        },
+        {
+          "phase": "cache_payload_start",
+          "timestamp_ms": 1792254004746,
+          "timestamp_iso": "2026-10-17T16:20:04.746Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_payload_end",
+          "timestamp_ms": 1792254005152,
+          "timestamp_iso": "2026-10-17T16:20:05.152Z",
+          "data": {}
+        },
+        {
+          "phase": "cpu_single_core_start",
+          "timestamp_ms": 1792254005191,
+          "timestamp_iso": "2026-10-17T16:20:05.191Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 1,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_single_core_end",
+          "timestamp_ms": 1792254013776,
+          "timestamp_iso": "2026-10-17T16:20:13.776Z",
+          "data": {
+            "workers": 1,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 2000000000,
+            "wall_ms": 8583,
+            "aggregate_cpu_ms": 8587,
+            "iterations_per_second": 233014434,
+            "checksums": [
+              185327476
+            ]
+          }
+        },
+        {
+          "phase": "cpu_all_cores_start",
+          "timestamp_ms": 1792254013829,
+          "timestamp_iso": "2026-10-17T16:20:13.829Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 4,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_all_cores_end",
+          "timestamp_ms": 1792254022475,
+          "timestamp_iso": "2026-10-17T16:20:22.475Z",
+          "data": {
+            "workers": 4,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 8000000000,
+            "wall_ms": 8643,
+            "aggregate_cpu_ms": 34342,
+            "iterations_per_second": 925570572,
+            "checksums": [
+              185327476,
+              3640110164,
+              3127122957,
+              1364301344
+            ]
+          }
+        },
+        {
+          "phase": "cache_save_start",
+          "timestamp_ms": 1792254022529,
+          "timestamp_iso": "2026-10-17T16:20:22.529Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_save_end",
+          "timestamp_ms": 1792254042803,
+          "timestamp_iso": "2026-10-17T16:20:42.803Z",
+          "data": {}
+        },
+        {
+          "phase": "job_end",
+          "timestamp_ms": 1792254042841,
+          "timestamp_iso": "2026-10-17T16:20:42.841Z",
+          "data": {}
+        }
+      ]
+    },
+    {
+      "job_id": 117443187101,
+      "phase": "cold",
+      "sample": 3,
+      "provider": "github-hosted",
+      "host": {
+        "provider": "github-hosted",
+        "runner_name": "GitHub Actions 1000003676",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v22.23.3",
+        "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16766414848,
+        "kernel": "6.17.0-1022-azure",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem        1B-blocks        Used   Available Use% Mounted on\n/dev/root      154894188544 62790418432 92086992896  41% /"
+      },
+      "cache_hit": "false",
+      "restore_ms": 348,
+      "save_ms": 2633,
+      "wall_ms": 21607,
+      "single": 243303614,
+      "all": 810160437,
+      "checksums": [
+        185327476,
+        3640110164,
+        3127122957,
+        1364301344
+      ],
+      "events": [
+        {
+          "phase": "host_fingerprint",
+          "timestamp_ms": 1792253980616,
+          "timestamp_iso": "2026-10-17T16:19:40.616Z",
+          "data": {
+            "provider": "github-hosted",
+            "runner_name": "GitHub Actions 1000003676",
+            "os": "linux",
+            "arch": "x64",
+            "node": "v22.23.3",
+            "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "memory_bytes": 16766414848,
+            "kernel": "6.17.0-1022-azure",
+            "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+            "disk": "Filesystem        1B-blocks        Used   Available Use% Mounted on\n/dev/root      154894188544 62790418432 92086992896  41% /"
+          }
+        },
+        {
+          "phase": "job_start",
+          "timestamp_ms": 1792253980646,
+          "timestamp_iso": "2026-10-17T16:19:40.646Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_start",
+          "timestamp_ms": 1792253980691,
+          "timestamp_iso": "2026-10-17T16:19:40.691Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_end",
+          "timestamp_ms": 1792253981039,
+          "timestamp_iso": "2026-10-17T16:19:41.039Z",
+          "data": {
+            "cache_hit": "false",
+            "cache_primary_key": "celesto-ci-benchmarks-v1-matched-20261017-a-sample-3-cold-linux-x64-512MiB"
+          }
+        },
+        {
+          "phase": "cache_payload_start",
+          "timestamp_ms": 1792253981089,
+          "timestamp_iso": "2026-10-17T16:19:41.089Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_payload_end",
+          "timestamp_ms": 1792253981312,
+          "timestamp_iso": "2026-10-17T16:19:41.312Z",
+          "data": {}
+        },
+        {
+          "phase": "cpu_single_core_start",
+          "timestamp_ms": 1792253981360,
+          "timestamp_iso": "2026-10-17T16:19:41.360Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 1,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_single_core_end",
+          "timestamp_ms": 1792253989581,
+          "timestamp_iso": "2026-10-17T16:19:49.581Z",
+          "data": {
+            "workers": 1,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 2000000000,
+            "wall_ms": 8220,
+            "aggregate_cpu_ms": 8220,
+            "iterations_per_second": 243303614,
+            "checksums": [
+              185327476
+            ]
+          }
+        },
+        {
+          "phase": "cpu_all_cores_start",
+          "timestamp_ms": 1792253989648,
+          "timestamp_iso": "2026-10-17T16:19:49.648Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 4,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_all_cores_end",
+          "timestamp_ms": 1792253999525,
+          "timestamp_iso": "2026-10-17T16:19:59.525Z",
+          "data": {
+            "workers": 4,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 8000000000,
+            "wall_ms": 9875,
+            "aggregate_cpu_ms": 33335,
+            "iterations_per_second": 810160437,
+            "checksums": [
+              185327476,
+              3640110164,
+              3127122957,
+              1364301344
+            ]
+          }
+        },
+        {
+          "phase": "cache_save_start",
+          "timestamp_ms": 1792253999578,
+          "timestamp_iso": "2026-10-17T16:19:59.578Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_save_end",
+          "timestamp_ms": 1792254002211,
+          "timestamp_iso": "2026-10-17T16:20:02.211Z",
+          "data": {}
+        },
+        {
+          "phase": "job_end",
+          "timestamp_ms": 1792254002253,
+          "timestamp_iso": "2026-10-17T16:20:02.253Z",
+          "data": {}
+        }
+      ]
+    },
+    {
+      "job_id": 117443300324,
+      "phase": "cold",
+      "sample": 3,
+      "provider": "celesto-large",
+      "host": {
+        "provider": "celesto-large",
+        "runner_name": "celesto-117443300324",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v22.23.3",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16776597504,
+        "kernel": "6.12.85",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63319519232 2890235904 57191329792   5% /"
+      },
+      "cache_hit": "false",
+      "restore_ms": 439,
+      "save_ms": 4810,
+      "wall_ms": 23173,
+      "single": 232797135,
+      "all": 928442693,
+      "checksums": [
+        185327476,
+        3640110164,
+        3127122957,
+        1364301344
+      ],
+      "events": [
+        {
+          "phase": "host_fingerprint",
+          "timestamp_ms": 1792254042178,
+          "timestamp_iso": "2026-10-17T16:20:42.178Z",
+          "data": {
+            "provider": "celesto-large",
+            "runner_name": "celesto-117443300324",
+            "os": "linux",
+            "arch": "x64",
+            "node": "v22.23.3",
+            "cpu_model": "AMD EPYC-Milan Processor",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "memory_bytes": 16776597504,
+            "kernel": "6.12.85",
+            "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+            "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63319519232 2890235904 57191329792   5% /"
+          }
+        },
+        {
+          "phase": "job_start",
+          "timestamp_ms": 1792254042210,
+          "timestamp_iso": "2026-10-17T16:20:42.210Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_start",
+          "timestamp_ms": 1792254042255,
+          "timestamp_iso": "2026-10-17T16:20:42.255Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_end",
+          "timestamp_ms": 1792254042694,
+          "timestamp_iso": "2026-10-17T16:20:42.694Z",
+          "data": {
+            "cache_hit": "false",
+            "cache_primary_key": "celesto-ci-benchmarks-v1-matched-20261017-a-sample-3-cold-linux-x64-512MiB"
+          }
+        },
+        {
+          "phase": "cache_payload_start",
+          "timestamp_ms": 1792254042740,
+          "timestamp_iso": "2026-10-17T16:20:42.740Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_payload_end",
+          "timestamp_ms": 1792254043171,
+          "timestamp_iso": "2026-10-17T16:20:43.171Z",
+          "data": {}
+        },
+        {
+          "phase": "cpu_single_core_start",
+          "timestamp_ms": 1792254043210,
+          "timestamp_iso": "2026-10-17T16:20:43.210Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 1,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_single_core_end",
+          "timestamp_ms": 1792254051804,
+          "timestamp_iso": "2026-10-17T16:20:51.804Z",
+          "data": {
+            "workers": 1,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 2000000000,
+            "wall_ms": 8591,
+            "aggregate_cpu_ms": 8596,
+            "iterations_per_second": 232797135,
+            "checksums": [
+              185327476
+            ]
+          }
+        },
+        {
+          "phase": "cpu_all_cores_start",
+          "timestamp_ms": 1792254051861,
+          "timestamp_iso": "2026-10-17T16:20:51.861Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 4,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_all_cores_end",
+          "timestamp_ms": 1792254060480,
+          "timestamp_iso": "2026-10-17T16:21:00.480Z",
+          "data": {
+            "workers": 4,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 8000000000,
+            "wall_ms": 8617,
+            "aggregate_cpu_ms": 34247,
+            "iterations_per_second": 928442693,
+            "checksums": [
+              185327476,
+              3640110164,
+              3127122957,
+              1364301344
+            ]
+          }
+        },
+        {
+          "phase": "cache_save_start",
+          "timestamp_ms": 1792254060534,
+          "timestamp_iso": "2026-10-17T16:21:00.534Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_save_end",
+          "timestamp_ms": 1792254065344,
+          "timestamp_iso": "2026-10-17T16:21:05.344Z",
+          "data": {}
+        },
+        {
+          "phase": "job_end",
+          "timestamp_ms": 1792254065383,
+          "timestamp_iso": "2026-10-17T16:21:05.383Z",
+          "data": {}
+        }
+      ]
+    },
+    {
+      "job_id": 117443581266,
+      "phase": "warm",
+      "sample": 1,
+      "provider": "github-hosted",
+      "host": {
+        "provider": "github-hosted",
+        "runner_name": "GitHub Actions 1000003677",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v22.23.3",
+        "cpu_model": "AMD EPYC 7763 64-Core Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16766410752,
+        "kernel": "6.17.0-1022-azure",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem        1B-blocks        Used   Available Use% Mounted on\n/dev/root      154894188544 62790529024 92086882304  41% /"
+      },
+      "cache_hit": "true",
+      "restore_ms": 3143,
+      "save_ms": null,
+      "wall_ms": 23648,
+      "single": 197721636,
+      "all": 788894612,
+      "checksums": [
+        185327476,
+        3640110164,
+        3127122957,
+        1364301344
+      ],
+      "events": [
+        {
+          "phase": "host_fingerprint",
+          "timestamp_ms": 1792254077949,
+          "timestamp_iso": "2026-10-17T16:21:17.949Z",
+          "data": {
+            "provider": "github-hosted",
+            "runner_name": "GitHub Actions 1000003677",
+            "os": "linux",
+            "arch": "x64",
+            "node": "v22.23.3",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "memory_bytes": 16766410752,
+            "kernel": "6.17.0-1022-azure",
+            "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+            "disk": "Filesystem        1B-blocks        Used   Available Use% Mounted on\n/dev/root      154894188544 62790529024 92086882304  41% /"
+          }
+        },
+        {
+          "phase": "job_start",
+          "timestamp_ms": 1792254077981,
+          "timestamp_iso": "2026-10-17T16:21:17.981Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_start",
+          "timestamp_ms": 1792254078030,
+          "timestamp_iso": "2026-10-17T16:21:18.030Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_end",
+          "timestamp_ms": 1792254081173,
+          "timestamp_iso": "2026-10-17T16:21:21.173Z",
+          "data": {
+            "cache_hit": "true",
+            "cache_primary_key": "celesto-ci-benchmarks-v1-matched-20261017-a-sample-1-cold-linux-x64-512MiB"
+          }
+        },
+        {
+          "phase": "cpu_single_core_start",
+          "timestamp_ms": 1792254081237,
+          "timestamp_iso": "2026-10-17T16:21:21.237Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 1,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_single_core_end",
+          "timestamp_ms": 1792254091354,
+          "timestamp_iso": "2026-10-17T16:21:31.354Z",
+          "data": {
+            "workers": 1,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 2000000000,
+            "wall_ms": 10115,
+            "aggregate_cpu_ms": 10023,
+            "iterations_per_second": 197721636,
+            "checksums": [
+              185327476
+            ]
+          }
+        },
+        {
+          "phase": "cpu_all_cores_start",
+          "timestamp_ms": 1792254091419,
+          "timestamp_iso": "2026-10-17T16:21:31.419Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 4,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_all_cores_end",
+          "timestamp_ms": 1792254101562,
+          "timestamp_iso": "2026-10-17T16:21:41.562Z",
+          "data": {
+            "workers": 4,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 8000000000,
+            "wall_ms": 10141,
+            "aggregate_cpu_ms": 40302,
+            "iterations_per_second": 788894612,
+            "checksums": [
+              185327476,
+              3640110164,
+              3127122957,
+              1364301344
+            ]
+          }
+        },
+        {
+          "phase": "job_end",
+          "timestamp_ms": 1792254101629,
+          "timestamp_iso": "2026-10-17T16:21:41.629Z",
+          "data": {}
+        }
+      ]
+    },
+    {
+      "job_id": 117443581331,
+      "phase": "warm",
+      "sample": 1,
+      "provider": "celesto-large",
+      "host": {
+        "provider": "celesto-large",
+        "runner_name": "celesto-117443581331",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v22.23.3",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16776605696,
+        "kernel": "6.12.85",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63319519232 2890235904 57191329792   5% /"
+      },
+      "cache_hit": "true",
+      "restore_ms": 5744,
+      "save_ms": null,
+      "wall_ms": 23095,
+      "single": 233738385,
+      "all": 931117488,
+      "checksums": [
+        185327476,
+        3640110164,
+        3127122957,
+        1364301344
+      ],
+      "events": [
+        {
+          "phase": "host_fingerprint",
+          "timestamp_ms": 1792254102981,
+          "timestamp_iso": "2026-10-17T16:21:42.981Z",
+          "data": {
+            "provider": "celesto-large",
+            "runner_name": "celesto-117443581331",
+            "os": "linux",
+            "arch": "x64",
+            "node": "v22.23.3",
+            "cpu_model": "AMD EPYC-Milan Processor",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "memory_bytes": 16776605696,
+            "kernel": "6.12.85",
+            "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+            "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63319519232 2890235904 57191329792   5% /"
+          }
+        },
+        {
+          "phase": "job_start",
+          "timestamp_ms": 1792254103013,
+          "timestamp_iso": "2026-10-17T16:21:43.013Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_start",
+          "timestamp_ms": 1792254103055,
+          "timestamp_iso": "2026-10-17T16:21:43.055Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_end",
+          "timestamp_ms": 1792254108799,
+          "timestamp_iso": "2026-10-17T16:21:48.799Z",
+          "data": {
+            "cache_hit": "true",
+            "cache_primary_key": "celesto-ci-benchmarks-v1-matched-20261017-a-sample-1-cold-linux-x64-512MiB"
+          }
+        },
+        {
+          "phase": "cpu_single_core_start",
+          "timestamp_ms": 1792254108840,
+          "timestamp_iso": "2026-10-17T16:21:48.840Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 1,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_single_core_end",
+          "timestamp_ms": 1792254117398,
+          "timestamp_iso": "2026-10-17T16:21:57.398Z",
+          "data": {
+            "workers": 1,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 2000000000,
+            "wall_ms": 8557,
+            "aggregate_cpu_ms": 8560,
+            "iterations_per_second": 233738385,
+            "checksums": [
+              185327476
+            ]
+          }
+        },
+        {
+          "phase": "cpu_all_cores_start",
+          "timestamp_ms": 1792254117453,
+          "timestamp_iso": "2026-10-17T16:21:57.453Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 4,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_all_cores_end",
+          "timestamp_ms": 1792254126047,
+          "timestamp_iso": "2026-10-17T16:22:06.047Z",
+          "data": {
+            "workers": 4,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 8000000000,
+            "wall_ms": 8592,
+            "aggregate_cpu_ms": 34181,
+            "iterations_per_second": 931117488,
+            "checksums": [
+              185327476,
+              3640110164,
+              3127122957,
+              1364301344
+            ]
+          }
+        },
+        {
+          "phase": "job_end",
+          "timestamp_ms": 1792254126108,
+          "timestamp_iso": "2026-10-17T16:22:06.108Z",
+          "data": {}
+        }
+      ]
+    },
+    {
+      "job_id": 117443750935,
+      "phase": "warm",
+      "sample": 2,
+      "provider": "github-hosted",
+      "host": {
+        "provider": "github-hosted",
+        "runner_name": "GitHub Actions 1000003678",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v22.23.3",
+        "cpu_model": "AMD EPYC 7763 64-Core Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16766414848,
+        "kernel": "6.17.0-1022-azure",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem        1B-blocks        Used   Available Use% Mounted on\n/dev/root      154894188544 62790545408 92086865920  41% /"
+      },
+      "cache_hit": "true",
+      "restore_ms": 6640,
+      "save_ms": null,
+      "wall_ms": 29837,
+      "single": 186810052,
+      "all": 681597060,
+      "checksums": [
+        185327476,
+        3640110164,
+        3127122957,
+        1364301344
+      ],
+      "events": [
+        {
+          "phase": "host_fingerprint",
+          "timestamp_ms": 1792254112921,
+          "timestamp_iso": "2026-10-17T16:21:52.921Z",
+          "data": {
+            "provider": "github-hosted",
+            "runner_name": "GitHub Actions 1000003678",
+            "os": "linux",
+            "arch": "x64",
+            "node": "v22.23.3",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "memory_bytes": 16766414848,
+            "kernel": "6.17.0-1022-azure",
+            "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+            "disk": "Filesystem        1B-blocks        Used   Available Use% Mounted on\n/dev/root      154894188544 62790545408 92086865920  41% /"
+          }
+        },
+        {
+          "phase": "job_start",
+          "timestamp_ms": 1792254112953,
+          "timestamp_iso": "2026-10-17T16:21:52.953Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_start",
+          "timestamp_ms": 1792254113024,
+          "timestamp_iso": "2026-10-17T16:21:53.024Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_end",
+          "timestamp_ms": 1792254119664,
+          "timestamp_iso": "2026-10-17T16:21:59.664Z",
+          "data": {
+            "cache_hit": "true",
+            "cache_primary_key": "celesto-ci-benchmarks-v1-matched-20261017-a-sample-2-cold-linux-x64-512MiB"
+          }
+        },
+        {
+          "phase": "cpu_single_core_start",
+          "timestamp_ms": 1792254119937,
+          "timestamp_iso": "2026-10-17T16:21:59.937Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 1,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_single_core_end",
+          "timestamp_ms": 1792254130645,
+          "timestamp_iso": "2026-10-17T16:22:10.645Z",
+          "data": {
+            "workers": 1,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 2000000000,
+            "wall_ms": 10706,
+            "aggregate_cpu_ms": 10027,
+            "iterations_per_second": 186810052,
+            "checksums": [
+              185327476
+            ]
+          }
+        },
+        {
+          "phase": "cpu_all_cores_start",
+          "timestamp_ms": 1792254130984,
+          "timestamp_iso": "2026-10-17T16:22:10.984Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 4,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_all_cores_end",
+          "timestamp_ms": 1792254142723,
+          "timestamp_iso": "2026-10-17T16:22:22.723Z",
+          "data": {
+            "workers": 4,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 8000000000,
+            "wall_ms": 11737,
+            "aggregate_cpu_ms": 40347,
+            "iterations_per_second": 681597060,
+            "checksums": [
+              185327476,
+              3640110164,
+              3127122957,
+              1364301344
+            ]
+          }
+        },
+        {
+          "phase": "job_end",
+          "timestamp_ms": 1792254142790,
+          "timestamp_iso": "2026-10-17T16:22:22.790Z",
+          "data": {}
+        }
+      ]
+    },
+    {
+      "job_id": 117443843783,
+      "phase": "warm",
+      "sample": 2,
+      "provider": "celesto-large",
+      "host": {
+        "provider": "celesto-large",
+        "runner_name": "celesto-117443843783",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v22.23.3",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16776597504,
+        "kernel": "6.12.85",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63319519232 2890240000 57191325696   5% /"
+      },
+      "cache_hit": "true",
+      "restore_ms": 6230,
+      "save_ms": null,
+      "wall_ms": 23634,
+      "single": 233198052,
+      "all": 926631011,
+      "checksums": [
+        185327476,
+        3640110164,
+        3127122957,
+        1364301344
+      ],
+      "events": [
+        {
+          "phase": "host_fingerprint",
+          "timestamp_ms": 1792254163625,
+          "timestamp_iso": "2026-10-17T16:22:43.625Z",
+          "data": {
+            "provider": "celesto-large",
+            "runner_name": "celesto-117443843783",
+            "os": "linux",
+            "arch": "x64",
+            "node": "v22.23.3",
+            "cpu_model": "AMD EPYC-Milan Processor",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "memory_bytes": 16776597504,
+            "kernel": "6.12.85",
+            "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+            "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63319519232 2890240000 57191325696   5% /"
+          }
+        },
+        {
+          "phase": "job_start",
+          "timestamp_ms": 1792254163658,
+          "timestamp_iso": "2026-10-17T16:22:43.658Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_start",
+          "timestamp_ms": 1792254163697,
+          "timestamp_iso": "2026-10-17T16:22:43.697Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_end",
+          "timestamp_ms": 1792254169927,
+          "timestamp_iso": "2026-10-17T16:22:49.927Z",
+          "data": {
+            "cache_hit": "true",
+            "cache_primary_key": "celesto-ci-benchmarks-v1-matched-20261017-a-sample-2-cold-linux-x64-512MiB"
+          }
+        },
+        {
+          "phase": "cpu_single_core_start",
+          "timestamp_ms": 1792254169967,
+          "timestamp_iso": "2026-10-17T16:22:49.967Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 1,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_single_core_end",
+          "timestamp_ms": 1792254178545,
+          "timestamp_iso": "2026-10-17T16:22:58.545Z",
+          "data": {
+            "workers": 1,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 2000000000,
+            "wall_ms": 8576,
+            "aggregate_cpu_ms": 8580,
+            "iterations_per_second": 233198052,
+            "checksums": [
+              185327476
+            ]
+          }
+        },
+        {
+          "phase": "cpu_all_cores_start",
+          "timestamp_ms": 1792254178601,
+          "timestamp_iso": "2026-10-17T16:22:58.601Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 4,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_all_cores_end",
+          "timestamp_ms": 1792254187236,
+          "timestamp_iso": "2026-10-17T16:23:07.236Z",
+          "data": {
+            "workers": 4,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 8000000000,
+            "wall_ms": 8633,
+            "aggregate_cpu_ms": 34260,
+            "iterations_per_second": 926631011,
+            "checksums": [
+              185327476,
+              3640110164,
+              3127122957,
+              1364301344
+            ]
+          }
+        },
+        {
+          "phase": "job_end",
+          "timestamp_ms": 1792254187292,
+          "timestamp_iso": "2026-10-17T16:23:07.292Z",
+          "data": {}
+        }
+      ]
+    },
+    {
+      "job_id": 117443907968,
+      "phase": "warm",
+      "sample": 3,
+      "provider": "github-hosted",
+      "host": {
+        "provider": "github-hosted",
+        "runner_name": "GitHub Actions 1000003679",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v22.23.3",
+        "cpu_model": "AMD EPYC 7763 64-Core Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16766402560,
+        "kernel": "6.17.0-1022-azure",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem        1B-blocks        Used   Available Use% Mounted on\n/dev/root      154894188544 62790533120 92086878208  41% /"
+      },
+      "cache_hit": "true",
+      "restore_ms": 3295,
+      "save_ms": null,
+      "wall_ms": 23787,
+      "single": 199437191,
+      "all": 784485103,
+      "checksums": [
+        185327476,
+        3640110164,
+        3127122957,
+        1364301344
+      ],
+      "events": [
+        {
+          "phase": "host_fingerprint",
+          "timestamp_ms": 1792254152682,
+          "timestamp_iso": "2026-10-17T16:22:32.683Z",
+          "data": {
+            "provider": "github-hosted",
+            "runner_name": "GitHub Actions 1000003679",
+            "os": "linux",
+            "arch": "x64",
+            "node": "v22.23.3",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "memory_bytes": 16766402560,
+            "kernel": "6.17.0-1022-azure",
+            "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+            "disk": "Filesystem        1B-blocks        Used   Available Use% Mounted on\n/dev/root      154894188544 62790533120 92086878208  41% /"
+          }
+        },
+        {
+          "phase": "job_start",
+          "timestamp_ms": 1792254152716,
+          "timestamp_iso": "2026-10-17T16:22:32.716Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_start",
+          "timestamp_ms": 1792254152779,
+          "timestamp_iso": "2026-10-17T16:22:32.779Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_end",
+          "timestamp_ms": 1792254156074,
+          "timestamp_iso": "2026-10-17T16:22:36.074Z",
+          "data": {
+            "cache_hit": "true",
+            "cache_primary_key": "celesto-ci-benchmarks-v1-matched-20261017-a-sample-3-cold-linux-x64-512MiB"
+          }
+        },
+        {
+          "phase": "cpu_single_core_start",
+          "timestamp_ms": 1792254156129,
+          "timestamp_iso": "2026-10-17T16:22:36.129Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 1,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_single_core_end",
+          "timestamp_ms": 1792254166159,
+          "timestamp_iso": "2026-10-17T16:22:46.159Z",
+          "data": {
+            "workers": 1,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 2000000000,
+            "wall_ms": 10028,
+            "aggregate_cpu_ms": 10027,
+            "iterations_per_second": 199437191,
+            "checksums": [
+              185327476
+            ]
+          }
+        },
+        {
+          "phase": "cpu_all_cores_start",
+          "timestamp_ms": 1792254166228,
+          "timestamp_iso": "2026-10-17T16:22:46.228Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 4,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_all_cores_end",
+          "timestamp_ms": 1792254176428,
+          "timestamp_iso": "2026-10-17T16:22:56.428Z",
+          "data": {
+            "workers": 4,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 8000000000,
+            "wall_ms": 10198,
+            "aggregate_cpu_ms": 40310,
+            "iterations_per_second": 784485103,
+            "checksums": [
+              185327476,
+              3640110164,
+              3127122957,
+              1364301344
+            ]
+          }
+        },
+        {
+          "phase": "job_end",
+          "timestamp_ms": 1792254176503,
+          "timestamp_iso": "2026-10-17T16:22:56.503Z",
+          "data": {}
+        }
+      ]
+    },
+    {
+      "job_id": 117444022066,
+      "phase": "warm",
+      "sample": 3,
+      "provider": "celesto-large",
+      "host": {
+        "provider": "celesto-large",
+        "runner_name": "celesto-117444022066",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v22.23.3",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16776601600,
+        "kernel": "6.12.85",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63319519232 2890235904 57191329792   5% /"
+      },
+      "cache_hit": "true",
+      "restore_ms": 8485,
+      "save_ms": null,
+      "wall_ms": 25921,
+      "single": 233602759,
+      "all": 923658213,
+      "checksums": [
+        185327476,
+        3640110164,
+        3127122957,
+        1364301344
+      ],
+      "events": [
+        {
+          "phase": "host_fingerprint",
+          "timestamp_ms": 1792254213038,
+          "timestamp_iso": "2026-10-17T16:23:33.038Z",
+          "data": {
+            "provider": "celesto-large",
+            "runner_name": "celesto-117444022066",
+            "os": "linux",
+            "arch": "x64",
+            "node": "v22.23.3",
+            "cpu_model": "AMD EPYC-Milan Processor",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "memory_bytes": 16776601600,
+            "kernel": "6.12.85",
+            "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+            "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63319519232 2890235904 57191329792   5% /"
+          }
+        },
+        {
+          "phase": "job_start",
+          "timestamp_ms": 1792254213070,
+          "timestamp_iso": "2026-10-17T16:23:33.070Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_start",
+          "timestamp_ms": 1792254213111,
+          "timestamp_iso": "2026-10-17T16:23:33.111Z",
+          "data": {}
+        },
+        {
+          "phase": "cache_restore_end",
+          "timestamp_ms": 1792254221596,
+          "timestamp_iso": "2026-10-17T16:23:41.596Z",
+          "data": {
+            "cache_hit": "true",
+            "cache_primary_key": "celesto-ci-benchmarks-v1-matched-20261017-a-sample-3-cold-linux-x64-512MiB"
+          }
+        },
+        {
+          "phase": "cpu_single_core_start",
+          "timestamp_ms": 1792254221642,
+          "timestamp_iso": "2026-10-17T16:23:41.642Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 1,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_single_core_end",
+          "timestamp_ms": 1792254230205,
+          "timestamp_iso": "2026-10-17T16:23:50.205Z",
+          "data": {
+            "workers": 1,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 2000000000,
+            "wall_ms": 8562,
+            "aggregate_cpu_ms": 8566,
+            "iterations_per_second": 233602759,
+            "checksums": [
+              185327476
+            ]
+          }
+        },
+        {
+          "phase": "cpu_all_cores_start",
+          "timestamp_ms": 1792254230270,
+          "timestamp_iso": "2026-10-17T16:23:50.270Z",
+          "data": {
+            "node": "v22.23.3",
+            "platform": "linux",
+            "arch": "x64",
+            "logical_cpus": 4,
+            "available_cpus": 4,
+            "workers": 4,
+            "iterations_per_worker": 2000000000
+          }
+        },
+        {
+          "phase": "cpu_all_cores_end",
+          "timestamp_ms": 1792254238933,
+          "timestamp_iso": "2026-10-17T16:23:58.933Z",
+          "data": {
+            "workers": 4,
+            "iterations_per_worker": 2000000000,
+            "total_iterations": 8000000000,
+            "wall_ms": 8661,
+            "aggregate_cpu_ms": 34247,
+            "iterations_per_second": 923658213,
+            "checksums": [
+              185327476,
+              3640110164,
+              3127122957,
+              1364301344
+            ]
+          }
+        },
+        {
+          "phase": "job_end",
+          "timestamp_ms": 1792254238991,
+          "timestamp_iso": "2026-10-17T16:23:58.991Z",
+          "data": {}
+        }
+      ]
+    }
+  ]
+}
