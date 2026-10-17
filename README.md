@@ -1,50 +1,88 @@
-# Celesto CI vs. GitHub Actions benchmark
+# CI benchmarks
 
-A public, repeatable benchmark for comparing **CPU throughput** and **cache archive performance** across Celesto CI and GitHub-hosted Actions.
+**Compare Celesto CI and GitHub Actions on CPU speed and cache performance.** Same benchmark, same CPU count, same RAM. Runs and raw data are public.
 
-It follows the approach in [Celesto's dependency-cache benchmark](https://celesto.ai/blog/posts/celesto-ci-dependency-cache/): measure a cold save and a warm restore separately, capture the cache-hit outcome, and disclose the runner configuration alongside elapsed time.
+[See the results](results/2026-10-17-matched/README.md) · [Run the comparison](https://github.com/CelestoAI/ci-benchmarks/actions/workflows/matched.yml)
 
-## Latest matched comparison
+## Latest results
 
-[Results and raw measurements: October 17, 2026](results/2026-10-17-matched/README.md). Both providers used four vCPUs, nominal 16 GiB RAM, Ubuntu 24.04.5 and Node 22.23.3. Twelve jobs passed: three cold/warm pairs per provider.
+October 17, 2026. Both runners: **4 vCPUs, 16 GiB RAM, Ubuntu 24.04.5, Node 22.23.3**. Three cold/warm pairs per provider; all 12 jobs passed.
 
-Run **Matched 4-core benchmark** (`.github/workflows/matched.yml`) with a fresh `cache_namespace` to reproduce the experiment. It runs the cold samples first and then verifies warm restores, using 512 MiB caches and two billion iterations per CPU worker. The shared harness records actual CPU/RAM/OS/disk details and checks the four-CPU capacity. Celesto uses the Large size, which requires credit eligible for that size.
+| Measurement | GitHub Actions | Celesto Large | Better |
+| --- | ---: | ---: | --- |
+| Single-core CPU ↑ | 199.4 million iterations/s | 233.2 million iterations/s | Celesto +16.9% |
+| Four-core CPU ↑ | 786.7 million iterations/s | 927.5 million iterations/s | Celesto +17.9% |
+| Restore a 512 MiB cache ↓ | 3.30 s | 6.23 s | GitHub 1.89× faster |
+| Save a 512 MiB cache ↓ | 2.50 s | 5.18 s | GitHub 2.08× faster |
 
-## Workflows
+↑ More work per second is better. ↓ Less time is better. Values are medians: six CPU measurements and three measurements per cache operation, per provider.
 
-| Workflow | Runner |
+**In this test:** Celesto had higher median CPU throughput. GitHub saved and restored the cache faster. CPU models, kernels, and disks differed despite matching CPU/RAM capacity. These are synthetic workloads, not a prediction for every build.
+
+[Full methodology, ranges, outliers, and raw data →](results/2026-10-17-matched/README.md)
+
+## Run it yourself
+
+No local install needed. One workflow runs both providers and produces all 12 jobs.
+
+1. **Use a repo you can run workflows in.** If you do not have write access here, [fork this repo](https://github.com/CelestoAI/ci-benchmarks/fork) and enable **Actions** in your fork.
+2. **Connect Celesto.** [Install the Celesto CI App](https://github.com/apps/celesto-ci) for that repo and connect it to a Celesto workspace. It needs credit eligible for the **Large** runner; a Micro-only trial will not work. Celesto jobs consume workspace credit.
+3. **Open Actions → Matched 4-core benchmark → Run workflow.** Use `main`. In a fork, open this workflow from your fork's Actions tab.
+4. **Change `cache_namespace` to a new name**, such as `yourname-test-001`, then click **Run workflow**. Use a different name for every new experiment. Do not reuse the prefilled name.
+
+That's it. The workflow handles the order:
+
+| Phase | What happens | Expected cache result |
+| --- | --- | --- |
+| Cold | Create and save a new cache on each provider | `false` (miss) |
+| Warm | Restore the cache saved by the cold run | `true` (hit) |
+
+Each phase has three samples per provider. The reference experiment finished in **5m 33s**; runner startup and queues can change the wait.
+
+## Find your numbers
+
+Open the completed run in **Actions**:
+
+- **Summary:** scroll down for each job's CPU throughput, cache hit, restore time, and save time.
+- **Artifacts:** download a job's archive. `benchmark-summary.md` is the readable report; `benchmark-events.jsonl` contains raw timings and machine details.
+- **Success check:** all 12 jobs should pass. Cold jobs should miss; warm jobs should hit. Save time is absent on warm runs because an existing cache is reused.
+
+The workflow does not calculate a cross-provider median for you. The [published report](results/2026-10-17-matched/README.md) shows how this experiment was summarized.
+
+## Something stuck?
+
+| Symptom | What to check |
 | --- | --- |
-| **Benchmark on GitHub-hosted Actions** | `ubuntu-24.04` |
-| **Benchmark on Celesto CI** | `[self-hosted, celesto-large]` |
+| No **Run workflow** button | You need write access. In a fork, enable Actions first. |
+| Celesto job stays queued | Open the commit's **Celesto runner setup** check. Verify App access, workspace connection, and credit eligible for Large. |
+| A cold job reports a hit | The namespace was used before. Start a new experiment with a new name. |
+| A warm job misses | Check the matching cold job's cache-save logs. Warm runs need that saved cache. |
+| CPU/RAM check fails | Both providers must expose four CPUs and at least 14 GiB usable RAM. Check the selected runner and job logs. |
 
-Both workflows call the same shared harness in `.github/workflows/benchmark.yml`. Only the runner labels differ.
+[Report a problem](https://github.com/CelestoAI/ci-benchmarks/issues/new). Include the run URL, job name, and relevant error.
 
-## What is measured
+## How the test works
 
-- **Single-core CPU throughput**: deterministic integer work in one worker, the best per-vCPU signal.
-- **All-core CPU throughput**: the same workload across all processors reported by Node's `os.availableParallelism()`; this measures allocated capacity, not per-core performance alone.
-- **Cache restore boundary**: wall time immediately before `actions/cache/restore@v4` through the following workflow step.
-- **Cache save boundary**: wall time surrounding `actions/cache/save@v4` on a cache miss.
-- **Cache payload generation**: a configurable high-entropy archive generated only on a miss, kept outside the cache-save boundary.
+The [matched workflow](.github/workflows/matched.yml) calls the [same benchmark steps](.github/workflows/benchmark.yml) for both providers.
 
-The payload contains random bytes so it does not create misleadingly high compression ratios. Supported workflow inputs are **256, 512, 1024, and 2304 MiB**. The 2304 MiB option mirrors the browser-tool cache shape in the referenced post.
+- **CPU:** two billion integer-mixing iterations per worker. Run once with one worker and once with four.
+- **Cache:** 512 MiB of random bytes that do not compress well. Each provider has its own cache store.
+- **Timing:** restore/save measurements include action overhead, transfer, and compression or extraction. They do not measure network speed alone.
+- **Elapsed time:** the report's instrumented time excludes checkout, Node setup, queueing, and artifact upload. Use the Actions UI for total workflow time.
 
-## Run a paired comparison
+Want a different payload? Use the individual [GitHub](.github/workflows/github-hosted.yml) and [Celesto](.github/workflows/celesto.yml) workflows. Match their inputs; run each once cold, then again unchanged for warm. Payload options: 256, 512, 1024, or 2304 MiB.
 
-1. Install the [Celesto CI GitHub App](https://github.com/apps/celesto-ci), enable this repository, and connect it to a Celesto workspace with credit.
-2. Choose a fresh `cache_namespace` (for example `2026-10-17-a`), a payload size, and CPU iterations. Keep these identical for the pair.
-3. Run the GitHub-hosted workflow once and the Celesto workflow once. Those are the two **cold** runs because the providers use separate cache stores.
-4. Re-run both workflows without changing inputs. Those are the **warm** runs.
-5. Download the `*-benchmark-*` artifact from each run. It contains `benchmark-events.jsonl` and `benchmark-summary.md`.
+Inspired by [Celesto's dependency-cache post](https://celesto.ai/blog/posts/celesto-ci-dependency-cache/). This repo uses a synthetic random-byte cache, so it does not reproduce that post's dependency workload.
 
-For more reliable results, use at least three fresh namespaces and alternate which provider runs first. Compare cold with cold and warm with warm. Cache transport, host generation, CPU allocation, image revision, and network location can all affect the result, so do not describe the outcome as a cache-service-only comparison.
+## Try the scripts locally
 
-## Local use
-
-The harness uses Node 20+ and has no runtime dependencies:
+Requires **Node.js 20+** and a macOS, Linux, or WSL shell. No `npm install` needed. These commands are a quick script check; provider cache timing requires CI.
 
 ```sh
-BENCHMARK_CACHE_MIB=16 node scripts/seed-cache.mjs
+git clone https://github.com/CelestoAI/ci-benchmarks.git
+cd ci-benchmarks
 BENCHMARK_CPU_ITERATIONS=1000000 node scripts/cpu-benchmark.mjs
+BENCHMARK_CACHE_MIB=16 node scripts/seed-cache.mjs
 ```
 
+Expect `CPU benchmark: … iterations/s` and `Generated 16 MiB cache payload…`. The scripts write `benchmark-events.jsonl` and `.benchmark-cache/` locally.
