@@ -63,6 +63,7 @@ if (!isMainThread) {
   });
 
   const started = performance.now();
+  const processCpuStarted = process.cpuUsage();
   const results = await Promise.all([...Array(workers)].map((_, index) => new Promise((resolve, reject) => {
     const worker = new Worker(new URL(import.meta.url), {
       workerData: { iterations, seed: 0x9e3779b9 ^ index },
@@ -75,7 +76,8 @@ if (!isMainThread) {
   })));
   const elapsedMs = performance.now() - started;
   const totalIterations = iterations * workers;
-  const totalCpuMs = results.reduce((total, result) => total + result.cpu_user_ms + result.cpu_system_ms, 0);
+  const processCpu = process.cpuUsage(processCpuStarted);
+  const totalCpuMs = (processCpu.user + processCpu.system) / 1_000;
   const output = {
     workers,
     iterations_per_worker: iterations,
