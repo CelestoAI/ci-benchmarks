@@ -1,0 +1,9 @@
+{"phase":"host_fingerprint","timestamp_ms":1792251982678,"timestamp_iso":"2026-10-17T15:46:22.678Z","data":{"provider":"celesto-ci","runner_name":"celesto-117435905455-2","os":"linux","arch":"x64","node":"v22.23.3"}}
+{"phase":"job_start","timestamp_ms":1792251982707,"timestamp_iso":"2026-10-17T15:46:22.707Z","data":{}}
+{"phase":"cache_restore_start","timestamp_ms":1792251982771,"timestamp_iso":"2026-10-17T15:46:22.771Z","data":{}}
+{"phase":"cache_restore_end","timestamp_ms":1792251995166,"timestamp_iso":"2026-10-17T15:46:35.166Z","data":{"cache_hit":"true","cache_primary_key":"celesto-ci-benchmarks-v1-bench-20261017-b-linux-x64-512MiB"}}
+{"phase":"cpu_single_core_start","timestamp_ms":1792251995256,"timestamp_iso":"2026-10-17T15:46:35.256Z","data":{"node":"v22.23.3","platform":"linux","arch":"x64","logical_cpus":1,"available_cpus":1,"workers":1,"iterations_per_worker":250000000}}
+{"phase":"cpu_single_core_end","timestamp_ms":1792251996382,"timestamp_iso":"2026-10-17T15:46:36.382Z","data":{"workers":1,"iterations_per_worker":250000000,"total_iterations":250000000,"wall_ms":1124,"aggregate_cpu_ms":1072,"iterations_per_second":222489750,"checksums":[2775414133]}}
+{"phase":"cpu_all_cores_start","timestamp_ms":1792251996463,"timestamp_iso":"2026-10-17T15:46:36.463Z","data":{"node":"v22.23.3","platform":"linux","arch":"x64","logical_cpus":1,"available_cpus":1,"workers":1,"iterations_per_worker":250000000}}
+{"phase":"cpu_all_cores_end","timestamp_ms":1792251997580,"timestamp_iso":"2026-10-17T15:46:37.580Z","data":{"workers":1,"iterations_per_worker":250000000,"total_iterations":250000000,"wall_ms":1115,"aggregate_cpu_ms":1069,"iterations_per_second":224301895,"checksums":[2775414133]}}
+{"phase":"job_end","timestamp_ms":1792251997697,"timestamp_iso":"2026-10-17T15:46:37.697Z","data":{}}
