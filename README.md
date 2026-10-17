@@ -4,12 +4,18 @@ A public, repeatable benchmark for comparing **CPU throughput** and **cache arch
 
 It follows the approach in [Celesto's dependency-cache benchmark](https://celesto.ai/blog/posts/celesto-ci-dependency-cache/): measure a cold save and a warm restore separately, capture the cache-hit outcome, and disclose the runner configuration alongside elapsed time.
 
+## Latest matched comparison
+
+[Results and raw measurements: October 17, 2026](results/2026-10-17-matched/README.md). Both providers used four vCPUs, nominal 16 GiB RAM, Ubuntu 24.04.5 and Node 22.23.3. Twelve jobs passed: three cold/warm pairs per provider.
+
+Run **Matched 4-core benchmark** (`.github/workflows/matched.yml`) with a fresh `cache_namespace` to reproduce the experiment. It runs the cold samples first and then verifies warm restores, using 512 MiB caches and two billion iterations per CPU worker. The shared harness records actual CPU/RAM/OS/disk details and checks the four-CPU capacity. Celesto uses the Large size, which requires credit eligible for that size.
+
 ## Workflows
 
 | Workflow | Runner |
 | --- | --- |
-| **Benchmark on GitHub-hosted Actions** | `ubuntu-latest` |
-| **Benchmark on Celesto CI** | `[self-hosted, celesto-micro]` |
+| **Benchmark on GitHub-hosted Actions** | `ubuntu-24.04` |
+| **Benchmark on Celesto CI** | `[self-hosted, celesto-large]` |
 
 Both workflows call the same shared harness in `.github/workflows/benchmark.yml`. Only the runner labels differ.
 
