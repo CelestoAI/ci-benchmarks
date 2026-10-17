@@ -37,6 +37,36 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Record Docker Hub pull allowance outside workload timing
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import base64, json, os, urllib.request, urllib.parse, urllib.error
+          from pathlib import Path
+          username, token = os.environ['DOCKERHUB_USERNAME'], os.environ['DOCKERHUB_TOKEN']
+          query=urllib.parse.urlencode({'service':'registry.docker.io','scope':'repository:ratelimitpreview/test:pull','account':username})
+          request=urllib.request.Request('https://auth.docker.io/token?'+query,
+              headers={'Authorization':'Basic '+base64.b64encode((username+':'+token).encode()).decode()})
+          receipt={}
+          try:
+              with urllib.request.urlopen(request,timeout=20) as response:
+                  data=json.load(response)
+              access=data.get('token') or data.get('access_token')
+              request=urllib.request.Request('https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest',
+                  method='HEAD',headers={'Authorization':'Bearer '+access})
+              with urllib.request.urlopen(request,timeout=20) as response:
+                  receipt={'http_status':response.status,'limit':response.headers.get('ratelimit-limit'),
+                           'remaining':response.headers.get('ratelimit-remaining')}
+          except urllib.error.HTTPError as error:
+              receipt={'http_status':error.code,'quota_observation_unavailable':True}
+          except (OSError,ValueError,TypeError):
+              receipt={'quota_observation_unavailable':True}
+          Path('docker-results').mkdir(exist_ok=True)
+          Path('docker-results/registry-quota.log').write_text(json.dumps(receipt)+'\n')
+          print(json.dumps(receipt))
+          PY
       - name: Match Compose version
         run: |
           mkdir -p "$HOME/.docker/cli-plugins"
