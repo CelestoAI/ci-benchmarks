@@ -1,0 +1,15 @@
+{
+  "name": "celesto-ci-benchmarks",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Reproducible CPU and dependency-cache benchmarks for Celesto CI and GitHub Actions.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "benchmark:cpu": "node scripts/cpu-benchmark.mjs",
+    "cache:seed": "node scripts/seed-cache.mjs",
+    "summary": "node scripts/render-summary.mjs",
+    "test": "node --test test/*.test.mjs"
+  }
+}
