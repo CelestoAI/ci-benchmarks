@@ -8,6 +8,8 @@
 
 October 17, 2026. Both runners: **4 vCPUs, 16 GiB RAM, Ubuntu 24.04.5, Node 22.23.3**. Three cold/warm pairs per provider; all 12 jobs passed.
 
+[![Matched four-core benchmark: Celesto has higher median CPU throughput; GitHub has lower cache restore and save times.](docs/images/matched-benchmark.svg)](results/2026-10-17-matched/README.md)
+
 | Measurement | GitHub Actions | Celesto Large | Better |
 | --- | ---: | ---: | --- |
 | Single-core CPU ↑ | 199.4 million iterations/s | 233.2 million iterations/s | Celesto +16.9% |
@@ -71,6 +73,8 @@ The [matched workflow](.github/workflows/matched.yml) calls the [same benchmark 
 - **Elapsed time:** the report's instrumented time excludes checkout, Node setup, queueing, and artifact upload. Use the Actions UI for total workflow time.
 
 Want a different payload? Use the individual [GitHub](.github/workflows/github-hosted.yml) and [Celesto](.github/workflows/celesto.yml) workflows. Match their inputs; run each once cold, then again unchanged for warm. Payload options: 256, 512, 1024, or 2304 MiB.
+
+Regenerate the chart from the saved samples with `node scripts/render-chart.mjs`.
 
 Inspired by [Celesto's dependency-cache post](https://celesto.ai/blog/posts/celesto-ci-dependency-cache/). This repo uses a synthetic random-byte cache, so it does not reproduce that post's dependency workload.
 
