@@ -38,7 +38,6 @@ For more reliable results, use at least three fresh namespaces and alternate whi
 The harness uses Node 20+ and has no runtime dependencies:
 
 ```sh
-npm test
 BENCHMARK_CACHE_MIB=16 node scripts/seed-cache.mjs
 BENCHMARK_CPU_ITERATIONS=1000000 node scripts/cpu-benchmark.mjs
 ```
