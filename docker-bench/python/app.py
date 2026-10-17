@@ -6,6 +6,7 @@ import traceback
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import psycopg
 from azure.storage.blob import BlobServiceClient
+from azure.core.credentials import AzureNamedKeyCredential
 
 def exercise():
     with psycopg.connect(os.environ['DATABASE_URL']) as conn:
@@ -15,7 +16,8 @@ def exercise():
             cur.executemany('INSERT INTO benchmark_items VALUES (%s, %s)', [(i, f'item-{i}') for i in range(1000)])
             cur.execute('SELECT count(*), sum(id) FROM benchmark_items')
             assert cur.fetchone() == (1000, 499500)
-    service = BlobServiceClient(account_url='http://azurite:10000/benchmark', credential=os.environ['AZURITE_KEY'], api_version='2023-11-03')
+    credential = AzureNamedKeyCredential('benchmark', os.environ['AZURITE_KEY'])
+    service = BlobServiceClient(account_url='http://azurite:10000/benchmark', credential=credential, api_version='2023-11-03')
     container = service.get_container_client('benchmark')
     if not container.exists():
         container.create_container()
