@@ -1,0 +1,4 @@
+.benchmark-cache/
+benchmark-events.jsonl
+benchmark-summary.md
+node_modules/
