@@ -19,7 +19,7 @@ jobs:
     if: inputs.mode != 'runtime-pilot'
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 2
       matrix:
         backend: ${{ fromJSON(inputs.mode == 'native-probe' && '["native"]' || '["portable","registry"]') }}
         repetition: ${{ fromJSON(inputs.mode == 'full' && '[1,2,3,4,5]' || '[1]') }}

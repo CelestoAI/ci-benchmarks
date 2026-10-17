@@ -49,7 +49,7 @@ Evidence:
 - Provider-specific cache keys/refs. Each scenario consumes the unchanged seed on a fresh runner and exports to its own destination. No cross-provider cache reuse; no same-machine warm-cache shortcut.
 - A warm source/unchanged build must prove the **dependency-install vertex** was cached. A dependency change must prove the install executes. A cache archive's presence alone is insufficient.
 - Five repetitions in full mode; report every sample, median and observed range. Ranges are not confidence intervals. Pilot runs are not pooled into final results.
-- At most two concrete jobs per paired experiment. Seed and warm scenarios stay together to reduce eviction risk. Provider ordering alternates for seed pairs; warm scenarios pair both providers in the same scheduling window.
+- At most two concrete jobs per paired experiment, with at most two paired experiments active (four concrete jobs total). Seed and warm scenarios stay together to reduce eviction risk. Provider ordering alternates for seed pairs; warm scenarios pair both providers in the same scheduling window. This is a controlled concurrent-runner comparison, not a claim of an otherwise idle physical host.
 - Cache keys are cold, not the entire public registry/CDN: public registries may already hold shared blobs and have their own caches. Different network geography is part of the observed service performance, not pure CPU speed.
 - No ARM/QEMU comparison, persistent runner disk advantage, production deployment, private customer code, or claimed universal speedup.
 
