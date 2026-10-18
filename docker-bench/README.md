@@ -70,8 +70,9 @@ Evidence:
 
 The Celesto GitHub App must already be installed and linked to the repository.
 The registry job needs `packages: write`; the workflow grants it only to this
-benchmark. Existing workflows on `main` are unchanged: dispatch the benchmark
-branch explicitly.
+benchmark. On `main`, `celesto.yml` is the Docker dispatcher. The matched CPU
+comparison remains in `matched.yml`; the original individual Celesto CPU
+workflow is preserved as `celesto-cpu.yml`. Nothing runs automatically on push.
 
 Configure repository Actions secrets `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`
 using a valid Docker Hub personal access token with **Repo Public Read-only**
@@ -91,16 +92,16 @@ outside workload timings and remain visible in the cohort manifest.
 
 ```sh
 gh workflow run celesto.yml --repo CelestoAI/ci-benchmarks \
-  --ref codex/docker-benchmarks-20261017 \
-  -f mode=pilot -f namespace=docker-pilot-UNIQUE
+  --ref main \
+  -f mode=pilot -f namespace=docker-pilot-yourname-001
 
 # After the pilot passes, choose a NEW lowercase namespace:
 gh workflow run celesto.yml --repo CelestoAI/ci-benchmarks \
-  --ref codex/docker-benchmarks-20261017 \
-  -f mode=full -f namespace=docker-full-UNIQUE
+  --ref main \
+  -f mode=full -f namespace=docker-full-yourname-001
 
 # To collect locally: Python 3.10+, Node 20+, and authenticated gh; no pip/npm install.
-git clone --branch codex/docker-benchmarks-20261017 \
+git clone --branch main \
   https://github.com/CelestoAI/ci-benchmarks.git
 cd ci-benchmarks
 # Once the full run completes:
@@ -144,8 +145,8 @@ For quota-controlled reproduction, use a fresh namespace and one pair at a time:
 
 ```sh
 gh workflow run celesto.yml --repo CelestoAI/ci-benchmarks \
-  --ref codex/docker-benchmarks-20261017 \
-  -f mode=portable-pair -f repetition=1 -f namespace=docker-clean-UNIQUE
+  --ref main \
+  -f mode=portable-pair -f repetition=1 -f namespace=docker-clean-yourname-001
 ```
 
 Repeat with repetitions 2–5. Ensure storage headroom before each pair; retain

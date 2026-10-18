@@ -80,7 +80,7 @@ The [matched workflow](.github/workflows/matched.yml) calls the [same benchmark 
 - **Timing:** restore/save measurements include action overhead, transfer, and compression or extraction. They do not measure network speed alone.
 - **Elapsed time:** the report's instrumented time excludes checkout, Node setup, queueing, and artifact upload. Use the Actions UI for total workflow time.
 
-Want a different random-byte payload? On **main**, use the individual [GitHub](https://github.com/CelestoAI/ci-benchmarks/blob/main/.github/workflows/github-hosted.yml) and [Celesto](https://github.com/CelestoAI/ci-benchmarks/blob/main/.github/workflows/celesto.yml) CPU/cache workflows. Match their inputs; run each once cold, then again unchanged for warm. Payload options: 256, 512, 1024, or 2304 MiB. On the Docker benchmark branch, `celesto.yml` is the Docker dispatcher instead.
+Want a different random-byte payload? Use the individual [GitHub](.github/workflows/github-hosted.yml) and [Celesto](.github/workflows/celesto-cpu.yml) CPU/cache workflows. Match their inputs; run each once cold, then again unchanged for warm. Payload options: 256, 512, 1024, or 2304 MiB. `celesto.yml` is now the Docker dispatcher; the original individual Celesto CPU workflow is preserved as `celesto-cpu.yml`.
 
 Regenerate the chart from the saved samples with `node scripts/render-chart.mjs`.
 
