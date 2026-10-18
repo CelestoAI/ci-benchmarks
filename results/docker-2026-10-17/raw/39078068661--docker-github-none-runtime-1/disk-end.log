@@ -1,0 +1,23 @@
+Images space usage:
+
+REPOSITORY     TAG       IMAGE ID       CREATED          SIZE      SHARED SIZE   UNIQUE SIZE   CONTAINERS
+bench-python   run       118dd81fcfb6   50 seconds ago   267MB     149.5MB       117.9MB       0
+<none>         <none>    34386ef0cb08   11 days ago      200MB     149.5MB       50.17MB       0
+<none>         <none>    721873c34ceb   4 weeks ago      420MB     0B            419.7MB       0
+<none>         <none>    de10faf919fc   11 months ago    333MB     0B            332.7MB       1
+<none>         <none>    64232e656c05   13 months ago    1.21GB    0B            1.215GB       0
+<none>         <none>    647c63a91102   14 months ago    429MB     0B            429.1MB       0
+
+Containers space usage:
+
+CONTAINER ID   IMAGE                   COMMAND                  LOCAL VOLUMES   SIZE      CREATED              STATUS              NAMES
+b48e6e6ffa19   moby/buildkit:v0.26.2   "buildkitd --config …"   1               73.7kB    About a minute ago   Up About a minute   buildx_buildkit_builder-0b70add2-46a0-4cbd-aea3-b0bdf937977e0
+
+Local Volumes space usage:
+
+VOLUME NAME                                                           LINKS     SIZE
+buildx_buildkit_builder-0b70add2-46a0-4cbd-aea3-b0bdf937977e0_state   1         304.7MB
+
+Build cache usage: 0B
+
+CACHE ID   CACHE TYPE   SIZE      CREATED   LAST USED   USAGE     SHARED

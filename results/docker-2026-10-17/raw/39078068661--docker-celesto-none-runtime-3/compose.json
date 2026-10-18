@@ -1,0 +1,55 @@
+{
+  "services": {
+    "postgres": {
+      "image": "postgres:16-alpine@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+      "environment": {
+        "POSTGRES_PASSWORD": "benchmark-only"
+      },
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "pg_isready -U postgres"
+        ],
+        "interval": "1s",
+        "timeout": "3s",
+        "retries": 60
+      }
+    },
+    "azurite": {
+      "image": "mcr.microsoft.com/azure-storage/azurite:3.35.0@sha256:647c63a91102a9d8e8000aab803436e1fc85fbb285e7ce830a82ee5d6661cf37",
+      "environment": {
+        "AZURITE_ACCOUNTS": "benchmark:YmVuY2htYXJrLXNtb2tlLWtleS1ub3QtYS1zZWNyZXQ="
+      },
+      "command": "azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --skipApiVersionCheck",
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://127.0.0.1:10000/',r=>process.exit(r.statusCode===400?0:1)).on('error',()=>process.exit(1))"
+        ],
+        "interval": "1s",
+        "timeout": "3s",
+        "retries": 60
+      }
+    },
+    "api": {
+      "image": "bench-python:run",
+      "ports": [
+        "8080:8080"
+      ],
+      "environment": {
+        "DATABASE_URL": "postgresql://postgres:benchmark-only@postgres/postgres",
+        "AZURITE_KEY": "YmVuY2htYXJrLXNtb2tlLWtleS1ub3QtYS1zZWNyZXQ="
+      },
+      "depends_on": {
+        "postgres": {
+          "condition": "service_healthy"
+        },
+        "azurite": {
+          "condition": "service_healthy"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,385 @@
+{
+  "authentication": "Docker Hub login on both providers",
+  "authentication_verification": 39078014200,
+  "authentication_failures": [
+    39076674071,
+    39077707370,
+    39077894835
+  ],
+  "diagnostic_runs": [
+    39073691950,
+    39075713994
+  ],
+  "namespace": "docker-auth-20261017c",
+  "runs": [
+    {
+      "databaseId": 39078068661,
+      "event": "workflow_dispatch",
+      "headSha": "227b06003d5816b6787fc064b46a22dad1bbe20d",
+      "mode": "continuation",
+      "repetition": 1,
+      "conclusion": "success"
+    },
+    {
+      "databaseId": 39078729403,
+      "event": "workflow_dispatch",
+      "headSha": "63ddbf58ba16305137f02013e0fcc27426171079",
+      "mode": "portable-pair",
+      "repetition": 1,
+      "conclusion": "success"
+    },
+    {
+      "databaseId": 39078738654,
+      "event": "workflow_dispatch",
+      "headSha": "63ddbf58ba16305137f02013e0fcc27426171079",
+      "mode": "registry-pair",
+      "repetition": 1,
+      "conclusion": "success"
+    },
+    {
+      "databaseId": 39079182412,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "portable-pair",
+      "repetition": 2,
+      "conclusion": "success"
+    },
+    {
+      "databaseId": 39079233429,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "registry-pair",
+      "repetition": 2,
+      "conclusion": "success"
+    },
+    {
+      "databaseId": 39081924554,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "portable-pair",
+      "repetition": 3,
+      "conclusion": "success"
+    },
+    {
+      "databaseId": 39081977281,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "registry-pair",
+      "repetition": 3,
+      "conclusion": "success"
+    },
+    {
+      "databaseId": 39082292982,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "portable-pair",
+      "repetition": 4,
+      "conclusion": "success"
+    },
+    {
+      "databaseId": 39082373652,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "registry-pair",
+      "repetition": 4,
+      "conclusion": "success"
+    },
+    {
+      "databaseId": 39082713916,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "portable-pair",
+      "repetition": 5,
+      "conclusion": "success"
+    },
+    {
+      "databaseId": 39082805485,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "registry-pair",
+      "repetition": 5,
+      "conclusion": "success"
+    },
+    {
+      "databaseId": 39083202858,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "image-full",
+      "repetition": 1,
+      "conclusion": "success"
+    }
+  ],
+  "cleanups": [
+    {
+      "repetition": 1,
+      "entries": [
+        {
+          "size_bytes": 181447040,
+          "state": "committed"
+        },
+        {
+          "size_bytes": 181559157,
+          "state": "committed"
+        },
+        {
+          "size_bytes": 181545211,
+          "state": "committed"
+        },
+        {
+          "size_bytes": 181559184,
+          "state": "committed"
+        }
+      ]
+    },
+    {
+      "repetition": 2,
+      "entries": [
+        {
+          "size_bytes": 181413537,
+          "state": "committed"
+        },
+        {
+          "size_bytes": 181553011,
+          "state": "committed"
+        },
+        {
+          "size_bytes": 181571983,
+          "state": "committed"
+        },
+        {
+          "size_bytes": 181552905,
+          "state": "committed"
+        }
+      ]
+    },
+    {
+      "repetition": 3,
+      "entries": [
+        {
+          "size_bytes": 181553370,
+          "state": "committed"
+        },
+        {
+          "size_bytes": 181553332,
+          "state": "committed"
+        },
+        {
+          "size_bytes": 181547402,
+          "state": "committed"
+        },
+        {
+          "size_bytes": 181467326,
+          "state": "committed"
+        }
+      ]
+    },
+    {
+      "repetition": 4,
+      "entries": [
+        {
+          "size_bytes": 181491810,
+          "state": "committed"
+        },
+        {
+          "size_bytes": 181491847,
+          "state": "committed"
+        },
+        {
+          "size_bytes": 181490340,
+          "state": "committed"
+        },
+        {
+          "size_bytes": 181433999,
+          "state": "committed"
+        }
+      ]
+    },
+    {
+      "repetition": 5,
+      "entries": [
+        {
+          "size_bytes": 181516372,
+          "state": "committed"
+        },
+        {
+          "size_bytes": 181516283,
+          "state": "committed"
+        },
+        {
+          "size_bytes": 181526404,
+          "state": "committed"
+        },
+        {
+          "size_bytes": 181481220,
+          "state": "committed"
+        }
+      ]
+    }
+  ],
+  "quota_probes": [
+    {
+      "databaseId": 39079061333,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "quota-probe",
+      "repetition": 1,
+      "conclusion": "success",
+      "quota": {
+        "http_status": 200,
+        "limit": "200;w=3600",
+        "remaining": "93;w=3600"
+      }
+    },
+    {
+      "databaseId": 39079138866,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "quota-probe",
+      "repetition": 1,
+      "conclusion": "success",
+      "quota": {
+        "http_status": 200,
+        "limit": "200;w=3600",
+        "remaining": "93;w=3600"
+      }
+    },
+    {
+      "databaseId": 39079189792,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "quota-probe",
+      "repetition": 1,
+      "conclusion": "success",
+      "quota": {
+        "http_status": 200,
+        "limit": "200;w=3600",
+        "remaining": "93;w=3600"
+      }
+    },
+    {
+      "databaseId": 39079594334,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "quota-probe",
+      "repetition": 1,
+      "conclusion": "success",
+      "quota": {
+        "http_status": 200,
+        "limit": "200;w=3600",
+        "remaining": "61;w=3600"
+      }
+    },
+    {
+      "databaseId": 39079765652,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "quota-probe",
+      "repetition": 1
+    },
+    {
+      "databaseId": 39081881493,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "quota-probe",
+      "repetition": 1,
+      "conclusion": "success",
+      "quota": {
+        "http_status": 200,
+        "limit": "200;w=3600",
+        "remaining": "200;w=3600"
+      }
+    },
+    {
+      "databaseId": 39081933369,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "quota-probe",
+      "repetition": 1,
+      "conclusion": "success",
+      "quota": {
+        "http_status": 200,
+        "limit": "200;w=3600",
+        "remaining": "200;w=3600"
+      }
+    },
+    {
+      "databaseId": 39082251272,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "quota-probe",
+      "repetition": 1,
+      "conclusion": "success",
+      "quota": {
+        "http_status": 200,
+        "limit": "200;w=3600",
+        "remaining": "170;w=3600"
+      }
+    },
+    {
+      "databaseId": 39082332665,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "quota-probe",
+      "repetition": 1,
+      "conclusion": "success",
+      "quota": {
+        "http_status": 200,
+        "limit": "200;w=3600",
+        "remaining": "167;w=3600"
+      }
+    },
+    {
+      "databaseId": 39082670169,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "quota-probe",
+      "repetition": 1,
+      "conclusion": "success",
+      "quota": {
+        "http_status": 200,
+        "limit": "200;w=3600",
+        "remaining": "136;w=3600"
+      }
+    },
+    {
+      "databaseId": 39082753891,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "quota-probe",
+      "repetition": 1,
+      "conclusion": "success",
+      "quota": {
+        "http_status": 200,
+        "limit": "200;w=3600",
+        "remaining": "133;w=3600"
+      }
+    },
+    {
+      "databaseId": 39083155245,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "quota-probe",
+      "repetition": 1,
+      "conclusion": "success",
+      "quota": {
+        "http_status": 200,
+        "limit": "200;w=3600",
+        "remaining": "104;w=3600"
+      }
+    }
+  ],
+  "quota_waits": [
+    {
+      "at": "2026-10-17T23:27:32.659698+00:00",
+      "remaining": 93,
+      "required": 108,
+      "probe_run": 39079061333
+    },
+    {
+      "at": "2026-10-17T23:35:50.989479+00:00",
+      "remaining": 61,
+      "required": 76,
+      "probe_run": 39079594334
+    }
+  ]
+}

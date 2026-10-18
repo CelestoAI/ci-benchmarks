@@ -1,0 +1,38 @@
+   Compiling crossbeam-utils v0.8.23
+   Compiling proc-macro2 v1.0.107
+   Compiling crossbeam-epoch v0.9.21
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling memchr v2.8.3
+   Compiling serde_core v1.0.229
+   Compiling utf8parse v0.2.2
+   Compiling crossbeam-deque v0.8.8
+   Compiling anstyle-parse v0.2.7
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling rayon-core v1.13.0
+   Compiling anstyle v1.0.14
+   Compiling serde v1.0.229
+   Compiling colorchoice v1.0.5
+   Compiling anstyle-query v1.1.5
+   Compiling anstream v0.6.21
+   Compiling syn v2.0.119
+   Compiling aho-corasick v1.1.5
+   Compiling strsim v0.11.1
+   Compiling serde_json v1.0.140
+   Compiling clap_lex v0.7.7
+   Compiling regex-syntax v0.8.11
+   Compiling heck v0.5.0
+   Compiling clap_builder v4.5.40
+   Compiling clap_derive v4.5.40
+   Compiling regex-automata v0.4.18
+   Compiling itoa v1.0.18
+   Compiling either v1.19.0
+   Compiling ryu v1.0.23
+   Compiling rayon v1.10.0
+   Compiling regex v1.11.1
+   Compiling clap v4.5.40
+   Compiling ci-compile-fixture v0.1.0 (/app)
+    Finished `release` profile [optimized] target(s) in 13.95s
+COMPILE_TIME real=13.998 user=51.350 sys=2.443
+893550592
+{"matched":1000}

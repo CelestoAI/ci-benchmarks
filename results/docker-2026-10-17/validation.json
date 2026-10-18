@@ -1,0 +1,149 @@
+{
+  "run": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39078068661",
+  "source_commit": "227b06003d5816b6787fc064b46a22dad1bbe20d",
+  "concrete_jobs": 120,
+  "cohorts": [
+    {
+      "databaseId": 39078068661,
+      "event": "workflow_dispatch",
+      "headSha": "227b06003d5816b6787fc064b46a22dad1bbe20d",
+      "mode": "continuation",
+      "repetition": 1,
+      "conclusion": "success",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39078068661",
+      "whole_run_conclusion": "success",
+      "selected_jobs": 20
+    },
+    {
+      "databaseId": 39078729403,
+      "event": "workflow_dispatch",
+      "headSha": "63ddbf58ba16305137f02013e0fcc27426171079",
+      "mode": "portable-pair",
+      "repetition": 1,
+      "conclusion": "success",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39078729403",
+      "whole_run_conclusion": "success",
+      "selected_jobs": 8
+    },
+    {
+      "databaseId": 39078738654,
+      "event": "workflow_dispatch",
+      "headSha": "63ddbf58ba16305137f02013e0fcc27426171079",
+      "mode": "registry-pair",
+      "repetition": 1,
+      "conclusion": "success",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39078738654",
+      "whole_run_conclusion": "success",
+      "selected_jobs": 8
+    },
+    {
+      "databaseId": 39079182412,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "portable-pair",
+      "repetition": 2,
+      "conclusion": "success",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39079182412",
+      "whole_run_conclusion": "success",
+      "selected_jobs": 8
+    },
+    {
+      "databaseId": 39079233429,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "registry-pair",
+      "repetition": 2,
+      "conclusion": "success",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39079233429",
+      "whole_run_conclusion": "success",
+      "selected_jobs": 8
+    },
+    {
+      "databaseId": 39081924554,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "portable-pair",
+      "repetition": 3,
+      "conclusion": "success",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39081924554",
+      "whole_run_conclusion": "success",
+      "selected_jobs": 8
+    },
+    {
+      "databaseId": 39081977281,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "registry-pair",
+      "repetition": 3,
+      "conclusion": "success",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39081977281",
+      "whole_run_conclusion": "success",
+      "selected_jobs": 8
+    },
+    {
+      "databaseId": 39082292982,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "portable-pair",
+      "repetition": 4,
+      "conclusion": "success",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39082292982",
+      "whole_run_conclusion": "success",
+      "selected_jobs": 8
+    },
+    {
+      "databaseId": 39082373652,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "registry-pair",
+      "repetition": 4,
+      "conclusion": "success",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39082373652",
+      "whole_run_conclusion": "success",
+      "selected_jobs": 8
+    },
+    {
+      "databaseId": 39082713916,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "portable-pair",
+      "repetition": 5,
+      "conclusion": "success",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39082713916",
+      "whole_run_conclusion": "success",
+      "selected_jobs": 8
+    },
+    {
+      "databaseId": 39082805485,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "registry-pair",
+      "repetition": 5,
+      "conclusion": "success",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39082805485",
+      "whole_run_conclusion": "success",
+      "selected_jobs": 8
+    },
+    {
+      "databaseId": 39083202858,
+      "event": "workflow_dispatch",
+      "headSha": "dae4b326b4c660e17b2ce8602a0b6e773ca0c469",
+      "mode": "image-full",
+      "repetition": 1,
+      "conclusion": "success",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39083202858",
+      "whole_run_conclusion": "success",
+      "selected_jobs": 20
+    }
+  ],
+  "repetitions_per_provider_scenario": 5,
+  "verified_log_hashes": 1100,
+  "expected_dependency_layer_hits": 80,
+  "observed_dependency_layer_hits": 80,
+  "expected_dependency_install_executions": 100,
+  "observed_dependency_install_executions": 100,
+  "expected_exact_archive_hits": 40,
+  "observed_exact_archive_hits": 40,
+  "independently_recomputed_summary_rows": 106,
+  "result": "passed"
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "artifact": "raw/docker-celesto-portable-dependency-4/events.jsonl",
+    "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39073691950/job/117518359354",
+    "conclusion": "success",
+    "reason": "Cache save warned despite a green Actions job; excluded from successful measurements"
+  },
+  {
+    "artifact": "raw/docker-celesto-portable-dependency-5/events.jsonl",
+    "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39073691950/job/117518975723",
+    "conclusion": "failure",
+    "reason": "missing host fingerprint; workload did not start"
+  },
+  {
+    "artifact": "raw/docker-celesto-portable-seed-5/events.jsonl",
+    "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39073691950/job/117518448096",
+    "conclusion": "success",
+    "reason": "Cache save warned despite a green Actions job; excluded from successful measurements"
+  },
+  {
+    "artifact": "raw/docker-celesto-portable-source-5/events.jsonl",
+    "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39073691950/job/117518838195",
+    "conclusion": "failure",
+    "reason": "missing host fingerprint; workload did not start"
+  },
+  {
+    "artifact": "raw/docker-celesto-portable-unchanged-5/events.jsonl",
+    "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39073691950/job/117518697084",
+    "conclusion": "failure",
+    "reason": "missing host fingerprint; workload did not start"
+  }
+]

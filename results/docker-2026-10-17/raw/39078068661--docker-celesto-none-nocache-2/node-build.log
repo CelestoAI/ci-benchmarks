@@ -1,0 +1,101 @@
+#0 building with "builder-cb96c182-16c0-4cd9-a050-9c53b56e170e" instance using docker-container driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 306B done
+#1 WARN: InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 2)
+#1 WARN: InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 9)
+#1 DONE 0.1s
+
+#2 [auth] library/node:pull token for registry-1.docker.io
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#3 DONE 0.6s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [build 1/7] FROM docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#5 resolve docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392 0.0s done
+#5 ...
+
+#6 [internal] load build context
+#6 transferring context: 142.41kB 0.1s done
+#6 DONE 0.2s
+
+#5 [build 1/7] FROM docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#5 sha256:a8de9fa052209313d8e45435a8486e29b20eebaa820e2e7f63a7c3c94b4fa567 448B / 448B 0.0s done
+#5 sha256:2cfab517365cfc6b4bd1f8c4cb01754884ef75bc38758b3c41e291c696f019f5 1.71MB / 1.71MB 0.1s done
+#5 sha256:f0400f4b55b0ad346bf6167a1b64a258e4d73db608c457798ce35e4ffeebfaaf 3.31kB / 3.31kB 0.0s done
+#5 sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 25.17MB / 49.84MB 0.2s
+#5 sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 49.84MB / 49.84MB 0.3s
+#5 sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 1.05MB / 28.25MB 0.2s
+#5 sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 49.84MB / 49.84MB 0.3s done
+#5 sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 28.25MB / 28.25MB 0.4s done
+#5 extracting sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39
+#5 extracting sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 1.1s done
+#5 DONE 1.7s
+
+#5 [build 1/7] FROM docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#5 extracting sha256:f0400f4b55b0ad346bf6167a1b64a258e4d73db608c457798ce35e4ffeebfaaf 0.0s done
+#5 extracting sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856
+#5 extracting sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 1.4s done
+#5 extracting sha256:2cfab517365cfc6b4bd1f8c4cb01754884ef75bc38758b3c41e291c696f019f5
+#5 extracting sha256:2cfab517365cfc6b4bd1f8c4cb01754884ef75bc38758b3c41e291c696f019f5 0.3s done
+#5 DONE 3.4s
+
+#5 [build 1/7] FROM docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#5 extracting sha256:a8de9fa052209313d8e45435a8486e29b20eebaa820e2e7f63a7c3c94b4fa567 0.0s done
+#5 DONE 3.5s
+
+#7 [build 2/7] WORKDIR /app
+#7 DONE 0.4s
+
+#8 [build 3/7] COPY package.json package-lock.json ./
+#8 DONE 0.1s
+
+#9 [build 4/7] RUN npm ci --no-audit --no-fund
+#9 1.598 
+#9 1.598 added 4 packages in 1s
+#9 1.599 npm notice
+#9 1.599 npm notice New major version of npm available! 10.9.9 -> 12.2.0
+#9 1.599 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+#9 1.599 npm notice To update run: npm install -g npm@12.2.0
+#9 1.599 npm notice
+#9 DONE 1.7s
+
+#10 [build 5/7] COPY tsconfig.json ./
+#10 DONE 0.0s
+
+#11 [build 6/7] COPY src ./src
+#11 DONE 0.1s
+
+#12 [build 7/7] RUN npm run build
+#12 0.176 
+#12 0.176 > ci-docker-node-fixture@1.0.0 build
+#12 0.176 > tsc && esbuild dist/main.js --bundle --platform=node --outfile=bundle.js
+#12 0.176 
+#12 1.775 
+#12 1.775   bundle.js  247.5kb
+#12 1.775 
+#12 1.775 ⚡ Done in 40ms
+#12 DONE 1.8s
+
+#13 [stage-1 3/3] COPY --from=build /app/bundle.js ./bundle.js
+#13 DONE 0.0s
+
+#14 exporting to oci image format
+#14 exporting layers 0.1s done
+#14 exporting manifest sha256:0056d78091d0051077a3a15d534378d3313a8c5cba6de0d84b619682a703407b 0.0s done
+#14 exporting config sha256:4bc7b62c063de4df93b51004fe37ad51b855fb6e489d4726697003a289b73810 0.0s done
+#14 sending tarball
+#14 sending tarball 3.3s done
+#14 DONE 3.4s
+
+#15 importing to docker
+#15 DONE 0.0s
+
+ [33m2 warnings found (use docker --debug to expand):
+[0m - InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 9)
+ - InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 2)

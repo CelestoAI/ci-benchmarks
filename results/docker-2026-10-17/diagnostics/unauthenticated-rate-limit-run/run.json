@@ -1,0 +1,2203 @@
+{
+  "conclusion": "failure",
+  "createdAt": "2026-10-17T22:35:46Z",
+  "headSha": "ea2abbecb36698ece36945babaa44720d8e461b3",
+  "jobs": [
+    {
+      "databaseId": 117522322089,
+      "name": "no-cache (2, github) / github-none-nocache-2",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39075713994/job/117522322089",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T22:35:51Z",
+      "completedAt": "2026-10-17T22:36:45Z",
+      "runnerName": "GitHub Actions 1000003764",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-17T22:35:52Z",
+          "completed_at": "2026-10-17T22:35:55Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-17T22:35:55Z",
+          "completed_at": "2026-10-17T22:35:56Z"
+        },
+        {
+          "name": "Match Docker Engine on GitHub to baked Celesto Engine",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-17T22:35:56Z",
+          "completed_at": "2026-10-17T22:36:06Z"
+        },
+        {
+          "name": "Match Compose version",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-17T22:36:06Z",
+          "completed_at": "2026-10-17T22:36:07Z"
+        },
+        {
+          "name": "Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-17T22:36:07Z",
+          "completed_at": "2026-10-17T22:36:13Z"
+        },
+        {
+          "name": "Expose runtime cache environment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-17T22:36:13Z",
+          "completed_at": "2026-10-17T22:36:13Z"
+        },
+        {
+          "name": "Log in to shared registry",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-10-17T22:36:13Z",
+          "completed_at": "2026-10-17T22:36:13Z"
+        },
+        {
+          "name": "Build cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-17T22:36:13Z",
+          "completed_at": "2026-10-17T22:36:13Z"
+        },
+        {
+          "name": "Restore portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-17T22:36:13Z",
+          "completed_at": "2026-10-17T22:36:13Z"
+        },
+        {
+          "name": "Build cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-17T22:36:13Z",
+          "completed_at": "2026-10-17T22:36:13Z"
+        },
+        {
+          "name": "Run Docker workloads with correctness assertions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-17T22:36:13Z",
+          "completed_at": "2026-10-17T22:36:35Z"
+        },
+        {
+          "name": "Build cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12,
+          "started_at": "2026-10-17T22:36:35Z",
+          "completed_at": "2026-10-17T22:36:35Z"
+        },
+        {
+          "name": "Save portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13,
+          "started_at": "2026-10-17T22:36:35Z",
+          "completed_at": "2026-10-17T22:36:35Z"
+        },
+        {
+          "name": "Build cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14,
+          "started_at": "2026-10-17T22:36:35Z",
+          "completed_at": "2026-10-17T22:36:35Z"
+        },
+        {
+          "name": "Cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-10-17T22:36:35Z",
+          "completed_at": "2026-10-17T22:36:35Z"
+        },
+        {
+          "name": "Restore image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16,
+          "started_at": "2026-10-17T22:36:35Z",
+          "completed_at": "2026-10-17T22:36:35Z"
+        },
+        {
+          "name": "Cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17,
+          "started_at": "2026-10-17T22:36:35Z",
+          "completed_at": "2026-10-17T22:36:35Z"
+        },
+        {
+          "name": "Measure image tar creation or loading",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 18,
+          "started_at": "2026-10-17T22:36:35Z",
+          "completed_at": "2026-10-17T22:36:35Z"
+        },
+        {
+          "name": "Cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 19,
+          "started_at": "2026-10-17T22:36:35Z",
+          "completed_at": "2026-10-17T22:36:35Z"
+        },
+        {
+          "name": "Save image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 20,
+          "started_at": "2026-10-17T22:36:35Z",
+          "completed_at": "2026-10-17T22:36:35Z"
+        },
+        {
+          "name": "Cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 21,
+          "started_at": "2026-10-17T22:36:35Z",
+          "completed_at": "2026-10-17T22:36:35Z"
+        },
+        {
+          "name": "Upload raw measurements and logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-17T22:36:35Z",
+          "completed_at": "2026-10-17T22:36:36Z"
+        },
+        {
+          "name": "Post Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 42,
+          "started_at": "2026-10-17T22:36:36Z",
+          "completed_at": "2026-10-17T22:36:38Z"
+        },
+        {
+          "name": "Post Match Docker Engine on GitHub to baked Celesto Engine",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-10-17T22:36:38Z",
+          "completed_at": "2026-10-17T22:36:43Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 44,
+          "started_at": "2026-10-17T22:36:43Z",
+          "completed_at": "2026-10-17T22:36:43Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 45,
+          "started_at": "2026-10-17T22:36:43Z",
+          "completed_at": "2026-10-17T22:36:43Z"
+        }
+      ]
+    },
+    {
+      "databaseId": 117522322162,
+      "name": "no-cache (2, celesto) / celesto-none-nocache-2",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39075713994/job/117522322162",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T22:36:20Z",
+      "completedAt": "2026-10-17T22:36:59Z",
+      "runnerName": "celesto-117522322162",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-17T22:36:20Z",
+          "completed_at": "2026-10-17T22:36:22Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-17T22:36:22Z",
+          "completed_at": "2026-10-17T22:36:23Z"
+        },
+        {
+          "name": "Match Docker Engine on GitHub to baked Celesto Engine",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 3,
+          "started_at": "2026-10-17T22:36:23Z",
+          "completed_at": "2026-10-17T22:36:23Z"
+        },
+        {
+          "name": "Match Compose version",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-17T22:36:23Z",
+          "completed_at": "2026-10-17T22:36:23Z"
+        },
+        {
+          "name": "Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-17T22:36:23Z",
+          "completed_at": "2026-10-17T22:36:29Z"
+        },
+        {
+          "name": "Expose runtime cache environment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-17T22:36:29Z",
+          "completed_at": "2026-10-17T22:36:29Z"
+        },
+        {
+          "name": "Log in to shared registry",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-10-17T22:36:29Z",
+          "completed_at": "2026-10-17T22:36:29Z"
+        },
+        {
+          "name": "Build cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-17T22:36:29Z",
+          "completed_at": "2026-10-17T22:36:29Z"
+        },
+        {
+          "name": "Restore portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-17T22:36:29Z",
+          "completed_at": "2026-10-17T22:36:29Z"
+        },
+        {
+          "name": "Build cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-17T22:36:29Z",
+          "completed_at": "2026-10-17T22:36:29Z"
+        },
+        {
+          "name": "Run Docker workloads with correctness assertions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-17T22:36:29Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Build cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Save portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Build cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Restore image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Measure image tar creation or loading",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 18,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 19,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Save image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 20,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 21,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Upload raw measurements and logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:56Z"
+        },
+        {
+          "name": "Post Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-10-17T22:36:56Z",
+          "completed_at": "2026-10-17T22:36:57Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 44,
+          "started_at": "2026-10-17T22:36:57Z",
+          "completed_at": "2026-10-17T22:36:57Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 45,
+          "started_at": "2026-10-17T22:36:57Z",
+          "completed_at": "2026-10-17T22:36:57Z"
+        }
+      ]
+    },
+    {
+      "databaseId": 117522322206,
+      "name": "no-cache (1, github) / github-none-nocache-1",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39075713994/job/117522322206",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T22:35:50Z",
+      "completedAt": "2026-10-17T22:36:42Z",
+      "runnerName": "GitHub Actions 1000003763",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-17T22:35:51Z",
+          "completed_at": "2026-10-17T22:35:55Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-17T22:35:55Z",
+          "completed_at": "2026-10-17T22:35:56Z"
+        },
+        {
+          "name": "Match Docker Engine on GitHub to baked Celesto Engine",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-17T22:35:56Z",
+          "completed_at": "2026-10-17T22:36:07Z"
+        },
+        {
+          "name": "Match Compose version",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-17T22:36:07Z",
+          "completed_at": "2026-10-17T22:36:07Z"
+        },
+        {
+          "name": "Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-17T22:36:07Z",
+          "completed_at": "2026-10-17T22:36:13Z"
+        },
+        {
+          "name": "Expose runtime cache environment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-17T22:36:13Z",
+          "completed_at": "2026-10-17T22:36:13Z"
+        },
+        {
+          "name": "Log in to shared registry",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-10-17T22:36:13Z",
+          "completed_at": "2026-10-17T22:36:13Z"
+        },
+        {
+          "name": "Build cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-17T22:36:13Z",
+          "completed_at": "2026-10-17T22:36:13Z"
+        },
+        {
+          "name": "Restore portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-17T22:36:13Z",
+          "completed_at": "2026-10-17T22:36:13Z"
+        },
+        {
+          "name": "Build cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-17T22:36:13Z",
+          "completed_at": "2026-10-17T22:36:13Z"
+        },
+        {
+          "name": "Run Docker workloads with correctness assertions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-17T22:36:13Z",
+          "completed_at": "2026-10-17T22:36:32Z"
+        },
+        {
+          "name": "Build cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12,
+          "started_at": "2026-10-17T22:36:32Z",
+          "completed_at": "2026-10-17T22:36:32Z"
+        },
+        {
+          "name": "Save portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13,
+          "started_at": "2026-10-17T22:36:32Z",
+          "completed_at": "2026-10-17T22:36:32Z"
+        },
+        {
+          "name": "Build cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14,
+          "started_at": "2026-10-17T22:36:32Z",
+          "completed_at": "2026-10-17T22:36:32Z"
+        },
+        {
+          "name": "Cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-10-17T22:36:32Z",
+          "completed_at": "2026-10-17T22:36:32Z"
+        },
+        {
+          "name": "Restore image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16,
+          "started_at": "2026-10-17T22:36:32Z",
+          "completed_at": "2026-10-17T22:36:32Z"
+        },
+        {
+          "name": "Cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17,
+          "started_at": "2026-10-17T22:36:32Z",
+          "completed_at": "2026-10-17T22:36:32Z"
+        },
+        {
+          "name": "Measure image tar creation or loading",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 18,
+          "started_at": "2026-10-17T22:36:32Z",
+          "completed_at": "2026-10-17T22:36:32Z"
+        },
+        {
+          "name": "Cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 19,
+          "started_at": "2026-10-17T22:36:32Z",
+          "completed_at": "2026-10-17T22:36:32Z"
+        },
+        {
+          "name": "Save image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 20,
+          "started_at": "2026-10-17T22:36:32Z",
+          "completed_at": "2026-10-17T22:36:32Z"
+        },
+        {
+          "name": "Cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 21,
+          "started_at": "2026-10-17T22:36:32Z",
+          "completed_at": "2026-10-17T22:36:32Z"
+        },
+        {
+          "name": "Upload raw measurements and logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-17T22:36:32Z",
+          "completed_at": "2026-10-17T22:36:33Z"
+        },
+        {
+          "name": "Post Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 42,
+          "started_at": "2026-10-17T22:36:33Z",
+          "completed_at": "2026-10-17T22:36:35Z"
+        },
+        {
+          "name": "Post Match Docker Engine on GitHub to baked Celesto Engine",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-10-17T22:36:35Z",
+          "completed_at": "2026-10-17T22:36:40Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 44,
+          "started_at": "2026-10-17T22:36:40Z",
+          "completed_at": "2026-10-17T22:36:40Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 45,
+          "started_at": "2026-10-17T22:36:40Z",
+          "completed_at": "2026-10-17T22:36:40Z"
+        }
+      ]
+    },
+    {
+      "databaseId": 117522322299,
+      "name": "no-cache (1, celesto) / celesto-none-nocache-1",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39075713994/job/117522322299",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T22:36:20Z",
+      "completedAt": "2026-10-17T22:36:59Z",
+      "runnerName": "celesto-117522322299",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-17T22:36:20Z",
+          "completed_at": "2026-10-17T22:36:22Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-17T22:36:22Z",
+          "completed_at": "2026-10-17T22:36:23Z"
+        },
+        {
+          "name": "Match Docker Engine on GitHub to baked Celesto Engine",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 3,
+          "started_at": "2026-10-17T22:36:23Z",
+          "completed_at": "2026-10-17T22:36:23Z"
+        },
+        {
+          "name": "Match Compose version",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-17T22:36:23Z",
+          "completed_at": "2026-10-17T22:36:23Z"
+        },
+        {
+          "name": "Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-17T22:36:23Z",
+          "completed_at": "2026-10-17T22:36:28Z"
+        },
+        {
+          "name": "Expose runtime cache environment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-17T22:36:28Z",
+          "completed_at": "2026-10-17T22:36:28Z"
+        },
+        {
+          "name": "Log in to shared registry",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-10-17T22:36:28Z",
+          "completed_at": "2026-10-17T22:36:28Z"
+        },
+        {
+          "name": "Build cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-17T22:36:28Z",
+          "completed_at": "2026-10-17T22:36:28Z"
+        },
+        {
+          "name": "Restore portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-17T22:36:28Z",
+          "completed_at": "2026-10-17T22:36:28Z"
+        },
+        {
+          "name": "Build cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-17T22:36:28Z",
+          "completed_at": "2026-10-17T22:36:28Z"
+        },
+        {
+          "name": "Run Docker workloads with correctness assertions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-17T22:36:28Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Build cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Save portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Build cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Restore image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Measure image tar creation or loading",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 18,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 19,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Save image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 20,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 21,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Upload raw measurements and logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:55Z"
+        },
+        {
+          "name": "Post Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-10-17T22:36:55Z",
+          "completed_at": "2026-10-17T22:36:57Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 44,
+          "started_at": "2026-10-17T22:36:57Z",
+          "completed_at": "2026-10-17T22:36:57Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 45,
+          "started_at": "2026-10-17T22:36:57Z",
+          "completed_at": "2026-10-17T22:36:57Z"
+        }
+      ]
+    },
+    {
+      "databaseId": 117522322947,
+      "name": "builds",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39075713994/job/117522322947",
+      "status": "completed",
+      "conclusion": "skipped",
+      "startedAt": "2026-10-17T22:35:48Z",
+      "completedAt": "2026-10-17T22:35:48Z",
+      "runnerName": null,
+      "steps": []
+    },
+    {
+      "databaseId": 117522505122,
+      "name": "no-cache (3, github) / github-none-nocache-3",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39075713994/job/117522505122",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T22:36:45Z",
+      "completedAt": "2026-10-17T22:37:48Z",
+      "runnerName": "GitHub Actions 1000003765",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-17T22:36:46Z",
+          "completed_at": "2026-10-17T22:36:51Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-17T22:36:51Z",
+          "completed_at": "2026-10-17T22:36:52Z"
+        },
+        {
+          "name": "Match Docker Engine on GitHub to baked Celesto Engine",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-17T22:36:52Z",
+          "completed_at": "2026-10-17T22:37:03Z"
+        },
+        {
+          "name": "Match Compose version",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-17T22:37:03Z",
+          "completed_at": "2026-10-17T22:37:04Z"
+        },
+        {
+          "name": "Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-17T22:37:04Z",
+          "completed_at": "2026-10-17T22:37:13Z"
+        },
+        {
+          "name": "Expose runtime cache environment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-17T22:37:13Z",
+          "completed_at": "2026-10-17T22:37:13Z"
+        },
+        {
+          "name": "Log in to shared registry",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-10-17T22:37:13Z",
+          "completed_at": "2026-10-17T22:37:13Z"
+        },
+        {
+          "name": "Build cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-17T22:37:13Z",
+          "completed_at": "2026-10-17T22:37:13Z"
+        },
+        {
+          "name": "Restore portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-17T22:37:13Z",
+          "completed_at": "2026-10-17T22:37:13Z"
+        },
+        {
+          "name": "Build cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-17T22:37:13Z",
+          "completed_at": "2026-10-17T22:37:13Z"
+        },
+        {
+          "name": "Run Docker workloads with correctness assertions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-17T22:37:13Z",
+          "completed_at": "2026-10-17T22:37:36Z"
+        },
+        {
+          "name": "Build cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12,
+          "started_at": "2026-10-17T22:37:36Z",
+          "completed_at": "2026-10-17T22:37:36Z"
+        },
+        {
+          "name": "Save portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13,
+          "started_at": "2026-10-17T22:37:36Z",
+          "completed_at": "2026-10-17T22:37:36Z"
+        },
+        {
+          "name": "Build cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14,
+          "started_at": "2026-10-17T22:37:36Z",
+          "completed_at": "2026-10-17T22:37:36Z"
+        },
+        {
+          "name": "Cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-10-17T22:37:36Z",
+          "completed_at": "2026-10-17T22:37:36Z"
+        },
+        {
+          "name": "Restore image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16,
+          "started_at": "2026-10-17T22:37:36Z",
+          "completed_at": "2026-10-17T22:37:36Z"
+        },
+        {
+          "name": "Cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17,
+          "started_at": "2026-10-17T22:37:36Z",
+          "completed_at": "2026-10-17T22:37:36Z"
+        },
+        {
+          "name": "Measure image tar creation or loading",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 18,
+          "started_at": "2026-10-17T22:37:36Z",
+          "completed_at": "2026-10-17T22:37:36Z"
+        },
+        {
+          "name": "Cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 19,
+          "started_at": "2026-10-17T22:37:36Z",
+          "completed_at": "2026-10-17T22:37:36Z"
+        },
+        {
+          "name": "Save image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 20,
+          "started_at": "2026-10-17T22:37:36Z",
+          "completed_at": "2026-10-17T22:37:36Z"
+        },
+        {
+          "name": "Cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 21,
+          "started_at": "2026-10-17T22:37:36Z",
+          "completed_at": "2026-10-17T22:37:36Z"
+        },
+        {
+          "name": "Upload raw measurements and logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-17T22:37:36Z",
+          "completed_at": "2026-10-17T22:37:38Z"
+        },
+        {
+          "name": "Post Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 42,
+          "started_at": "2026-10-17T22:37:38Z",
+          "completed_at": "2026-10-17T22:37:40Z"
+        },
+        {
+          "name": "Post Match Docker Engine on GitHub to baked Celesto Engine",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-10-17T22:37:40Z",
+          "completed_at": "2026-10-17T22:37:45Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 44,
+          "started_at": "2026-10-17T22:37:45Z",
+          "completed_at": "2026-10-17T22:37:46Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 45,
+          "started_at": "2026-10-17T22:37:46Z",
+          "completed_at": "2026-10-17T22:37:46Z"
+        }
+      ]
+    },
+    {
+      "databaseId": 117522513729,
+      "name": "no-cache (3, celesto) / celesto-none-nocache-3",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39075713994/job/117522513729",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T22:37:12Z",
+      "completedAt": "2026-10-17T22:37:51Z",
+      "runnerName": "celesto-117522513729",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-17T22:37:12Z",
+          "completed_at": "2026-10-17T22:37:14Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-17T22:37:14Z",
+          "completed_at": "2026-10-17T22:37:15Z"
+        },
+        {
+          "name": "Match Docker Engine on GitHub to baked Celesto Engine",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 3,
+          "started_at": "2026-10-17T22:37:15Z",
+          "completed_at": "2026-10-17T22:37:15Z"
+        },
+        {
+          "name": "Match Compose version",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-17T22:37:15Z",
+          "completed_at": "2026-10-17T22:37:15Z"
+        },
+        {
+          "name": "Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-17T22:37:15Z",
+          "completed_at": "2026-10-17T22:37:21Z"
+        },
+        {
+          "name": "Expose runtime cache environment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-17T22:37:21Z",
+          "completed_at": "2026-10-17T22:37:21Z"
+        },
+        {
+          "name": "Log in to shared registry",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-10-17T22:37:21Z",
+          "completed_at": "2026-10-17T22:37:21Z"
+        },
+        {
+          "name": "Build cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-17T22:37:21Z",
+          "completed_at": "2026-10-17T22:37:21Z"
+        },
+        {
+          "name": "Restore portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-17T22:37:21Z",
+          "completed_at": "2026-10-17T22:37:21Z"
+        },
+        {
+          "name": "Build cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-17T22:37:21Z",
+          "completed_at": "2026-10-17T22:37:21Z"
+        },
+        {
+          "name": "Run Docker workloads with correctness assertions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-17T22:37:21Z",
+          "completed_at": "2026-10-17T22:37:47Z"
+        },
+        {
+          "name": "Build cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12,
+          "started_at": "2026-10-17T22:37:47Z",
+          "completed_at": "2026-10-17T22:37:47Z"
+        },
+        {
+          "name": "Save portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13,
+          "started_at": "2026-10-17T22:37:47Z",
+          "completed_at": "2026-10-17T22:37:47Z"
+        },
+        {
+          "name": "Build cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14,
+          "started_at": "2026-10-17T22:37:47Z",
+          "completed_at": "2026-10-17T22:37:47Z"
+        },
+        {
+          "name": "Cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-10-17T22:37:47Z",
+          "completed_at": "2026-10-17T22:37:47Z"
+        },
+        {
+          "name": "Restore image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16,
+          "started_at": "2026-10-17T22:37:47Z",
+          "completed_at": "2026-10-17T22:37:47Z"
+        },
+        {
+          "name": "Cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17,
+          "started_at": "2026-10-17T22:37:47Z",
+          "completed_at": "2026-10-17T22:37:47Z"
+        },
+        {
+          "name": "Measure image tar creation or loading",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 18,
+          "started_at": "2026-10-17T22:37:47Z",
+          "completed_at": "2026-10-17T22:37:47Z"
+        },
+        {
+          "name": "Cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 19,
+          "started_at": "2026-10-17T22:37:47Z",
+          "completed_at": "2026-10-17T22:37:47Z"
+        },
+        {
+          "name": "Save image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 20,
+          "started_at": "2026-10-17T22:37:47Z",
+          "completed_at": "2026-10-17T22:37:47Z"
+        },
+        {
+          "name": "Cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 21,
+          "started_at": "2026-10-17T22:37:47Z",
+          "completed_at": "2026-10-17T22:37:47Z"
+        },
+        {
+          "name": "Upload raw measurements and logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-17T22:37:47Z",
+          "completed_at": "2026-10-17T22:37:48Z"
+        },
+        {
+          "name": "Post Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-10-17T22:37:48Z",
+          "completed_at": "2026-10-17T22:37:49Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 44,
+          "started_at": "2026-10-17T22:37:49Z",
+          "completed_at": "2026-10-17T22:37:49Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 45,
+          "started_at": "2026-10-17T22:37:49Z",
+          "completed_at": "2026-10-17T22:37:49Z"
+        }
+      ]
+    },
+    {
+      "databaseId": 117522559303,
+      "name": "no-cache (4, github) / github-none-nocache-4",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39075713994/job/117522559303",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T22:37:02Z",
+      "completedAt": "2026-10-17T22:37:52Z",
+      "runnerName": "GitHub Actions 1000003766",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-17T22:37:02Z",
+          "completed_at": "2026-10-17T22:37:04Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-17T22:37:04Z",
+          "completed_at": "2026-10-17T22:37:04Z"
+        },
+        {
+          "name": "Match Docker Engine on GitHub to baked Celesto Engine",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-17T22:37:04Z",
+          "completed_at": "2026-10-17T22:37:15Z"
+        },
+        {
+          "name": "Match Compose version",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-17T22:37:15Z",
+          "completed_at": "2026-10-17T22:37:16Z"
+        },
+        {
+          "name": "Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-17T22:37:16Z",
+          "completed_at": "2026-10-17T22:37:20Z"
+        },
+        {
+          "name": "Expose runtime cache environment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-17T22:37:20Z",
+          "completed_at": "2026-10-17T22:37:20Z"
+        },
+        {
+          "name": "Log in to shared registry",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-10-17T22:37:20Z",
+          "completed_at": "2026-10-17T22:37:20Z"
+        },
+        {
+          "name": "Build cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-17T22:37:20Z",
+          "completed_at": "2026-10-17T22:37:20Z"
+        },
+        {
+          "name": "Restore portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-17T22:37:20Z",
+          "completed_at": "2026-10-17T22:37:20Z"
+        },
+        {
+          "name": "Build cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-17T22:37:20Z",
+          "completed_at": "2026-10-17T22:37:20Z"
+        },
+        {
+          "name": "Run Docker workloads with correctness assertions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-17T22:37:20Z",
+          "completed_at": "2026-10-17T22:37:42Z"
+        },
+        {
+          "name": "Build cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12,
+          "started_at": "2026-10-17T22:37:42Z",
+          "completed_at": "2026-10-17T22:37:42Z"
+        },
+        {
+          "name": "Save portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13,
+          "started_at": "2026-10-17T22:37:42Z",
+          "completed_at": "2026-10-17T22:37:42Z"
+        },
+        {
+          "name": "Build cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14,
+          "started_at": "2026-10-17T22:37:42Z",
+          "completed_at": "2026-10-17T22:37:42Z"
+        },
+        {
+          "name": "Cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-10-17T22:37:42Z",
+          "completed_at": "2026-10-17T22:37:42Z"
+        },
+        {
+          "name": "Restore image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16,
+          "started_at": "2026-10-17T22:37:42Z",
+          "completed_at": "2026-10-17T22:37:42Z"
+        },
+        {
+          "name": "Cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17,
+          "started_at": "2026-10-17T22:37:42Z",
+          "completed_at": "2026-10-17T22:37:42Z"
+        },
+        {
+          "name": "Measure image tar creation or loading",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 18,
+          "started_at": "2026-10-17T22:37:42Z",
+          "completed_at": "2026-10-17T22:37:42Z"
+        },
+        {
+          "name": "Cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 19,
+          "started_at": "2026-10-17T22:37:42Z",
+          "completed_at": "2026-10-17T22:37:42Z"
+        },
+        {
+          "name": "Save image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 20,
+          "started_at": "2026-10-17T22:37:42Z",
+          "completed_at": "2026-10-17T22:37:42Z"
+        },
+        {
+          "name": "Cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 21,
+          "started_at": "2026-10-17T22:37:42Z",
+          "completed_at": "2026-10-17T22:37:42Z"
+        },
+        {
+          "name": "Upload raw measurements and logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-17T22:37:42Z",
+          "completed_at": "2026-10-17T22:37:43Z"
+        },
+        {
+          "name": "Post Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 42,
+          "started_at": "2026-10-17T22:37:43Z",
+          "completed_at": "2026-10-17T22:37:45Z"
+        },
+        {
+          "name": "Post Match Docker Engine on GitHub to baked Celesto Engine",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-10-17T22:37:45Z",
+          "completed_at": "2026-10-17T22:37:50Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 44,
+          "started_at": "2026-10-17T22:37:50Z",
+          "completed_at": "2026-10-17T22:37:50Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 45,
+          "started_at": "2026-10-17T22:37:50Z",
+          "completed_at": "2026-10-17T22:37:50Z"
+        }
+      ]
+    },
+    {
+      "databaseId": 117522559627,
+      "name": "no-cache (4, celesto) / celesto-none-nocache-4",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39075713994/job/117522559627",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T22:38:11Z",
+      "completedAt": "2026-10-17T22:38:48Z",
+      "runnerName": "celesto-117522559627",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-17T22:38:11Z",
+          "completed_at": "2026-10-17T22:38:13Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-17T22:38:13Z",
+          "completed_at": "2026-10-17T22:38:13Z"
+        },
+        {
+          "name": "Match Docker Engine on GitHub to baked Celesto Engine",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 3,
+          "started_at": "2026-10-17T22:38:13Z",
+          "completed_at": "2026-10-17T22:38:13Z"
+        },
+        {
+          "name": "Match Compose version",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-17T22:38:13Z",
+          "completed_at": "2026-10-17T22:38:14Z"
+        },
+        {
+          "name": "Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-17T22:38:14Z",
+          "completed_at": "2026-10-17T22:38:22Z"
+        },
+        {
+          "name": "Expose runtime cache environment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-17T22:38:22Z",
+          "completed_at": "2026-10-17T22:38:22Z"
+        },
+        {
+          "name": "Log in to shared registry",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-10-17T22:38:22Z",
+          "completed_at": "2026-10-17T22:38:22Z"
+        },
+        {
+          "name": "Build cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-17T22:38:22Z",
+          "completed_at": "2026-10-17T22:38:22Z"
+        },
+        {
+          "name": "Restore portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-17T22:38:22Z",
+          "completed_at": "2026-10-17T22:38:22Z"
+        },
+        {
+          "name": "Build cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-17T22:38:22Z",
+          "completed_at": "2026-10-17T22:38:22Z"
+        },
+        {
+          "name": "Run Docker workloads with correctness assertions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-17T22:38:22Z",
+          "completed_at": "2026-10-17T22:38:44Z"
+        },
+        {
+          "name": "Build cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12,
+          "started_at": "2026-10-17T22:38:44Z",
+          "completed_at": "2026-10-17T22:38:44Z"
+        },
+        {
+          "name": "Save portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13,
+          "started_at": "2026-10-17T22:38:44Z",
+          "completed_at": "2026-10-17T22:38:44Z"
+        },
+        {
+          "name": "Build cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14,
+          "started_at": "2026-10-17T22:38:44Z",
+          "completed_at": "2026-10-17T22:38:44Z"
+        },
+        {
+          "name": "Cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-10-17T22:38:44Z",
+          "completed_at": "2026-10-17T22:38:44Z"
+        },
+        {
+          "name": "Restore image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16,
+          "started_at": "2026-10-17T22:38:44Z",
+          "completed_at": "2026-10-17T22:38:44Z"
+        },
+        {
+          "name": "Cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17,
+          "started_at": "2026-10-17T22:38:44Z",
+          "completed_at": "2026-10-17T22:38:44Z"
+        },
+        {
+          "name": "Measure image tar creation or loading",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 18,
+          "started_at": "2026-10-17T22:38:44Z",
+          "completed_at": "2026-10-17T22:38:44Z"
+        },
+        {
+          "name": "Cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 19,
+          "started_at": "2026-10-17T22:38:44Z",
+          "completed_at": "2026-10-17T22:38:44Z"
+        },
+        {
+          "name": "Save image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 20,
+          "started_at": "2026-10-17T22:38:44Z",
+          "completed_at": "2026-10-17T22:38:44Z"
+        },
+        {
+          "name": "Cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 21,
+          "started_at": "2026-10-17T22:38:44Z",
+          "completed_at": "2026-10-17T22:38:44Z"
+        },
+        {
+          "name": "Upload raw measurements and logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-17T22:38:44Z",
+          "completed_at": "2026-10-17T22:38:45Z"
+        },
+        {
+          "name": "Post Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-10-17T22:38:45Z",
+          "completed_at": "2026-10-17T22:38:46Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 44,
+          "started_at": "2026-10-17T22:38:46Z",
+          "completed_at": "2026-10-17T22:38:46Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 45,
+          "started_at": "2026-10-17T22:38:46Z",
+          "completed_at": "2026-10-17T22:38:46Z"
+        }
+      ]
+    },
+    {
+      "databaseId": 117522716525,
+      "name": "no-cache (5, github) / github-none-nocache-5",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39075713994/job/117522716525",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T22:37:50Z",
+      "completedAt": "2026-10-17T22:38:40Z",
+      "runnerName": "GitHub Actions 1000003767",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-17T22:37:51Z",
+          "completed_at": "2026-10-17T22:37:53Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-17T22:37:53Z",
+          "completed_at": "2026-10-17T22:37:53Z"
+        },
+        {
+          "name": "Match Docker Engine on GitHub to baked Celesto Engine",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-17T22:37:53Z",
+          "completed_at": "2026-10-17T22:38:04Z"
+        },
+        {
+          "name": "Match Compose version",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-17T22:38:04Z",
+          "completed_at": "2026-10-17T22:38:05Z"
+        },
+        {
+          "name": "Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-17T22:38:05Z",
+          "completed_at": "2026-10-17T22:38:09Z"
+        },
+        {
+          "name": "Expose runtime cache environment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-17T22:38:09Z",
+          "completed_at": "2026-10-17T22:38:09Z"
+        },
+        {
+          "name": "Log in to shared registry",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-10-17T22:38:09Z",
+          "completed_at": "2026-10-17T22:38:09Z"
+        },
+        {
+          "name": "Build cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-17T22:38:09Z",
+          "completed_at": "2026-10-17T22:38:09Z"
+        },
+        {
+          "name": "Restore portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-17T22:38:09Z",
+          "completed_at": "2026-10-17T22:38:09Z"
+        },
+        {
+          "name": "Build cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-17T22:38:09Z",
+          "completed_at": "2026-10-17T22:38:09Z"
+        },
+        {
+          "name": "Run Docker workloads with correctness assertions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-17T22:38:09Z",
+          "completed_at": "2026-10-17T22:38:30Z"
+        },
+        {
+          "name": "Build cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12,
+          "started_at": "2026-10-17T22:38:30Z",
+          "completed_at": "2026-10-17T22:38:30Z"
+        },
+        {
+          "name": "Save portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13,
+          "started_at": "2026-10-17T22:38:30Z",
+          "completed_at": "2026-10-17T22:38:30Z"
+        },
+        {
+          "name": "Build cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14,
+          "started_at": "2026-10-17T22:38:30Z",
+          "completed_at": "2026-10-17T22:38:30Z"
+        },
+        {
+          "name": "Cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-10-17T22:38:30Z",
+          "completed_at": "2026-10-17T22:38:30Z"
+        },
+        {
+          "name": "Restore image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16,
+          "started_at": "2026-10-17T22:38:30Z",
+          "completed_at": "2026-10-17T22:38:30Z"
+        },
+        {
+          "name": "Cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17,
+          "started_at": "2026-10-17T22:38:30Z",
+          "completed_at": "2026-10-17T22:38:30Z"
+        },
+        {
+          "name": "Measure image tar creation or loading",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 18,
+          "started_at": "2026-10-17T22:38:30Z",
+          "completed_at": "2026-10-17T22:38:30Z"
+        },
+        {
+          "name": "Cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 19,
+          "started_at": "2026-10-17T22:38:30Z",
+          "completed_at": "2026-10-17T22:38:30Z"
+        },
+        {
+          "name": "Save image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 20,
+          "started_at": "2026-10-17T22:38:30Z",
+          "completed_at": "2026-10-17T22:38:30Z"
+        },
+        {
+          "name": "Cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 21,
+          "started_at": "2026-10-17T22:38:30Z",
+          "completed_at": "2026-10-17T22:38:30Z"
+        },
+        {
+          "name": "Upload raw measurements and logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-17T22:38:30Z",
+          "completed_at": "2026-10-17T22:38:31Z"
+        },
+        {
+          "name": "Post Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 42,
+          "started_at": "2026-10-17T22:38:31Z",
+          "completed_at": "2026-10-17T22:38:33Z"
+        },
+        {
+          "name": "Post Match Docker Engine on GitHub to baked Celesto Engine",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-10-17T22:38:33Z",
+          "completed_at": "2026-10-17T22:38:38Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 44,
+          "started_at": "2026-10-17T22:38:38Z",
+          "completed_at": "2026-10-17T22:38:38Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 45,
+          "started_at": "2026-10-17T22:38:38Z",
+          "completed_at": "2026-10-17T22:38:38Z"
+        }
+      ]
+    },
+    {
+      "databaseId": 117522728416,
+      "name": "no-cache (5, celesto) / celesto-none-nocache-5",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39075713994/job/117522728416",
+      "status": "completed",
+      "conclusion": "failure",
+      "startedAt": "2026-10-17T22:38:17Z",
+      "completedAt": "2026-10-17T22:38:44Z",
+      "runnerName": "celesto-117522728416",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-17T22:38:18Z",
+          "completed_at": "2026-10-17T22:38:19Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-17T22:38:19Z",
+          "completed_at": "2026-10-17T22:38:20Z"
+        },
+        {
+          "name": "Match Docker Engine on GitHub to baked Celesto Engine",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 3,
+          "started_at": "2026-10-17T22:38:20Z",
+          "completed_at": "2026-10-17T22:38:20Z"
+        },
+        {
+          "name": "Match Compose version",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-17T22:38:20Z",
+          "completed_at": "2026-10-17T22:38:21Z"
+        },
+        {
+          "name": "Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-17T22:38:21Z",
+          "completed_at": "2026-10-17T22:38:27Z"
+        },
+        {
+          "name": "Expose runtime cache environment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-17T22:38:27Z",
+          "completed_at": "2026-10-17T22:38:27Z"
+        },
+        {
+          "name": "Log in to shared registry",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-10-17T22:38:27Z",
+          "completed_at": "2026-10-17T22:38:27Z"
+        },
+        {
+          "name": "Build cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-17T22:38:27Z",
+          "completed_at": "2026-10-17T22:38:27Z"
+        },
+        {
+          "name": "Restore portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-17T22:38:27Z",
+          "completed_at": "2026-10-17T22:38:27Z"
+        },
+        {
+          "name": "Build cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-17T22:38:27Z",
+          "completed_at": "2026-10-17T22:38:27Z"
+        },
+        {
+          "name": "Run Docker workloads with correctness assertions",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 11,
+          "started_at": "2026-10-17T22:38:27Z",
+          "completed_at": "2026-10-17T22:38:40Z"
+        },
+        {
+          "name": "Build cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12,
+          "started_at": "2026-10-17T22:38:40Z",
+          "completed_at": "2026-10-17T22:38:40Z"
+        },
+        {
+          "name": "Save portable BuildKit layer cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13,
+          "started_at": "2026-10-17T22:38:40Z",
+          "completed_at": "2026-10-17T22:38:40Z"
+        },
+        {
+          "name": "Build cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14,
+          "started_at": "2026-10-17T22:38:40Z",
+          "completed_at": "2026-10-17T22:38:40Z"
+        },
+        {
+          "name": "Cache restore boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-10-17T22:38:40Z",
+          "completed_at": "2026-10-17T22:38:40Z"
+        },
+        {
+          "name": "Restore image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16,
+          "started_at": "2026-10-17T22:38:40Z",
+          "completed_at": "2026-10-17T22:38:40Z"
+        },
+        {
+          "name": "Cache restore boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17,
+          "started_at": "2026-10-17T22:38:40Z",
+          "completed_at": "2026-10-17T22:38:40Z"
+        },
+        {
+          "name": "Measure image tar creation or loading",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 18,
+          "started_at": "2026-10-17T22:38:40Z",
+          "completed_at": "2026-10-17T22:38:40Z"
+        },
+        {
+          "name": "Cache save boundary start",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 19,
+          "started_at": "2026-10-17T22:38:40Z",
+          "completed_at": "2026-10-17T22:38:40Z"
+        },
+        {
+          "name": "Save image tar cache",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 20,
+          "started_at": "2026-10-17T22:38:40Z",
+          "completed_at": "2026-10-17T22:38:40Z"
+        },
+        {
+          "name": "Cache save boundary end",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 21,
+          "started_at": "2026-10-17T22:38:40Z",
+          "completed_at": "2026-10-17T22:38:40Z"
+        },
+        {
+          "name": "Upload raw measurements and logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-17T22:38:40Z",
+          "completed_at": "2026-10-17T22:38:41Z"
+        },
+        {
+          "name": "Post Prepare matched BuildKit builder",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-10-17T22:38:41Z",
+          "completed_at": "2026-10-17T22:38:42Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 44,
+          "started_at": "2026-10-17T22:38:42Z",
+          "completed_at": "2026-10-17T22:38:42Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 45,
+          "started_at": "2026-10-17T22:38:42Z",
+          "completed_at": "2026-10-17T22:38:42Z"
+        }
+      ]
+    },
+    {
+      "databaseId": 117522914269,
+      "name": "images",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39075713994/job/117522914269",
+      "status": "completed",
+      "conclusion": "skipped",
+      "startedAt": "2026-10-17T22:38:48Z",
+      "completedAt": "2026-10-17T22:38:48Z",
+      "runnerName": null,
+      "steps": []
+    },
+    {
+      "databaseId": 117522914272,
+      "name": "runtime",
+      "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39075713994/job/117522914272",
+      "status": "completed",
+      "conclusion": "skipped",
+      "startedAt": "2026-10-17T22:38:48Z",
+      "completedAt": "2026-10-17T22:38:48Z",
+      "runnerName": null,
+      "steps": []
+    }
+  ],
+  "status": "completed",
+  "updatedAt": "2026-10-17T22:38:48Z",
+  "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39075713994"
+}

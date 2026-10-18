@@ -1,0 +1,219 @@
+[
+  {
+    "backend": "none",
+    "scenario": "nocache",
+    "metric": "Actions job including setup and post-cleanup",
+    "celesto": {
+      "n": 4,
+      "median": 39.0,
+      "min": 37.0,
+      "max": 39.0,
+      "samples": [
+        39.0,
+        39.0,
+        39.0,
+        37.0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 52.0,
+      "min": 50.0,
+      "max": 63.0,
+      "samples": [
+        52.0,
+        54.0,
+        63.0,
+        50.0,
+        50.0
+      ]
+    },
+    "github_over_celesto": 1.3333333333333333
+  },
+  {
+    "backend": "none",
+    "scenario": "nocache",
+    "metric": "node compilation",
+    "celesto": {
+      "n": 4,
+      "median": 1.7,
+      "min": 1.3,
+      "max": 2.3,
+      "samples": [
+        1.7,
+        1.7,
+        2.3,
+        1.3
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 2.2,
+      "min": 1.7,
+      "max": 2.4,
+      "samples": [
+        2.0,
+        2.3,
+        1.7,
+        2.4,
+        2.2
+      ]
+    },
+    "github_over_celesto": 1.2941176470588236
+  },
+  {
+    "backend": "none",
+    "scenario": "nocache",
+    "metric": "node dependency install",
+    "celesto": {
+      "n": 4,
+      "median": 1.7,
+      "min": 1.0,
+      "max": 1.8,
+      "samples": [
+        1.7,
+        1.7,
+        1.8,
+        1.0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 1.2,
+      "min": 1.1,
+      "max": 1.4,
+      "samples": [
+        1.1,
+        1.2,
+        1.1,
+        1.4,
+        1.2
+      ]
+    },
+    "github_over_celesto": 0.7058823529411765
+  },
+  {
+    "backend": "none",
+    "scenario": "nocache",
+    "metric": "node image build/load",
+    "celesto": {
+      "n": 4,
+      "median": 11.0037164325,
+      "min": 9.073368305000002,
+      "max": 11.920779223,
+      "samples": [
+        11.055517713999997,
+        10.951915151000001,
+        11.920779223,
+        9.073368305000002
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 9.332573970999988,
+      "min": 8.223611832999993,
+      "max": 9.855384390000012,
+      "samples": [
+        8.223611832999993,
+        9.421518241000001,
+        9.855384390000012,
+        9.332573970999988,
+        8.92043213399998
+      ]
+    },
+    "github_over_celesto": 0.84812926871105
+  },
+  {
+    "backend": "none",
+    "scenario": "nocache",
+    "metric": "python dependency install",
+    "celesto": {
+      "n": 4,
+      "median": 4.85,
+      "min": 4.7,
+      "max": 5.4,
+      "samples": [
+        4.8,
+        4.7,
+        4.9,
+        5.4
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 5.0,
+      "min": 4.3,
+      "max": 5.3,
+      "samples": [
+        4.3,
+        5.0,
+        4.8,
+        5.3,
+        5.1
+      ]
+    },
+    "github_over_celesto": 1.0309278350515465
+  },
+  {
+    "backend": "none",
+    "scenario": "nocache",
+    "metric": "python image build/load",
+    "celesto": {
+      "n": 4,
+      "median": 11.202440586999998,
+      "min": 10.454626733000005,
+      "max": 11.35375182,
+      "samples": [
+        11.35375182,
+        11.241179295999999,
+        11.163701877999998,
+        10.454626733000005
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 10.129350620000004,
+      "min": 8.784748982999986,
+      "max": 10.292937229000017,
+      "samples": [
+        8.784748982999986,
+        10.129350620000004,
+        10.155524665000002,
+        10.292937229000017,
+        10.006226486999992
+      ]
+    },
+    "github_over_celesto": 0.9042092695188874
+  },
+  {
+    "backend": "none",
+    "scenario": "nocache",
+    "metric": "two-image workload incl cache transfer",
+    "celesto": {
+      "n": 4,
+      "median": 25.58291287,
+      "min": 22.220098551,
+      "max": 25.722964861999998,
+      "samples": [
+        25.722964861999998,
+        25.575528043,
+        25.590297697,
+        22.220098551
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 21.282475616999996,
+      "min": 18.660821474000002,
+      "max": 23.291519113999982,
+      "samples": [
+        18.660821474000002,
+        21.282475616999996,
+        23.291519113999982,
+        21.473241798000004,
+        20.686221028000006
+      ]
+    },
+    "github_over_celesto": 0.8319019700824238
+  }
+]

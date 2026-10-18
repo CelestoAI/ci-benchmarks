@@ -1,0 +1,159 @@
+#0 building with "builder-f634ae8c-3b62-4623-9062-f7b2f9623e90" instance using docker-container driver
+
+#1 [internal] load build definition from Dockerfile
+#1 DONE 0.0s
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 306B done
+#1 WARN: InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 2)
+#1 WARN: InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 9)
+#1 DONE 0.1s
+
+#2 [auth] library/node:pull token for registry-1.docker.io
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#3 DONE 0.4s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 DONE 0.0s
+
+#6 [build 1/7] FROM docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#6 resolve docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392 0.0s done
+#6 DONE 0.0s
+
+#7 [auth] celestoai/ci-benchmarks-cache:pull token for ghcr.io
+#7 DONE 0.0s
+
+#8 importing cache manifest from ghcr.io/celestoai/ci-benchmarks-cache:docker-auth-20261017c-celesto-2-node
+#8 inferred cache manifest type: application/vnd.oci.image.manifest.v1+json done
+#8 DONE 0.9s
+
+#5 [internal] load build context
+#5 transferring context: 142.41kB 0.1s done
+#5 DONE 0.2s
+
+#9 [build 2/7] WORKDIR /app
+#9 CACHED
+
+#9 [build 2/7] WORKDIR /app
+#9 sha256:4b20eefefbf03c836e2bd126cc40e5b31c82133fe52371e87538ef9566339c1b 0B / 93B 0.2s
+#9 sha256:4b20eefefbf03c836e2bd126cc40e5b31c82133fe52371e87538ef9566339c1b 93B / 93B 0.2s done
+#9 sha256:2cfab517365cfc6b4bd1f8c4cb01754884ef75bc38758b3c41e291c696f019f5 1.71MB / 1.71MB 0.3s done
+#9 sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 0B / 49.84MB 0.2s
+#9 sha256:a8de9fa052209313d8e45435a8486e29b20eebaa820e2e7f63a7c3c94b4fa567 0B / 448B 0.2s
+#9 sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 23.07MB / 49.84MB 0.3s
+#9 sha256:a8de9fa052209313d8e45435a8486e29b20eebaa820e2e7f63a7c3c94b4fa567 448B / 448B 0.2s done
+#9 sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 0B / 28.25MB 0.2s
+#9 sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 49.84MB / 49.84MB 0.4s done
+#9 sha256:f0400f4b55b0ad346bf6167a1b64a258e4d73db608c457798ce35e4ffeebfaaf 0B / 3.31kB 0.2s
+#9 sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 28.25MB / 28.25MB 0.5s
+#9 sha256:f0400f4b55b0ad346bf6167a1b64a258e4d73db608c457798ce35e4ffeebfaaf 3.31kB / 3.31kB 0.3s
+#9 sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 28.25MB / 28.25MB 0.5s done
+#9 sha256:f0400f4b55b0ad346bf6167a1b64a258e4d73db608c457798ce35e4ffeebfaaf 3.31kB / 3.31kB 0.4s done
+#9 extracting sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39
+#9 extracting sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 1.0s done
+#9 extracting sha256:f0400f4b55b0ad346bf6167a1b64a258e4d73db608c457798ce35e4ffeebfaaf
+#9 extracting sha256:f0400f4b55b0ad346bf6167a1b64a258e4d73db608c457798ce35e4ffeebfaaf 0.0s done
+#9 extracting sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856
+#9 extracting sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 1.6s done
+#9 DONE 3.4s
+
+#9 [build 2/7] WORKDIR /app
+#9 extracting sha256:2cfab517365cfc6b4bd1f8c4cb01754884ef75bc38758b3c41e291c696f019f5 0.1s done
+#9 extracting sha256:a8de9fa052209313d8e45435a8486e29b20eebaa820e2e7f63a7c3c94b4fa567 0.0s done
+#9 extracting sha256:4b20eefefbf03c836e2bd126cc40e5b31c82133fe52371e87538ef9566339c1b 0.0s done
+#9 DONE 3.5s
+
+#10 [build 3/7] COPY package.json package-lock.json ./
+#10 DONE 0.4s
+
+#11 [build 4/7] RUN npm ci --no-audit --no-fund
+#11 1.513 
+#11 1.513 added 4 packages in 1s
+#11 1.514 npm notice
+#11 1.514 npm notice New major version of npm available! 10.9.9 -> 12.2.0
+#11 1.514 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+#11 1.514 npm notice To update run: npm install -g npm@12.2.0
+#11 1.514 npm notice
+#11 DONE 1.7s
+
+#12 [build 5/7] COPY tsconfig.json ./
+#12 DONE 0.1s
+
+#13 [build 6/7] COPY src ./src
+#13 DONE 0.1s
+
+#14 [build 7/7] RUN npm run build
+#14 0.179 
+#14 0.179 > ci-docker-node-fixture@1.0.0 build
+#14 0.179 > tsc && esbuild dist/main.js --bundle --platform=node --outfile=bundle.js
+#14 0.179 
+#14 1.805 
+#14 1.805   bundle.js  247.5kb
+#14 1.805 
+#14 1.805 ⚡ Done in 43ms
+#14 DONE 1.9s
+
+#15 [stage-1 3/3] COPY --from=build /app/bundle.js ./bundle.js
+#15 sha256:2177fb329e90f8ef2b117255be8809b5747a6e8fb9c692524cffdefa7122feb1 0B / 27.55kB 0.2s
+#15 sha256:2177fb329e90f8ef2b117255be8809b5747a6e8fb9c692524cffdefa7122feb1 27.55kB / 27.55kB 0.2s done
+#15 DONE 0.3s
+
+#16 exporting to oci image format
+#16 exporting layers done
+#16 exporting manifest sha256:5f3671dbcd7fa10bb426de3ea600e7035cc2fe12687d42d2ae2154d560b2a675 0.0s done
+#16 exporting config sha256:440a8ad237e3181198392a9030df76dcd5d0d0774c9195d8c0b52027a0ee2aba 0.0s done
+#16 sending tarball
+#16 sending tarball 3.3s done
+#16 DONE 3.5s
+
+#17 importing to docker
+#17 DONE 0.0s
+
+#18 exporting cache to registry
+#18 preparing build cache for export
+#18 writing layer sha256:0d0d279f951d3c21ed15aafa29b50f059aaa6d6c96b84cc2d35dfdbfc3e27f71
+#18 ...
+
+#19 [auth] celestoai/ci-benchmarks-cache:pull,push token for ghcr.io
+#19 DONE 0.0s
+
+#18 exporting cache to registry
+#18 writing layer sha256:0d0d279f951d3c21ed15aafa29b50f059aaa6d6c96b84cc2d35dfdbfc3e27f71 1.2s done
+#18 writing layer sha256:2177fb329e90f8ef2b117255be8809b5747a6e8fb9c692524cffdefa7122feb1
+#18 writing layer sha256:2177fb329e90f8ef2b117255be8809b5747a6e8fb9c692524cffdefa7122feb1 0.1s done
+#18 writing layer sha256:2cfab517365cfc6b4bd1f8c4cb01754884ef75bc38758b3c41e291c696f019f5
+#18 writing layer sha256:2cfab517365cfc6b4bd1f8c4cb01754884ef75bc38758b3c41e291c696f019f5 0.1s done
+#18 writing layer sha256:3dfce20daefafee04aa542c663e4a4269fb671a45fec3d7943b64fc2e18a5e8b
+#18 writing layer sha256:3dfce20daefafee04aa542c663e4a4269fb671a45fec3d7943b64fc2e18a5e8b 1.4s done
+#18 writing layer sha256:4b20eefefbf03c836e2bd126cc40e5b31c82133fe52371e87538ef9566339c1b
+#18 writing layer sha256:4b20eefefbf03c836e2bd126cc40e5b31c82133fe52371e87538ef9566339c1b 0.1s done
+#18 writing layer sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39
+#18 writing layer sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 0.1s done
+#18 writing layer sha256:a8de9fa052209313d8e45435a8486e29b20eebaa820e2e7f63a7c3c94b4fa567
+#18 writing layer sha256:a8de9fa052209313d8e45435a8486e29b20eebaa820e2e7f63a7c3c94b4fa567 0.1s done
+#18 writing layer sha256:c3c0b044f394111c966c6e5656054ccabe10df14828974601474096431ff3459
+#18 writing layer sha256:c3c0b044f394111c966c6e5656054ccabe10df14828974601474096431ff3459 1.2s done
+#18 writing layer sha256:d08ed634fe1f7bb33b47724d3ca1451bc8ddcf6d62475d86e90f58c3110f1fb8
+#18 writing layer sha256:d08ed634fe1f7bb33b47724d3ca1451bc8ddcf6d62475d86e90f58c3110f1fb8 1.1s done
+#18 writing layer sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856
+#18 writing layer sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 0.1s done
+#18 writing layer sha256:e6d26c9bdae018194d8c7281d4efedd6dec29bb990b476c06ecf8e2213d33f52
+#18 writing layer sha256:e6d26c9bdae018194d8c7281d4efedd6dec29bb990b476c06ecf8e2213d33f52 1.1s done
+#18 writing layer sha256:f0400f4b55b0ad346bf6167a1b64a258e4d73db608c457798ce35e4ffeebfaaf
+#18 writing layer sha256:f0400f4b55b0ad346bf6167a1b64a258e4d73db608c457798ce35e4ffeebfaaf 0.1s done
+#18 writing config sha256:651ff12d27f9725d418dc7a699e40e5e79bb43c5940e4d88db27c080ea1f8c50
+#18 writing config sha256:651ff12d27f9725d418dc7a699e40e5e79bb43c5940e4d88db27c080ea1f8c50 1.1s done
+#18 writing cache image manifest sha256:cff279a380e3d1d1e9a93eef75cf3e9cfd2d9ce702a3716d1590d0c70f1c189e
+#18 preparing build cache for export 10.0s done
+#18 writing cache image manifest sha256:cff279a380e3d1d1e9a93eef75cf3e9cfd2d9ce702a3716d1590d0c70f1c189e 0.5s done
+#18 DONE 10.0s
+
+ [33m2 warnings found (use docker --debug to expand):
+[0m - InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 2)
+ - InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 9)

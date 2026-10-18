@@ -8,6 +8,7 @@ const run = JSON.parse(readFileSync(join(dir, 'run.json')));
 const failures = JSON.parse(readFileSync(join(dir, 'failures.json')));
 const observations = JSON.parse(readFileSync(join(dir, 'cache-observations.json')));
 const cohorts = run.cohorts;
+const interventions = existsSync(join(dir, 'interventions.json')) ? JSON.parse(readFileSync(join(dir, 'interventions.json'))) : null;
 const find = (backend, scenario, metric) => summary.find(r => r.backend === backend && r.scenario === scenario && r.metric === metric);
 const seconds = p => p ? `${p.median.toFixed(2)} (${p.min.toFixed(2)}–${p.max.toFixed(2)}; n=${p.n})` : 'Unavailable';
 const escape = value => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
@@ -29,7 +30,7 @@ const elements = [`<svg xmlns="http://www.w3.org/2000/svg" width="1250" height="
   '<rect width="100%" height="100%" fill="white"/>',
   '<g font-family="Arial, sans-serif" fill="#172033">',
   '<text x="30" y="40" font-size="25" font-weight="700">Docker CI · 4 vCPU / 16 GiB on both providers</text>',
-  `<text x="30" y="69" font-size="16">Seconds · lower is better · median with observed min–max · ${countLabel}</text>`,
+  `<text x="30" y="69" font-size="16">Seconds · lower is better · bars/labels = median · whiskers = min–max · ${countLabel}</text>`,
   '<text x="30" y="96" font-size="14" fill="#475569">Workloads exclude tool normalization and runner setup; no ARM emulation or persistent-runner shortcut.</text>'];
 for (let tick = 0; tick <= 5; tick++) {
   const x = plotX + plotWidth * tick / 5;
@@ -78,8 +79,10 @@ for (const backend of ['portable', 'registry']) for (const scenario of ['seed', 
   md += `| ${backend} | ${scenario} | ${seconds(row?.github)} | ${seconds(row?.celesto)} |\n`;
 }
 md += `\nPortable = BuildKit layer export transferred through each provider's actions/cache endpoint. Registry = identical GHCR cache backend on both providers. BuildKit vertex durations can overlap and are not added to produce these totals.\n\n`;
+md += 'A cache hit is not automatically a speedup: transfer, import, and export can cost more than rebuilding these small fixtures. Compare complete workload times, not hit counts alone.\n\n';
 const reusable = observations.filter(o => ['unchanged', 'source'].includes(o.scenario));
 md += `Dependency-install layer hits in expected-reuse cases: **${reusable.filter(o => o.install_layer_cached).length}/${reusable.length}** across both apps/providers/backends. Cold/dependency-change installs are independently checked to execute. This is a layer-hit count, not a byte-weighted cache hit ratio.${cohorts ? ' Exact archive restores: **40/40** (30 portable layer-cache restores + 10 image-tar restores), verified independently from raw events.' : ''}\n\n`;
+if (cohorts) md += 'Expected install executions after cold/dependency-change/no-cache builds: **100/100**. A dependency-lock change must invalidate the install layer; counting every job as a hit would be incorrect.\n\n';
 md += `## Portable cache transfer\n\nThe two image caches together; outer actions/cache boundaries include compression/extraction and action overhead, not just network transfer.\n\n| Scenario | Operation | GitHub | Celesto |\n| --- | --- | ---: | ---: |\n`;
 for (const scenario of ['seed', 'unchanged', 'source', 'dependency']) for (const metric of ['portable cache restore', 'portable cache save']) {
   if (scenario === 'seed' && metric.endsWith('restore')) continue;
@@ -87,19 +90,28 @@ for (const scenario of ['seed', 'unchanged', 'source', 'dependency']) for (const
   md += `| ${scenario} | ${metric.replace('portable cache ', '')} | ${seconds(row?.github)} | ${seconds(row?.celesto)} |\n`;
 }
 md += '\nSave times are included only when the save succeeded; a warning from a green Actions job is not a successful save.\n\n';
+if (interventions) {
+  const sizes = interventions.between_pair_cleanup.flatMap(c => c.committed_archive_sizes_bytes);
+  md += `Celesto's committed portable archives were **${(Math.min(...sizes)/1024**2).toFixed(1)}–${(Math.max(...sizes)/1024**2).toFixed(1)} MiB compressed** per save (both apps together), verified against committed cache entries. These are dependency/build caches, not the separate 512-MiB random-byte benchmark.\n\n`;
+}
 md += `## Image pull versus tar cache\n\nPostgreSQL + Azurite, together. Cache restore alone is not enough: docker load must finish too.\n\n| Operation | GitHub | Celesto |\n| --- | ---: | ---: |\n`;
 for (const [scenario, metric] of [['image-seed', 'two images: direct pull'], ['image-seed', 'two images: cache save'], ['image-warm', 'two images: cache restore'], ['image-warm', 'two images: cache restore + docker load']]) {
   const row = find('none', scenario, metric);
   md += `| ${metric} | ${seconds(row?.github)} | ${seconds(row?.celesto)} |\n`;
 }
+md += '\nIn this fixture, median restore + Docker load was slower than direct pull on both providers. This does not establish the outcome for larger images or other registries.\n';
 md += `\n## Compatibility caveat\n\nDirect BuildKit \`type=gha,version=2\` crashed on Celesto in both preflight attempts (2/2); GitHub passed both. Registry and portable caching are separate paths, not evidence that direct GHA cache compatibility is fixed. See [protocol reproduction](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39073026017) and [methodology](../../docker-bench/README.md). No failed pilot is pooled into the five-repeat results.\n\n`;
 md += `## Completeness and evidence\n\n- Failed/incomplete artifacts in the ${cohorts ? 'selected matrix' : 'final run'}: **${failures.length}**. See [failure inventory](failures.json); missing measurements are never zero.\n- [Every measured sample, CSV](samples.csv) · [JSON](samples.json) · [aggregated medians/ranges](summary.json).\n- [Cache hit observations](cache-observations.json) · [job timestamps and links](run.json) · [raw logs/events](raw/).\n- [Exact fixtures, controls, limitations, and reproduction commands](../../docker-bench/README.md) · [compatibility evidence](../../docker-bench/compatibility.md).\n\nTool normalization and post-cleanup are excluded from workload comparisons; full Actions job duration is retained as a separate metric. Cold means no reusable build cache, not a globally empty registry/CDN. CPU measurements disable network only for compilation; image pulls and dependency fetch are separate. No private code, production deployments, or customer messages were involved.\n`;
+if (cohorts) md += '\n[Machine-readable cohort manifest](cohort-manifest.json) · [registry quota observations](registry-quota-observations.json). The quota probe uses HEAD, runs outside workload timing, and never records credentials or client IPs.\n';
 if (cohorts) {
   md += '\n## Interventions and cohort provenance\n\n';
   md += 'The [original run](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39073691950) filled Celesto’s cache quota. Two saves warned despite green jobs; three later exact restores missed. This is a service limitation, not a zero-second save or a successful cache result. [Original failures](diagnostics/original-quota-run/failures.json), [save warnings](diagnostics/original-quota-run/cache-warnings.json), and [raw evidence](diagnostics/original-quota-run/raw/) are preserved.\n\n';
   md += 'The [unauthenticated continuation](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39075713994) then hit Docker Hub’s anonymous pull limit on Celesto: 9/10 uncached jobs passed, one returned HTTP 429, and the runtime phase was skipped. [Failure and raw evidence](diagnostics/unauthenticated-rate-limit-run/). This is an operational finding, not a timing sample.\n\n';
   md += '**Every one of the 120 selected jobs was rerun with Docker Hub login on both providers**, including the registry cohort that had previously passed. No earlier successful sample or failed attempt is pooled into these timings. Registry locations and pinned image digests were not changed. Login/setup time is excluded from workload measurements and retained in full job durations.\n\n';
+  md += 'Credential setup attempts failed before measurements; one token-capture attempt accidentally appended adjacent UI labels. That capture was corrected. [Direct Docker Hub and Docker CLI authentication then passed on both providers](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39078014200). [Setup-run metadata](diagnostics/authentication-setup.json) is kept separate from runner performance. No secret values are included.\n\n';
   md += 'With explicit approval, we removed only 18 task-owned Docker pilot/benchmark caches (3.07 GiB), leaving original CPU/tooling/unrelated caches and quotas unchanged. At most two paired experiments ran at once (four jobs total). Each portable pair’s four Celesto saves were verified committed before removing its completed caches. This measures normal operation with available quota, **not cache retention under storage pressure**. See [intervention receipt](interventions.json).\n\n';
+  md += 'Docker Hub’s live headers reported a shared account allowance of **200 pulls per 3,600 seconds** in this experiment. Before starting further cohorts, non-pulling HEAD probes checked available allowance; dispatch waited when its conservative budget would not fit. These are between-cohort waits, not measured build/cache speed, and do not establish queue-to-result performance. [Probe runs and wait timestamps](cohort-manifest.json) are preserved. No account upgrade, registry substitution, or quota increase was used.\n\n';
+  md += 'Local orchestration also stopped once on a GitHub API connection error during a quota probe, then resumed from the saved cohort journal without duplicating completed benchmarks. Log collection encountered a connection reset and was retried against the same completed runs. The dispatch gap is not wholly a quota wait; neither interruption is included in workload timings.\n\n';
   md += '| Cohort | Run | Selected jobs | Whole-run status |\n| --- | --- | ---: | --- |\n';
   for (const c of cohorts) md += `| ${c.mode}${c.mode.endsWith('-pair') ? ' '+c.repetition : ''} | [${c.databaseId}](${c.url}) | ${c.selected_jobs} | ${c.whole_run_conclusion} |\n`;
   md += `\nCPU/RAM counts and named Docker/Buildx/Compose/BuildKit versions match, not physical CPUs, storage, network location, kernels, or host runtime binaries. Celesto's Ubuntu Docker build and GitHub's upstream Docker bundle have different supporting containerd packages. Full versions are in raw logs. Cohorts ran in different time windows; five samples cannot remove host or network variability.\n`;

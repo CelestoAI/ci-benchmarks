@@ -1,0 +1,119 @@
+#0 building with "builder-e57cebc4-eada-4a3c-b80e-ebc758ed7f49" instance using docker-container driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 306B done
+#1 WARN: InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 2)
+#1 WARN: InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 9)
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#2 DONE 0.4s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [build 1/7] FROM docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#4 resolve docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392 0.0s done
+#4 ...
+
+#5 [internal] load build context
+#5 transferring context: 142.41kB 0.2s done
+#5 DONE 0.2s
+
+#4 [build 1/7] FROM docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#4 sha256:a8de9fa052209313d8e45435a8486e29b20eebaa820e2e7f63a7c3c94b4fa567 448B / 448B 0.0s done
+#4 sha256:2cfab517365cfc6b4bd1f8c4cb01754884ef75bc38758b3c41e291c696f019f5 1.71MB / 1.71MB 0.1s done
+#4 sha256:f0400f4b55b0ad346bf6167a1b64a258e4d73db608c457798ce35e4ffeebfaaf 3.31kB / 3.31kB 0.0s done
+#4 sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 37.97MB / 49.84MB 0.2s
+#4 sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 28.25MB / 28.25MB 0.3s done
+#4 sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 49.84MB / 49.84MB 0.3s done
+#4 extracting sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39
+#4 extracting sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 1.0s done
+#4 DONE 1.5s
+
+#4 [build 1/7] FROM docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#4 extracting sha256:f0400f4b55b0ad346bf6167a1b64a258e4d73db608c457798ce35e4ffeebfaaf 0.0s done
+#4 extracting sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856
+#4 extracting sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 1.4s done
+#4 extracting sha256:2cfab517365cfc6b4bd1f8c4cb01754884ef75bc38758b3c41e291c696f019f5
+#4 extracting sha256:2cfab517365cfc6b4bd1f8c4cb01754884ef75bc38758b3c41e291c696f019f5 0.1s done
+#4 extracting sha256:a8de9fa052209313d8e45435a8486e29b20eebaa820e2e7f63a7c3c94b4fa567 0.0s done
+#4 DONE 3.0s
+
+#6 [build 2/7] WORKDIR /app
+#6 DONE 0.3s
+
+#7 [build 3/7] COPY package.json package-lock.json ./
+#7 DONE 0.0s
+
+#8 [build 4/7] RUN npm ci --no-audit --no-fund
+#8 1.537 
+#8 1.537 added 4 packages in 1s
+#8 1.538 npm notice
+#8 1.538 npm notice New major version of npm available! 10.9.9 -> 12.2.0
+#8 1.538 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+#8 1.538 npm notice To update run: npm install -g npm@12.2.0
+#8 1.538 npm notice
+#8 DONE 1.7s
+
+#9 [build 5/7] COPY tsconfig.json ./
+#9 DONE 0.0s
+
+#10 [build 6/7] COPY src ./src
+#10 DONE 0.1s
+
+#11 [build 7/7] RUN npm run build
+#11 0.174 
+#11 0.174 > ci-docker-node-fixture@1.0.0 build
+#11 0.174 > tsc && esbuild dist/main.js --bundle --platform=node --outfile=bundle.js
+#11 0.174 
+#11 1.747 
+#11 1.747   bundle.js  247.5kb
+#11 1.747 
+#11 1.747 ⚡ Done in 44ms
+#11 DONE 1.8s
+
+#12 [stage-1 3/3] COPY --from=build /app/bundle.js ./bundle.js
+#12 DONE 0.0s
+
+#13 exporting to oci image format
+#13 exporting layers 0.1s done
+#13 exporting manifest sha256:1400d87ecb3dd21150aaf5ee21041119f85660d584132e45a05317833d07d704 0.0s done
+#13 exporting config sha256:78c5f5419af32b6a605714d8fa8fbbf11430b490194194ffe8a8a3010a745b37 0.0s done
+#13 sending tarball
+#13 sending tarball 3.3s done
+#13 DONE 3.5s
+
+#14 importing to docker
+#14 DONE 0.0s
+
+#15 exporting cache to client directory
+#15 preparing build cache for export
+#15 writing layer sha256:053df5ee73eba9b5f61948eb5d00a08759c6d1a9b1852a56bd5779d93b0991ea
+#15 writing layer sha256:053df5ee73eba9b5f61948eb5d00a08759c6d1a9b1852a56bd5779d93b0991ea 0.0s done
+#15 writing layer sha256:0b29f1663d6645a3a0227f8d7839206cf84c677e1dc15baca184445c597b4494 0.0s done
+#15 writing layer sha256:20155ae6e4fd40f7becda15faac2c6edeb2cb38f5dc61b697e4fbbe0290fc73a
+#15 writing layer sha256:20155ae6e4fd40f7becda15faac2c6edeb2cb38f5dc61b697e4fbbe0290fc73a 0.2s done
+#15 writing layer sha256:2cfab517365cfc6b4bd1f8c4cb01754884ef75bc38758b3c41e291c696f019f5
+#15 writing layer sha256:2cfab517365cfc6b4bd1f8c4cb01754884ef75bc38758b3c41e291c696f019f5 0.0s done
+#15 writing layer sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39
+#15 writing layer sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 0.3s done
+#15 writing layer sha256:a31c6a783b5a266ce70623829eab48291e4eb9017b47e98a283fc970cd6c22bc
+#15 writing layer sha256:a31c6a783b5a266ce70623829eab48291e4eb9017b47e98a283fc970cd6c22bc 0.0s done
+#15 writing layer sha256:a8de9fa052209313d8e45435a8486e29b20eebaa820e2e7f63a7c3c94b4fa567 0.0s done
+#15 writing layer sha256:c6f66963fb1e40c57570d5f3302cc0bcb0143e7eff3f2caa709b38ff7d4ac0df 0.0s done
+#15 writing layer sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856
+#15 writing layer sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 0.6s done
+#15 writing layer sha256:d8027caacaf78c0fade87d3e9d6c028941f42a088da127b3fc02016336cf3829
+#15 preparing build cache for export 2.9s done
+#15 writing layer sha256:d8027caacaf78c0fade87d3e9d6c028941f42a088da127b3fc02016336cf3829 0.0s done
+#15 writing layer sha256:e7b210a1fc009da6d650c2144c486882969f0dd74d70309c0c3244c87b0eeaf1 0.0s done
+#15 writing layer sha256:f0400f4b55b0ad346bf6167a1b64a258e4d73db608c457798ce35e4ffeebfaaf 0.0s done
+#15 writing config sha256:8a3545452c6201d610b0f8b11c252528382b21540eea4cacefa654c7326461ba 0.0s done
+#15 writing cache image manifest sha256:cccf146f75d5a076789de87211c7a088ed0be3968d9a7d9e8c43bc8cfd156bfe 0.0s done
+#15 DONE 2.9s
+
+ [33m2 warnings found (use docker --debug to expand):
+[0m - InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 9)
+ - InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 2)

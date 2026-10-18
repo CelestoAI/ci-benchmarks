@@ -101,10 +101,14 @@ for (const row of summary) {
 const hits = json('cache-observations.json').filter(o => ['unchanged', 'source'].includes(o.scenario));
 assert.equal(hits.length, 80);
 assert(hits.every(o => o.install_layer_cached));
+const misses = json('cache-observations.json').filter(o => ['seed','dependency','nocache'].includes(o.scenario));
+assert.equal(misses.length, 100);
+assert(misses.every(o => !o.install_layer_cached));
 const receipt = { run: run.url, source_commit: run.headSha, concrete_jobs: actual.size,
   cohorts: run.cohorts ?? null,
   repetitions_per_provider_scenario: 5, verified_log_hashes: logHashes,
   expected_dependency_layer_hits: 80, observed_dependency_layer_hits: hits.length,
+  expected_dependency_install_executions: 100, observed_dependency_install_executions: misses.length,
   expected_exact_archive_hits: 40, observed_exact_archive_hits: exactArchiveHits,
   independently_recomputed_summary_rows: summary.length, result: 'passed' };
 writeFileSync(join(dir, 'validation.json'), JSON.stringify(receipt, null, 2) + '\n');

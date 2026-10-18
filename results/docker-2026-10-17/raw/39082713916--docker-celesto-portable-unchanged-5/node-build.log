@@ -1,0 +1,125 @@
+#0 building with "builder-c704a4ae-df4e-426a-96a9-853108fa9489" instance using docker-container driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 306B done
+#1 WARN: InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 2)
+#1 WARN: InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 9)
+#1 DONE 0.1s
+
+#2 [auth] library/node:pull token for registry-1.docker.io
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#3 DONE 0.4s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 importing cache manifest from local:18142446219669109617
+#5 inferred cache manifest type: application/vnd.oci.image.manifest.v1+json done
+#5 DONE 0.0s
+
+#6 [build 1/7] FROM docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#6 resolve docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392 0.0s done
+#6 DONE 0.0s
+
+#7 [internal] load build context
+#7 transferring context: 142.41kB 0.1s done
+#7 DONE 0.2s
+
+#8 [build 3/7] COPY package.json package-lock.json ./
+#8 CACHED
+
+#9 [build 4/7] RUN npm ci --no-audit --no-fund
+#9 CACHED
+
+#10 [build 6/7] COPY src ./src
+#10 CACHED
+
+#11 [build 7/7] RUN npm run build
+#11 CACHED
+
+#12 [build 2/7] WORKDIR /app
+#12 CACHED
+
+#13 [build 5/7] COPY tsconfig.json ./
+#13 CACHED
+
+#14 [stage-1 3/3] COPY --from=build /app/bundle.js ./bundle.js
+#14 sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 13.63MB / 28.25MB 0.2s
+#14 sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 28.25MB / 28.25MB 0.3s
+#14 sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 28.25MB / 28.25MB 0.3s done
+#14 extracting sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39
+#14 extracting sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 1.1s done
+#14 sha256:f0400f4b55b0ad346bf6167a1b64a258e4d73db608c457798ce35e4ffeebfaaf 3.31kB / 3.31kB done
+#14 extracting sha256:f0400f4b55b0ad346bf6167a1b64a258e4d73db608c457798ce35e4ffeebfaaf 0.0s done
+#14 sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 14.68MB / 49.84MB 0.2s
+#14 sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 29.36MB / 49.84MB 0.3s
+#14 sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 44.04MB / 49.84MB 0.5s
+#14 sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 49.84MB / 49.84MB 0.6s done
+#14 extracting sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856
+#14 extracting sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 1.4s done
+#14 sha256:2cfab517365cfc6b4bd1f8c4cb01754884ef75bc38758b3c41e291c696f019f5 1.71MB / 1.71MB 0.0s done
+#14 extracting sha256:2cfab517365cfc6b4bd1f8c4cb01754884ef75bc38758b3c41e291c696f019f5 0.1s done
+#14 sha256:a8de9fa052209313d8e45435a8486e29b20eebaa820e2e7f63a7c3c94b4fa567 448B / 448B done
+#14 extracting sha256:a8de9fa052209313d8e45435a8486e29b20eebaa820e2e7f63a7c3c94b4fa567 0.0s done
+#14 sha256:b451b1105cfb164739beeab14e7a5ec11b63ff86a1854ecea7252ab0b02136c4 92B / 92B done
+#14 extracting sha256:b451b1105cfb164739beeab14e7a5ec11b63ff86a1854ecea7252ab0b02136c4 0.0s done
+#14 sha256:ce09bde03a484cf5149edf67e7f6a85caee87bee577e811be013b5030d04e8d7 27.55kB / 27.55kB 0.0s done
+#14 extracting sha256:ce09bde03a484cf5149edf67e7f6a85caee87bee577e811be013b5030d04e8d7 0.0s done
+#14 CACHED
+
+#15 exporting to oci image format
+#15 exporting layers done
+#15 exporting manifest sha256:6223509e9d7b3cd9edae82989fccd70a847dbcdd918d59191c213df0df738906 0.0s done
+#15 exporting config sha256:297d7501e20606ee83041d53ad8f069ae1bf38463a4a212dc4e49dec79198ea5 0.0s done
+#15 sending tarball
+#15 sending tarball 3.5s done
+#15 DONE 3.6s
+
+#16 importing to docker
+#16 DONE 0.0s
+
+#17 exporting cache to client directory
+#17 preparing build cache for export
+#17 sha256:66e2f42961c24a6474e322f73d6b6f242632d83c043c9ad81afbfab247d0e335 3.31kB / 3.31kB done
+#17 extracting sha256:66e2f42961c24a6474e322f73d6b6f242632d83c043c9ad81afbfab247d0e335 0.0s done
+#17 sha256:f31c5fbc17c82cbc14397e4ba81cfb4bafaa35ccadedc2a26067775c3f5b3cee 13.69MB / 18.50MB 0.2s
+#17 sha256:f31c5fbc17c82cbc14397e4ba81cfb4bafaa35ccadedc2a26067775c3f5b3cee 18.50MB / 18.50MB 0.2s done
+#17 extracting sha256:f31c5fbc17c82cbc14397e4ba81cfb4bafaa35ccadedc2a26067775c3f5b3cee
+#17 extracting sha256:f31c5fbc17c82cbc14397e4ba81cfb4bafaa35ccadedc2a26067775c3f5b3cee 0.6s done
+#17 sha256:18eee151c698744b882875e917fb31d1174f9afc70ed59b106ad52d26d8d7355 239B / 239B 0.0s done
+#17 extracting sha256:18eee151c698744b882875e917fb31d1174f9afc70ed59b106ad52d26d8d7355 0.0s done
+#17 sha256:1b2ab2e0d1c32335a867fac13639973e3a862010226801dd00a54c9a28e6a23c 23.75kB / 23.75kB 0.0s done
+#17 extracting sha256:1b2ab2e0d1c32335a867fac13639973e3a862010226801dd00a54c9a28e6a23c
+#17 extracting sha256:1b2ab2e0d1c32335a867fac13639973e3a862010226801dd00a54c9a28e6a23c 0.2s done
+#17 sha256:c4912800703c5f38c1fa7e67978779ca5dee538bca819fd43603ca02f597a8d7 548.97kB / 548.97kB 0.0s done
+#17 extracting sha256:c4912800703c5f38c1fa7e67978779ca5dee538bca819fd43603ca02f597a8d7 0.1s done
+#17 writing layer sha256:18eee151c698744b882875e917fb31d1174f9afc70ed59b106ad52d26d8d7355 0.0s done
+#17 writing layer sha256:1b2ab2e0d1c32335a867fac13639973e3a862010226801dd00a54c9a28e6a23c 0.0s done
+#17 writing layer sha256:2cfab517365cfc6b4bd1f8c4cb01754884ef75bc38758b3c41e291c696f019f5 0.0s done
+#17 writing layer sha256:66e2f42961c24a6474e322f73d6b6f242632d83c043c9ad81afbfab247d0e335
+#17 writing layer sha256:66e2f42961c24a6474e322f73d6b6f242632d83c043c9ad81afbfab247d0e335 0.0s done
+#17 writing layer sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39
+#17 writing layer sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 0.3s done
+#17 writing layer sha256:a8de9fa052209313d8e45435a8486e29b20eebaa820e2e7f63a7c3c94b4fa567
+#17 writing layer sha256:a8de9fa052209313d8e45435a8486e29b20eebaa820e2e7f63a7c3c94b4fa567 0.0s done
+#17 writing layer sha256:b451b1105cfb164739beeab14e7a5ec11b63ff86a1854ecea7252ab0b02136c4 0.0s done
+#17 writing layer sha256:c4912800703c5f38c1fa7e67978779ca5dee538bca819fd43603ca02f597a8d7 0.0s done
+#17 writing layer sha256:ce09bde03a484cf5149edf67e7f6a85caee87bee577e811be013b5030d04e8d7 0.0s done
+#17 writing layer sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856
+#17 writing layer sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 0.5s done
+#17 writing layer sha256:f0400f4b55b0ad346bf6167a1b64a258e4d73db608c457798ce35e4ffeebfaaf
+#17 writing layer sha256:f0400f4b55b0ad346bf6167a1b64a258e4d73db608c457798ce35e4ffeebfaaf 0.0s done
+#17 writing layer sha256:f31c5fbc17c82cbc14397e4ba81cfb4bafaa35ccadedc2a26067775c3f5b3cee
+#17 writing layer sha256:f31c5fbc17c82cbc14397e4ba81cfb4bafaa35ccadedc2a26067775c3f5b3cee 0.2s done
+#17 writing config sha256:6c00158beaf849d1d8782491685a060ee686029c902783709cfdf8c892879707
+#17 preparing build cache for export 2.7s done
+#17 writing config sha256:6c00158beaf849d1d8782491685a060ee686029c902783709cfdf8c892879707 0.0s done
+#17 writing cache image manifest sha256:8f840297c1f8564ed3554369fc5fad421b5951471302c2be8bd7d485a52e0f73 0.0s done
+#17 DONE 2.7s
+
+ [33m2 warnings found (use docker --debug to expand):
+[0m - InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 2)
+ - InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 9)

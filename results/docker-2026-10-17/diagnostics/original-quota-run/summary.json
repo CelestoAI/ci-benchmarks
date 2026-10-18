@@ -1,0 +1,2466 @@
+[
+  {
+    "backend": "portable",
+    "scenario": "dependency",
+    "metric": "Actions job including setup and post-cleanup",
+    "celesto": {
+      "n": 3,
+      "median": 53.0,
+      "min": 44.0,
+      "max": 56.0,
+      "samples": [
+        53.0,
+        56.0,
+        44.0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 65.0,
+      "min": 58.0,
+      "max": 71.0,
+      "samples": [
+        65.0,
+        71.0,
+        58.0,
+        67.0,
+        59.0
+      ]
+    },
+    "github_over_celesto": 1.2264150943396226
+  },
+  {
+    "backend": "portable",
+    "scenario": "dependency",
+    "metric": "node BuildKit cache export",
+    "celesto": {
+      "n": 3,
+      "median": 2.5,
+      "min": 2.4,
+      "max": 2.9,
+      "samples": [
+        2.5,
+        2.9,
+        2.4
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 2.1,
+      "min": 2.0,
+      "max": 2.4,
+      "samples": [
+        2.0,
+        2.0,
+        2.2,
+        2.4,
+        2.1
+      ]
+    },
+    "github_over_celesto": 0.8400000000000001
+  },
+  {
+    "backend": "portable",
+    "scenario": "dependency",
+    "metric": "node compilation",
+    "celesto": {
+      "n": 3,
+      "median": 1.4,
+      "min": 1.3,
+      "max": 1.8,
+      "samples": [
+        1.3,
+        1.8,
+        1.4
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 1.7,
+      "min": 1.4,
+      "max": 2.4,
+      "samples": [
+        1.4,
+        1.5,
+        2.4,
+        1.7,
+        2.3
+      ]
+    },
+    "github_over_celesto": 1.2142857142857144
+  },
+  {
+    "backend": "portable",
+    "scenario": "dependency",
+    "metric": "node dependency install",
+    "celesto": {
+      "n": 3,
+      "median": 1.0,
+      "min": 1.0,
+      "max": 1.7,
+      "samples": [
+        1.0,
+        1.7,
+        1.0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 1.1,
+      "min": 1.1,
+      "max": 1.2,
+      "samples": [
+        1.1,
+        1.1,
+        1.2,
+        1.1,
+        1.2
+      ]
+    },
+    "github_over_celesto": 1.1
+  },
+  {
+    "backend": "portable",
+    "scenario": "dependency",
+    "metric": "node image build/load",
+    "celesto": {
+      "n": 3,
+      "median": 13.335270258000001,
+      "min": 13.238779939999997,
+      "max": 16.725875801,
+      "samples": [
+        13.335270258000001,
+        16.725875801,
+        13.238779939999997
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 12.116056784999998,
+      "min": 11.71801357199999,
+      "max": 12.961467919999997,
+      "samples": [
+        11.71801357199999,
+        12.116056784999998,
+        12.464540593999999,
+        12.961467919999997,
+        11.964761177000014
+      ]
+    },
+    "github_over_celesto": 0.9085722711717386
+  },
+  {
+    "backend": "portable",
+    "scenario": "dependency",
+    "metric": "portable cache restore",
+    "celesto": {
+      "n": 3,
+      "median": 1.614,
+      "min": 1.412,
+      "max": 2.107,
+      "samples": [
+        1.614,
+        2.107,
+        1.412
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 1.485,
+      "min": 1.158,
+      "max": 2.451,
+      "samples": [
+        1.834,
+        2.451,
+        1.485,
+        1.158,
+        1.43
+      ]
+    },
+    "github_over_celesto": 0.9200743494423792
+  },
+  {
+    "backend": "portable",
+    "scenario": "dependency",
+    "metric": "portable cache save",
+    "celesto": {
+      "n": 3,
+      "median": 2.849,
+      "min": 2.774,
+      "max": 3.246,
+      "samples": [
+        2.849,
+        3.246,
+        2.774
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 1.66,
+      "min": 1.479,
+      "max": 2.03,
+      "samples": [
+        1.768,
+        2.03,
+        1.479,
+        1.605,
+        1.66
+      ]
+    },
+    "github_over_celesto": 0.5826605826605826
+  },
+  {
+    "backend": "portable",
+    "scenario": "dependency",
+    "metric": "python BuildKit cache export",
+    "celesto": {
+      "n": 3,
+      "median": 2.6,
+      "min": 2.5,
+      "max": 3.2,
+      "samples": [
+        2.6,
+        3.2,
+        2.5
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 2.5,
+      "min": 2.1,
+      "max": 2.6,
+      "samples": [
+        2.1,
+        2.3,
+        2.5,
+        2.6,
+        2.5
+      ]
+    },
+    "github_over_celesto": 0.9615384615384615
+  },
+  {
+    "backend": "portable",
+    "scenario": "dependency",
+    "metric": "python dependency install",
+    "celesto": {
+      "n": 3,
+      "median": 4.1,
+      "min": 3.9,
+      "max": 5.1,
+      "samples": [
+        4.1,
+        5.1,
+        3.9
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 4.9,
+      "min": 4.0,
+      "max": 5.1,
+      "samples": [
+        4.0,
+        4.3,
+        5.1,
+        4.9,
+        4.9
+      ]
+    },
+    "github_over_celesto": 1.1951219512195124
+  },
+  {
+    "backend": "portable",
+    "scenario": "dependency",
+    "metric": "python image build/load",
+    "celesto": {
+      "n": 3,
+      "median": 11.866837338000003,
+      "min": 11.342563629000004,
+      "max": 15.038681564000001,
+      "samples": [
+        11.866837338000003,
+        15.038681564000001,
+        11.342563629000004
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 12.666174895000012,
+      "min": 10.852790464999984,
+      "max": 13.865827471999992,
+      "samples": [
+        10.852790464999984,
+        12.857638034999994,
+        12.666174895000012,
+        13.865827471999992,
+        12.347885856999994
+      ]
+    },
+    "github_over_celesto": 1.0673589377045194
+  },
+  {
+    "backend": "portable",
+    "scenario": "dependency",
+    "metric": "two-image workload incl cache transfer",
+    "celesto": {
+      "n": 3,
+      "median": 32.131807772,
+      "min": 31.208203966000003,
+      "max": 39.726447498000006,
+      "samples": [
+        32.131807772,
+        39.726447498000006,
+        31.208203966000003
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 29.52931656999999,
+      "min": 29.19167003400001,
+      "max": 33.282810461,
+      "samples": [
+        29.231726084000012,
+        32.81799062899999,
+        29.52931656999999,
+        33.282810461,
+        29.19167003400001
+      ]
+    },
+    "github_over_celesto": 0.9190057646159626
+  },
+  {
+    "backend": "portable",
+    "scenario": "seed",
+    "metric": "Actions job including setup and post-cleanup",
+    "celesto": {
+      "n": 4,
+      "median": 50.5,
+      "min": 46.0,
+      "max": 52.0,
+      "samples": [
+        51.0,
+        52.0,
+        50.0,
+        46.0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 65.0,
+      "min": 56.0,
+      "max": 69.0,
+      "samples": [
+        69.0,
+        56.0,
+        65.0,
+        67.0,
+        57.0
+      ]
+    },
+    "github_over_celesto": 1.2871287128712872
+  },
+  {
+    "backend": "portable",
+    "scenario": "seed",
+    "metric": "node BuildKit cache export",
+    "celesto": {
+      "n": 4,
+      "median": 2.9,
+      "min": 2.9,
+      "max": 2.9,
+      "samples": [
+        2.9,
+        2.9,
+        2.9,
+        2.9
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 2.1,
+      "min": 2.1,
+      "max": 2.8,
+      "samples": [
+        2.8,
+        2.1,
+        2.1,
+        2.1,
+        2.1
+      ]
+    },
+    "github_over_celesto": 0.7241379310344828
+  },
+  {
+    "backend": "portable",
+    "scenario": "seed",
+    "metric": "node compilation",
+    "celesto": {
+      "n": 4,
+      "median": 1.8,
+      "min": 1.8,
+      "max": 1.8,
+      "samples": [
+        1.8,
+        1.8,
+        1.8,
+        1.8
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 2.3,
+      "min": 1.9,
+      "max": 2.6,
+      "samples": [
+        1.9,
+        2.6,
+        2.2,
+        2.3,
+        2.3
+      ]
+    },
+    "github_over_celesto": 1.2777777777777777
+  },
+  {
+    "backend": "portable",
+    "scenario": "seed",
+    "metric": "node dependency install",
+    "celesto": {
+      "n": 4,
+      "median": 1.7,
+      "min": 1.7,
+      "max": 1.8,
+      "samples": [
+        1.7,
+        1.7,
+        1.8,
+        1.7
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 1.2,
+      "min": 1.2,
+      "max": 1.3,
+      "samples": [
+        1.3,
+        1.2,
+        1.3,
+        1.2,
+        1.2
+      ]
+    },
+    "github_over_celesto": 0.7058823529411765
+  },
+  {
+    "backend": "portable",
+    "scenario": "seed",
+    "metric": "node image build/load",
+    "celesto": {
+      "n": 4,
+      "median": 14.563345454000002,
+      "min": 14.225450873000003,
+      "max": 15.135359812,
+      "samples": [
+        14.413200683000003,
+        14.713490225000001,
+        15.135359812,
+        14.225450873000003
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 11.81807658400001,
+      "min": 11.369207619999997,
+      "max": 13.323191140000006,
+      "samples": [
+        13.323191140000006,
+        11.706729494000001,
+        11.81807658400001,
+        11.858245871000001,
+        11.369207619999997
+      ]
+    },
+    "github_over_celesto": 0.8114946267894806
+  },
+  {
+    "backend": "portable",
+    "scenario": "seed",
+    "metric": "portable cache save",
+    "celesto": {
+      "n": 4,
+      "median": 4.071,
+      "min": 3.282,
+      "max": 4.991,
+      "samples": [
+        3.759,
+        4.383,
+        4.991,
+        3.282
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 2.619,
+      "min": 1.507,
+      "max": 2.992,
+      "samples": [
+        2.619,
+        2.067,
+        2.917,
+        2.992,
+        1.507
+      ]
+    },
+    "github_over_celesto": 0.6433308769344143
+  },
+  {
+    "backend": "portable",
+    "scenario": "seed",
+    "metric": "python BuildKit cache export",
+    "celesto": {
+      "n": 4,
+      "median": 3.15,
+      "min": 3.0,
+      "max": 3.4,
+      "samples": [
+        3.3,
+        3.4,
+        3.0,
+        3.0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 2.5,
+      "min": 2.5,
+      "max": 3.0,
+      "samples": [
+        3.0,
+        2.5,
+        2.5,
+        2.5,
+        2.5
+      ]
+    },
+    "github_over_celesto": 0.7936507936507937
+  },
+  {
+    "backend": "portable",
+    "scenario": "seed",
+    "metric": "python dependency install",
+    "celesto": {
+      "n": 4,
+      "median": 4.7,
+      "min": 4.3,
+      "max": 5.2,
+      "samples": [
+        5.2,
+        4.7,
+        4.3,
+        4.7
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 4.8,
+      "min": 4.3,
+      "max": 5.2,
+      "samples": [
+        4.5,
+        4.9,
+        5.2,
+        4.8,
+        4.3
+      ]
+    },
+    "github_over_celesto": 1.0212765957446808
+  },
+  {
+    "backend": "portable",
+    "scenario": "seed",
+    "metric": "python image build/load",
+    "celesto": {
+      "n": 4,
+      "median": 14.573875967500001,
+      "min": 13.515904149,
+      "max": 15.360800339999997,
+      "samples": [
+        15.360800339999997,
+        15.338460529000002,
+        13.515904149,
+        13.809291406
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 12.773364079000004,
+      "min": 11.778445177000002,
+      "max": 13.094734948000024,
+      "samples": [
+        13.094734948000024,
+        12.421504079000016,
+        12.944443563999982,
+        12.773364079000004,
+        11.778445177000002
+      ]
+    },
+    "github_over_celesto": 0.8764562088688576
+  },
+  {
+    "backend": "portable",
+    "scenario": "seed",
+    "metric": "two-image workload incl cache transfer",
+    "celesto": {
+      "n": 4,
+      "median": 35.732033184,
+      "min": 33.253841711999996,
+      "max": 37.052155007,
+      "samples": [
+        35.944126679,
+        37.052155007,
+        35.519939689,
+        33.253841711999996
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 29.432605265000007,
+      "min": 26.475373124000004,
+      "max": 32.709124936999984,
+      "samples": [
+        32.709124936999984,
+        27.780725171999983,
+        29.432605265000007,
+        29.472980508000003,
+        26.475373124000004
+      ]
+    },
+    "github_over_celesto": 0.8237036250760917
+  },
+  {
+    "backend": "portable",
+    "scenario": "source",
+    "metric": "Actions job including setup and post-cleanup",
+    "celesto": {
+      "n": 4,
+      "median": 44.0,
+      "min": 43.0,
+      "max": 46.0,
+      "samples": [
+        44.0,
+        44.0,
+        43.0,
+        46.0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 55.0,
+      "min": 51.0,
+      "max": 63.0,
+      "samples": [
+        63.0,
+        51.0,
+        53.0,
+        55.0,
+        58.0
+      ]
+    },
+    "github_over_celesto": 1.25
+  },
+  {
+    "backend": "portable",
+    "scenario": "source",
+    "metric": "node BuildKit cache export",
+    "celesto": {
+      "n": 4,
+      "median": 1.55,
+      "min": 1.5,
+      "max": 1.7,
+      "samples": [
+        1.5,
+        1.6,
+        1.7,
+        1.5
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 0.9,
+      "min": 0.8,
+      "max": 1.0,
+      "samples": [
+        1.0,
+        1.0,
+        0.9,
+        0.8,
+        0.9
+      ]
+    },
+    "github_over_celesto": 0.5806451612903226
+  },
+  {
+    "backend": "portable",
+    "scenario": "source",
+    "metric": "node compilation",
+    "celesto": {
+      "n": 4,
+      "median": 1.9,
+      "min": 1.8,
+      "max": 1.9,
+      "samples": [
+        1.9,
+        1.8,
+        1.9,
+        1.9
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 2.4,
+      "min": 1.3,
+      "max": 2.4,
+      "samples": [
+        2.4,
+        2.4,
+        2.4,
+        2.3,
+        1.3
+      ]
+    },
+    "github_over_celesto": 1.263157894736842
+  },
+  {
+    "backend": "portable",
+    "scenario": "source",
+    "metric": "node dependency install",
+    "celesto": {
+      "n": 4,
+      "median": 0.0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "backend": "portable",
+    "scenario": "source",
+    "metric": "node image build/load",
+    "celesto": {
+      "n": 4,
+      "median": 13.63762433,
+      "min": 13.205408657000003,
+      "max": 15.286476301,
+      "samples": [
+        13.205408657000003,
+        14.037658283999999,
+        13.237590376,
+        15.286476301
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 10.511155066000015,
+      "min": 9.966297646000001,
+      "max": 11.489040529999997,
+      "samples": [
+        11.489040529999997,
+        10.718043155000004,
+        10.511155066000015,
+        10.20110241799999,
+        9.966297646000001
+      ]
+    },
+    "github_over_celesto": 0.7707467819653612
+  },
+  {
+    "backend": "portable",
+    "scenario": "source",
+    "metric": "portable cache restore",
+    "celesto": {
+      "n": 4,
+      "median": 2.8689999999999998,
+      "min": 2.486,
+      "max": 4.689,
+      "samples": [
+        2.97,
+        2.768,
+        2.486,
+        4.689
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 1.937,
+      "min": 1.482,
+      "max": 3.626,
+      "samples": [
+        3.626,
+        1.482,
+        1.848,
+        1.937,
+        2.12
+      ]
+    },
+    "github_over_celesto": 0.6751481352387593
+  },
+  {
+    "backend": "portable",
+    "scenario": "source",
+    "metric": "portable cache save",
+    "celesto": {
+      "n": 4,
+      "median": 4.3425,
+      "min": 3.116,
+      "max": 4.633,
+      "samples": [
+        4.519,
+        4.633,
+        4.166,
+        3.116
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 2.248,
+      "min": 1.699,
+      "max": 3.052,
+      "samples": [
+        3.052,
+        1.888,
+        2.346,
+        2.248,
+        1.699
+      ]
+    },
+    "github_over_celesto": 0.5176741508347726
+  },
+  {
+    "backend": "portable",
+    "scenario": "source",
+    "metric": "python BuildKit cache export",
+    "celesto": {
+      "n": 4,
+      "median": 2.3,
+      "min": 2.2,
+      "max": 2.8,
+      "samples": [
+        2.3,
+        2.2,
+        2.8,
+        2.3
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 1.3,
+      "min": 1.3,
+      "max": 1.4,
+      "samples": [
+        1.4,
+        1.3,
+        1.4,
+        1.3,
+        1.3
+      ]
+    },
+    "github_over_celesto": 0.5652173913043479
+  },
+  {
+    "backend": "portable",
+    "scenario": "source",
+    "metric": "python dependency install",
+    "celesto": {
+      "n": 4,
+      "median": 0.0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "backend": "portable",
+    "scenario": "source",
+    "metric": "python image build/load",
+    "celesto": {
+      "n": 4,
+      "median": 7.660026622999997,
+      "min": 7.2308466480000035,
+      "max": 8.11154174,
+      "samples": [
+        7.7048845789999945,
+        7.2308466480000035,
+        8.11154174,
+        7.615168666999999
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 4.847173199000011,
+      "min": 4.719887622000002,
+      "max": 5.263630395999996,
+      "samples": [
+        5.263630395999996,
+        4.826084751999993,
+        4.998401043000001,
+        4.847173199000011,
+        4.719887622000002
+      ]
+    },
+    "github_over_celesto": 0.6327880355462328
+  },
+  {
+    "backend": "portable",
+    "scenario": "source",
+    "metric": "two-image workload incl cache transfer",
+    "celesto": {
+      "n": 4,
+      "median": 30.8862667125,
+      "min": 30.119637780999998,
+      "max": 32.912394278,
+      "samples": [
+        30.827933144999996,
+        30.944600280000003,
+        30.119637780999998,
+        32.912394278
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 21.702049504000012,
+      "min": 20.861446789,
+      "max": 25.390728359000004,
+      "samples": [
+        25.390728359000004,
+        20.861446789,
+        21.702049504000012,
+        21.17060751000001,
+        22.046851593
+      ]
+    },
+    "github_over_celesto": 0.7026439843316176
+  },
+  {
+    "backend": "portable",
+    "scenario": "unchanged",
+    "metric": "Actions job including setup and post-cleanup",
+    "celesto": {
+      "n": 4,
+      "median": 51.0,
+      "min": 38.0,
+      "max": 156.0,
+      "samples": [
+        48.0,
+        156.0,
+        38.0,
+        54.0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 52.0,
+      "min": 47.0,
+      "max": 69.0,
+      "samples": [
+        48.0,
+        69.0,
+        53.0,
+        52.0,
+        47.0
+      ]
+    },
+    "github_over_celesto": 1.0196078431372548
+  },
+  {
+    "backend": "portable",
+    "scenario": "unchanged",
+    "metric": "node BuildKit cache export",
+    "celesto": {
+      "n": 4,
+      "median": 2.35,
+      "min": 2.0,
+      "max": 2.8,
+      "samples": [
+        2.6,
+        2.1,
+        2.0,
+        2.8
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 1.5,
+      "min": 1.4,
+      "max": 1.8,
+      "samples": [
+        1.4,
+        1.8,
+        1.5,
+        1.4,
+        1.5
+      ]
+    },
+    "github_over_celesto": 0.6382978723404255
+  },
+  {
+    "backend": "portable",
+    "scenario": "unchanged",
+    "metric": "node compilation",
+    "celesto": {
+      "n": 4,
+      "median": 0.0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "backend": "portable",
+    "scenario": "unchanged",
+    "metric": "node dependency install",
+    "celesto": {
+      "n": 4,
+      "median": 0.0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "backend": "portable",
+    "scenario": "unchanged",
+    "metric": "node image build/load",
+    "celesto": {
+      "n": 4,
+      "median": 10.701600940499999,
+      "min": 7.698795396999998,
+      "max": 44.069709468,
+      "samples": [
+        10.376450285999997,
+        44.069709468,
+        7.698795396999998,
+        11.026751595
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 7.053158497000005,
+      "min": 6.876795982000004,
+      "max": 7.96511768900001,
+      "samples": [
+        6.876795982000004,
+        7.96511768900001,
+        7.304116943999986,
+        7.027734507000005,
+        7.053158497000005
+      ]
+    },
+    "github_over_celesto": 0.6590750800945553
+  },
+  {
+    "backend": "portable",
+    "scenario": "unchanged",
+    "metric": "portable cache restore",
+    "celesto": {
+      "n": 4,
+      "median": 2.5475000000000003,
+      "min": 1.223,
+      "max": 7.318,
+      "samples": [
+        3.075,
+        2.02,
+        1.223,
+        7.318
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 1.798,
+      "min": 1.404,
+      "max": 2.534,
+      "samples": [
+        1.453,
+        2.534,
+        2.289,
+        1.798,
+        1.404
+      ]
+    },
+    "github_over_celesto": 0.7057899901864573
+  },
+  {
+    "backend": "portable",
+    "scenario": "unchanged",
+    "metric": "portable cache save",
+    "celesto": {
+      "n": 4,
+      "median": 3.8295,
+      "min": 2.968,
+      "max": 8.711,
+      "samples": [
+        4.335,
+        3.324,
+        2.968,
+        8.711
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 1.882,
+      "min": 1.479,
+      "max": 2.559,
+      "samples": [
+        1.479,
+        2.317,
+        2.559,
+        1.882,
+        1.499
+      ]
+    },
+    "github_over_celesto": 0.49144796970883925
+  },
+  {
+    "backend": "portable",
+    "scenario": "unchanged",
+    "metric": "python BuildKit cache export",
+    "celesto": {
+      "n": 4,
+      "median": 1.95,
+      "min": 1.5,
+      "max": 3.2,
+      "samples": [
+        3.2,
+        1.5,
+        1.5,
+        2.4
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 1.3,
+      "min": 1.3,
+      "max": 1.7,
+      "samples": [
+        1.3,
+        1.7,
+        1.3,
+        1.3,
+        1.3
+      ]
+    },
+    "github_over_celesto": 0.6666666666666667
+  },
+  {
+    "backend": "portable",
+    "scenario": "unchanged",
+    "metric": "python dependency install",
+    "celesto": {
+      "n": 4,
+      "median": 0.0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "backend": "portable",
+    "scenario": "unchanged",
+    "metric": "python image build/load",
+    "celesto": {
+      "n": 4,
+      "median": 6.462835526000013,
+      "min": 5.025432117000001,
+      "max": 12.337922559999996,
+      "samples": [
+        12.337922559999996,
+        5.088042097000027,
+        5.025432117000001,
+        7.837628955
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 4.764068873999996,
+      "min": 4.668586437000002,
+      "max": 5.958526545999987,
+      "samples": [
+        4.721955527999995,
+        5.958526545999987,
+        4.890862917999982,
+        4.764068873999996,
+        4.668586437000002
+      ]
+    },
+    "github_over_celesto": 0.737148401012857
+  },
+  {
+    "backend": "portable",
+    "scenario": "unchanged",
+    "metric": "two-image workload incl cache transfer",
+    "celesto": {
+      "n": 4,
+      "median": 37.4795120015,
+      "min": 24.584371852999997,
+      "max": 71.63006081199998,
+      "samples": [
+        34.925226695,
+        71.63006081199998,
+        24.584371852999997,
+        40.033797308
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 18.93431426500001,
+      "min": 17.663152729,
+      "max": 27.129761869000006,
+      "samples": [
+        17.663152729,
+        27.129761869000006,
+        20.485162934000005,
+        18.93431426500001,
+        17.888598375999997
+      ]
+    },
+    "github_over_celesto": 0.5051910564962058
+  },
+  {
+    "backend": "registry",
+    "scenario": "dependency",
+    "metric": "Actions job including setup and post-cleanup",
+    "celesto": {
+      "n": 5,
+      "median": 64.0,
+      "min": 55.0,
+      "max": 122.0,
+      "samples": [
+        55.0,
+        62.0,
+        122.0,
+        64.0,
+        120.0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 79.0,
+      "min": 72.0,
+      "max": 135.0,
+      "samples": [
+        72.0,
+        76.0,
+        135.0,
+        79.0,
+        86.0
+      ]
+    },
+    "github_over_celesto": 1.234375
+  },
+  {
+    "backend": "registry",
+    "scenario": "dependency",
+    "metric": "node BuildKit cache export",
+    "celesto": {
+      "n": 5,
+      "median": 10.0,
+      "min": 9.4,
+      "max": 72.8,
+      "samples": [
+        9.4,
+        10.0,
+        72.8,
+        9.4,
+        69.2
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 9.6,
+      "min": 9.3,
+      "max": 62.6,
+      "samples": [
+        9.3,
+        9.6,
+        62.6,
+        9.3,
+        11.1
+      ]
+    },
+    "github_over_celesto": 0.96
+  },
+  {
+    "backend": "registry",
+    "scenario": "dependency",
+    "metric": "node compilation",
+    "celesto": {
+      "n": 5,
+      "median": 1.9,
+      "min": 1.3,
+      "max": 2.8,
+      "samples": [
+        1.3,
+        2.8,
+        1.8,
+        2.1,
+        1.9
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 2.3,
+      "min": 1.7,
+      "max": 2.5,
+      "samples": [
+        2.3,
+        2.5,
+        1.7,
+        1.7,
+        2.4
+      ]
+    },
+    "github_over_celesto": 1.2105263157894737
+  },
+  {
+    "backend": "registry",
+    "scenario": "dependency",
+    "metric": "node dependency install",
+    "celesto": {
+      "n": 5,
+      "median": 1.7,
+      "min": 1.0,
+      "max": 3.3,
+      "samples": [
+        1.0,
+        1.7,
+        1.7,
+        3.3,
+        1.8
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 1.2,
+      "min": 1.1,
+      "max": 1.3,
+      "samples": [
+        1.2,
+        1.2,
+        1.2,
+        1.1,
+        1.3
+      ]
+    },
+    "github_over_celesto": 0.7058823529411765
+  },
+  {
+    "backend": "registry",
+    "scenario": "dependency",
+    "metric": "node image build/load",
+    "celesto": {
+      "n": 5,
+      "median": 24.368423466,
+      "min": 19.240356314999996,
+      "max": 85.359814143,
+      "samples": [
+        19.240356314999996,
+        23.348874491,
+        85.359814143,
+        24.368423466,
+        81.68266090499999
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 20.819372497999993,
+      "min": 19.63640536399999,
+      "max": 73.555554963,
+      "samples": [
+        19.63640536399999,
+        20.819372497999993,
+        73.555554963,
+        20.118696424000007,
+        22.819944627000012
+      ]
+    },
+    "github_over_celesto": 0.8543586140091577
+  },
+  {
+    "backend": "registry",
+    "scenario": "dependency",
+    "metric": "python BuildKit cache export",
+    "celesto": {
+      "n": 5,
+      "median": 10.5,
+      "min": 9.9,
+      "max": 11.2,
+      "samples": [
+        10.0,
+        10.5,
+        9.9,
+        10.5,
+        11.2
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 10.3,
+      "min": 9.5,
+      "max": 11.6,
+      "samples": [
+        9.9,
+        10.5,
+        10.3,
+        9.5,
+        11.6
+      ]
+    },
+    "github_over_celesto": 0.980952380952381
+  },
+  {
+    "backend": "registry",
+    "scenario": "dependency",
+    "metric": "python dependency install",
+    "celesto": {
+      "n": 5,
+      "median": 4.3,
+      "min": 4.0,
+      "max": 5.1,
+      "samples": [
+        4.0,
+        4.5,
+        4.1,
+        5.1,
+        4.3
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 4.9,
+      "min": 3.8,
+      "max": 5.3,
+      "samples": [
+        4.5,
+        4.9,
+        5.2,
+        3.8,
+        5.3
+      ]
+    },
+    "github_over_celesto": 1.1395348837209303
+  },
+  {
+    "backend": "registry",
+    "scenario": "dependency",
+    "metric": "python image build/load",
+    "celesto": {
+      "n": 5,
+      "median": 22.113645045,
+      "min": 19.650946073,
+      "max": 23.041305568999995,
+      "samples": [
+        19.650946073,
+        22.113645045,
+        21.301995153999997,
+        23.041305568999995,
+        22.383141374000004
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 21.078164132999987,
+      "min": 19.113367807000003,
+      "max": 23.05646344499999,
+      "samples": [
+        20.144452813,
+        21.078164132999987,
+        21.91828310199999,
+        19.113367807000003,
+        23.05646344499999
+      ]
+    },
+    "github_over_celesto": 0.9531745711802434
+  },
+  {
+    "backend": "registry",
+    "scenario": "dependency",
+    "metric": "two-image workload incl cache transfer",
+    "celesto": {
+      "n": 5,
+      "median": 49.525195584,
+      "min": 41.30120761100001,
+      "max": 108.38002483099999,
+      "samples": [
+        41.30120761100001,
+        47.35073906000001,
+        108.38002483099999,
+        49.525195584,
+        105.675066658
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 43.38058785,
+      "min": 41.575175433000005,
+      "max": 97.570748772,
+      "samples": [
+        41.575175433000005,
+        43.38058785,
+        97.570748772,
+        42.514726688,
+        47.42341872200001
+      ]
+    },
+    "github_over_celesto": 0.8759296624366057
+  },
+  {
+    "backend": "registry",
+    "scenario": "seed",
+    "metric": "Actions job including setup and post-cleanup",
+    "celesto": {
+      "n": 5,
+      "median": 64.0,
+      "min": 62.0,
+      "max": 124.0,
+      "samples": [
+        64.0,
+        62.0,
+        121.0,
+        124.0,
+        63.0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 87.0,
+      "min": 73.0,
+      "max": 158.0,
+      "samples": [
+        80.0,
+        87.0,
+        92.0,
+        158.0,
+        73.0
+      ]
+    },
+    "github_over_celesto": 1.359375
+  },
+  {
+    "backend": "registry",
+    "scenario": "seed",
+    "metric": "node BuildKit cache export",
+    "celesto": {
+      "n": 5,
+      "median": 11.5,
+      "min": 10.9,
+      "max": 12.8,
+      "samples": [
+        12.8,
+        11.9,
+        11.4,
+        11.5,
+        10.9
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 12.9,
+      "min": 11.4,
+      "max": 13.7,
+      "samples": [
+        12.9,
+        13.7,
+        13.5,
+        11.9,
+        11.4
+      ]
+    },
+    "github_over_celesto": 1.1217391304347826
+  },
+  {
+    "backend": "registry",
+    "scenario": "seed",
+    "metric": "node compilation",
+    "celesto": {
+      "n": 5,
+      "median": 1.8,
+      "min": 1.8,
+      "max": 1.9,
+      "samples": [
+        1.8,
+        1.9,
+        1.8,
+        1.8,
+        1.8
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 2.1,
+      "min": 1.7,
+      "max": 2.3,
+      "samples": [
+        2.0,
+        2.3,
+        2.1,
+        1.7,
+        2.3
+      ]
+    },
+    "github_over_celesto": 1.1666666666666667
+  },
+  {
+    "backend": "registry",
+    "scenario": "seed",
+    "metric": "node dependency install",
+    "celesto": {
+      "n": 5,
+      "median": 1.7,
+      "min": 1.7,
+      "max": 1.9,
+      "samples": [
+        1.7,
+        1.7,
+        1.7,
+        1.7,
+        1.9
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 1.2,
+      "min": 1.1,
+      "max": 1.2,
+      "samples": [
+        1.1,
+        1.2,
+        1.1,
+        1.2,
+        1.2
+      ]
+    },
+    "github_over_celesto": 0.7058823529411765
+  },
+  {
+    "backend": "registry",
+    "scenario": "seed",
+    "metric": "node image build/load",
+    "celesto": {
+      "n": 5,
+      "median": 23.850012184999997,
+      "min": 22.700364770999997,
+      "max": 24.583165294000004,
+      "samples": [
+        24.049320669,
+        23.273045953,
+        23.850012184999997,
+        22.700364770999997,
+        24.583165294000004
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 22.85850964400001,
+      "min": 20.570411027000006,
+      "max": 24.777192192,
+      "samples": [
+        21.267173852,
+        23.450940908,
+        24.777192192,
+        22.85850964400001,
+        20.570411027000006
+      ]
+    },
+    "github_over_celesto": 0.9584275876545013
+  },
+  {
+    "backend": "registry",
+    "scenario": "seed",
+    "metric": "python BuildKit cache export",
+    "celesto": {
+      "n": 5,
+      "median": 11.3,
+      "min": 10.2,
+      "max": 71.5,
+      "samples": [
+        11.3,
+        11.3,
+        70.3,
+        71.5,
+        10.2
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 12.9,
+      "min": 11.0,
+      "max": 86.7,
+      "samples": [
+        12.8,
+        13.4,
+        12.9,
+        86.7,
+        11.0
+      ]
+    },
+    "github_over_celesto": 1.1415929203539823
+  },
+  {
+    "backend": "registry",
+    "scenario": "seed",
+    "metric": "python dependency install",
+    "celesto": {
+      "n": 5,
+      "median": 4.8,
+      "min": 4.7,
+      "max": 6.7,
+      "samples": [
+        6.7,
+        4.7,
+        4.8,
+        5.0,
+        4.7
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 4.4,
+      "min": 4.2,
+      "max": 4.9,
+      "samples": [
+        4.2,
+        4.8,
+        4.3,
+        4.4,
+        4.9
+      ]
+    },
+    "github_over_celesto": 0.9166666666666667
+  },
+  {
+    "backend": "registry",
+    "scenario": "seed",
+    "metric": "python image build/load",
+    "celesto": {
+      "n": 5,
+      "median": 24.51754968400001,
+      "min": 22.420627388,
+      "max": 82.94153888,
+      "samples": [
+        24.51754968400001,
+        22.693672764,
+        81.33013110099999,
+        82.94153888,
+        22.420627388
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 23.182070527999997,
+      "min": 20.793496216999998,
+      "max": 96.262222847,
+      "samples": [
+        21.687675188,
+        23.602072300000003,
+        23.182070527999997,
+        96.262222847,
+        20.793496216999998
+      ]
+    },
+    "github_over_celesto": 0.9455296645377439
+  },
+  {
+    "backend": "registry",
+    "scenario": "seed",
+    "metric": "two-image workload incl cache transfer",
+    "celesto": {
+      "n": 5,
+      "median": 50.578350865000004,
+      "min": 47.912099456,
+      "max": 107.438035923,
+      "samples": [
+        50.578350865000004,
+        47.912099456,
+        107.128041843,
+        107.438035923,
+        49.157020968
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 48.943192887,
+      "min": 43.074261934,
+      "max": 122.003124563,
+      "samples": [
+        44.61505773299999,
+        48.943192887,
+        51.326199773,
+        122.003124563,
+        43.074261934
+      ]
+    },
+    "github_over_celesto": 0.9676707929373884
+  },
+  {
+    "backend": "registry",
+    "scenario": "source",
+    "metric": "Actions job including setup and post-cleanup",
+    "celesto": {
+      "n": 5,
+      "median": 44.0,
+      "min": 42.0,
+      "max": 103.0,
+      "samples": [
+        45.0,
+        103.0,
+        44.0,
+        42.0,
+        42.0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 67.0,
+      "min": 53.0,
+      "max": 78.0,
+      "samples": [
+        55.0,
+        78.0,
+        53.0,
+        67.0,
+        71.0
+      ]
+    },
+    "github_over_celesto": 1.5227272727272727
+  },
+  {
+    "backend": "registry",
+    "scenario": "source",
+    "metric": "node BuildKit cache export",
+    "celesto": {
+      "n": 5,
+      "median": 6.4,
+      "min": 5.6,
+      "max": 66.0,
+      "samples": [
+        6.5,
+        66.0,
+        6.4,
+        5.6,
+        6.0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 7.3,
+      "min": 5.5,
+      "max": 7.7,
+      "samples": [
+        5.6,
+        7.5,
+        5.5,
+        7.7,
+        7.3
+      ]
+    },
+    "github_over_celesto": 1.140625
+  },
+  {
+    "backend": "registry",
+    "scenario": "source",
+    "metric": "node compilation",
+    "celesto": {
+      "n": 5,
+      "median": 1.8,
+      "min": 1.7,
+      "max": 1.9,
+      "samples": [
+        1.8,
+        1.7,
+        1.8,
+        1.8,
+        1.9
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 2.3,
+      "min": 1.8,
+      "max": 2.4,
+      "samples": [
+        2.3,
+        2.4,
+        2.3,
+        2.4,
+        1.8
+      ]
+    },
+    "github_over_celesto": 1.2777777777777777
+  },
+  {
+    "backend": "registry",
+    "scenario": "source",
+    "metric": "node dependency install",
+    "celesto": {
+      "n": 5,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "backend": "registry",
+    "scenario": "source",
+    "metric": "node image build/load",
+    "celesto": {
+      "n": 5,
+      "median": 17.977533255999997,
+      "min": 17.396946471999996,
+      "max": 77.16157458500001,
+      "samples": [
+        17.977533255999997,
+        77.16157458500001,
+        19.423953223,
+        17.478295489,
+        17.396946471999996
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 18.94351524000001,
+      "min": 14.894345441000013,
+      "max": 32.109750801,
+      "samples": [
+        15.36943554299998,
+        32.109750801,
+        14.894345441000013,
+        18.94351524000001,
+        20.006667125999996
+      ]
+    },
+    "github_over_celesto": 1.0537327324190942
+  },
+  {
+    "backend": "registry",
+    "scenario": "source",
+    "metric": "python BuildKit cache export",
+    "celesto": {
+      "n": 5,
+      "median": 3.9,
+      "min": 3.4,
+      "max": 3.9,
+      "samples": [
+        3.9,
+        3.9,
+        3.7,
+        3.4,
+        3.9
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 4.5,
+      "min": 3.3,
+      "max": 5.1,
+      "samples": [
+        3.3,
+        4.9,
+        3.3,
+        5.1,
+        4.5
+      ]
+    },
+    "github_over_celesto": 1.153846153846154
+  },
+  {
+    "backend": "registry",
+    "scenario": "source",
+    "metric": "python dependency install",
+    "celesto": {
+      "n": 5,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "backend": "registry",
+    "scenario": "source",
+    "metric": "python image build/load",
+    "celesto": {
+      "n": 5,
+      "median": 9.311147071,
+      "min": 8.874379391999994,
+      "max": 10.845188000999997,
+      "samples": [
+        10.845188000999997,
+        10.320608969999995,
+        9.311147071,
+        8.874379391999994,
+        9.298517695000001
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 10.041442275000009,
+      "min": 7.252762837999967,
+      "max": 10.305892141999976,
+      "samples": [
+        7.4075812560000145,
+        10.119301859000004,
+        7.252762837999967,
+        10.305892141999976,
+        10.041442275000009
+      ]
+    },
+    "github_over_celesto": 1.0784323562318703
+  },
+  {
+    "backend": "registry",
+    "scenario": "source",
+    "metric": "two-image workload incl cache transfer",
+    "celesto": {
+      "n": 5,
+      "median": 30.870037457999995,
+      "min": 28.965973821000002,
+      "max": 89.42532230900001,
+      "samples": [
+        30.878514072999998,
+        89.42532230900001,
+        30.870037457999995,
+        28.993870688999998,
+        28.965973821000002
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 31.189497911999993,
+      "min": 23.93846969499998,
+      "max": 44.155531618999994,
+      "samples": [
+        24.61647111900001,
+        44.155531618999994,
+        23.93846969499998,
+        31.189497911999993,
+        32.928635361000005
+      ]
+    },
+    "github_over_celesto": 1.0103485606207845
+  },
+  {
+    "backend": "registry",
+    "scenario": "unchanged",
+    "metric": "Actions job including setup and post-cleanup",
+    "celesto": {
+      "n": 5,
+      "median": 30.0,
+      "min": 29.0,
+      "max": 32.0,
+      "samples": [
+        31.0,
+        30.0,
+        29.0,
+        29.0,
+        32.0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 44.0,
+      "min": 41.0,
+      "max": 60.0,
+      "samples": [
+        44.0,
+        52.0,
+        60.0,
+        43.0,
+        41.0
+      ]
+    },
+    "github_over_celesto": 1.4666666666666666
+  },
+  {
+    "backend": "registry",
+    "scenario": "unchanged",
+    "metric": "node BuildKit cache export",
+    "celesto": {
+      "n": 5,
+      "median": 2.2,
+      "min": 2.0,
+      "max": 2.4,
+      "samples": [
+        2.4,
+        2.0,
+        2.2,
+        2.1,
+        2.3
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 1.9,
+      "min": 1.8,
+      "max": 3.0,
+      "samples": [
+        1.9,
+        2.5,
+        3.0,
+        1.9,
+        1.8
+      ]
+    },
+    "github_over_celesto": 0.8636363636363635
+  },
+  {
+    "backend": "registry",
+    "scenario": "unchanged",
+    "metric": "node compilation",
+    "celesto": {
+      "n": 5,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "backend": "registry",
+    "scenario": "unchanged",
+    "metric": "node dependency install",
+    "celesto": {
+      "n": 5,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "backend": "registry",
+    "scenario": "unchanged",
+    "metric": "node image build/load",
+    "celesto": {
+      "n": 5,
+      "median": 7.712118959000001,
+      "min": 7.607172976000001,
+      "max": 8.598858925000002,
+      "samples": [
+        8.598858925000002,
+        7.690483885000003,
+        7.712118959000001,
+        7.607172976000001,
+        8.118718810999997
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 6.537336064999998,
+      "min": 6.237397378999994,
+      "max": 8.896835171999996,
+      "samples": [
+        6.324573407999992,
+        7.2746419509999924,
+        8.896835171999996,
+        6.537336064999998,
+        6.237397378999994
+      ]
+    },
+    "github_over_celesto": 0.8476705429149225
+  },
+  {
+    "backend": "registry",
+    "scenario": "unchanged",
+    "metric": "python BuildKit cache export",
+    "celesto": {
+      "n": 5,
+      "median": 1.9,
+      "min": 1.8,
+      "max": 2.1,
+      "samples": [
+        2.0,
+        1.8,
+        1.9,
+        1.9,
+        2.1
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 1.7,
+      "min": 1.7,
+      "max": 2.9,
+      "samples": [
+        1.7,
+        2.2,
+        2.9,
+        1.7,
+        1.7
+      ]
+    },
+    "github_over_celesto": 0.8947368421052632
+  },
+  {
+    "backend": "registry",
+    "scenario": "unchanged",
+    "metric": "python dependency install",
+    "celesto": {
+      "n": 5,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "samples": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "backend": "registry",
+    "scenario": "unchanged",
+    "metric": "python image build/load",
+    "celesto": {
+      "n": 5,
+      "median": 6.007173066,
+      "min": 5.875596031999997,
+      "max": 7.688993005999997,
+      "samples": [
+        6.233829692999997,
+        6.007173066,
+        5.875596031999997,
+        5.942726433000004,
+        7.688993005999997
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 4.956495685,
+      "min": 4.785031347999997,
+      "max": 7.601445685999991,
+      "samples": [
+        4.86886015799999,
+        5.49397891000001,
+        7.601445685999991,
+        4.956495685,
+        4.785031347999997
+      ]
+    },
+    "github_over_celesto": 0.8250962025804236
+  },
+  {
+    "backend": "registry",
+    "scenario": "unchanged",
+    "metric": "two-image workload incl cache transfer",
+    "celesto": {
+      "n": 5,
+      "median": 15.805105154,
+      "min": 15.52594878,
+      "max": 18.415534107000003,
+      "samples": [
+        17.008496713,
+        15.756937933999996,
+        15.52594878,
+        15.805105154,
+        18.415534107000003
+      ]
+    },
+    "github": {
+      "n": 5,
+      "median": 13.537229976000006,
+      "min": 12.838121128000004,
+      "max": 20.008237922999996,
+      "samples": [
+        13.061100960999994,
+        15.980158065000005,
+        20.008237922999996,
+        13.537229976000006,
+        12.838121128000004
+      ]
+    },
+    "github_over_celesto": 0.8565099595413933
+  }
+]

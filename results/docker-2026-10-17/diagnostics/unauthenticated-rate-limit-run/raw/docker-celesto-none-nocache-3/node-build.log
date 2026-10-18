@@ -1,0 +1,93 @@
+#0 building with "builder-55fce70b-1106-4a2b-b5c1-132d418fd77f" instance using docker-container driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 306B done
+#1 WARN: InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 2)
+#1 WARN: InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 9)
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#2 DONE 0.4s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [build 1/7] FROM docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#4 resolve docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392 0.0s done
+#4 DONE 0.1s
+
+#5 [internal] load build context
+#5 transferring context: 142.41kB 0.1s done
+#5 DONE 0.2s
+
+#4 [build 1/7] FROM docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#4 sha256:a8de9fa052209313d8e45435a8486e29b20eebaa820e2e7f63a7c3c94b4fa567 448B / 448B 0.1s done
+#4 sha256:2cfab517365cfc6b4bd1f8c4cb01754884ef75bc38758b3c41e291c696f019f5 1.71MB / 1.71MB 0.1s done
+#4 sha256:f0400f4b55b0ad346bf6167a1b64a258e4d73db608c457798ce35e4ffeebfaaf 3.31kB / 3.31kB 0.0s done
+#4 sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 49.84MB / 49.84MB 0.3s done
+#4 sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 17.60MB / 28.25MB 0.2s
+#4 sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 28.25MB / 28.25MB 0.3s done
+#4 extracting sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39
+#4 extracting sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 1.0s done
+#4 DONE 1.5s
+
+#4 [build 1/7] FROM docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#4 extracting sha256:f0400f4b55b0ad346bf6167a1b64a258e4d73db608c457798ce35e4ffeebfaaf 0.0s done
+#4 extracting sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856
+#4 extracting sha256:d22c69a95cf463f4cb74462bd2899597ce505d82bd4c01ceddf7845e12f13856 1.4s done
+#4 extracting sha256:2cfab517365cfc6b4bd1f8c4cb01754884ef75bc38758b3c41e291c696f019f5
+#4 extracting sha256:2cfab517365cfc6b4bd1f8c4cb01754884ef75bc38758b3c41e291c696f019f5 0.1s done
+#4 extracting sha256:a8de9fa052209313d8e45435a8486e29b20eebaa820e2e7f63a7c3c94b4fa567 0.0s done
+#4 DONE 3.0s
+
+#6 [build 2/7] WORKDIR /app
+#6 DONE 0.4s
+
+#7 [build 3/7] COPY package.json package-lock.json ./
+#7 DONE 0.0s
+
+#8 [build 4/7] RUN npm ci --no-audit --no-fund
+#8 1.649 
+#8 1.649 added 4 packages in 1s
+#8 1.650 npm notice
+#8 1.650 npm notice New major version of npm available! 10.9.9 -> 12.2.0
+#8 1.650 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+#8 1.650 npm notice To update run: npm install -g npm@12.2.0
+#8 1.650 npm notice
+#8 DONE 1.8s
+
+#9 [build 5/7] COPY tsconfig.json ./
+#9 DONE 0.1s
+
+#10 [build 6/7] COPY src ./src
+#10 DONE 0.2s
+
+#11 [build 7/7] RUN npm run build
+#11 0.187 
+#11 0.187 > ci-docker-node-fixture@1.0.0 build
+#11 0.187 > tsc && esbuild dist/main.js --bundle --platform=node --outfile=bundle.js
+#11 0.187 
+#11 1.762 
+#11 1.762   bundle.js  247.5kb
+#11 1.762 
+#11 1.762 ⚡ Done in 38ms
+#11 DONE 2.3s
+
+#12 [stage-1 3/3] COPY --from=build /app/bundle.js ./bundle.js
+#12 DONE 0.0s
+
+#13 exporting to oci image format
+#13 exporting layers 0.1s done
+#13 exporting manifest sha256:ef6adad59db4272a1308e796dca356c2e42bf1b8b73031ae093e57bdd9acf6fa 0.0s done
+#13 exporting config sha256:8e31a650c2188cfccb510b503927835e392a24a509c5ab63e956e61125582d90 0.0s done
+#13 sending tarball
+#13 sending tarball 3.2s done
+#13 DONE 3.4s
+
+#14 importing to docker
+#14 DONE 0.0s
+
+ [33m2 warnings found (use docker --debug to expand):
+[0m - InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 2)
+ - InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 9)

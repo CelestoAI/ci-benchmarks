@@ -21,6 +21,7 @@ samples, observations, jobs, cohorts = [], [], [], []
 selected = set()
 audited_jobs=[]
 environments={p:{'cpu_models':{},'kernels':{},'containerd_versions':{},'jobs':0} for p in ['github','celesto']}
+quota_observations=[]
 source = '80cabc32e3888c5dadb9b177c94a35829f5b75cf'
 assert journal['authentication']=='Docker Hub login on both providers'
 entries = journal['runs']
@@ -58,6 +59,10 @@ for entry in entries:
         containerd=next(c['Version'] for c in docker['Server']['Components'] if c['Name']=='containerd')
         for field,value in [('cpu_models',host['cpu_model']),('kernels',host['kernel']),('containerd_versions',containerd)]:
             environment[field][value]=environment[field].get(value,0)+1
+        quota_file=path.parent/'registry-quota.log'
+        if quota_file.exists():
+            quota_observations.append({'provider':host['provider'],'backend':host['backend'],'scenario':host['scenario'],
+                'repetition':host['repetition'],'run_id':entry['databaseId'],**json.loads(quota_file.read_text())})
         shutil.copytree(path.parent, out/'raw'/f'{entry["databaseId"]}--{path.parent.name}')
     samples += these
     observations += read('cache-observations.json')
@@ -80,11 +85,16 @@ for (backend,scenario,metric),providers in sorted(groups.items()):
     summary.append(row)
 run={'status':'completed','conclusion':'success','selection':'quota-controlled 120-job matrix across documented cohorts',
      'authentication':journal['authentication'],
-     'url':cohorts[0]['url'],'headSha':source,'jobs':jobs,'cohorts':cohorts}
+     'workload_baseline_commit':source,
+     'url':cohorts[0]['url'],'headSha':cohorts[0]['headSha'],'jobs':jobs,'cohorts':cohorts}
 for name,data in [('run',run),('samples',samples),('summary',summary),('failures',[]),('cache-observations',observations)]:
     (out/f'{name}.json').write_text(json.dumps(data,indent=2)+'\n')
 (out/'cache-log-audit.json').write_text(json.dumps({'audited_jobs':audited_jobs,'selected_job_cache_save_warnings':0},indent=2)+'\n')
 (out/'environment-summary.json').write_text(json.dumps(environments,indent=2)+'\n')
+(out/'registry-quota-observations.json').write_text(json.dumps(quota_observations,indent=2)+'\n')
+public_manifest={**journal,'cleanups':[{'repetition':c['repetition'],
+    'entries':[{'size_bytes':r['size_bytes'],'state':r['state']} for r in c['entries']]} for c in journal['cleanups']]}
+(out/'cohort-manifest.json').write_text(json.dumps(public_manifest,indent=2)+'\n')
 with (out/'samples.csv').open('w') as f:
     writer=csv.DictWriter(f,fieldnames=list(samples[0]))
     writer.writeheader()
@@ -97,11 +107,18 @@ for run_id,name in zip(journal['diagnostic_runs'],['original-quota-run','unauthe
         if failure.get('artifact'):
             failure['artifact']='/'.join(Path(failure['artifact']).parts[-3:])
     (diagnostic/'failures.json').write_text(json.dumps(original_failures,indent=2)+'\n')
+auth_evidence=[]
+for run_id in [*journal.get('authentication_failures',[]),journal['authentication_verification']]:
+    evidence=json.loads(subprocess.check_output(['gh','run','view',str(run_id),'--repo','CelestoAI/ci-benchmarks',
+        '--json','databaseId,url,status,conclusion,headSha,jobs'],text=True))
+    auth_evidence.append(evidence)
+(out/'diagnostics'/'authentication-setup.json').write_text(json.dumps(auth_evidence,indent=2)+'\n')
 (out/'interventions.json').write_text(json.dumps({
     'reason':'Original run reached cache quota; the unauthenticated continuation reached Docker Hub pull limits. All 120 selected jobs were rerun with Docker Hub login on both providers. Earlier samples are diagnostics only.',
     'scope':'Only task-owned Docker benchmark/pilot cache entries; unrelated caches and quotas unchanged.',
     'initial_cleanup_entries':18,'initial_cleanup_bytes':3295576525,
-    'between_pair_cleanup':[{'repetition':c['repetition'],'entries':len(c['entries']),'bytes':sum(r['size_bytes'] for r in c['entries'])} for c in journal['cleanups']],
+    'between_pair_cleanup':[{'repetition':c['repetition'],'entries':len(c['entries']),'bytes':sum(r['size_bytes'] for r in c['entries']),
+                            'committed_archive_sizes_bytes':[r['size_bytes'] for r in c['entries']]} for c in journal['cleanups']],
     'cohort_selection_fixed_before_rerun':True,
 },indent=2)+'\n')
 print(json.dumps({'selected_jobs':len(jobs),'samples':len(samples),'cohorts':cohorts},indent=2))

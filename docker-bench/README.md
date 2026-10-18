@@ -3,18 +3,17 @@
 Same workloads, fresh runners, **4 vCPU / 16 GiB RAM** on each provider.
 This suite measures representative fixtures, not a customer's private application.
 
-**Execution status:** the full repeated report is not complete. The original
-shared-registry cohort passed all 40 jobs, but portable caching reached storage
-quota. After approved task-only cleanup, the uncached continuation hit Docker
-Hub's anonymous pull limit on Celesto (HTTP 429). Docker Hub login is now wired
-equally into both providers, but the supplied credentials were rejected before
-workload measurements on both providers. A separate direct registry-auth check
-also returned HTTP 401. Further dispatches are stopped pending valid credentials.
-Do not silently replace the registry or count failed attempts as timings.
+**Complete:** [120 successful authenticated jobs, numbers, and plot](../results/docker-2026-10-17/README.md).
+Five repetitions per provider/scenario; all expected cache hits and saves passed
+independent validation. Docker Hub authentication passed on both providers.
+All final measurements come from this fresh matrix, not the pilots.
+Earlier cache-quota, anonymous-pull-limit, and credential-setup failures are
+retained as diagnostics; failed attempts are never counted as fast timings.
 
 - [Original quota-limited run](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39073691950)
 - [Continuation with registry-rate-limit failure](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39075713994)
 - [Authentication attempt, before workload measurements](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39076674071)
+- [Verified authentication on both providers](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39078014200)
 
 ## What runs
 
@@ -75,9 +74,20 @@ benchmark. Existing workflows on `main` are unchanged: dispatch the benchmark
 branch explicitly.
 
 Configure repository Actions secrets `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`
-using a valid Docker Hub personal access token with read permission. The same
+using a valid Docker Hub personal access token with **Repo Public Read-only**
+permission. The same
 login is required on both providers, including before the BuildKit image pull.
 Never put a token in a workflow, command argument, commit, or benchmark log.
+Celesto jobs consume Large-runner credit. Full mode needs roughly **4.5 GiB of
+free cache headroom per provider**, in addition to any existing caches; check
+your account's actual quota first. Use the smaller paired modes if headroom is
+limited, and retain each seed until all its warm scenarios finish.
+Also check Docker Hub's **live** pull allowance, not only whether login succeeds.
+Both providers share the supplied account's quota. Full mode does not pace pulls
+automatically; use it only with sufficient registry allowance. This experiment
+dispatches paired cohorts only when a secret-safe HEAD probe reports enough
+remaining allowance, and waits between cohorts when needed. Those waits are
+outside workload timings and remain visible in the cohort manifest.
 
 ```sh
 gh workflow run celesto.yml --repo CelestoAI/ci-benchmarks \
@@ -89,7 +99,11 @@ gh workflow run celesto.yml --repo CelestoAI/ci-benchmarks \
   --ref codex/docker-benchmarks-20261017 \
   -f mode=full -f namespace=docker-full-UNIQUE
 
-# Once the full run completes (Python 3.10+ and authenticated gh):
+# To collect locally: Python 3.10+, Node 20+, and authenticated gh; no pip/npm install.
+git clone --branch codex/docker-benchmarks-20261017 \
+  https://github.com/CelestoAI/ci-benchmarks.git
+cd ci-benchmarks
+# Once the full run completes:
 python3 docker-bench/collect.py RUN_ID --output results/docker-DATE
 node docker-bench/validate.mjs results/docker-DATE
 node docker-bench/render.mjs results/docker-DATE
@@ -105,6 +119,11 @@ these jobs for 120 independent CPU samples.
 `image-full` runs five image-cache pairs. `native-probe` tests
 the direct BuildKit GHA protocol and is expected to fail until compatibility
 is repaired; it is not part of the repeated portable/registry comparison.
+`auth-probe` verifies this repository's configured account directly and via
+Docker CLI on both providers. `quota-probe` uses one GitHub job to inspect the
+shared account's live allowance without pulling images. Its headers take
+precedence over assumptions about the account's reset window. See Docker's
+[HEAD-based quota-check documentation](https://docs.docker.com/docker-hub/usage/pulls/#view-pull-rate-and-limit).
 
 ### Storage headroom matters
 
@@ -114,10 +133,10 @@ failed. The collector audits cache-save warnings and excludes those jobs from
 successful measurements. Missing/failed measurements are never zero.
 
 After explicit approval, only task-owned Docker benchmark/pilot caches were
-removed; quotas and unrelated caches were unchanged. The planned final report
-will use **a complete new 120-job matrix with authenticated pulls on both
+removed; quotas and unrelated caches were unchanged. The final report
+uses **a complete new 120-job matrix with authenticated pulls on both
 providers**, including all five registry and portable repetitions. No earlier
-success or failure will be pooled into those timings. The workload and fixtures are
+success or failure is pooled into those timings. The workload and fixtures are
 byte-identical across these orchestration revisions (`combine.py` checks git).
 The complete original quota-limited run is retained as diagnostic evidence.
 

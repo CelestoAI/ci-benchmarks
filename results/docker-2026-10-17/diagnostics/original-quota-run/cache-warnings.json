@@ -1,0 +1,32 @@
+[
+  {
+    "job_name": "builds (portable, 4) / warm (dependency, celesto) / celesto-portable-dependency-4",
+    "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39073691950/job/117518359354",
+    "message": "2026-10-17T22:17:28.2198653Z ##[warning]Cache reservation failed: Celesto cache storage limit reached; older entries are removed hourly"
+  },
+  {
+    "job_name": "builds (portable, 4) / warm (dependency, celesto) / celesto-portable-dependency-4",
+    "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39073691950/job/117518359354",
+    "message": "2026-10-17T22:17:28.2207639Z Failed to save: Unable to reserve cache with key docker-layers-docker-full-20261017a-celesto-4-dependency, another job may be creating this cache."
+  },
+  {
+    "job_name": "builds (portable, 4) / warm (dependency, celesto) / celesto-portable-dependency-4",
+    "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39073691950/job/117518359354",
+    "message": "2026-10-17T22:17:28.2430223Z ##[warning]Cache save failed."
+  },
+  {
+    "job_name": "builds (portable, 5) / seed (celesto) / celesto-portable-seed-5",
+    "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39073691950/job/117518448096",
+    "message": "2026-10-17T22:17:45.8231307Z ##[warning]Cache reservation failed: Celesto cache storage limit reached; older entries are removed hourly"
+  },
+  {
+    "job_name": "builds (portable, 5) / seed (celesto) / celesto-portable-seed-5",
+    "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39073691950/job/117518448096",
+    "message": "2026-10-17T22:17:45.8237381Z Failed to save: Unable to reserve cache with key docker-layers-docker-full-20261017a-celesto-5-seed, another job may be creating this cache."
+  },
+  {
+    "job_name": "builds (portable, 5) / seed (celesto) / celesto-portable-seed-5",
+    "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39073691950/job/117518448096",
+    "message": "2026-10-17T22:17:45.8456470Z ##[warning]Cache save failed."
+  }
+]

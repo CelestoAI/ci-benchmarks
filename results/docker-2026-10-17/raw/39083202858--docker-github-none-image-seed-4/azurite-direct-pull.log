@@ -1,0 +1,34 @@
+mcr.microsoft.com/azure-storage/azurite@sha256:647c63a91102a9d8e8000aab803436e1fc85fbb285e7ce830a82ee5d6661cf37: Pulling from azure-storage/azurite
+1e035cec320e: Pulling fs layer
+1a142d512ad8: Pulling fs layer
+079c7eea2eca: Pulling fs layer
+0368fd46e3c6: Pulling fs layer
+15693936b357: Pulling fs layer
+86d3b24204e4: Pulling fs layer
+130a749ae877: Pulling fs layer
+af3b465dea21: Pulling fs layer
+45ffd552049a: Pulling fs layer
+cc74811bebca: Pulling fs layer
+af3b465dea21: Download complete
+15693936b357: Download complete
+45ffd552049a: Download complete
+1e035cec320e: Download complete
+1a142d512ad8: Download complete
+0368fd46e3c6: Download complete
+cc74811bebca: Download complete
+86d3b24204e4: Download complete
+0368fd46e3c6: Pull complete
+079c7eea2eca: Download complete
+130a749ae877: Download complete
+15693936b357: Pull complete
+1a142d512ad8: Pull complete
+130a749ae877: Pull complete
+af3b465dea21: Pull complete
+45ffd552049a: Pull complete
+86d3b24204e4: Pull complete
+cc74811bebca: Pull complete
+1e035cec320e: Pull complete
+079c7eea2eca: Pull complete
+Digest: sha256:647c63a91102a9d8e8000aab803436e1fc85fbb285e7ce830a82ee5d6661cf37
+Status: Downloaded newer image for mcr.microsoft.com/azure-storage/azurite@sha256:647c63a91102a9d8e8000aab803436e1fc85fbb285e7ce830a82ee5d6661cf37
+mcr.microsoft.com/azure-storage/azurite:3.35.0@sha256:647c63a91102a9d8e8000aab803436e1fc85fbb285e7ce830a82ee5d6661cf37

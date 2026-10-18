@@ -1,0 +1,157 @@
+#0 building with "builder-494a2bac-0acd-4161-8e0c-cd9aeef4f5f7" instance using docker-container driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 298B done
+#1 WARN: InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 2)
+#1 WARN: InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 6)
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258
+#2 DONE 0.3s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 DONE 0.0s
+
+#5 [build 1/4] FROM docker.io/library/python:3.12-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258
+#5 resolve docker.io/library/python:3.12-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258 0.0s done
+#5 DONE 0.0s
+
+#6 importing cache manifest from ghcr.io/celestoai/ci-benchmarks-cache:docker-full-20261017a-celesto-4-python
+#6 inferred cache manifest type: application/vnd.oci.image.manifest.v1+json done
+#6 DONE 0.5s
+
+#4 [internal] load build context
+#4 transferring context: 38.67kB done
+#4 DONE 0.0s
+
+#7 [build 2/4] WORKDIR /app
+#7 sha256:238174fdb497f2f38402c4d1a3d5938193d6fa8615fbc35f7f9e2e61f0c2cc76 0B / 93B 0.2s
+#7 sha256:238174fdb497f2f38402c4d1a3d5938193d6fa8615fbc35f7f9e2e61f0c2cc76 93B / 93B 0.2s done
+#7 sha256:f9d2fb07d6f062d06ddc7aa58191cc5359c728f54af6cebe69a37d2c89e72a0d 249B / 249B 0.2s done
+#7 sha256:6e0ba8ba048777f5354b5a7cb497ae5261116fac8246160c06fc045c8300c582 3.34MB / 3.34MB 0.3s done
+#7 sha256:86a9e13e035d8e44ae37bfebc52c7fc68898fde19b4b26dd0585f2231fcfaf2c 0B / 15.97MB 0.2s
+#7 sha256:86a9e13e035d8e44ae37bfebc52c7fc68898fde19b4b26dd0585f2231fcfaf2c 15.97MB / 15.97MB 0.3s done
+#7 extracting sha256:6e0ba8ba048777f5354b5a7cb497ae5261116fac8246160c06fc045c8300c582 0.1s done
+#7 DONE 0.6s
+
+#7 [build 2/4] WORKDIR /app
+#7 extracting sha256:86a9e13e035d8e44ae37bfebc52c7fc68898fde19b4b26dd0585f2231fcfaf2c
+#7 extracting sha256:86a9e13e035d8e44ae37bfebc52c7fc68898fde19b4b26dd0585f2231fcfaf2c 0.7s done
+#7 DONE 1.2s
+
+#7 [build 2/4] WORKDIR /app
+#7 extracting sha256:f9d2fb07d6f062d06ddc7aa58191cc5359c728f54af6cebe69a37d2c89e72a0d 0.0s done
+#7 extracting sha256:238174fdb497f2f38402c4d1a3d5938193d6fa8615fbc35f7f9e2e61f0c2cc76 0.0s done
+#7 DONE 1.3s
+
+#8 [build 3/4] COPY requirements.txt ./
+#8 DONE 0.1s
+
+#9 [build 4/4] RUN pip install --no-cache-dir --require-hashes --prefix=/install -r requirements.txt
+#9 1.403 Collecting azure-core==1.41.0 (from -r requirements.txt (line 3))
+#9 1.486   Downloading azure_core-1.41.0-py3-none-any.whl (220 kB)
+#9 1.565 Collecting azure-storage-blob==12.25.1 (from -r requirements.txt (line 7))
+#9 1.581   Downloading azure_storage_blob-12.25.1-py3-none-any.whl (406 kB)
+#9 1.650 Collecting certifi==2026.7.22 (from -r requirements.txt (line 11))
+#9 1.666   Downloading certifi-2026.7.22-py3-none-any.whl (136 kB)
+#9 1.791 Collecting cffi==2.1.1 (from -r requirements.txt (line 15))
+#9 1.807   Downloading cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (221 kB)
+#9 1.936 Collecting charset-normalizer==3.5.2 (from -r requirements.txt (line 117))
+#9 1.951   Downloading charset_normalizer-3.5.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (257 kB)
+#9 2.113 Collecting cryptography==50.0.2 (from -r requirements.txt (line 291))
+#9 2.129   Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_34_x86_64.whl (4.8 MB)
+#9 2.343      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.8/4.8 MB 23.0 MB/s eta 0:00:00
+#9 2.374 Collecting idna==3.20 (from -r requirements.txt (line 352))
+#9 2.390   Downloading idna-3.20-py3-none-any.whl (69 kB)
+#9 2.415 Collecting isodate==0.7.2 (from -r requirements.txt (line 356))
+#9 2.431   Downloading isodate-0.7.2-py3-none-any.whl (22 kB)
+#9 2.462 Collecting psycopg==3.2.9 (from -r requirements.txt (line 360))
+#9 2.477   Downloading psycopg-3.2.9-py3-none-any.whl (202 kB)
+#9 2.598 Collecting psycopg-binary==3.2.9 (from -r requirements.txt (line 364))
+#9 2.615   Downloading psycopg_binary-3.2.9-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (4.4 MB)
+#9 2.728      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.4/4.4 MB 39.6 MB/s eta 0:00:00
+#9 2.756 Collecting pycparser==3.11 (from -r requirements.txt (line 431))
+#9 2.770   Downloading pycparser-3.11-py3-none-any.whl (51 kB)
+#9 2.801 Collecting pygments==2.18.0 (from -r requirements.txt (line 435))
+#9 2.818   Downloading pygments-2.18.0-py3-none-any.whl (1.2 MB)
+#9 2.841      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 54.4 MB/s eta 0:00:00
+#9 2.885 Collecting requests==2.34.2 (from -r requirements.txt (line 439))
+#9 2.901   Downloading requests-2.34.2-py3-none-any.whl (73 kB)
+#9 2.933 Collecting typing-extensions==4.16.0 (from -r requirements.txt (line 443))
+#9 2.948   Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+#9 2.980 Collecting urllib3==2.8.0 (from -r requirements.txt (line 450))
+#9 2.995   Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+#9 3.074 Installing collected packages: urllib3, typing-extensions, pygments, pycparser, psycopg-binary, isodate, idna, charset-normalizer, certifi, requests, psycopg, cffi, cryptography, azure-core, azure-storage-blob
+#9 4.762 Successfully installed azure-core-1.41.0 azure-storage-blob-12.25.1 certifi-2026.7.22 cffi-2.1.1 charset-normalizer-3.5.2 cryptography-50.0.2 idna-3.20 isodate-0.7.2 psycopg-3.2.9 psycopg-binary-3.2.9 pycparser-3.11 pygments-2.18.0 requests-2.34.2 typing-extensions-4.16.0 urllib3-2.8.0
+#9 4.762 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#9 4.919 
+#9 4.919 [notice] A new release of pip is available: 25.0.1 -> 26.2.1
+#9 4.919 [notice] To update, run: pip install --upgrade pip
+#9 DONE 5.1s
+
+#5 [build 1/4] FROM docker.io/library/python:3.12-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258
+#5 DONE 0.0s
+
+#10 [stage-1 2/4] COPY --from=build /install /usr/local
+#10 DONE 0.6s
+
+#11 [stage-1 3/4] WORKDIR /app
+#11 DONE 0.1s
+
+#12 [stage-1 4/4] COPY app.py ./
+#12 DONE 0.0s
+
+#13 exporting to oci image format
+#13 exporting layers
+#13 exporting layers 1.8s done
+#13 exporting manifest sha256:21913ba1868961a7ca2bad2ed20d2eaafc7930ce966c757dedec8f08c0dc2ae1 0.0s done
+#13 exporting config sha256:5074f62bdf298d134c5526ae55e05727bc797cd39652481c9bfa5d1c63c4c907 0.0s done
+#13 sending tarball
+#13 sending tarball 2.1s done
+#13 DONE 4.0s
+
+#14 importing to docker
+#14 DONE 0.0s
+
+#15 exporting cache to registry
+#15 preparing build cache for export
+#15 writing layer sha256:238174fdb497f2f38402c4d1a3d5938193d6fa8615fbc35f7f9e2e61f0c2cc76
+#15 ...
+
+#16 [auth] celestoai/ci-benchmarks-cache:pull,push token for ghcr.io
+#16 DONE 0.0s
+
+#15 exporting cache to registry
+#15 writing layer sha256:238174fdb497f2f38402c4d1a3d5938193d6fa8615fbc35f7f9e2e61f0c2cc76 0.2s done
+#15 writing layer sha256:515587b1ed74f7bab7a8c3a8a2779e495236a35a5fa2a018179670b2231ba10e
+#15 writing layer sha256:515587b1ed74f7bab7a8c3a8a2779e495236a35a5fa2a018179670b2231ba10e 1.3s done
+#15 writing layer sha256:6e0ba8ba048777f5354b5a7cb497ae5261116fac8246160c06fc045c8300c582
+#15 writing layer sha256:6e0ba8ba048777f5354b5a7cb497ae5261116fac8246160c06fc045c8300c582 0.1s done
+#15 writing layer sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39
+#15 writing layer sha256:7fd1ebe418b5079d4aa36f416af9b143d127bc75b0155d71cb5fd559b5e04d39 0.1s done
+#15 writing layer sha256:86a9e13e035d8e44ae37bfebc52c7fc68898fde19b4b26dd0585f2231fcfaf2c
+#15 writing layer sha256:86a9e13e035d8e44ae37bfebc52c7fc68898fde19b4b26dd0585f2231fcfaf2c 0.1s done
+#15 writing layer sha256:88d40d4be03476e999c1187278b3a7b60ee7bfac4f321086c691f0e50aecbe83
+#15 writing layer sha256:88d40d4be03476e999c1187278b3a7b60ee7bfac4f321086c691f0e50aecbe83 1.1s done
+#15 writing layer sha256:b3e36d0fb18cb2073b456c8ccd0663b2f8fc4deaf6655acd92ea6f2b04cebbdd
+#15 writing layer sha256:b3e36d0fb18cb2073b456c8ccd0663b2f8fc4deaf6655acd92ea6f2b04cebbdd 1.1s done
+#15 writing layer sha256:bdff4f5b206b2217b26e6ce0a14a4eab9a345e14dcd0b6c37576bffa62131e31
+#15 writing layer sha256:bdff4f5b206b2217b26e6ce0a14a4eab9a345e14dcd0b6c37576bffa62131e31 1.4s done
+#15 writing layer sha256:cc69a745f881b93b4add9872529a51c4e7311d4fb4541a64064a6e8221bcc258
+#15 writing layer sha256:cc69a745f881b93b4add9872529a51c4e7311d4fb4541a64064a6e8221bcc258 1.1s done
+#15 writing layer sha256:f9d2fb07d6f062d06ddc7aa58191cc5359c728f54af6cebe69a37d2c89e72a0d
+#15 writing layer sha256:f9d2fb07d6f062d06ddc7aa58191cc5359c728f54af6cebe69a37d2c89e72a0d 0.1s done
+#15 writing config sha256:a7db649006dfda2c525bec93915aa81126efca0f5001a30fe04591380c24780d
+#15 writing config sha256:a7db649006dfda2c525bec93915aa81126efca0f5001a30fe04591380c24780d 1.3s done
+#15 writing cache image manifest sha256:796e61eb21e10f163bef792bd09bfda8b84cc3ba11727918c82725a52d4326c0
+#15 preparing build cache for export 10.5s done
+#15 writing cache image manifest sha256:796e61eb21e10f163bef792bd09bfda8b84cc3ba11727918c82725a52d4326c0 0.5s done
+#15 DONE 10.5s
+
+ [33m2 warnings found (use docker --debug to expand):
+[0m - InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 2)
+ - InvalidDefaultArgInFrom: Default value for ARG ${BASE} results in empty or invalid base image name (line 6)

@@ -1,0 +1,64 @@
+{
+  "reason": "Original run reached cache quota; the unauthenticated continuation reached Docker Hub pull limits. All 120 selected jobs were rerun with Docker Hub login on both providers. Earlier samples are diagnostics only.",
+  "scope": "Only task-owned Docker benchmark/pilot cache entries; unrelated caches and quotas unchanged.",
+  "initial_cleanup_entries": 18,
+  "initial_cleanup_bytes": 3295576525,
+  "between_pair_cleanup": [
+    {
+      "repetition": 1,
+      "entries": 4,
+      "bytes": 726110592,
+      "committed_archive_sizes_bytes": [
+        181447040,
+        181559157,
+        181545211,
+        181559184
+      ]
+    },
+    {
+      "repetition": 2,
+      "entries": 4,
+      "bytes": 726091436,
+      "committed_archive_sizes_bytes": [
+        181413537,
+        181553011,
+        181571983,
+        181552905
+      ]
+    },
+    {
+      "repetition": 3,
+      "entries": 4,
+      "bytes": 726121430,
+      "committed_archive_sizes_bytes": [
+        181553370,
+        181553332,
+        181547402,
+        181467326
+      ]
+    },
+    {
+      "repetition": 4,
+      "entries": 4,
+      "bytes": 725907996,
+      "committed_archive_sizes_bytes": [
+        181491810,
+        181491847,
+        181490340,
+        181433999
+      ]
+    },
+    {
+      "repetition": 5,
+      "entries": 4,
+      "bytes": 726040279,
+      "committed_archive_sizes_bytes": [
+        181516372,
+        181516283,
+        181526404,
+        181481220
+      ]
+    }
+  ],
+  "cohort_selection_fixed_before_rerun": true
+}

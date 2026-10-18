@@ -2,9 +2,17 @@
 
 **Compare Celesto CI and GitHub Actions on CPU speed and cache performance.** Same benchmark, same CPU count, same RAM. Runs and raw data are public.
 
-[See the results](results/2026-10-17-matched/README.md) · [Run the comparison](https://github.com/CelestoAI/ci-benchmarks/actions/workflows/matched.yml)
+[CPU/cache results](results/2026-10-17-matched/README.md) · [Docker results](results/docker-2026-10-17/README.md) · [Run the CPU comparison](https://github.com/CelestoAI/ci-benchmarks/actions/workflows/matched.yml)
 
-## Latest results
+## Docker benchmarks
+
+**Python API + PostgreSQL + Azurite, image builds, layer caches, and offline Rust compilation.** Five repetitions per provider/scenario, matched 4-vCPU / 16-GiB runners, fresh runner per job.
+
+[See Docker numbers and plot →](results/docker-2026-10-17/README.md) · [Workloads and reproduction →](docker-bench/README.md)
+
+Read the caveats before migrating: direct BuildKit GHA caching and Docker's explicit CPU-limit flag failed Celesto preflight. The report preserves a quota-limited run separately from the normal-operation rerun. These fixtures are not the customer's private application.
+
+## CPU/cache results
 
 October 17, 2026. Both runners: **4 vCPUs, 16 GiB RAM, Ubuntu 24.04.5, Node 22.23.3**. Three cold/warm pairs per provider; all 12 jobs passed.
 
@@ -72,7 +80,7 @@ The [matched workflow](.github/workflows/matched.yml) calls the [same benchmark 
 - **Timing:** restore/save measurements include action overhead, transfer, and compression or extraction. They do not measure network speed alone.
 - **Elapsed time:** the report's instrumented time excludes checkout, Node setup, queueing, and artifact upload. Use the Actions UI for total workflow time.
 
-Want a different payload? Use the individual [GitHub](.github/workflows/github-hosted.yml) and [Celesto](.github/workflows/celesto.yml) workflows. Match their inputs; run each once cold, then again unchanged for warm. Payload options: 256, 512, 1024, or 2304 MiB.
+Want a different random-byte payload? On **main**, use the individual [GitHub](https://github.com/CelestoAI/ci-benchmarks/blob/main/.github/workflows/github-hosted.yml) and [Celesto](https://github.com/CelestoAI/ci-benchmarks/blob/main/.github/workflows/celesto.yml) CPU/cache workflows. Match their inputs; run each once cold, then again unchanged for warm. Payload options: 256, 512, 1024, or 2304 MiB. On the Docker benchmark branch, `celesto.yml` is the Docker dispatcher instead.
 
 Regenerate the chart from the saved samples with `node scripts/render-chart.mjs`.
 

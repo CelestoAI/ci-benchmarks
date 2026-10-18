@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1250" height="730" viewBox="0 0 1250 730" role="img" aria-labelledby="title desc">
+<title id="title">Docker CI benchmarks: matched 4-vCPU, 16-GiB runners</title>
+<desc id="desc">Bars show median wall time in seconds; whiskers show observed minimum and maximum, not confidence intervals. GitHub and Celesto use identical workload revisions.</desc>
+<rect width="100%" height="100%" fill="white"/>
+<g font-family="Arial, sans-serif" fill="#172033">
+<text x="30" y="40" font-size="25" font-weight="700">Docker CI · 4 vCPU / 16 GiB on both providers</text>
+<text x="30" y="69" font-size="16">Seconds · lower is better · bars/labels = median · whiskers = min–max · five repetitions per provider</text>
+<text x="30" y="96" font-size="14" fill="#475569">Workloads exclude tool normalization and runner setup; no ARM emulation or persistent-runner shortcut.</text>
+<line x1="430" y1="126" x2="430" y2="682" stroke="#e2e8f0"/><text x="430" y="119" text-anchor="middle" font-size="13">0s</text>
+<line x1="550" y1="126" x2="550" y2="682" stroke="#e2e8f0"/><text x="550" y="119" text-anchor="middle" font-size="13">11s</text>
+<line x1="670" y1="126" x2="670" y2="682" stroke="#e2e8f0"/><text x="670" y="119" text-anchor="middle" font-size="13">22s</text>
+<line x1="790" y1="126" x2="790" y2="682" stroke="#e2e8f0"/><text x="790" y="119" text-anchor="middle" font-size="13">33s</text>
+<line x1="910" y1="126" x2="910" y2="682" stroke="#e2e8f0"/><text x="910" y="119" text-anchor="middle" font-size="13">44s</text>
+<line x1="1030" y1="126" x2="1030" y2="682" stroke="#e2e8f0"/><text x="1030" y="119" text-anchor="middle" font-size="13">55s</text>
+<text x="30" y="133" font-size="16" font-weight="700">Cold: two image builds, no cache</text>
+<text x="418" y="157" text-anchor="end" font-size="14">GitHub</text>
+<rect x="430" y="141" width="237.0519414633559" height="21" fill="#475569"/>
+<line x1="646.5733950054109" y1="151" x2="687.5165399026366" y2="151" stroke="#0f172a" stroke-width="1.5"/>
+<line x1="646.5733950054109" y1="146" x2="646.5733950054109" y2="156" stroke="#0f172a"/>
+<line x1="687.5165399026366" y1="146" x2="687.5165399026366" y2="156" stroke="#0f172a"/>
+<text x="696.5165399026366" y="156" font-size="14">21.69s</text>
+<text x="418" y="186" text-anchor="end" font-size="14">Celesto</text>
+<rect x="430" y="170" width="282.16680447066074" height="21" fill="#2563eb"/>
+<line x1="700.2185954485794" y1="180" x2="732.9450573933558" y2="180" stroke="#0f172a" stroke-width="1.5"/>
+<line x1="700.2185954485794" y1="175" x2="700.2185954485794" y2="185" stroke="#0f172a"/>
+<line x1="732.9450573933558" y1="175" x2="732.9450573933558" y2="185" stroke="#0f172a"/>
+<text x="741.9450573933558" y="185" font-size="14">25.81s</text>
+<text x="30" y="247" font-size="16" font-weight="700">Source change: portable cache, incl transfer</text>
+<text x="418" y="271" text-anchor="end" font-size="14">GitHub</text>
+<rect x="430" y="255" width="249.21988194117327" height="21" fill="#475569"/>
+<line x1="650.6407714578513" y1="265" x2="745.8620056131238" y2="265" stroke="#0f172a" stroke-width="1.5"/>
+<line x1="650.6407714578513" y1="260" x2="650.6407714578513" y2="270" stroke="#0f172a"/>
+<line x1="745.8620056131238" y1="260" x2="745.8620056131238" y2="270" stroke="#0f172a"/>
+<text x="754.8620056131238" y="270" font-size="14">22.80s</text>
+<text x="418" y="300" text-anchor="end" font-size="14">Celesto</text>
+<rect x="430" y="284" width="332.68545876633976" height="21" fill="#2563eb"/>
+<line x1="746.5289470248836" y1="294" x2="786.441054064579" y2="294" stroke="#0f172a" stroke-width="1.5"/>
+<line x1="746.5289470248836" y1="289" x2="746.5289470248836" y2="299" stroke="#0f172a"/>
+<line x1="786.441054064579" y1="289" x2="786.441054064579" y2="299" stroke="#0f172a"/>
+<text x="795.441054064579" y="299" font-size="14">30.43s</text>
+<text x="30" y="361" font-size="16" font-weight="700">Source change: shared registry cache</text>
+<text x="418" y="385" text-anchor="end" font-size="14">GitHub</text>
+<rect x="430" y="369" width="304.79510339722566" height="21" fill="#475569"/>
+<line x1="695.8973357185776" y1="379" x2="755.3337440531349" y2="379" stroke="#0f172a" stroke-width="1.5"/>
+<line x1="695.8973357185776" y1="374" x2="695.8973357185776" y2="384" stroke="#0f172a"/>
+<line x1="755.3337440531349" y1="374" x2="755.3337440531349" y2="384" stroke="#0f172a"/>
+<text x="764.3337440531349" y="384" font-size="14">27.88s</text>
+<text x="418" y="414" text-anchor="end" font-size="14">Celesto</text>
+<rect x="430" y="398" width="322.69204493092684" height="21" fill="#2563eb"/>
+<line x1="720.0293137230765" y1="408" x2="764.5217922919057" y2="408" stroke="#0f172a" stroke-width="1.5"/>
+<line x1="720.0293137230765" y1="403" x2="720.0293137230765" y2="413" stroke="#0f172a"/>
+<line x1="764.5217922919057" y1="403" x2="764.5217922919057" y2="413" stroke="#0f172a"/>
+<text x="773.5217922919057" y="413" font-size="14">29.52s</text>
+<text x="30" y="475" font-size="16" font-weight="700">CPU: offline Rust release compilation</text>
+<text x="418" y="499" text-anchor="end" font-size="14">GitHub</text>
+<rect x="430" y="483" width="198.2421883534497" height="21" fill="#475569"/>
+<line x1="583.0187015479232" y1="493" x2="652.11651641322" y2="493" stroke="#0f172a" stroke-width="1.5"/>
+<line x1="583.0187015479232" y1="488" x2="583.0187015479232" y2="498" stroke="#0f172a"/>
+<line x1="652.11651641322" y1="488" x2="652.11651641322" y2="498" stroke="#0f172a"/>
+<text x="661.11651641322" y="498" font-size="14">18.14s</text>
+<text x="418" y="528" text-anchor="end" font-size="14">Celesto</text>
+<rect x="430" y="512" width="126.80503914530006" height="21" fill="#2563eb"/>
+<line x1="544.7148345509293" y1="522" x2="559.013195861451" y2="522" stroke="#0f172a" stroke-width="1.5"/>
+<line x1="544.7148345509293" y1="517" x2="544.7148345509293" y2="527" stroke="#0f172a"/>
+<line x1="559.013195861451" y1="517" x2="559.013195861451" y2="527" stroke="#0f172a"/>
+<text x="568.013195861451" y="527" font-size="14">11.60s</text>
+<text x="30" y="589" font-size="16" font-weight="700">Python CI: pulls, build, Compose tests</text>
+<text x="418" y="613" text-anchor="end" font-size="14">GitHub</text>
+<rect x="430" y="597" width="442.03521052421297" height="21" fill="#475569"/>
+<line x1="841.1351764560834" y1="607" x2="938.2297674260633" y2="607" stroke="#0f172a" stroke-width="1.5"/>
+<line x1="841.1351764560834" y1="602" x2="841.1351764560834" y2="612" stroke="#0f172a"/>
+<line x1="938.2297674260633" y1="602" x2="938.2297674260633" y2="612" stroke="#0f172a"/>
+<text x="947.2297674260633" y="612" font-size="14">40.44s</text>
+<text x="418" y="642" text-anchor="end" font-size="14">Celesto</text>
+<rect x="430" y="626" width="463.43460236474954" height="21" fill="#2563eb"/>
+<line x1="879.0315534046678" y1="636" x2="951.7391304347826" y2="636" stroke="#0f172a" stroke-width="1.5"/>
+<line x1="879.0315534046678" y1="631" x2="879.0315534046678" y2="641" stroke="#0f172a"/>
+<line x1="951.7391304347826" y1="631" x2="951.7391304347826" y2="641" stroke="#0f172a"/>
+<text x="960.7391304347826" y="641" font-size="14">42.39s</text>
+<text x="30" y="715" font-size="13" fill="#475569">Source: CelestoAI/ci-benchmarks · documented quota-controlled cohorts · raw evidence alongside this chart.</text>
+</g></svg>

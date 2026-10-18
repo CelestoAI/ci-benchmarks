@@ -1,0 +1,7 @@
+[
+  {
+    "artifact": "raw/docker-celesto-none-nocache-5/events.jsonl",
+    "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/39075713994/job/117522728416",
+    "conclusion": "failure"
+  }
+]
