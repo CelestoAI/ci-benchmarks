@@ -57,6 +57,27 @@ jobs:
       - name: Apply the change under test
         run: bash django-bench/apply-change.sh django "$CHANGE"
 
+      # setup-python's pip cache calls lsb_release to build its cache key.
+      # Celesto's github-ci runner image does not ship it (found by this
+      # benchmark), so provide the two answers it asks for when it is
+      # missing. GitHub's runners have it, so this step does nothing there.
+      - name: Provide lsb_release if the image lacks it
+        run: |
+          if ! command -v lsb_release >/dev/null; then
+            mkdir -p "$RUNNER_TEMP/shim"
+            cat > "$RUNNER_TEMP/shim/lsb_release" <<'SH'
+          #!/bin/sh
+          . /etc/os-release
+          case "$*" in
+            *-i*) echo "${NAME%% *}" ;;
+            *-r*) echo "$VERSION_ID" ;;
+            *) echo "$PRETTY_NAME" ;;
+          esac
+          SH
+            chmod +x "$RUNNER_TEMP/shim/lsb_release"
+            echo "$RUNNER_TEMP/shim" >> "$GITHUB_PATH"
+          fi
+
       - name: Set up Python with the pip cache
         uses: actions/setup-python@v5
         with:
