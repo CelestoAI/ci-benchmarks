@@ -1,0 +1,61 @@
+name: Step breakdown benchmark
+
+# Same cold-then-warm order as matched.yml, with per-step probes. Summarize a
+# finished run with: python3 scripts/breakdown-report.py RUN_ID
+on:
+  workflow_dispatch:
+    inputs:
+      cache_namespace:
+        description: Unique experiment namespace; never reuse one.
+        required: true
+        type: string
+      probe_url:
+        description: Optional object both providers download for the network probe.
+        required: false
+        default: ''
+        type: string
+permissions:
+  contents: read
+jobs:
+  cold:
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        sample: [1, 2, 3, 4, 5]
+        runner:
+          - provider: github-hosted
+            labels: '["ubuntu-24.04"]'
+          - provider: celesto-large
+            labels: '["self-hosted","celesto-large"]'
+    uses: ./.github/workflows/breakdown-job.yml
+    with:
+      phase: cold
+      provider: ${{ matrix.runner.provider }}
+      runs_on: ${{ matrix.runner.labels }}
+      cache_namespace: ${{ inputs.cache_namespace }}-sample-${{ matrix.sample }}
+      cache_mb: '512'
+      cpu_iterations: '2000000000'
+      probe_url: ${{ inputs.probe_url }}
+  warm:
+    needs: cold
+    if: ${{ !cancelled() }}
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        sample: [1, 2, 3, 4, 5]
+        runner:
+          - provider: github-hosted
+            labels: '["ubuntu-24.04"]'
+          - provider: celesto-large
+            labels: '["self-hosted","celesto-large"]'
+    uses: ./.github/workflows/breakdown-job.yml
+    with:
+      phase: warm
+      provider: ${{ matrix.runner.provider }}
+      runs_on: ${{ matrix.runner.labels }}
+      cache_namespace: ${{ inputs.cache_namespace }}-sample-${{ matrix.sample }}
+      cache_mb: '512'
+      cpu_iterations: '2000000000'
+      probe_url: ${{ inputs.probe_url }}
