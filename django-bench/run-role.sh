@@ -20,6 +20,28 @@ role=$2
 shard=${3:-}
 here=$(cd "$(dirname "$0")" && pwd)
 source "$here/bench.env"
+
+# Two runner-image differences break Django's own tests (found on Celesto's
+# github-ci image). Both fixes do nothing on GitHub's runners.
+#
+# 1. No system time-zone data: point glibc at the zoneinfo files shipped in
+#    the tzdata wheel, which Django's requirements already install.
+if [ ! -d /usr/share/zoneinfo ] && [ -z "${TZDIR:-}" ]; then
+  TZDIR=$(python -c 'import os, tzdata; print(os.path.join(os.path.dirname(tzdata.__file__), "zoneinfo"))')
+  export TZDIR
+fi
+# 2. The job runs as root, so Django's "file is not writable" tests cannot
+#    fail the way they expect. Re-run this script as a normal user, keeping
+#    the job's PATH (setup-python's interpreter) and TZDIR.
+if [ "$(id -u)" = 0 ]; then
+  chmod 1777 /dev/shm
+  id ciuser >/dev/null 2>&1 || useradd -m ciuser
+  chown -R ciuser: "$django_dir" "$here"
+  env_args=(PATH="$PATH" HOME=/home/ciuser)
+  [ -n "${TZDIR:-}" ] && env_args+=(TZDIR="$TZDIR")
+  exec runuser -u ciuser -- env "${env_args[@]}" bash "$here/run-role.sh" "$@"
+fi
+
 cd "$django_dir"
 
 pin() { taskset -c 0,1 "$@"; }
