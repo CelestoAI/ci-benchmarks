@@ -1,0 +1,32 @@
+# Setup B on GitHub: one checks job plus one job per test shard, all started
+# together. Every job installs everything first, as normal CI does.
+name: Django B - GitHub, sharded
+
+on:
+  push:
+    branches: [bench/django]
+    paths: [django-bench/triggers/github-sharded]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    uses: ./.github/workflows/django-job.yml
+    with:
+      runs_on: '["ubuntu-latest"]'
+      role: checks
+      trigger: django-bench/triggers/github-sharded
+
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        # Keep in step with SHARDS in django-bench/bench.env.
+        shard: ['1', '2', '3', '4', '5', '6', '7', '8']
+    uses: ./.github/workflows/django-job.yml
+    with:
+      runs_on: '["ubuntu-latest"]'
+      role: shard
+      shard: ${{ matrix.shard }}
+      trigger: django-bench/triggers/github-sharded

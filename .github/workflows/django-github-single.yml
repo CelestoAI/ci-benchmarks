@@ -1,0 +1,20 @@
+# Setup A on GitHub: one job installs everything, then runs the checks and
+# the whole Django test suite. Runs when the trigger file is pushed to the
+# bench/django branch; the file's content is the change to test.
+name: Django A - GitHub, one job
+
+on:
+  push:
+    branches: [bench/django]
+    paths: [django-bench/triggers/github-single]
+
+permissions:
+  contents: read
+
+jobs:
+  all:
+    uses: ./.github/workflows/django-job.yml
+    with:
+      runs_on: '["ubuntu-latest"]'
+      role: all
+      trigger: django-bench/triggers/github-single

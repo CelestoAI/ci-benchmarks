@@ -1,0 +1,72 @@
+# One Django CI job, run the normal GitHub Actions way: check out, set up
+# Python with its pip cache, install, then run the job's work. Called by the
+# four django-*.yml workflows, which pick the runner and how the work is split.
+name: Django benchmark job
+
+on:
+  workflow_call:
+    inputs:
+      runs_on:
+        description: JSON runner label list.
+        required: true
+        type: string
+      role:
+        description: all, checks or shard (see django-bench/run-role.sh).
+        required: true
+        type: string
+      shard:
+        description: Shard index for role=shard.
+        required: false
+        type: string
+        default: ''
+      trigger:
+        description: Trigger file whose content names the change to test.
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    timeout-minutes: 45
+    steps:
+      - name: Check out the benchmark scripts
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Load benchmark settings
+        run: |
+          grep -E '^[A-Z_]+=' django-bench/bench.env >> "$GITHUB_ENV"
+          # The trigger file holds the change for this run: none or deps-N.
+          echo "CHANGE=$(tr -d '[:space:]' < '${{ inputs.trigger }}')" >> "$GITHUB_ENV"
+
+      - name: Check out Django
+        uses: actions/checkout@v4
+        with:
+          repository: django/django
+          ref: ${{ env.DJANGO_SHA }}
+          path: django
+          persist-credentials: false
+
+      # Before setup-python, so a dependency change also changes the pip
+      # cache key, as it would in Django's own CI.
+      - name: Apply the change under test
+        run: bash django-bench/apply-change.sh django "$CHANGE"
+
+      - name: Set up Python with the pip cache
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: django/${{ env.REQUIREMENTS }}
+
+      - name: Install dependencies
+        run: |
+          taskset -c 0,1 python -m pip install --upgrade pip wheel
+          taskset -c 0,1 python -m pip install -r "django/$REQUIREMENTS" -e django flake8 isort
+
+      - name: Run ${{ inputs.role }} ${{ inputs.shard }}
+        run: bash django-bench/run-role.sh "$GITHUB_WORKSPACE/django" ${{ inputs.role }} ${{ inputs.shard }}

@@ -1,0 +1,20 @@
+# Setup A on Celesto: one job installs everything, then runs the checks and
+# the whole Django test suite. Runs when the trigger file is pushed to the
+# bench/django branch; the file's content is the change to test.
+name: Django A - Celesto, one job
+
+on:
+  push:
+    branches: [bench/django]
+    paths: [django-bench/triggers/celesto-single]
+
+permissions:
+  contents: read
+
+jobs:
+  all:
+    uses: ./.github/workflows/django-job.yml
+    with:
+      runs_on: '["self-hosted", "celesto-memory"]'
+      role: all
+      trigger: django-bench/triggers/celesto-single
