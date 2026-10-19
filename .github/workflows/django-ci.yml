@@ -1,0 +1,156 @@
+# Django's own Linux CI jobs, copied from django/django at the pinned commit
+# (.github/workflows/linters.yml and tests.yml): flake8, isort, black and the
+# "Ubuntu, SQLite" test job. Steps are kept as Django wrote them; only the
+# runner changes, and Django is checked out from django/django at a fixed
+# commit instead of the triggering repository.
+#
+# On runner images that differ from GitHub's (celesto: true), two extra
+# steps make Django's workflow run green. They are separate steps so their
+# time is measured and reported on its own:
+#   - "Runner image fix: lsb_release" before setup-python's pip cache
+#   - "Runner image fix: user and time zones" before the test run
+name: Django CI job set
+
+on:
+  workflow_call:
+    inputs:
+      runs_on:
+        description: JSON runner label list.
+        required: true
+        type: string
+      celesto:
+        description: Add the runner-image fix steps (Celesto github-ci image).
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  # django/django main on 19 October 2026.
+  DJANGO_SHA: 11af25c0ae06c8275ebb8def8b8ca777a5660ed6
+
+jobs:
+  flake8:
+    name: flake8
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          repository: django/django
+          ref: ${{ env.DJANGO_SHA }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - run: python -m pip install flake8
+      - name: flake8
+        # Pinned to v4.0.0.
+        uses: liskin/gh-problem-matcher-wrap@d31bb388d13cf879e93f878cb2550299f0afb460
+        with:
+          linters: flake8
+          run: flake8
+
+  isort:
+    name: isort
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          repository: django/django
+          ref: ${{ env.DJANGO_SHA }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - run: python -m pip install isort
+      - name: isort
+        # Pinned to v4.0.0.
+        uses: liskin/gh-problem-matcher-wrap@d31bb388d13cf879e93f878cb2550299f0afb460
+        with:
+          linters: isort
+          run: isort --check --diff django tests scripts
+
+  black:
+    name: black
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          repository: django/django
+          ref: ${{ env.DJANGO_SHA }}
+          persist-credentials: false
+      - name: black
+        uses: psf/black@stable
+
+  tests:
+    name: Ubuntu, SQLite, Python 3.14t
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          repository: django/django
+          ref: ${{ env.DJANGO_SHA }}
+          persist-credentials: false
+      # setup-python's pip cache asks lsb_release for the OS name and
+      # version; Celesto's github-ci image does not ship it.
+      - name: 'Runner image fix: lsb_release'
+        if: inputs.celesto
+        run: |
+          if ! command -v lsb_release >/dev/null; then
+            mkdir -p "$RUNNER_TEMP/shim"
+            cat > "$RUNNER_TEMP/shim/lsb_release" <<'SH'
+          #!/bin/sh
+          . /etc/os-release
+          case "$*" in
+            *-i*) echo "${NAME%% *}" ;;
+            *-r*) echo "$VERSION_ID" ;;
+            *) echo "$PRETTY_NAME" ;;
+          esac
+          SH
+            chmod +x "$RUNNER_TEMP/shim/lsb_release"
+            echo "$RUNNER_TEMP/shim" >> "$GITHUB_PATH"
+          fi
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14t'
+          cache: 'pip'
+          cache-dependency-path: 'tests/requirements/py3-free-threading.txt'
+      - name: Install and upgrade packaging tools
+        run: python -m pip install --upgrade pip wheel
+      - run: python -m pip install -r tests/requirements/py3-free-threading.txt -e .
+      - name: Show GIL status
+        run: python -c "import sys; print('GIL enabled:', sys._is_gil_enabled())"
+      # Celesto runs jobs as root (Django's "file is not writable" tests then
+      # cannot fail as they expect) and has no system time-zone data. Run the
+      # tests as a normal user, with glibc pointed at the zoneinfo files of
+      # the tzdata wheel that Django's requirements just installed.
+      - name: 'Runner image fix: user and time zones'
+        if: inputs.celesto
+        run: |
+          run_as=""
+          if [ "$(id -u)" = 0 ]; then
+            chmod 1777 /dev/shm
+            id ciuser >/dev/null 2>&1 || useradd -m ciuser
+            chown -R ciuser: "$GITHUB_WORKSPACE"
+            run_as="runuser -u ciuser -- env PATH=$PATH HOME=/home/ciuser"
+          fi
+          if [ ! -d /usr/share/zoneinfo ]; then
+            tzdir=$(python -c 'import os, tzdata; print(os.path.join(os.path.dirname(tzdata.__file__), "zoneinfo"))')
+            run_as="${run_as:-env} TZDIR=$tzdir"
+          fi
+          echo "RUN_AS=$run_as" >> "$GITHUB_ENV"
+      - name: Run tests
+        run: ${{ env.RUN_AS }} python -Wall tests/runtests.py -v2

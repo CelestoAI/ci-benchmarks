@@ -1,7 +1,8 @@
 """Run the Django benchmark's workflow setups (A and B) and record timings.
 
 Usage: python django-bench/drive.py <out.jsonl> <config>:<change> [...]
-  config  github-single, github-sharded, celesto-single or celesto-sharded
+  config  github-single, github-sharded, celesto-single, celesto-sharded,
+          ci-github or ci-celesto (Django's own CI jobs, django-ci.yml)
   change  none or deps-N (see apply-change.sh)
 
 Each run is a push to the bench/django branch that rewrites one trigger file,
@@ -109,6 +110,17 @@ def record(config: str, change: str, label: str) -> dict:
                 "created_at": j["created_at"],
                 "started_at": j["started_at"],
                 "completed_at": j["completed_at"],
+                # Per-step times, so setup, install and test time can be
+                # separated (and the runner-image fix steps reported alone).
+                "steps": [
+                    {
+                        "name": st["name"],
+                        "conclusion": st["conclusion"],
+                        "started_at": st["started_at"],
+                        "completed_at": st["completed_at"],
+                    }
+                    for st in j.get("steps", [])
+                ],
             }
             for j in jobs
         ],

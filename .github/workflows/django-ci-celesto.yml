@@ -1,0 +1,19 @@
+# Django's Linux CI jobs on Celesto runners (celesto-large, 4 vCPU / 16 GB).
+# Runs when the trigger file is pushed to the bench/django branch, so each
+# run starts from a real push event.
+name: Django CI - Celesto
+
+on:
+  push:
+    branches: [bench/django]
+    paths: [django-bench/triggers/ci-celesto]
+
+permissions:
+  contents: read
+
+jobs:
+  django:
+    uses: ./.github/workflows/django-ci.yml
+    with:
+      runs_on: '["self-hosted", "celesto-large"]'
+      celesto: true

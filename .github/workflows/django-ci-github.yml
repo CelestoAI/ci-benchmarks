@@ -1,0 +1,19 @@
+# Django's Linux CI jobs on GitHub runners (ubuntu-latest, 4 vCPU / 16 GB in a public repository).
+# Runs when the trigger file is pushed to the bench/django branch, so each
+# run starts from a real push event.
+name: Django CI - GitHub
+
+on:
+  push:
+    branches: [bench/django]
+    paths: [django-bench/triggers/ci-github]
+
+permissions:
+  contents: read
+
+jobs:
+  django:
+    uses: ./.github/workflows/django-ci.yml
+    with:
+      runs_on: '["ubuntu-latest"]'
+      celesto: false
