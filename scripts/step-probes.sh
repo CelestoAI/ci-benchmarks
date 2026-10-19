@@ -89,7 +89,8 @@ rm -rf "$WORK/archive" "$WORK/extract"
 # Both providers download one fixed object from the same store, once as a
 # single stream and once as parallel ranges, discarding the bytes.
 if [ -n "${PROBE_URL:-}" ]; then
-  size=$(curl -sfIL -m 20 "$PROBE_URL" | awk 'tolower($1)=="content-length:" {print $2}' | tr -d '\r' | tail -1)
+  # A one-byte GET, not HEAD: a presigned GET link refuses other methods.
+  size=$(curl -sfL -m 20 -r 0-0 -D - -o /dev/null "$PROBE_URL" | awk 'tolower($1)=="content-range:" {split($3, a, "/"); print a[2]}' | tr -d '\r' | tail -1)
   if [ -n "$size" ]; then
     timed net_single_stream false curl -sf -m 120 -o /dev/null "$PROBE_URL"
     chunk=$(( (size + RANGES - 1) / RANGES ))
