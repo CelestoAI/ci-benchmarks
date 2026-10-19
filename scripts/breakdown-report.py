@@ -54,6 +54,10 @@ def milestones(lines: list[tuple[float, str]]) -> dict[str, float]:
             step, marks['r_start'] = 'r', t
         elif 'Run actions/cache/save' in message:
             step, marks['s_start'] = 's', t
+        elif message.startswith('##[group]Run '):
+            step = None  # a later step's lines must not complete a cache phase
+        elif step == 's' and 'Cache save failed' in message:
+            marks['s_failed'] = t
         elif step == 'r' and message.startswith('Cache hit for'):
             marks['r_hit'] = t
         elif step == 'r' and message.startswith('Cache Size:'):
@@ -109,6 +113,10 @@ def main() -> None:
         group = 'github' if provider.startswith('github') else f"celesto/{host.get('host_provider') or '?'}"
         base = {'group': group, 'phase': phase, 'sample': sample, 'cpu_model': fingerprint.get('cpu_model')}
         marks = milestones(lines)
+        if 's_failed' in marks:
+            # A refused save is a failure, never a fast save; count it instead.
+            samples.append({**base, 'metric': 'save: failed (count)', 'value': 1})
+            marks = {k: v for k, v in marks.items() if not k.startswith('s_')}
         for metric, start, end in PHASES[phase]:
             if start in marks and end in marks:
                 samples.append({**base, 'metric': metric, 'value': marks[end] - marks[start]})
