@@ -30,6 +30,11 @@ if [ "$(id -u)" = 0 ]; then
   rm -rf /opt/venv /opt/django
   mkdir -p /opt/venv /opt/django
   chown -R "$user": /opt/venv /opt/django "$(dirname "$here")"
+  # The image's shared uv Python directory belongs to that user; give back
+  # anything a root run put there.
+  if [ -n "${UV_PYTHON_INSTALL_DIR:-}" ] && [ -d "$UV_PYTHON_INSTALL_DIR" ]; then
+    chown -R "$user": "$UV_PYTHON_INSTALL_DIR"
+  fi
   # A login shell, so the user gets a clean HOME and the image's profile.
   exec runuser -l "$user" -c "bash '$here/warm-setup.sh' '$role' '$shard'"
 fi
