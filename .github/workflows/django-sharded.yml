@@ -1,0 +1,139 @@
+# Django's Linux CI work split the way boxd split it for its benchmark: one
+# checks job (flake8, isort, black in order) plus the test suite in 8 shards,
+# each on its own 2 vCPU machine. Commands are Django's own (linters.yml and
+# tests.yml at the pinned commit); only the split and the runner change.
+#
+# pin_two_cores: hold every command to 2 CPUs with taskset, for runners that
+# have more (GitHub's public-repository runner has 4).
+# celesto: add the runner-image fix steps for Celesto's github-ci image
+# (see django-ci.yml), each timed as its own step.
+name: Django sharded job set
+
+on:
+  workflow_call:
+    inputs:
+      runs_on:
+        description: JSON runner label list.
+        required: true
+        type: string
+      pin_two_cores:
+        required: false
+        type: boolean
+        default: false
+      celesto:
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  # django/django main on 19 October 2026.
+  DJANGO_SHA: 11af25c0ae06c8275ebb8def8b8ca777a5660ed6
+  SHARDS: 8
+
+jobs:
+  checks:
+    name: checks
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          repository: django/django
+          ref: ${{ env.DJANGO_SHA }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - name: Pin to two cores
+        if: inputs.pin_two_cores
+        run: echo "PIN=taskset -c 0,1" >> "$GITHUB_ENV"
+      # The three linters Django runs, installed together on one machine.
+      - name: Install linters
+        run: $PIN python -m pip install flake8 isort black
+      - name: flake8
+        run: $PIN flake8
+      - name: isort
+        run: $PIN isort --check --diff django tests scripts
+      - name: black
+        run: $PIN black --check --diff .
+
+  tests:
+    name: tests ${{ matrix.shard }}/8
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        # Keep in step with SHARDS above.
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
+    steps:
+      - name: Checkout the shard script
+        uses: actions/checkout@v7
+        with:
+          sparse-checkout: django-bench/shard.py
+          sparse-checkout-cone-mode: false
+          path: bench
+          persist-credentials: false
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          repository: django/django
+          ref: ${{ env.DJANGO_SHA }}
+          path: django
+          persist-credentials: false
+      - name: 'Runner image fix: lsb_release'
+        if: inputs.celesto
+        run: |
+          if ! command -v lsb_release >/dev/null; then
+            mkdir -p "$RUNNER_TEMP/shim"
+            cat > "$RUNNER_TEMP/shim/lsb_release" <<'SH'
+          #!/bin/sh
+          . /etc/os-release
+          case "$*" in
+            *-i*) echo "${NAME%% *}" ;;
+            *-r*) echo "$VERSION_ID" ;;
+            *) echo "$PRETTY_NAME" ;;
+          esac
+          SH
+            chmod +x "$RUNNER_TEMP/shim/lsb_release"
+            echo "$RUNNER_TEMP/shim" >> "$GITHUB_PATH"
+          fi
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14t'
+          cache: 'pip'
+          cache-dependency-path: 'django/tests/requirements/py3-free-threading.txt'
+      - name: Pin to two cores
+        if: inputs.pin_two_cores
+        run: echo "PIN=taskset -c 0,1" >> "$GITHUB_ENV"
+      - name: Install and upgrade packaging tools
+        run: $PIN python -m pip install --upgrade pip wheel
+      - name: Install Django's requirements
+        working-directory: django
+        run: $PIN python -m pip install -r tests/requirements/py3-free-threading.txt -e .
+      - name: 'Runner image fix: user and time zones'
+        if: inputs.celesto
+        run: |
+          run_as=""
+          if [ "$(id -u)" = 0 ]; then
+            chmod 1777 /dev/shm
+            id ciuser >/dev/null 2>&1 || useradd -m ciuser
+            chown -R ciuser: "$GITHUB_WORKSPACE"
+            run_as="runuser -u ciuser -- env PATH=$PATH HOME=/home/ciuser"
+          fi
+          if [ ! -d /usr/share/zoneinfo ]; then
+            tzdir=$(python -c 'import os, tzdata; print(os.path.join(os.path.dirname(tzdata.__file__), "zoneinfo"))')
+            run_as="${run_as:-env} TZDIR=$tzdir"
+          fi
+          echo "RUN_AS=$run_as" >> "$GITHUB_ENV"
+      - name: Run tests
+        working-directory: django
+        run: |
+          modules=$(python ../bench/django-bench/shard.py . ${{ matrix.shard }} "$SHARDS")
+          $RUN_AS $PIN python -Wall tests/runtests.py -v2 $modules

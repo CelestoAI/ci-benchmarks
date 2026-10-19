@@ -1,0 +1,20 @@
+# Django's CI split boxd-style (1 checks job + 8 test shards) on Celesto
+# runners: celesto-memory, 2 vCPU / 8 GiB.
+# Runs when the trigger file is pushed to the bench/django branch.
+name: Django sharded - Celesto
+
+on:
+  push:
+    branches: [bench/django]
+    paths: [django-bench/triggers/sharded-celesto]
+
+permissions:
+  contents: read
+
+jobs:
+  django:
+    uses: ./.github/workflows/django-sharded.yml
+    with:
+      runs_on: '["self-hosted", "celesto-memory"]'
+      pin_two_cores: false
+      celesto: true

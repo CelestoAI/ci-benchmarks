@@ -1,0 +1,20 @@
+# Django's CI split boxd-style (1 checks job + 8 test shards) on GitHub
+# runners: ubuntu-latest held to 2 cores with taskset (the machine has 4 vCPU / 16 GB).
+# Runs when the trigger file is pushed to the bench/django branch.
+name: Django sharded - GitHub
+
+on:
+  push:
+    branches: [bench/django]
+    paths: [django-bench/triggers/sharded-github]
+
+permissions:
+  contents: read
+
+jobs:
+  django:
+    uses: ./.github/workflows/django-sharded.yml
+    with:
+      runs_on: '["ubuntu-latest"]'
+      pin_two_cores: true
+      celesto: false
