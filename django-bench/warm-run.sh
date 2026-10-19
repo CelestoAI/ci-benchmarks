@@ -11,7 +11,7 @@
 # and prints one JSON line with the time of each step, measured with this
 # computer's own clock.
 #
-# Usage: warm-run.sh <role> <shard or -> <change> <label>
+# Usage (as the user in /opt/bench-user): warm-run.sh <role> <shard or -> <change> <label>
 set -uo pipefail
 
 role=$1
