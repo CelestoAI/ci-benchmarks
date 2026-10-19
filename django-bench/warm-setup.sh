@@ -19,6 +19,8 @@ source "$here/bench.env"
 # not writable" tests cannot fail the way they expect). The root part runs
 # once, then the script re-runs itself as that user.
 if [ "$(id -u)" = 0 ]; then
+  # The image ships without an apt package index.
+  apt-get update -qq
   DEBIAN_FRONTEND=noninteractive apt-get install -y -qq tzdata >/dev/null
   # The coding-agent template's own non-root user, which already owns its
   # uv Python directory; create one only on images without it.
