@@ -22,6 +22,9 @@ if [ "$(id -u)" = 0 ]; then
   # The image ships without an apt package index.
   apt-get update -qq
   DEBIAN_FRONTEND=noninteractive apt-get install -y -qq tzdata >/dev/null
+  # Python multiprocessing (flake8, Django's --parallel) needs a shared
+  # memory directory any user can write, as on a normal Linux machine.
+  chmod 1777 /dev/shm
   # The coding-agent template's own non-root user, which already owns its
   # uv Python directory; create one only on images without it.
   user=ohm
