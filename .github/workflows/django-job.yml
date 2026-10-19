@@ -40,8 +40,9 @@ jobs:
       - name: Load benchmark settings
         run: |
           grep -E '^[A-Z_]+=' django-bench/bench.env >> "$GITHUB_ENV"
-          # The trigger file holds the change for this run: none or deps-N.
-          echo "CHANGE=$(tr -d '[:space:]' < '${{ inputs.trigger }}')" >> "$GITHUB_ENV"
+          # Line 1 of the trigger file is the change for this run: none or
+          # deps-N. Later lines only label the run.
+          echo "CHANGE=$(head -n1 '${{ inputs.trigger }}' | tr -d '[:space:]')" >> "$GITHUB_ENV"
 
       - name: Check out Django
         uses: actions/checkout@v4
