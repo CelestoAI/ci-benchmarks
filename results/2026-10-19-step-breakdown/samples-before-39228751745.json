@@ -1,0 +1,2258 @@
+[
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "save: compress",
+    "value": 2.2391090393066406
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "save: reserve+upload",
+    "value": 6.989526033401489
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "save: commit",
+    "value": 1.138646125793457
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "save: total",
+    "value": 10.501155138015747
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "cpu: single_core M iter/s",
+    "value": 233.412309
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 931.188161
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: disk_write_fsync",
+    "value": 0.9336
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: disk_read_cold",
+    "value": 0.1765
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.3266
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.249
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_create_warm",
+    "value": 0.8331
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_extract_cold",
+    "value": 1.6206
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_extract_sync",
+    "value": 0.9524
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: net_single_stream",
+    "value": 9.7199
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: net_ranged",
+    "value": 2.7792
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "save: compress",
+    "value": 0.7044079303741455
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "save: reserve+upload",
+    "value": 2.132718086242676
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "save: commit",
+    "value": 0.25077295303344727
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "save: total",
+    "value": 3.185832977294922
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "cpu: single_core M iter/s",
+    "value": 242.648978
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 946.019629
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "probe: disk_write_fsync",
+    "value": 3.0948
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "probe: disk_read_cold",
+    "value": 1.2603
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.1641
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.0858
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "probe: tar_create_warm",
+    "value": 0.3106
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "probe: tar_extract_cold",
+    "value": 1.2874
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "probe: tar_extract_sync",
+    "value": 2.8646
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "probe: net_single_stream",
+    "value": 8.6947
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "probe: net_ranged",
+    "value": 1.8588
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "save: compress",
+    "value": 1.685776948928833
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "save: reserve+upload",
+    "value": 2.993232011795044
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "save: commit",
+    "value": 0.5441079139709473
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "save: total",
+    "value": 5.336848020553589
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "cpu: single_core M iter/s",
+    "value": 231.363197
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 917.210695
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: disk_write_fsync",
+    "value": 0.9758
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: disk_read_cold",
+    "value": 0.1666
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.3874
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.2591
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_create_warm",
+    "value": 0.93
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_extract_cold",
+    "value": 1.6052
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_extract_sync",
+    "value": 1.0012
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: net_single_stream",
+    "value": 2.9175
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: net_ranged",
+    "value": 3.0067
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "save: compress",
+    "value": 0.6635138988494873
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "save: reserve+upload",
+    "value": 2.0522210597991943
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "save: commit",
+    "value": 0.1618938446044922
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "save: total",
+    "value": 2.997454881668091
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "cpu: single_core M iter/s",
+    "value": 188.611757
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 636.204294
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "probe: disk_write_fsync",
+    "value": 1.1598
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "probe: disk_read_cold",
+    "value": 1.0368
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.1733
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.1019
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "probe: tar_create_warm",
+    "value": 0.3706
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "probe: tar_extract_cold",
+    "value": 1.2141
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "probe: tar_extract_sync",
+    "value": 1.2546
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "probe: net_single_stream",
+    "value": 6.679
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "metric": "probe: net_ranged",
+    "value": 1.7857
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "save: failed (count)",
+    "value": 1
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "cpu: single_core M iter/s",
+    "value": 233.026521
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 930.945782
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: disk_write_fsync",
+    "value": 0.8294
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: disk_read_cold",
+    "value": 0.1457
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.4228
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.2832
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_create_warm",
+    "value": 0.8918
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_extract_cold",
+    "value": 1.6707
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_extract_sync",
+    "value": 0.9066
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: net_single_stream",
+    "value": 2.6267
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: net_ranged",
+    "value": 2.4748
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "metric": "save: compress",
+    "value": 0.6918439865112305
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "metric": "save: reserve+upload",
+    "value": 2.068652868270874
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "metric": "save: commit",
+    "value": 0.1494591236114502
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "metric": "save: total",
+    "value": 3.024238109588623
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "metric": "cpu: single_core M iter/s",
+    "value": 178.38135
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 682.770564
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "metric": "probe: disk_write_fsync",
+    "value": 3.3182
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "metric": "probe: disk_read_cold",
+    "value": 4.6514
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.2317
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.1452
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "metric": "probe: tar_create_warm",
+    "value": 0.4345
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "metric": "probe: tar_extract_cold",
+    "value": 5.5103
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "metric": "probe: tar_extract_sync",
+    "value": 4.759
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "metric": "probe: net_single_stream",
+    "value": 10.2026
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "3",
+    "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "metric": "probe: net_ranged",
+    "value": 2.3361
+  },
+  {
+    "group": "celesto/aws",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "Intel(R) Xeon(R) 6975P-C",
+    "metric": "save: failed (count)",
+    "value": 1
+  },
+  {
+    "group": "celesto/aws",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "Intel(R) Xeon(R) 6975P-C",
+    "metric": "cpu: single_core M iter/s",
+    "value": 215.807556
+  },
+  {
+    "group": "celesto/aws",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "Intel(R) Xeon(R) 6975P-C",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 856.17693
+  },
+  {
+    "group": "celesto/aws",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "Intel(R) Xeon(R) 6975P-C",
+    "metric": "probe: disk_write_fsync",
+    "value": 3.6917
+  },
+  {
+    "group": "celesto/aws",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "Intel(R) Xeon(R) 6975P-C",
+    "metric": "probe: disk_read_cold",
+    "value": 0.1481
+  },
+  {
+    "group": "celesto/aws",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "Intel(R) Xeon(R) 6975P-C",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.1939
+  },
+  {
+    "group": "celesto/aws",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "Intel(R) Xeon(R) 6975P-C",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.1622
+  },
+  {
+    "group": "celesto/aws",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "Intel(R) Xeon(R) 6975P-C",
+    "metric": "probe: tar_create_warm",
+    "value": 0.3224
+  },
+  {
+    "group": "celesto/aws",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "Intel(R) Xeon(R) 6975P-C",
+    "metric": "probe: tar_extract_cold",
+    "value": 0.6438
+  },
+  {
+    "group": "celesto/aws",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "Intel(R) Xeon(R) 6975P-C",
+    "metric": "probe: tar_extract_sync",
+    "value": 3.7983
+  },
+  {
+    "group": "celesto/aws",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "Intel(R) Xeon(R) 6975P-C",
+    "metric": "probe: net_single_stream",
+    "value": 1.578
+  },
+  {
+    "group": "celesto/aws",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "Intel(R) Xeon(R) 6975P-C",
+    "metric": "probe: net_ranged",
+    "value": 0.7629
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+    "metric": "save: compress",
+    "value": 0.3678290843963623
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+    "metric": "save: reserve+upload",
+    "value": 1.557852029800415
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+    "metric": "save: commit",
+    "value": 0.1720590591430664
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+    "metric": "save: total",
+    "value": 2.1790621280670166
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+    "metric": "cpu: single_core M iter/s",
+    "value": 270.075041
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 1053.779906
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+    "metric": "probe: disk_write_fsync",
+    "value": 2.9509
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+    "metric": "probe: disk_read_cold",
+    "value": 1.1033
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.1164
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.0706
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+    "metric": "probe: tar_create_warm",
+    "value": 0.2272
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+    "metric": "probe: tar_extract_cold",
+    "value": 1.151
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+    "metric": "probe: tar_extract_sync",
+    "value": 2.7515
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+    "metric": "probe: net_single_stream",
+    "value": 5.1874
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+    "metric": "probe: net_ranged",
+    "value": 1.0264
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "save: failed (count)",
+    "value": 1
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "cpu: single_core M iter/s",
+    "value": 233.320167
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 905.240563
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: disk_write_fsync",
+    "value": 1.1804
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: disk_read_cold",
+    "value": 0.1479
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.3705
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.2379
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_create_warm",
+    "value": 0.8411
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_extract_cold",
+    "value": 1.722
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_extract_sync",
+    "value": 1.1585
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: net_single_stream",
+    "value": 4.9863
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: net_ranged",
+    "value": 2.0354
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "save: compress",
+    "value": 0.7427041530609131
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "save: reserve+upload",
+    "value": 1.6635420322418213
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "save: commit",
+    "value": 0.19416189193725586
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "save: total",
+    "value": 2.720383882522583
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "cpu: single_core M iter/s",
+    "value": 199.562324
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 783.044669
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: disk_write_fsync",
+    "value": 1.1789
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: disk_read_cold",
+    "value": 1.0118
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.3245
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.1313
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: tar_create_warm",
+    "value": 0.5405
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: tar_extract_cold",
+    "value": 1.195
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: tar_extract_sync",
+    "value": 1.2053
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: net_single_stream",
+    "value": 4.9303
+  },
+  {
+    "group": "github",
+    "phase": "cold",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: net_ranged",
+    "value": 1.3624
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "restore: lookup",
+    "value": 0.3922238349914551
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "restore: download",
+    "value": 4.76832914352417
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "restore: extract",
+    "value": 1.543414831161499
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "restore: total",
+    "value": 6.70838189125061
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "cpu: single_core M iter/s",
+    "value": 233.103861
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 925.351836
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: disk_write_fsync",
+    "value": 0.9883
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: disk_read_cold",
+    "value": 0.1487
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.337
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.2442
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_create_warm",
+    "value": 0.8334
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_extract_cold",
+    "value": 1.6549
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_extract_sync",
+    "value": 0.5793
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: net_single_stream",
+    "value": 2.4048
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: net_ranged",
+    "value": 2.4082
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: lookup",
+    "value": 0.19088506698608398
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: download",
+    "value": 2.292543888092041
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: extract",
+    "value": 0.6505310535430908
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: total",
+    "value": 3.1404449939727783
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "cpu: single_core M iter/s",
+    "value": 195.914708
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 644.215262
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: disk_write_fsync",
+    "value": 1.2162
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: disk_read_cold",
+    "value": 1.0239
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.3171
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.1346
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: tar_create_warm",
+    "value": 0.5428
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: tar_extract_cold",
+    "value": 1.2103
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: tar_extract_sync",
+    "value": 1.1924
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: net_single_stream",
+    "value": 1.6739
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "1",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: net_ranged",
+    "value": 0.6513
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "restore: lookup",
+    "value": 0.33438801765441895
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "restore: download",
+    "value": 4.409877777099609
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "restore: extract",
+    "value": 1.57218599319458
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "restore: total",
+    "value": 6.32055401802063
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "cpu: single_core M iter/s",
+    "value": 233.27689
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 925.872392
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: disk_write_fsync",
+    "value": 0.9332
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: disk_read_cold",
+    "value": 0.1516
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.3221
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.3086
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_create_warm",
+    "value": 0.8987
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_extract_cold",
+    "value": 1.6749
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_extract_sync",
+    "value": 0.7217
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: net_single_stream",
+    "value": 2.3561
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: net_ranged",
+    "value": 2.0821
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: lookup",
+    "value": 0.19239020347595215
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: download",
+    "value": 2.219449996948242
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: extract",
+    "value": 0.7055490016937256
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: total",
+    "value": 3.1246771812438965
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "cpu: single_core M iter/s",
+    "value": 198.150368
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 660.720585
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: disk_write_fsync",
+    "value": 1.2222
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: disk_read_cold",
+    "value": 1.0221
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.3264
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.1054
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: tar_create_warm",
+    "value": 0.5473
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: tar_extract_cold",
+    "value": 1.199
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: tar_extract_sync",
+    "value": 1.2317
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: net_single_stream",
+    "value": 1.9176
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "2",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: net_ranged",
+    "value": 0.5912
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "save: failed (count)",
+    "value": 1
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "cpu: single_core M iter/s",
+    "value": 232.082321
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 927.331402
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: disk_write_fsync",
+    "value": 0.8425
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: disk_read_cold",
+    "value": 0.1656
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.3875
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.2567
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_create_warm",
+    "value": 0.889
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_extract_cold",
+    "value": 1.4761
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_extract_sync",
+    "value": 0.5631
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: net_single_stream",
+    "value": 2.8918
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: net_ranged",
+    "value": 2.4641
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: lookup",
+    "value": 0.17239785194396973
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: download",
+    "value": 2.1098921298980713
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: extract",
+    "value": 0.7353301048278809
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: total",
+    "value": 3.022171974182129
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "cpu: single_core M iter/s",
+    "value": 199.382689
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 647.976045
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: disk_write_fsync",
+    "value": 1.1793
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: disk_read_cold",
+    "value": 1.0218
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.3164
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.1191
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: tar_create_warm",
+    "value": 0.5167
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: tar_extract_cold",
+    "value": 1.2157
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: tar_extract_sync",
+    "value": 1.1824
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: net_single_stream",
+    "value": 1.6441
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "3",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: net_ranged",
+    "value": 0.5781
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "save: failed (count)",
+    "value": 1
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "cpu: single_core M iter/s",
+    "value": 233.492307
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 924.393359
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: disk_write_fsync",
+    "value": 0.8101
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: disk_read_cold",
+    "value": 0.2009
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.3648
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.2801
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_create_warm",
+    "value": 0.8369
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_extract_cold",
+    "value": 1.6237
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_extract_sync",
+    "value": 0.53
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: net_single_stream",
+    "value": 4.4049
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: net_ranged",
+    "value": 3.0585
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: lookup",
+    "value": 0.19011783599853516
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: download",
+    "value": 2.183399200439453
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: extract",
+    "value": 0.6730380058288574
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: total",
+    "value": 3.0515658855438232
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "cpu: single_core M iter/s",
+    "value": 199.08044
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 788.770341
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: disk_write_fsync",
+    "value": 1.2378
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: disk_read_cold",
+    "value": 1.0088
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.3238
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.1273
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: tar_create_warm",
+    "value": 0.5439
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: tar_extract_cold",
+    "value": 1.1928
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: tar_extract_sync",
+    "value": 1.2042
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: net_single_stream",
+    "value": 1.6344
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "4",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: net_ranged",
+    "value": 0.602
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "save: failed (count)",
+    "value": 1
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "cpu: single_core M iter/s",
+    "value": 233.513066
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 930.28422
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: disk_write_fsync",
+    "value": 0.8369
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: disk_read_cold",
+    "value": 0.1553
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.3549
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.2366
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_create_warm",
+    "value": 0.844
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_extract_cold",
+    "value": 1.5911
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: tar_extract_sync",
+    "value": 0.5433
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: net_single_stream",
+    "value": 3.0569
+  },
+  {
+    "group": "celesto/ovh",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "metric": "probe: net_ranged",
+    "value": 2.0561
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: lookup",
+    "value": 0.3670511245727539
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: download",
+    "value": 5.5471789836883545
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: extract",
+    "value": 0.7434370517730713
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "restore: total",
+    "value": 6.662600994110107
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "cpu: single_core M iter/s",
+    "value": 198.793197
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "cpu: all_cores M iter/s",
+    "value": 782.331532
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: disk_write_fsync",
+    "value": 1.2313
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: disk_read_cold",
+    "value": 1.0096
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: zstd_compress_mem",
+    "value": 0.3184
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: zstd_decompress_mem",
+    "value": 0.1123
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: tar_create_warm",
+    "value": 0.5515
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: tar_extract_cold",
+    "value": 1.2277
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: tar_extract_sync",
+    "value": 1.1909
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: net_single_stream",
+    "value": 10.5264
+  },
+  {
+    "group": "github",
+    "phase": "warm",
+    "sample": "5",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "metric": "probe: net_ranged",
+    "value": 2.0375
+  }
+]

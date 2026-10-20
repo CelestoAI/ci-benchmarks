@@ -31,6 +31,20 @@ October 17, 2026. Both runners: **4 vCPUs, 16 GiB RAM, Ubuntu 24.04.5, Node 22.2
 
 [Full methodology, ranges, outliers, and raw data →](results/2026-10-17-matched/README.md)
 
+## Step breakdown
+
+October 19, 2026. The same cache test with each restore and save split into steps, run before and after Celesto switched restores to parallel ranged downloads with read-ahead. Celesto jobs on OVH hosts:
+
+| Restore step ↓ | Before | After | GitHub (after run) |
+| --- | ---: | ---: | ---: |
+| Download | 4.59 s | **2.96 s** | 3.14 s |
+| Extract | 1.56 s | 1.78 s | 0.61 s |
+| Total | 6.51 s | **5.30 s** | 3.84 s |
+
+**Download is now level with GitHub** (it was 2.37 s behind). The remaining gap is extract: OVH guests spend longer in the kernel on syscalls, pipes, and page faults. The single AWS restore downloaded in 1.52 s and finished in 2.39 s, ahead of GitHub.
+
+[Every step, disk/network/compression probes, and raw samples →](results/2026-10-19-step-breakdown/README.md)
+
 ## Run it yourself
 
 No local install needed. One workflow runs both providers and produces all 12 jobs.
