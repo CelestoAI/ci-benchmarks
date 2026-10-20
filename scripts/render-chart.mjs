@@ -5,6 +5,10 @@ import { fileURLToPath } from 'node:url';
 const root = new URL('../', import.meta.url);
 const source = new URL('results/2026-10-17-matched/samples.json', root);
 const { samples } = JSON.parse(readFileSync(source, 'utf8'));
+// Restore comes from the October 19 rerun after Celesto added ranged
+// read-ahead downloads; CPU and save still come from the October 17 run.
+const restoreSource = new URL('results/2026-10-19-readahead-restore/restore.json', root);
+const { samples: restoreSamples } = JSON.parse(readFileSync(restoreSource, 'utf8'));
 const median = (values) => {
   const sorted = [...values].sort((a, b) => a - b);
   const middle = Math.floor(sorted.length / 2);
@@ -15,10 +19,10 @@ const providers = [
   { id: 'celesto-large', label: 'Celesto Large', color: '#c2410c' },
 ];
 const metrics = [
-  { key: 'single', title: 'Single-core CPU', unit: 'Million iterations / second', direction: 'Higher is better', phase: null, divisor: 1e6, max: 300, ticks: [0, 100, 200, 300], digits: 1 },
-  { key: 'all', title: 'Four-core CPU', unit: 'Million iterations / second', direction: 'Higher is better', phase: null, divisor: 1e6, max: 1200, ticks: [0, 400, 800, 1200], digits: 1 },
-  { key: 'restore_ms', title: 'Cache restore', unit: 'Seconds · 512 MiB cache hit', direction: 'Lower is better', phase: 'warm', divisor: 1000, max: 8, ticks: [0, 2, 4, 6, 8], digits: 2 },
-  { key: 'save_ms', title: 'Cache save', unit: 'Seconds · 512 MiB cache miss', direction: 'Lower is better', phase: 'cold', divisor: 1000, max: 6, ticks: [0, 2, 4, 6], digits: 2 },
+  { key: 'single', title: 'Single-core CPU', unit: 'Million iterations / second', direction: 'Higher is better', phase: null, divisor: 1e6, max: 300, ticks: [0, 100, 200, 300], digits: 1, samples, count: 6 },
+  { key: 'all', title: 'Four-core CPU', unit: 'Million iterations / second', direction: 'Higher is better', phase: null, divisor: 1e6, max: 1200, ticks: [0, 400, 800, 1200], digits: 1, samples, count: 6 },
+  { key: 'restore_ms', title: 'Cache restore', unit: 'Seconds · 512 MiB cache hit · Oct 19', direction: 'Lower is better', phase: 'warm', divisor: 1000, max: 8, ticks: [0, 2, 4, 6, 8], digits: 2, samples: restoreSamples, count: 5 },
+  { key: 'save_ms', title: 'Cache save', unit: 'Seconds · 512 MiB cache miss', direction: 'Lower is better', phase: 'cold', divisor: 1000, max: 6, ticks: [0, 2, 4, 6], digits: 2, samples, count: 3 },
 ];
 const panels = metrics.map((metric, index) => {
   const x = 36 + (index % 2) * 532;
@@ -27,8 +31,8 @@ const panels = metrics.map((metric, index) => {
   const plotWidth = 398;
   const barY = y + 112;
   const values = providers.map((provider) => {
-    const selected = samples.filter((s) => s.provider === provider.id && (!metric.phase || s.phase === metric.phase));
-    if (selected.length !== (metric.phase ? 3 : 6)) throw new Error('Unexpected sample count');
+    const selected = metric.samples.filter((s) => s.provider === provider.id && (!metric.phase || s.phase === metric.phase));
+    if (selected.length !== metric.count) throw new Error('Unexpected sample count');
     return median(selected.map((s) => s[metric.key])) / metric.divisor;
   });
   if (values.some((value) => !Number.isFinite(value) || value < 0 || value > metric.max)) throw new Error('Chart scale does not fit data');
@@ -46,7 +50,7 @@ const panels = metrics.map((metric, index) => {
 }).join('\n');
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="790" viewBox="0 0 1120 790" role="img" aria-labelledby="title desc">
 <title id="title">Celesto Large versus GitHub Actions: matched four-core benchmark</title>
-<desc id="desc">Both providers use four vCPUs and 16 GiB RAM. Median single-core throughput: GitHub 199.4, Celesto 233.2 million iterations per second. Four-core: GitHub 786.7, Celesto 927.5 million. Cache restore: GitHub 3.30, Celesto 6.23 seconds. Cache save: GitHub 2.50, Celesto 5.18 seconds. All bar axes begin at zero; each panel has its own labeled scale.</desc>
+<desc id="desc">Both providers use four vCPUs and 16 GiB RAM. Median single-core throughput: GitHub 199.4, Celesto 233.2 million iterations per second. Four-core: GitHub 786.7, Celesto 927.5 million. Cache restore (October 19 rerun): GitHub 3.93, Celesto 5.33 seconds. Cache save: GitHub 2.50, Celesto 5.18 seconds. All bar axes begin at zero; each panel has its own labeled scale.</desc>
 <style>text{font-family:Inter,Arial,Helvetica,sans-serif;fill:#0f172a}.title{font-size:34px;font-weight:750}.subtitle{font-size:18px;fill:#64748b}.panel-title{font-size:23px;font-weight:700}.direction{font-size:16px;fill:#64748b}.label{font-size:17px}.tick{font-size:16px;fill:#64748b}.value{font-size:19px;font-weight:700}.footer{font-size:17px;fill:#475569}</style>
 <rect width="1120" height="790" rx="20" fill="#f8fafc"/>
 <text x="36" y="55" class="title">Same capacity. Different trade-offs.</text>
@@ -54,10 +58,10 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="790" v
 <rect x="36" y="114" width="18" height="18" rx="3" fill="#475569"/><text x="64" y="130" class="label">GitHub Actions</text>
 <rect x="242" y="114" width="18" height="18" rx="3" fill="#c2410c"/><text x="270" y="130" class="label">Celesto Large</text>
 ${panels}
-<text x="36" y="720" class="footer">Medians · CPU: 6 runs/provider · Cache: 3 runs/operation/provider · October 17, 2026</text>
+<text x="36" y="720" class="footer">Medians · CPU: 6 runs/provider · Save: 3 runs/provider, October 17, 2026 · Restore: 5 runs/provider, October 19, 2026</text>
 <text x="36" y="749" class="subtitle">Synthetic workloads. CPU models, kernels and disks differ. Full data and outliers in the linked report.</text>
 </svg>\n`;
 const output = new URL('docs/images/matched-benchmark.svg', root);
 mkdirSync(new URL('docs/images/', root), { recursive: true });
 writeFileSync(output, svg);
-console.log(`Rendered ${fileURLToPath(output)} from ${fileURLToPath(source)}`);
+console.log(`Rendered ${fileURLToPath(output)} from ${fileURLToPath(source)} and ${fileURLToPath(restoreSource)}`);
