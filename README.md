@@ -22,10 +22,12 @@ October 17, 2026. Both runners: **4 vCPUs, 16 GiB RAM, Ubuntu 24.04.5, Node 22.2
 | --- | ---: | ---: | --- |
 | Single-core CPU ↑ | 199.4 million iterations/s | 233.2 million iterations/s | Celesto +16.9% |
 | Four-core CPU ↑ | 786.7 million iterations/s | 927.5 million iterations/s | Celesto +17.9% |
-| Restore a 512 MiB cache ↓ | 3.30 s | 6.23 s | GitHub 1.89× faster |
+| Restore a 512 MiB cache ↓ | 3.93 s | 5.33 s | GitHub 1.36× faster |
 | Save a 512 MiB cache ↓ | 2.50 s | 5.18 s | GitHub 2.08× faster |
 
-↑ More work per second is better. ↓ Less time is better. Values are medians: six CPU measurements and three measurements per cache operation, per provider.
+↑ More work per second is better. ↓ Less time is better. Values are medians: six CPU measurements and three save measurements per provider from October 17; five restore measurements per provider from the [October 19 rerun](results/2026-10-19-readahead-restore/README.md).
+
+**Restore updated October 19:** Celesto now downloads cache archives in parallel ranges with read-ahead. Celesto's median restore dropped from 6.23 s to 5.33 s, and GitHub's lead from 1.89× to 1.36×. GitHub's own median in the rerun was 3.93 s (3.30 s on October 17).
 
 **In this test:** Celesto had higher median CPU throughput. GitHub saved and restored the cache faster. CPU models, kernels, and disks differed despite matching CPU/RAM capacity. These are synthetic workloads, not a prediction for every build.
 
