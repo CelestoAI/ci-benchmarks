@@ -1,0 +1,45 @@
+# Setup C: Django's CI split boxd-style (1 checks + 8 test shards) on Celesto
+# computers created from a custom template, the closest Celesto has to
+# boxd's machines restored from a snapshot of main.
+#
+# A push of the trigger file starts this run, as with the other setups. A
+# small GitHub-hosted job (playing the part of boxd's automation) creates the
+# 9 computers through the Celesto API, runs one job on each, then deletes
+# them: see django-bench/template-run.py. Push -> result is this run's
+# creation to this job's end.
+#
+# Needs the CELESTO_API_KEY repository secret and TEMPLATE_ID in
+# django-bench/bench.env.
+name: Django template - Celesto
+
+on:
+  push:
+    branches: [bench/django]
+    paths: [django-bench/triggers/template-celesto]
+
+permissions:
+  contents: read
+
+jobs:
+  orchestrate:
+    name: create from template, run, delete
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout the benchmark scripts
+        uses: actions/checkout@v7
+        with:
+          sparse-checkout: django-bench
+          persist-credentials: false
+      - name: Run Django's CI on 9 computers from the template
+        env:
+          CELESTO_API_KEY: ${{ secrets.CELESTO_API_KEY }}
+        run: |
+          TEMPLATE_ID=$(sed -n 's/^TEMPLATE_ID=//p' django-bench/bench.env) python3 django-bench/template-run.py
+      - name: Keep the per-computer results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-results
+          path: bench-results.jsonl
+          if-no-files-found: ignore
