@@ -1,0 +1,19 @@
+# Django's CI as one job (lint + all tests) on GitHub runners: ubuntu-latest held to 2 cores with taskset (4 vCPU / 16 GB machine).
+# Runs when the trigger file is pushed to the bench/django branch.
+name: Django single job - GitHub
+
+on:
+  push:
+    branches: [bench/django]
+    paths: [django-bench/triggers/single-github]
+
+permissions:
+  contents: read
+
+jobs:
+  django:
+    uses: ./.github/workflows/django-single.yml
+    with:
+      runs_on: '["ubuntu-latest"]'
+      pin_two_cores: true
+      celesto: false

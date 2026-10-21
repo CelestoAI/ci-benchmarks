@@ -1,0 +1,98 @@
+# Django's Linux CI work as ONE job on one 2 vCPU machine: flake8, isort and
+# black, then the whole test suite. This is boxd's "GitHub, one job"
+# baseline, the one its 6x headline is measured against. Commands are
+# Django's own (linters.yml and tests.yml at the pinned commit).
+#
+# pin_two_cores: hold every command to 2 CPUs with taskset (GitHub's
+# public-repository runner has 4). celesto: add the runner-image fix steps
+# for Celesto's github-ci image (see django-ci.yml), each its own step.
+name: Django single job set
+
+on:
+  workflow_call:
+    inputs:
+      runs_on:
+        description: JSON runner label list.
+        required: true
+        type: string
+      pin_two_cores:
+        required: false
+        type: boolean
+        default: false
+      celesto:
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  # django/django main on 19 October 2026.
+  DJANGO_SHA: 11af25c0ae06c8275ebb8def8b8ca777a5660ed6
+
+jobs:
+  all:
+    name: lint and tests
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          repository: django/django
+          ref: ${{ env.DJANGO_SHA }}
+          persist-credentials: false
+      - name: 'Runner image fix: lsb_release'
+        if: inputs.celesto
+        run: |
+          if ! command -v lsb_release >/dev/null; then
+            mkdir -p "$RUNNER_TEMP/shim"
+            cat > "$RUNNER_TEMP/shim/lsb_release" <<'SH'
+          #!/bin/sh
+          . /etc/os-release
+          case "$*" in
+            *-i*) echo "${NAME%% *}" ;;
+            *-r*) echo "$VERSION_ID" ;;
+            *) echo "$PRETTY_NAME" ;;
+          esac
+          SH
+            chmod +x "$RUNNER_TEMP/shim/lsb_release"
+            echo "$RUNNER_TEMP/shim" >> "$GITHUB_PATH"
+          fi
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14t'
+          cache: 'pip'
+          cache-dependency-path: 'tests/requirements/py3-free-threading.txt'
+      - name: Pin to two cores
+        if: inputs.pin_two_cores
+        run: echo "PIN=taskset -c 0,1" >> "$GITHUB_ENV"
+      - name: Install and upgrade packaging tools
+        run: $PIN python -m pip install --upgrade pip wheel
+      - name: Install Django's requirements and linters
+        run: $PIN python -m pip install -r tests/requirements/py3-free-threading.txt -e . flake8 isort black
+      - name: flake8
+        run: $PIN flake8
+      - name: isort
+        run: $PIN isort --check --diff django tests scripts
+      - name: black
+        run: $PIN black --check --diff .
+      - name: 'Runner image fix: user and time zones'
+        if: inputs.celesto
+        run: |
+          run_as=""
+          if [ "$(id -u)" = 0 ]; then
+            chmod 1777 /dev/shm
+            id ciuser >/dev/null 2>&1 || useradd -m ciuser
+            chown -R ciuser: "$GITHUB_WORKSPACE"
+            run_as="runuser -u ciuser -- env PATH=$PATH HOME=/home/ciuser"
+          fi
+          if [ ! -d /usr/share/zoneinfo ]; then
+            tzdir=$(python -c 'import os, tzdata; print(os.path.join(os.path.dirname(tzdata.__file__), "zoneinfo"))')
+            run_as="${run_as:-env} TZDIR=$tzdir"
+          fi
+          echo "RUN_AS=$run_as" >> "$GITHUB_ENV"
+      - name: Run tests
+        run: $RUN_AS $PIN python -Wall tests/runtests.py -v2

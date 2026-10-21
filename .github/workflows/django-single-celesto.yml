@@ -1,0 +1,19 @@
+# Django's CI as one job (lint + all tests) on Celesto runners: celesto-memory, 2 vCPU / 8 GiB.
+# Runs when the trigger file is pushed to the bench/django branch.
+name: Django single job - Celesto
+
+on:
+  push:
+    branches: [bench/django]
+    paths: [django-bench/triggers/single-celesto]
+
+permissions:
+  contents: read
+
+jobs:
+  django:
+    uses: ./.github/workflows/django-single.yml
+    with:
+      runs_on: '["self-hosted", "celesto-memory"]'
+      pin_two_cores: false
+      celesto: true
