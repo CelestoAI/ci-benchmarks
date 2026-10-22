@@ -1,0 +1,66 @@
+name: Postgres via Docker on Celesto runner
+# Reproduces the Docker-based Postgres setup commonly used in CI scripts.
+# Expected to FAIL on celesto-large until Docker support lands; re-run then.
+on:
+  workflow_dispatch:
+  push:
+    branches: [ci/postgres-docker]
+permissions:
+  contents: read
+jobs:
+  postgres-service:
+    name: postgres service container
+    runs-on: [self-hosted, celesto-large]
+    timeout-minutes: 10
+    steps:
+      - name: Docker is available
+        run: docker version
+      - name: Start Postgres
+        run: |
+          docker run -d --name celesto-runtime-events-pg \
+            -e POSTGRES_HOST_AUTH_METHOD=trust \
+            -e POSTGRES_DB=celesto_runtime_events_test \
+            -p 127.0.0.1:5432:5432 \
+            --health-cmd "pg_isready -U postgres" \
+            --health-interval 5s \
+            --health-timeout 5s \
+            --health-retries 10 \
+            postgres:17
+      - name: Wait until healthy
+        run: |
+          for i in $(seq 1 30); do
+            [ "$(docker inspect -f '{{.State.Health.Status}}' celesto-runtime-events-pg)" = healthy ] && exit 0
+            sleep 2
+          done
+          docker logs celesto-runtime-events-pg
+          exit 1
+      - name: Apply schema and dump it (host network)
+        run: |
+          echo 'create table t(id int);' > schema.sql
+          docker run --rm --network host -i postgres:17 \
+            psql postgresql://postgres@127.0.0.1:5432/celesto_runtime_events_test -XAt -v ON_ERROR_STOP=1 < schema.sql
+          docker run --rm --network host postgres:17 \
+            pg_dump postgresql://postgres@127.0.0.1:5432/celesto_runtime_events_test --schema-only --no-owner
+      - name: Cleanup
+        if: always()
+        run: docker rm -f celesto-runtime-events-pg
+
+  migration-roundtrip:
+    name: migration roundtrip in one container
+    runs-on: [self-hosted, celesto-large]
+    timeout-minutes: 10
+    env:
+      C: celesto-admin-removal-test-${{ github.run_id }}
+    steps:
+      - run: docker run -d --name "$C" -e POSTGRES_HOST_AUTH_METHOD=trust postgres:17
+      - run: |
+          until docker exec "$C" pg_isready -h 127.0.0.1 -U postgres; do sleep 1; done
+      - run: |
+          echo 'create table t(id int);' | docker exec -i "$C" psql -U postgres -d postgres -XAt -v ON_ERROR_STOP=1
+          docker exec "$C" pg_dump -U postgres -d postgres --schema-only --no-owner
+          docker exec "$C" createdb -U postgres migration
+          echo 'create table t(id int);' | docker exec -i "$C" psql -U postgres -d migration -XAt -v ON_ERROR_STOP=1
+          docker exec "$C" pg_dump -U postgres -d migration --schema-only --no-owner
+      - name: Cleanup
+        if: always()
+        run: docker rm -f "$C"
