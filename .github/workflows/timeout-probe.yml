@@ -97,9 +97,11 @@ jobs:
           command -v dmsetup || sudo apt-get install -y --no-install-recommends dmsetup || { sudo apt-get update && sudo apt-get install -y --no-install-recommends dmsetup; }
           sudo truncate -s 64M /tmp/stall.img
           loop=$(sudo losetup -f --show /tmp/stall.img)
-          sudo dmsetup create stall --table "0 $(sudo blockdev --getsz "$loop") linear $loop 0"
-          sudo chmod 666 /dev/mapper/stall
-          sudo dmsetup suspend stall
+          # The guest has no udev, so skip udev sync and create the node directly.
+          sudo dmsetup create --noudevsync stall --table "0 $(sudo blockdev --getsz "$loop") linear $loop 0"
+          sudo dmsetup mknodes stall
+          ls -l /dev/mapper/stall
+          sudo dmsetup suspend --noudevsync stall
           date -u +%FT%TZ
           echo "writing to the suspended device"
           exec dd if=/dev/zero of=/dev/mapper/stall bs=4k count=1 oflag=direct
