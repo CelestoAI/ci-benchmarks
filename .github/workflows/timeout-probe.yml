@@ -11,6 +11,8 @@ permissions:
 jobs:
   control-sleep:
     name: control (plain sleep)
+    # A push whose message contains [stalled-disk only] reruns just that job.
+    if: ${{ !contains(github.event.head_commit.message, '[stalled-disk only]') }}
     runs-on: [self-hosted, celesto-large]
     timeout-minutes: 2
     steps:
@@ -27,6 +29,8 @@ jobs:
 
   ignores-signals:
     name: step ignores SIGINT and SIGTERM
+    # A push whose message contains [stalled-disk only] reruns just that job.
+    if: ${{ !contains(github.event.head_commit.message, '[stalled-disk only]') }}
     runs-on: [self-hosted, celesto-large]
     timeout-minutes: 2
     steps:
@@ -47,6 +51,8 @@ jobs:
 
   runner-offline:
     name: runner loses its connection to GitHub
+    # A push whose message contains [stalled-disk only] reruns just that job.
+    if: ${{ !contains(github.event.head_commit.message, '[stalled-disk only]') }}
     runs-on: [self-hosted, celesto-large]
     timeout-minutes: 2
     steps:
@@ -87,6 +93,8 @@ jobs:
         # `exec` makes the step's own process the stuck writer, so the
         # runner's process-tree kill cannot end it.
         run: |
+          # The image has no dmsetup, so install it first.
+          command -v dmsetup || sudo apt-get install -y --no-install-recommends dmsetup || { sudo apt-get update && sudo apt-get install -y --no-install-recommends dmsetup; }
           sudo truncate -s 64M /tmp/stall.img
           loop=$(sudo losetup -f --show /tmp/stall.img)
           sudo dmsetup create stall --table "0 $(sudo blockdev --getsz "$loop") linear $loop 0"
