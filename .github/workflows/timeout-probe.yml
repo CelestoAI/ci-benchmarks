@@ -1,0 +1,97 @@
+name: Timeout probe on Celesto runner
+# Checks what happens when a job passes its timeout-minutes on a Celesto
+# runner: when GitHub ends the job, and when Celesto deletes the VM.
+# Every job has timeout-minutes: 2 and a step that would otherwise run 15 min.
+on:
+  workflow_dispatch:
+  push:
+    branches: [ci/timeout-probe]
+permissions:
+  contents: read
+jobs:
+  control-sleep:
+    name: control (plain sleep)
+    runs-on: [self-hosted, celesto-large]
+    timeout-minutes: 2
+    steps:
+      - name: Environment
+        run: |
+          date -u +%FT%TZ
+          uname -a
+          id
+          for tool in sudo iptables ip6tables nft dmsetup losetup blockdev; do
+            printf '%s: %s\n' "$tool" "$(command -v "$tool" || echo missing)"
+          done
+      - name: Sleep past the timeout
+        run: sleep 900
+
+  ignores-signals:
+    name: step ignores SIGINT and SIGTERM
+    runs-on: [self-hosted, celesto-large]
+    timeout-minutes: 2
+    steps:
+      - name: Environment
+        run: |
+          date -u +%FT%TZ
+          uname -a
+          id
+          for tool in sudo iptables ip6tables nft dmsetup losetup blockdev; do
+            printf '%s: %s\n' "$tool" "$(command -v "$tool" || echo missing)"
+          done
+      - name: Ignore cancel signals
+        # Children inherit the ignored signals, so only the runner's final
+        # process-tree kill can end this step.
+        run: |
+          trap '' INT TERM
+          sleep 900
+
+  runner-offline:
+    name: runner loses its connection to GitHub
+    runs-on: [self-hosted, celesto-large]
+    timeout-minutes: 2
+    steps:
+      - name: Environment
+        run: |
+          date -u +%FT%TZ
+          uname -a
+          id
+          for tool in sudo iptables ip6tables nft dmsetup losetup blockdev; do
+            printf '%s: %s\n' "$tool" "$(command -v "$tool" || echo missing)"
+          done
+      - name: Cut outbound traffic, then sleep past the timeout
+        # The cancel message can never reach the runner after this.
+        run: |
+          sleep 45
+          date -u +%FT%TZ
+          echo "dropping all outbound traffic except loopback"
+          sudo iptables -I OUTPUT 1 ! -o lo -j DROP
+          sudo ip6tables -I OUTPUT 1 ! -o lo -j DROP || true
+          sleep 900
+
+  stalled-disk:
+    name: step stuck in uninterruptible disk I/O
+    runs-on: [self-hosted, celesto-large]
+    timeout-minutes: 2
+    steps:
+      - name: Environment
+        run: |
+          date -u +%FT%TZ
+          uname -a
+          id
+          for tool in sudo iptables ip6tables nft dmsetup losetup blockdev; do
+            printf '%s: %s\n' "$tool" "$(command -v "$tool" || echo missing)"
+          done
+      - name: Write to a suspended device
+        # A suspended device-mapper target holds direct I/O forever, which
+        # leaves the writer in D state, like apt or dpkg on a stalled disk.
+        # `exec` makes the step's own process the stuck writer, so the
+        # runner's process-tree kill cannot end it.
+        run: |
+          sudo truncate -s 64M /tmp/stall.img
+          loop=$(sudo losetup -f --show /tmp/stall.img)
+          sudo dmsetup create stall --table "0 $(sudo blockdev --getsz "$loop") linear $loop 0"
+          sudo chmod 666 /dev/mapper/stall
+          sudo dmsetup suspend stall
+          date -u +%FT%TZ
+          echo "writing to the suspended device"
+          exec dd if=/dev/zero of=/dev/mapper/stall bs=4k count=1 oflag=direct
