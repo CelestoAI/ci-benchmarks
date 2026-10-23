@@ -58,18 +58,27 @@ jobs:
           after=$(python3 /tmp/quota.py)
           echo "docker hub allowance: before=$before after=$after"
           echo "DOCKERD_USED=$(( before - after ))" >> "$GITHUB_ENV"
-      - name: buildx docker-container builder uses the BuildKit mirror config
+      - name: Job user and buildx default config location
+        run: |
+          echo "user=$(id -un) home=$HOME BUILDX_CONFIG=${BUILDX_CONFIG:-unset}"
+          docker buildx version
+          # buildx applies buildkitd.default.toml from its config dir to every
+          # new docker-container builder; the image would bake this file.
+          mkdir -p "$HOME/.docker/buildx"
+          printf '[registry."docker.io"]\n  mirrors = ["mirror.gcr.io"]\n' > "$HOME/.docker/buildx/buildkitd.default.toml"
+      - name: Stock setup-buildx-action, no buildkitd config input
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - name: buildx FROM pull goes through the mirror
         run: |
           mkdir -p /tmp/bk && cd /tmp/bk
-          printf '[registry."docker.io"]\n  mirrors = ["mirror.gcr.io"]\n' > buildkitd.toml
           printf 'FROM ruby:3.3-slim\nRUN true\n' > Dockerfile
-          docker buildx create --name mirror-probe --driver docker-container --buildkitd-config buildkitd.toml --use
+          docker buildx inspect | sed -n 1,20p
+          builder=$(docker buildx inspect --format '{{.Name}}' 2>/dev/null || docker buildx inspect | awk '/^Name:/{print $2; exit}')
+          docker exec "buildx_buildkit_${builder}0" cat /etc/buildkit/buildkitd.toml || true
           before=$(python3 /tmp/quota.py)
           docker buildx build --progress plain .
           after=$(python3 /tmp/quota.py)
           echo "docker hub allowance around buildx build: before=$before after=$after"
-          # The builder's own moby/buildkit image is a Docker Hub pull by dockerd
-          # (mirrored above), so any drop here comes from the FROM pull.
       - name: Fallback to Docker Hub when the mirror is unreachable
         run: |
           # Port 9 on loopback refuses connections: a mirror that is down.
