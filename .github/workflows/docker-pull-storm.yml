@@ -1,0 +1,102 @@
+name: Concurrent Docker Hub pulls on Celesto runner
+# Reproduces the 2026-10-22 failure: many Celesto CI VMs start together and
+# pull the same large Docker Hub images anonymously. All VMs on one pool host
+# leave through the host's single public IP, so they share Docker Hub's
+# per-IP anonymous limit and hit registry-1.docker.io at the same moment.
+# There is deliberately no docker login and no retry, like a typical job.
+on:
+  workflow_dispatch:
+  push:
+    branches: [ci/docker-pull-storm]
+permissions:
+  contents: read
+jobs:
+  pull:
+    name: pull ${{ matrix.worker }}
+    runs-on: [self-hosted, celesto-large]
+    timeout-minutes: 15
+    strategy:
+      # Keep every job running so one run shows how many pulls fail.
+      fail-fast: false
+      matrix:
+        worker: [1, 2, 3, 4, 5, 6, 7, 8]
+    steps:
+      - name: Docker setup and configured mirrors
+        run: |
+          docker version --format 'server {{.Server.Version}}'
+          # Empty today; a mirror fix would list it here.
+          docker info --format 'mirrors: {{json .RegistryConfig.Mirrors}}'
+          # Jobs that share this IP share one anonymous Docker Hub limit.
+          echo "public ip: $(curl -s --max-time 10 https://api.ipify.org || echo unknown)"
+      - name: Anonymous Docker Hub allowance before pulls
+        run: |
+          python3 - <<'PY'
+          import json, urllib.request, urllib.error
+          # Anonymous token, then a HEAD on Docker's rate-limit test image;
+          # HEAD requests do not count against the limit.
+          url = ('https://auth.docker.io/token?service=registry.docker.io'
+                 '&scope=repository:ratelimitpreview/test:pull')
+          try:
+              with urllib.request.urlopen(url, timeout=20) as response:
+                  token = json.load(response)['token']
+              request = urllib.request.Request(
+                  'https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest',
+                  method='HEAD', headers={'Authorization': 'Bearer ' + token})
+              with urllib.request.urlopen(request, timeout=20) as response:
+                  print(json.dumps({'status': response.status,
+                                    'limit': response.headers.get('ratelimit-limit'),
+                                    'remaining': response.headers.get('ratelimit-remaining'),
+                                    'source': response.headers.get('docker-ratelimit-source')}))
+          except urllib.error.HTTPError as error:
+              print(json.dumps({'status': error.code, 'body': error.read(300).decode(errors='replace')}))
+          except OSError as error:
+              print(json.dumps({'error': str(error)}))
+          PY
+      - name: Pull the same images every job pulls
+        run: |
+          # Large multi-layer images, pulled in parallel like `services:`
+          # containers starting together. Each result is logged; the step
+          # fails at the end if any pull failed.
+          images="postgres:17 python:3.12 node:22 redis:7 mysql:8.4"
+          mkdir -p pulls
+          for image in $images; do
+            (
+              start=$(date +%s)
+              if docker pull -q "$image" > "pulls/${image//[:\/]/_}.log" 2>&1; then
+                echo "ok   $image $(( $(date +%s) - start ))s"
+              else
+                echo "FAIL $image $(( $(date +%s) - start ))s: $(tail -n 3 "pulls/${image//[:\/]/_}.log" | tr '\n' ' ')"
+                touch pulls/failed
+              fi
+            ) &
+          done
+          wait
+          test ! -e pulls/failed
+      - name: Anonymous Docker Hub allowance after pulls
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json, urllib.request, urllib.error
+          # Anonymous token, then a HEAD on Docker's rate-limit test image;
+          # HEAD requests do not count against the limit.
+          url = ('https://auth.docker.io/token?service=registry.docker.io'
+                 '&scope=repository:ratelimitpreview/test:pull')
+          try:
+              with urllib.request.urlopen(url, timeout=20) as response:
+                  token = json.load(response)['token']
+              request = urllib.request.Request(
+                  'https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest',
+                  method='HEAD', headers={'Authorization': 'Bearer ' + token})
+              with urllib.request.urlopen(request, timeout=20) as response:
+                  print(json.dumps({'status': response.status,
+                                    'limit': response.headers.get('ratelimit-limit'),
+                                    'remaining': response.headers.get('ratelimit-remaining'),
+                                    'source': response.headers.get('docker-ratelimit-source')}))
+          except urllib.error.HTTPError as error:
+              print(json.dumps({'status': error.code, 'body': error.read(300).decode(errors='replace')}))
+          except OSError as error:
+              print(json.dumps({'error': str(error)}))
+          PY
+      - name: dockerd log on failure
+        if: failure()
+        run: sudo tail -n 80 /var/log/celesto-docker.log || true
