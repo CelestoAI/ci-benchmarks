@@ -1,0 +1,58 @@
+name: GnuPG on Celesto runner
+# Checks that the github-ci image ships the full `gpg` command (gnupg), so jobs
+# can add apt repositories and sign artifacts without installing it first.
+# Nothing here installs gnupg: a missing `gpg` must fail the first step.
+on:
+  workflow_dispatch:
+  push:
+    branches: [ci/gpg]
+permissions:
+  contents: read
+jobs:
+  gpg:
+    name: gpg preinstalled
+    runs-on: [self-hosted, celesto-large]
+    timeout-minutes: 10
+    steps:
+      - name: gpg is preinstalled
+        run: |
+          command -v gpg || { echo "::error::gpg is not installed in the runner image"; exit 1; }
+          gpg --version | head -1
+          dpkg-query -W -f='${Package} ${Version}\n' gnupg gpg gpg-agent dirmngr
+          # A throwaway keyring for this job; later steps and cleanup share it.
+          echo "GNUPGHOME=$RUNNER_TEMP/gnupg" >> "$GITHUB_ENV"
+
+      - name: Add an apt repository with gpg --dearmor
+        # The common CI pattern: download an ASCII-armored signing key, convert
+        # it into a keyring, and let apt verify the repository with it.
+        run: |
+          SUDO=$([ "$(id -u)" = 0 ] || echo sudo)
+          curl -fsSL https://dl.cloudsmith.io/public/caddy/stable/gpg.key \
+            | gpg --dearmor | $SUDO tee /usr/share/keyrings/caddy-stable-archive-keyring.gpg >/dev/null
+          echo "deb [signed-by=/usr/share/keyrings/caddy-stable-archive-keyring.gpg] https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main" \
+            | $SUDO tee /etc/apt/sources.list.d/caddy-stable.list >/dev/null
+          $SUDO apt-get update -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/caddy-stable.list -o Dir::Etc::sourceparts=- -o APT::Get::List-Cleanup=0
+          $SUDO apt-get install -y --no-install-recommends caddy
+          dpkg-query -W -f='${Package} ${Version}\n' caddy
+
+      - name: Sign and verify without a prompt
+        # Batch key generation and a loopback pinentry, as signing jobs use in
+        # CI; a prompt would hang the job instead of failing it.
+        run: |
+          mkdir -p -m 700 "$GNUPGHOME"
+          gpg --batch --pinentry-mode loopback --passphrase '' \
+            --quick-generate-key 'Celesto CI <ci@example.invalid>' ed25519 sign never
+          echo "signed by celesto ci" > artifact.txt
+          gpg --batch --pinentry-mode loopback --passphrase '' --armor --detach-sign artifact.txt
+          gpg --verify artifact.txt.asc artifact.txt
+          echo "tampered" >> artifact.txt
+          if gpg --verify artifact.txt.asc artifact.txt 2>/dev/null; then
+            echo "::error::a tampered file passed signature verification"; exit 1
+          fi
+
+      - name: Cleanup
+        if: always()
+        run: |
+          gpgconf --kill all || true
+          SUDO=$([ "$(id -u)" = 0 ] || echo sudo)
+          $SUDO rm -f /etc/apt/sources.list.d/caddy-stable.list /usr/share/keyrings/caddy-stable-archive-keyring.gpg
