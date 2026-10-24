@@ -1,31 +1,90 @@
-name: Benchmark on Celesto CI
-
+name: Billing CI concurrency — 10 Large
+run-name: Billing CI 10 Large / ${{ inputs.test_id }}
 on:
   workflow_dispatch:
     inputs:
-      cache_namespace:
-        description: New value for a cold run; reuse unchanged for a warm run.
+      test_id:
+        description: Unique ID for this bounded billing canary.
         required: true
-        default: run-1
         type: string
-      cache_mb:
-        description: Incompressible cache payload in MiB.
-        required: true
-        default: '512'
-        type: choice
-        options: ['256', '512', '1024', '2304']
-      cpu_iterations:
-        description: Iterations per CPU worker; match the GitHub-hosted run.
-        required: true
-        default: '250000000'
-        type: string
-
+permissions:
+  contents: read
 jobs:
-  benchmark:
-    uses: ./.github/workflows/benchmark.yml
-    with:
-      provider: celesto-ci
-      runs_on: '["self-hosted", "celesto-large"]'
-      cache_namespace: ${{ inputs.cache_namespace }}
-      cache_mb: ${{ inputs.cache_mb }}
-      cpu_iterations: ${{ inputs.cpu_iterations }}
+  billing-large:
+    name: Large billing canary ${{ matrix.slot }}
+    runs-on: [self-hosted, celesto-large]
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        slot: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    env:
+      CANARY_SLOT: ${{ matrix.slot }}
+    steps:
+      - name: Verify hardware and exercise CPU/memory across lease renewals
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, multiprocessing as mp, os, time
+          from datetime import UTC, datetime
+          from pathlib import Path
+          
+          def memory():
+              return {line.split(':')[0]: int(line.split()[1]) for line in Path('/proc/meminfo').read_text().splitlines() if line.startswith(('MemTotal:', 'MemAvailable:', 'SwapTotal:', 'SwapFree:'))}
+          
+          def worker(deadline):
+              data = bytearray(256 * 1024 * 1024)
+              for offset in range(0, len(data), 4096):
+                  data[offset] = 1
+              payload = memoryview(data)[:1024 * 1024]
+              while time.monotonic() < deadline:
+                  busy_until = min(deadline, time.monotonic() + 0.25)
+                  while time.monotonic() < busy_until:
+                      hashlib.sha256(payload).digest()
+                  time.sleep(0.25)
+          
+          boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+          assert os.cpu_count() == 4, os.cpu_count()
+          assert memory()['MemTotal'] >= 14 * 1024 * 1024, memory()
+          duration = 360
+          deadline = time.monotonic() + duration
+          children = [mp.Process(target=worker, args=(deadline,)) for _ in range(4)]
+          receipt = {'run_id': os.environ['GITHUB_RUN_ID'], 'job': os.environ['GITHUB_JOB'], 'slot': os.environ['CANARY_SLOT'], 'runner': os.environ['RUNNER_NAME'], 'boot_id': boot, 'vcpus': os.cpu_count(), 'started_at': datetime.now(UTC).isoformat(), 'duration_seconds': duration, 'samples': []}
+          try:
+              for child in children:
+                  child.start()
+              while time.monotonic() < deadline:
+                  assert all(child.exitcode in (None, 0) for child in children), 'load worker failed'
+                  rss = 0
+                  for child in children:
+                      status = Path(f'/proc/{child.pid}/status')
+                      if status.exists():
+                          rss += sum(int(line.split()[1]) for line in status.read_text().splitlines() if line.startswith('VmRSS:'))
+                  sample = {'at': datetime.now(UTC).isoformat(), 'memory_kib': memory(), 'load_rss_kib': rss, 'uptime_seconds': float(Path('/proc/uptime').read_text().split()[0])}
+                  receipt['samples'].append(sample)
+                  print(json.dumps(sample), flush=True)
+                  Path('ci-billing-receipt.json').write_text(json.dumps(receipt, indent=2))
+                  time.sleep(min(30, max(0, deadline - time.monotonic())))
+              for child in children:
+                  child.join(timeout=10)
+                  assert child.exitcode == 0, child.exitcode
+              assert Path('/proc/sys/kernel/random/boot_id').read_text().strip() == boot
+              receipt['finished_at'] = datetime.now(UTC).isoformat()
+              receipt['passed'] = True
+          finally:
+              for child in children:
+                  if child.is_alive():
+                      child.terminate()
+                  if child.pid is not None:
+                      child.join(timeout=5)
+              Path('ci-billing-receipt.json').write_text(json.dumps(receipt, indent=2))
+          PY
+      - name: Upload hardware and runtime receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: billing-large-${{ github.run_id }}-${{ matrix.slot }}
+          path: ci-billing-receipt.json
+          if-no-files-found: error
+          retention-days: 7
