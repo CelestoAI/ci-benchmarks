@@ -4,6 +4,7 @@
 
 [CPU/cache results](results/2026-10-17-matched/README.md) · [Docker results](results/docker-2026-10-17/README.md) · [Run the CPU comparison](https://github.com/CelestoAI/ci-benchmarks/actions/workflows/matched.yml)
 
+
 ## Docker benchmarks
 
 **Python API + PostgreSQL + Azurite, image builds, layer caches, and offline Rust compilation.** Five repetitions per provider/scenario, matched 4-vCPU / 16-GiB runners, fresh runner per job.
