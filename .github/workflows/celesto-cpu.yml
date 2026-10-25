@@ -1,5 +1,5 @@
-name: Billing CI concurrency — 25 Large
-run-name: Billing CI 25 Large / ${{ inputs.test_id }}
+name: Pool CI concurrency qualification
+run-name: Pool CI concurrency / ${{ inputs.test_id }}
 on:
   workflow_dispatch:
     inputs:
@@ -7,6 +7,15 @@ on:
         description: Unique ID for this bounded billing canary.
         required: true
         type: string
+      slots:
+        description: Bounded list of job slots (at most 40).
+        required: true
+        type: string
+      duration_seconds:
+        description: Hold each runner across multiple funded lease renewals.
+        required: true
+        type: choice
+        options: ['180', '360']
 permissions:
   contents: read
 jobs:
@@ -16,11 +25,12 @@ jobs:
     timeout-minutes: 12
     strategy:
       fail-fast: false
-      max-parallel: 25
+      max-parallel: 40
       matrix:
-        slot: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+        slot: ${{ fromJSON(inputs.slots) }}
     env:
       CANARY_SLOT: ${{ matrix.slot }}
+      CANARY_DURATION: ${{ inputs.duration_seconds }}
     steps:
       - name: Verify hardware and exercise CPU/memory across lease renewals
         shell: bash
@@ -47,7 +57,9 @@ jobs:
           boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
           assert os.cpu_count() == 4, os.cpu_count()
           assert memory()['MemTotal'] >= 14 * 1024 * 1024, memory()
-          duration = 360
+          duration = int(os.environ["CANARY_DURATION"])
+          assert duration in (180, 360)
+          assert 1 <= int(os.environ["CANARY_SLOT"]) <= 40
           deadline = time.monotonic() + duration
           children = [mp.Process(target=worker, args=(deadline,)) for _ in range(4)]
           receipt = {'run_id': os.environ['GITHUB_RUN_ID'], 'job': os.environ['GITHUB_JOB'], 'slot': os.environ['CANARY_SLOT'], 'runner': os.environ['RUNNER_NAME'], 'boot_id': boot, 'vcpus': os.cpu_count(), 'started_at': datetime.now(UTC).isoformat(), 'duration_seconds': duration, 'samples': []}
