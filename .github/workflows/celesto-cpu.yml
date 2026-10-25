@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       slots:
-        description: Bounded list of job slots (at most 40).
+        description: Bounded list of job slots (at most 50).
         required: true
         type: string
       duration_seconds:
@@ -25,7 +25,7 @@ jobs:
     timeout-minutes: 12
     strategy:
       fail-fast: false
-      max-parallel: 40
+      max-parallel: 50
       matrix:
         slot: ${{ fromJSON(inputs.slots) }}
     env:
@@ -59,7 +59,7 @@ jobs:
           assert memory()['MemTotal'] >= 14 * 1024 * 1024, memory()
           duration = int(os.environ["CANARY_DURATION"])
           assert duration in (180, 360)
-          assert 1 <= int(os.environ["CANARY_SLOT"]) <= 40
+          assert 1 <= int(os.environ["CANARY_SLOT"]) <= 50
           deadline = time.monotonic() + duration
           children = [mp.Process(target=worker, args=(deadline,)) for _ in range(4)]
           receipt = {'run_id': os.environ['GITHUB_RUN_ID'], 'job': os.environ['GITHUB_JOB'], 'slot': os.environ['CANARY_SLOT'], 'runner': os.environ['RUNNER_NAME'], 'boot_id': boot, 'vcpus': os.cpu_count(), 'started_at': datetime.now(UTC).isoformat(), 'duration_seconds': duration, 'samples': []}
