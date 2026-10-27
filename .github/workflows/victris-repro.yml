@@ -1,0 +1,112 @@
+name: Victris feedback repro
+# Reproduces the issues a customer reported on Celesto CI (2026-10-27):
+# 1. the bare `celesto` label must pick up a runner (Micro),
+# 2. POSIX shared memory and semaphores must work for the runner user,
+# 3. Docker containers with CPU/memory limits must start (full cgroup v2),
+# 5. image nits: `docker-compose` binary, Bun, no global VIRTUAL_ENV.
+# Every check runs; the last step fails the job if any check failed.
+on:
+  workflow_dispatch:
+  push:
+    branches: [ci/victris-repro]
+permissions:
+  contents: read
+jobs:
+  repro:
+    name: victris repro (bare celesto label)
+    runs-on: [self-hosted, celesto]
+    timeout-minutes: 15
+    steps:
+      - name: Runner facts
+        run: |
+          set -x
+          id; uname -r; nproc; free -m
+          grep -E ' /dev/shm | /sys/fs/cgroup ' /proc/mounts || true
+          ls -ld /dev/shm
+          cat /sys/fs/cgroup/cgroup.controllers
+          cat /sys/fs/cgroup/cgroup.subtree_control
+
+      - name: "2: POSIX shared memory (shm_open)"
+        id: shm
+        continue-on-error: true
+        run: |
+          python3 - <<'PY'
+          from multiprocessing import shared_memory
+          s = shared_memory.SharedMemory(create=True, size=1024)
+          s.buf[0] = 7
+          s.close(); s.unlink()
+          print("shared_memory ok")
+          PY
+
+      - name: "2: POSIX semaphores (SemLock, Queue, Pool)"
+        id: sem
+        continue-on-error: true
+        run: |
+          python3 - <<'PY'
+          import multiprocessing as mp
+          def square(x):
+              return x * x
+          if __name__ == "__main__":
+              mp.Lock(); q = mp.Queue(); q.put(1); assert q.get() == 1
+              with mp.Pool(2) as pool:
+                  assert pool.map(square, range(4)) == [0, 1, 4, 9]
+              print("SemLock, Queue and Pool ok")
+          PY
+
+      - name: "3: Docker container with CPU and memory limits"
+        id: docker_limits
+        continue-on-error: true
+        run: |
+          for _ in $(seq 1 45); do docker info >/dev/null 2>&1 && break; sleep 1; done
+          docker info 2>&1 | grep -iE 'cgroup|warning' || true
+          docker run --rm --cpus 1 --memory 256m busybox:1.37 sh -c 'cat /sys/fs/cgroup/cpu.max /sys/fs/cgroup/memory.max'
+
+      - name: "3: docker compose up with limits"
+        id: compose_limits
+        continue-on-error: true
+        run: |
+          mkdir -p /tmp/compose-repro && cd /tmp/compose-repro
+          cat > compose.yaml <<'YAML'
+          services:
+            app:
+              image: busybox:1.37
+              command: ["sh", "-c", "echo compose-ok"]
+              deploy:
+                resources:
+                  limits: {cpus: "0.5", memory: 128M}
+          YAML
+          docker compose up --abort-on-container-exit --exit-code-from app
+          docker compose down
+
+      - name: "5: docker-compose binary, Bun, VIRTUAL_ENV"
+        id: image_nits
+        continue-on-error: true
+        run: |
+          rc=0
+          command -v docker-compose && docker-compose version || { echo "::error::no docker-compose binary"; rc=1; }
+          command -v bun && bun --version || { echo "::error::Bun not preinstalled"; rc=1; }
+          if [ -n "${VIRTUAL_ENV:-}" ]; then echo "::error::VIRTUAL_ENV=$VIRTUAL_ENV is set globally"; rc=1; fi
+          exit $rc
+
+      - name: Summary
+        if: always()
+        env:
+          SHM: ${{ steps.shm.outcome }}
+          SEM: ${{ steps.sem.outcome }}
+          DOCKER_LIMITS: ${{ steps.docker_limits.outcome }}
+          COMPOSE_LIMITS: ${{ steps.compose_limits.outcome }}
+          IMAGE_NITS: ${{ steps.image_nits.outcome }}
+        run: |
+          {
+            echo "| Check | Outcome |"
+            echo "|---|---|"
+            echo "| 1: bare celesto label | success (job started) |"
+            echo "| 2: shared memory | $SHM |"
+            echo "| 2: semaphores | $SEM |"
+            echo "| 3: docker run limits | $DOCKER_LIMITS |"
+            echo "| 3: compose limits | $COMPOSE_LIMITS |"
+            echo "| 5: image nits | $IMAGE_NITS |"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+          for o in "$SHM" "$SEM" "$DOCKER_LIMITS" "$COMPOSE_LIMITS" "$IMAGE_NITS"; do
+            [ "$o" = success ] || exit 1
+          done
