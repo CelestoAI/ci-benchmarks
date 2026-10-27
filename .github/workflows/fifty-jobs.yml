@@ -8,6 +8,11 @@ name: 50 parallel jobs
 # cannot see.
 
 on:
+  # A push to this branch runs the benchmark with the defaults below, because
+  # GitHub only dispatches workflows that are on the default branch.
+  push:
+    branches: [bench/50-jobs]
+    paths: [.github/workflows/fifty-jobs.yml]
   workflow_dispatch:
     inputs:
       runner:
@@ -48,7 +53,7 @@ jobs:
           41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
         ]
     # Celesto labels need `self-hosted` next to them; GitHub-hosted labels do not.
-    runs-on: ${{ startsWith(inputs.runner, 'celesto-') && fromJSON(format('["self-hosted","{0}"]', inputs.runner)) || inputs.runner }}
+    runs-on: ${{ startsWith((inputs.runner || 'celesto-micro'), 'celesto-') && fromJSON(format('["self-hosted","{0}"]', (inputs.runner || 'celesto-micro'))) || (inputs.runner || 'celesto-micro') }}
     timeout-minutes: 30
     steps:
       - name: Machine
@@ -58,7 +63,7 @@ jobs:
 
       - name: CPU work
         env:
-          WORK_SECONDS: ${{ inputs.work_seconds }}
+          WORK_SECONDS: ${{ (inputs.work_seconds || '60') }}
         run: |
           # Keep every CPU busy for WORK_SECONDS, so the job does real work
           # and not only start and stop.
@@ -78,8 +83,8 @@ jobs:
       - name: Timings from the GitHub API
         env:
           GH_TOKEN: ${{ github.token }}
-          RUNNER: ${{ inputs.runner }}
-          WORK_SECONDS: ${{ inputs.work_seconds }}
+          RUNNER: ${{ (inputs.runner || 'celesto-micro') }}
+          WORK_SECONDS: ${{ (inputs.work_seconds || '60') }}
         run: |
           gh api --paginate \
             "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}/jobs?per_page=100" \
