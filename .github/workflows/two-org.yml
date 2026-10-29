@@ -1,0 +1,149 @@
+name: two-org concurrency
+
+# Two-org concurrency test: the same file runs in two GitHub orgs at the same
+# time. A branch named bench/two-org-sanity* runs 3 jobs, bench/two-org-10-*
+# runs 10, bench/two-org-25-* runs 25, bench/two-org-100-* runs 100, and any other bench/two-org-* branch runs 50.
+
+# Starts 50 jobs at the same time on one runner label and reports how long the
+# whole fan-out takes: the queue wait of each job (created -> started), its run
+# time (started -> completed), and the wall time from the first job created to
+# the last job completed. The `report` job reads the timings from the GitHub
+# API, so the numbers include runner startup, which a step inside the job
+# cannot see.
+
+on:
+  # A push to this branch runs the benchmark with the defaults below, because
+  # GitHub only dispatches workflows that are on the default branch.
+  push:
+    branches: ['bench/two-org-*']
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: Runner label for the 50 jobs.
+        required: true
+        default: celesto-micro
+        type: choice
+        options:
+          - celesto-micro
+          - celesto-small
+          - celesto-standard
+          - celesto-memory
+          - celesto-large
+          - celesto-xl
+          - ubuntu-24.04
+      work_seconds:
+        description: Seconds of CPU work in each job (0 = start and stop only).
+        required: true
+        default: '60'
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  job:
+    name: job ${{ matrix.index }}
+    strategy:
+      fail-fast: false
+      max-parallel: 100
+      matrix:
+        index: ${{ fromJSON(startsWith(github.ref_name, 'bench/two-org-sanity') && '[1,2,3]' || startsWith(github.ref_name, 'bench/two-org-10-') && '[1,2,3,4,5,6,7,8,9,10]' || startsWith(github.ref_name, 'bench/two-org-100-') && '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100]' || startsWith(github.ref_name, 'bench/two-org-25-') && '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]' || '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50]') }}
+    # Celesto labels need `self-hosted` next to them; GitHub-hosted labels do not.
+    runs-on: ${{ startsWith((inputs.runner || 'celesto-micro'), 'celesto-') && fromJSON(format('["self-hosted","{0}"]', (inputs.runner || 'celesto-micro'))) || (inputs.runner || 'celesto-micro') }}
+    timeout-minutes: 30
+    steps:
+      - name: Machine
+        run: |
+          echo "runner=${RUNNER_NAME} cpus=$(nproc) mem=$(free -m | awk '/Mem:/ {print $2}')MiB"
+          uname -a
+
+      - name: CPU work
+        env:
+          WORK_SECONDS: ${{ (inputs.work_seconds || '60') }}
+        run: |
+          # Keep every CPU busy for WORK_SECONDS, so the job does real work
+          # and not only start and stop.
+          if [ "${WORK_SECONDS}" -gt 0 ]; then
+            for _ in $(seq "$(nproc)"); do
+              timeout "${WORK_SECONDS}" sh -c 'while :; do :; done' &
+            done
+            wait || true
+          fi
+          echo "done after ${WORK_SECONDS}s of work"
+
+  report:
+    needs: job
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Timings from the GitHub API
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUNNER: ${{ (inputs.runner || 'celesto-micro') }}
+          WORK_SECONDS: ${{ (inputs.work_seconds || '60') }}
+        run: |
+          gh api --paginate \
+            "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}/jobs?per_page=100" \
+            --jq '.jobs[] | select(.name | startswith("job "))' \
+            | jq -s . > jobs.json
+
+          # Queue and run times are null for a job that never started.
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json, os, statistics
+          from datetime import datetime
+
+          def ts(value):
+              return datetime.fromisoformat(value.replace("Z", "+00:00")) if value else None
+
+          jobs = json.load(open("jobs.json"))
+          rows = []
+          for job in jobs:
+              created, started, completed = ts(job["created_at"]), ts(job["started_at"]), ts(job["completed_at"])
+              rows.append({
+                  "name": job["name"],
+                  "conclusion": job["conclusion"],
+                  "created": created,
+                  "started": started,
+                  "completed": completed,
+                  "queue": (started - created).total_seconds() if started and created else None,
+                  "run": (completed - started).total_seconds() if completed and started else None,
+              })
+
+          def stats(values):
+              values = sorted(v for v in values if v is not None)
+              if not values:
+                  return "n/a"
+              p90 = values[min(len(values) - 1, int(len(values) * 0.9))]
+              return f"min {values[0]:.0f}s · median {statistics.median(values):.0f}s · p90 {p90:.0f}s · max {values[-1]:.0f}s"
+
+          first_created = min(r["created"] for r in rows)
+          last_started = max((r["started"] for r in rows if r["started"]), default=None)
+          last_completed = max((r["completed"] for r in rows if r["completed"]), default=None)
+          passed = sum(r["conclusion"] == "success" for r in rows)
+
+          print(f"## {len(rows)} parallel jobs on `{os.environ['RUNNER']}`\n")
+          print(f"Work per job: {os.environ['WORK_SECONDS']}s. Jobs found: {len(rows)}. Passed: {passed}.\n")
+          print("| Measurement | Value |")
+          print("| --- | --- |")
+          if last_completed:
+              print(f"| **Wall time** (first created → last completed) | **{(last_completed - first_created).total_seconds():.0f}s** |")
+          if last_started:
+              print(f"| All jobs started (first created → last started) | {(last_started - first_created).total_seconds():.0f}s |")
+          print(f"| Queue wait per job (created → started) | {stats(r['queue'] for r in rows)} |")
+          print(f"| Run time per job (started → completed) | {stats(r['run'] for r in rows)} |")
+          print("\n<details><summary>Per job</summary>\n")
+          print("| Job | Result | Queue | Run |")
+          print("| --- | --- | ---: | ---: |")
+          for r in sorted(rows, key=lambda r: int(r["name"].split()[-1])):
+              q = f"{r['queue']:.0f}s" if r["queue"] is not None else "-"
+              t = f"{r['run']:.0f}s" if r["run"] is not None else "-"
+              print(f"| {r['name']} | {r['conclusion']} | {q} | {t} |")
+          print("\n</details>")
+          PY
+          cat "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: two-org-timings
+          path: jobs.json
