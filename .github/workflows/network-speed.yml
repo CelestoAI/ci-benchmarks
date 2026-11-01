@@ -1,0 +1,117 @@
+name: network speed
+
+# Download speed on many runners at once, so slow hosts show up next to fast
+# ones. Each job downloads the same three files (a large npm package, a GitHub
+# release asset, and 100 MB from Cloudflare's edge, which also serves R2), two
+# times each, and restores the same 256 MiB cache from the provider's own cache
+# store. Each job records its egress IP so results can be grouped by host.
+
+on:
+  push:
+    branches: ['bench/netspeed-*']
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  CACHE_MIB: '256'
+
+jobs:
+  seed:
+    name: seed ${{ matrix.provider }}
+    strategy:
+      matrix:
+        include:
+          - provider: celesto
+            runs_on: '["self-hosted","celesto-micro"]'
+          - provider: github
+            runs_on: '"ubuntu-24.04"'
+    runs-on: ${{ fromJSON(matrix.runs_on) }}
+    steps:
+      - name: Make a cache payload that does not compress
+        run: |
+          mkdir -p payload
+          head -c "$((CACHE_MIB * 1024 * 1024))" /dev/urandom > payload/blob
+      - uses: actions/cache/save@v4
+        with:
+          path: payload
+          key: netbench-${{ github.run_id }}-${{ matrix.provider }}
+
+  net:
+    name: net ${{ matrix.runner }} ${{ matrix.index }}
+    needs: seed
+    strategy:
+      fail-fast: false
+      max-parallel: 50
+      matrix:
+        runner: [celesto-micro]
+        index: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+        include:
+          - {runner: celesto-large, index: 1}
+          - {runner: celesto-large, index: 2}
+          - {runner: celesto-large, index: 3}
+          - {runner: celesto-large, index: 4}
+          - {runner: celesto-large, index: 5}
+          - {runner: celesto-large, index: 6}
+          - {runner: ubuntu-24.04, index: 1}
+          - {runner: ubuntu-24.04, index: 2}
+          - {runner: ubuntu-24.04, index: 3}
+          - {runner: ubuntu-24.04, index: 4}
+          - {runner: ubuntu-24.04, index: 5}
+    runs-on: ${{ startsWith(matrix.runner, 'celesto-') && fromJSON(format('["self-hosted","{0}"]', matrix.runner)) || matrix.runner }}
+    timeout-minutes: 20
+    env:
+      RUNNER_LABEL: ${{ matrix.runner }}
+      JOB_INDEX: ${{ matrix.index }}
+    steps:
+      - name: Downloads
+        run: |
+          set -u
+          ip=$(curl -s --max-time 10 https://api.ipify.org || echo unknown)
+          echo "label=${RUNNER_LABEL} index=${JOB_INDEX} runner=${RUNNER_NAME} ip=${ip} cpus=$(nproc)"
+          npm_url=$(curl -s --max-time 20 https://registry.npmjs.org/@next/swc-linux-x64-gnu/latest \
+            | python3 -c 'import json,sys; print(json.load(sys.stdin)["dist"]["tarball"])')
+          : > netbench.jsonl
+          dl() {
+            for try in 1 2; do
+              out=$(curl -sL -o /dev/null --max-time 180 -w '%{http_code} %{size_download} %{time_total} %{speed_download}' "$2" || true)
+              set -- "$1" "$2" $out
+              printf '{"label":"%s","index":%s,"runner":"%s","ip":"%s","test":"%s","try":%s,"http":"%s","bytes":%s,"seconds":%s,"bytes_per_s":%s}\n' \
+                "$RUNNER_LABEL" "$JOB_INDEX" "$RUNNER_NAME" "$ip" "$1" "$try" "${3:-0}" "${4:-0}" "${5:-0}" "${6:-0}" >> netbench.jsonl
+              set -- "$1" "$2"
+            done
+          }
+          dl npm "$npm_url"
+          dl github_release "https://github.com/oven-sh/bun/releases/latest/download/bun-linux-x64.zip"
+          dl cloudflare "https://speed.cloudflare.com/__down?bytes=100000000"
+          echo "IP=${ip}" >> "$GITHUB_ENV"
+          echo "CACHE_START=$(date +%s.%N)" >> "$GITHUB_ENV"
+          cat netbench.jsonl
+
+      - uses: actions/cache/restore@v4
+        id: cache
+        with:
+          path: payload
+          key: netbench-${{ github.run_id }}-${{ startsWith(matrix.runner, 'celesto-') && 'celesto' || 'github' }}
+
+      - name: Cache restore time
+        env:
+          HIT: ${{ steps.cache.outputs.cache-hit }}
+        run: |
+          export END=$(date +%s.%N)
+          python3 - <<'PY' >> netbench.jsonl
+          import json, os
+          seconds = float(os.environ["END"]) - float(os.environ["CACHE_START"])
+          size = os.path.getsize("payload/blob") if os.path.exists("payload/blob") else 0
+          print(json.dumps({"label": os.environ["RUNNER_LABEL"], "index": int(os.environ["JOB_INDEX"]),
+                            "runner": os.environ["RUNNER_NAME"], "ip": os.environ["IP"], "test": "cache_restore",
+                            "try": 1, "http": "hit" if os.environ.get("HIT") == "true" else "miss",
+                            "bytes": size, "seconds": seconds, "bytes_per_s": size / seconds if seconds else 0}))
+          PY
+          tail -1 netbench.jsonl
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: netbench-${{ matrix.runner }}-${{ matrix.index }}
+          path: netbench.jsonl
