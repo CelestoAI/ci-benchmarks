@@ -152,5 +152,5 @@ jobs:
           docker wait hammer >/dev/null
           docker logs hammer | sort | uniq -c
           [ "$(docker logs hammer | sort -u)" = 403 ]
-          if [ "${{ inputs.phase }}" = verify ]; then (cd data && sha256sum -c blob.sha256); fi
+          if [ "${{ inputs.phase }}" = verify ]; then sha256sum -c data/blob.sha256; fi
           echo PASS
