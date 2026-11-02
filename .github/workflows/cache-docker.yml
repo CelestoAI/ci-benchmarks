@@ -19,7 +19,7 @@ on:
       runner:
         description: Celesto runner label
         type: string
-        default: celesto-large
+        default: celesto
 permissions:
   contents: read
 env:
