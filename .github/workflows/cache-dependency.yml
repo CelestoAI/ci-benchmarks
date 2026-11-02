@@ -18,7 +18,7 @@ on:
       providers:
         description: Where to run (JSON list of celesto, github)
         type: string
-        default: '["celesto","github"]'
+        default: '["celesto-memory","github"]'
       runner:
         description: Celesto runner label
         type: string
