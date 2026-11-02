@@ -15,6 +15,10 @@ on:
         description: New unique key per test (same key for save and verify)
         type: string
         required: true
+      providers:
+        description: Where to run (JSON list of celesto, github)
+        type: string
+        default: '["celesto","github"]'
       runner:
         description: Celesto runner label
         type: string
@@ -32,8 +36,12 @@ env:
     }
 jobs:
   build-action:
-    name: docker/build-push-action save and restore
-    runs-on: [self-hosted, "${{ inputs.runner }}"]
+    name: docker/build-push-action save and restore (${{ matrix.provider }})
+    runs-on: ${{ fromJSON(matrix.provider == 'github' && '["ubuntu-24.04"]' || format('["self-hosted","{0}"]', inputs.runner)) }}
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: ${{ fromJSON(inputs.providers) }}
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -53,8 +61,12 @@ jobs:
           count_cached cache-tests/docker action-${{ inputs.key }} 3 && echo PASS
 
   run-step:
-    name: buildx from a run step
-    runs-on: [self-hosted, "${{ inputs.runner }}"]
+    name: buildx from a run step (${{ matrix.provider }})
+    runs-on: ${{ fromJSON(matrix.provider == 'github' && '["ubuntu-24.04"]' || format('["self-hosted","{0}"]', inputs.runner)) }}
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: ${{ fromJSON(inputs.providers) }}
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -69,12 +81,13 @@ jobs:
           if [ "${{ inputs.phase }}" = verify ]; then [ "$cached" -ge 3 ] && echo PASS; fi
 
   parallel:
-    name: Four jobs save the same layers at once
-    runs-on: [self-hosted, "${{ inputs.runner }}"]
+    name: Four jobs save the same layers at once (${{ matrix.provider }} ${{ matrix.n }})
+    runs-on: ${{ fromJSON(matrix.provider == 'github' && '["ubuntu-24.04"]' || format('["self-hosted","{0}"]', inputs.runner)) }}
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
+        provider: ${{ fromJSON(inputs.providers) }}
         n: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -87,8 +100,12 @@ jobs:
           cache-to: type=gha,mode=max,scope=parallel-${{ inputs.key }}
 
   large-layer:
-    name: A 400 MB layer
-    runs-on: [self-hosted, "${{ inputs.runner }}"]
+    name: A 400 MB layer (${{ matrix.provider }})
+    runs-on: ${{ fromJSON(matrix.provider == 'github' && '["ubuntu-24.04"]' || format('["self-hosted","{0}"]', inputs.runner)) }}
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: ${{ fromJSON(inputs.providers) }}
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

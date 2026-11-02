@@ -15,6 +15,10 @@ on:
         description: New unique key per test (same key for save and verify)
         type: string
         required: true
+      providers:
+        description: Where to run (JSON list of celesto, github)
+        type: string
+        default: '["celesto","github"]'
       runner:
         description: Celesto runner label
         type: string
@@ -23,8 +27,12 @@ permissions:
   contents: read
 jobs:
   vm:
-    name: VM cache (setup-node, actions/cache, restore keys)
-    runs-on: [self-hosted, "${{ inputs.runner }}"]
+    name: VM cache (setup-node, actions/cache, restore keys) (${{ matrix.provider }})
+    runs-on: ${{ fromJSON(matrix.provider == 'github' && '["ubuntu-24.04"]' || format('["self-hosted","{0}"]', inputs.runner)) }}
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: ${{ fromJSON(inputs.providers) }}
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -70,8 +78,12 @@ jobs:
           echo PASS
 
   container:
-    name: Job container cache
-    runs-on: [self-hosted, "${{ inputs.runner }}"]
+    name: Job container cache (${{ matrix.provider }})
+    runs-on: ${{ fromJSON(matrix.provider == 'github' && '["ubuntu-24.04"]' || format('["self-hosted","{0}"]', inputs.runner)) }}
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: ${{ fromJSON(inputs.providers) }}
     timeout-minutes: 20
     container: node:22
     steps:
@@ -94,24 +106,32 @@ jobs:
           test "${{ steps.restore.outputs.cache-hit }}" = true && echo PASS
 
   artifact-upload:
-    name: Artifact upload with the cache on
-    runs-on: [self-hosted, "${{ inputs.runner }}"]
+    name: Artifact upload with the cache on (${{ matrix.provider }})
+    runs-on: ${{ fromJSON(matrix.provider == 'github' && '["ubuntu-24.04"]' || format('["self-hosted","{0}"]', inputs.runner)) }}
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: ${{ fromJSON(inputs.providers) }}
     timeout-minutes: 10
     steps:
       - run: mkdir -p proof && echo "${{ github.run_id }}-${{ github.run_attempt }}" > proof/proof.txt
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: cache-test-proof-${{ inputs.phase }}
+          name: cache-test-proof-${{ inputs.phase }}-${{ matrix.provider }}
           path: proof/
 
   artifact-download:
-    name: Artifact download in a later job
+    name: Artifact download in a later job (${{ matrix.provider }})
     needs: artifact-upload
-    runs-on: [self-hosted, "${{ inputs.runner }}"]
+    runs-on: ${{ fromJSON(matrix.provider == 'github' && '["ubuntu-24.04"]' || format('["self-hosted","{0}"]', inputs.runner)) }}
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: ${{ fromJSON(inputs.providers) }}
     timeout-minutes: 10
     steps:
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
-          name: cache-test-proof-${{ inputs.phase }}
+          name: cache-test-proof-${{ inputs.phase }}-${{ matrix.provider }}
           path: proof/
       - run: test "$(cat proof/proof.txt)" = "${{ github.run_id }}-${{ github.run_attempt }}" && echo PASS

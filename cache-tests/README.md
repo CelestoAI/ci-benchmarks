@@ -5,6 +5,11 @@ dependency cache (`actions/cache`, `setup-node`), the Docker layer cache
 (BuildKit `type=gha`), and cache isolation between branches, pull requests and
 repositories. Each check fails its job when the cache does the wrong thing.
 
+Every job runs twice, side by side: on a GitHub-hosted runner
+(`ubuntu-24.04`, GitHub's cache) and on a Celesto runner (Celesto's cache).
+The same checks must pass on both. Set the `providers` input to
+`["celesto"]` or `["github"]` to run only one.
+
 ## Run everything
 
 ```sh
