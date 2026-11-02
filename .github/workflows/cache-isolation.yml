@@ -130,7 +130,7 @@ jobs:
     name: A pull request saves under its own scope
     # Only branches of this repository: fork pull requests never reach Celesto runners.
     if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, celesto-large]
+    runs-on: [self-hosted, celesto-memory]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

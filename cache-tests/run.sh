@@ -7,8 +7,8 @@
 # foreign-key: a key that only ANOTHER repository saved with
 # `Cache tests - isolation` (phase=save); it must miss here. Optional.
 set -euo pipefail
-repo=${1:-CelestoAI/celesto-ci-benchmarks}
-runner=${2:-celesto-large}
+repo=${1:-CelestoAI/ci-benchmarks}
+runner=${2:-celesto}
 foreign=${3:-}
 key=t$(date +%s)
 echo "repository=$repo runner=$runner key=$key"

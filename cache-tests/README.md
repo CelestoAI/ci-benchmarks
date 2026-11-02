@@ -12,7 +12,7 @@ The test plans are in the backend repository:
 ## Run everything
 
 ```sh
-cache-tests/run.sh CelestoAI/celesto-ci-benchmarks celesto-large
+cache-tests/run.sh CelestoAI/ci-benchmarks celesto
 ```
 
 The script uses a new key, runs each workflow in order (save, then verify),
