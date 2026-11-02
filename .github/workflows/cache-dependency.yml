@@ -1,0 +1,123 @@
+# Dependency cache acceptance on Celesto CI (actions/cache, setup-node).
+# Plan: backend docs/designs/ci-actions-cache.md, A-01, A-02, A-04, A-06.
+#
+# Run twice with the same key: phase=save, then phase=verify.
+# `verify` fails if any restore misses or returns other content.
+name: Cache tests - dependency
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: save, then verify
+        type: choice
+        options: [save, verify]
+        default: save
+      key:
+        description: New unique key per test (same key for save and verify)
+        type: string
+        required: true
+      runner:
+        description: Celesto runner label
+        type: string
+        default: celesto-large
+permissions:
+  contents: read
+jobs:
+  vm:
+    name: VM cache (setup-node, actions/cache, restore keys)
+    runs-on: [self-hosted, "${{ inputs.runner }}"]
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: A-02 JavaScript actions get the Celesto proxy
+        uses: ./cache-tests/actions/check-results-url
+      - name: A-01 runner never self-updates (its cache patch would be lost)
+        run: |
+          python3 -c "import json,sys; s={k.lower():v for k,v in json.load(open('/tmp/celesto-actions-runner/.runner')).items()}; print('disableupdate =', s.get('disableupdate')); sys.exit(0 if str(s.get('disableupdate')).lower()=='true' else 1)"
+      - name: A-01 setup-node npm cache
+        id: node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: docker-bench/node/package-lock.json
+      - name: Content for this key
+        run: mkdir -p .cache-test && echo "dep-${{ inputs.key }}" > .cache-test/content.txt
+      - name: A-04 save (phase save)
+        if: inputs.phase == 'save'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .cache-test
+          key: dep-${{ inputs.key }}
+      - name: A-04 exact restore (phase verify)
+        if: inputs.phase == 'verify'
+        id: exact
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .cache-test
+          key: dep-${{ inputs.key }}
+      - name: A-04 restore by prefix through restore-keys (phase verify)
+        if: inputs.phase == 'verify'
+        id: prefix
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .cache-test
+          key: dep-${{ inputs.key }}-no-such-key
+          restore-keys: dep-${{ inputs.key }}
+      - name: Check the restores
+        if: inputs.phase == 'verify'
+        run: |
+          echo "setup-node npm hit=${{ steps.node.outputs.cache-hit }}"
+          echo "exact hit=${{ steps.exact.outputs.cache-hit }} matched=${{ steps.exact.outputs.cache-matched-key }}"
+          echo "prefix matched=${{ steps.prefix.outputs.cache-matched-key }}"
+          test "${{ steps.exact.outputs.cache-hit }}" = true
+          test "${{ steps.prefix.outputs.cache-matched-key }}" = "dep-${{ inputs.key }}"
+          test "$(cat .cache-test/content.txt)" = "dep-${{ inputs.key }}"
+          echo PASS
+
+  container:
+    name: Job container cache
+    runs-on: [self-hosted, "${{ inputs.runner }}"]
+    timeout-minutes: 20
+    container: node:22
+    steps:
+      - name: Content for this key
+        run: mkdir -p .cache-test && echo "container-${{ inputs.key }}" > .cache-test/content.txt && echo "ACTIONS_RESULTS_URL=${ACTIONS_RESULTS_URL:-unset}"
+      - if: inputs.phase == 'save'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .cache-test
+          key: container-${{ inputs.key }}
+      - if: inputs.phase == 'verify'
+        id: restore
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .cache-test
+          key: container-${{ inputs.key }}
+      - if: inputs.phase == 'verify'
+        run: |
+          echo "container hit=${{ steps.restore.outputs.cache-hit }}"
+          test "${{ steps.restore.outputs.cache-hit }}" = true && echo PASS
+
+  artifact-upload:
+    name: A-06 artifact upload with the cache on
+    runs-on: [self-hosted, "${{ inputs.runner }}"]
+    timeout-minutes: 10
+    steps:
+      - run: mkdir -p proof && echo "${{ github.run_id }}-${{ github.run_attempt }}" > proof/proof.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: cache-test-proof-${{ inputs.phase }}
+          path: proof/
+
+  artifact-download:
+    name: A-06 artifact download in a later job
+    needs: artifact-upload
+    runs-on: [self-hosted, "${{ inputs.runner }}"]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: cache-test-proof-${{ inputs.phase }}
+          path: proof/
+      - run: test "$(cat proof/proof.txt)" = "${{ github.run_id }}-${{ github.run_attempt }}" && echo PASS

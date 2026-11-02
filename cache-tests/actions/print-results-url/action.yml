@@ -1,0 +1,5 @@
+name: Print results URL (Docker action)
+description: Prints the cache URL the runner gives a Docker action.
+runs:
+  using: docker
+  image: Dockerfile
