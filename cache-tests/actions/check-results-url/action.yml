@@ -1,5 +1,0 @@
-name: Check results URL (JavaScript action)
-description: Fails unless a JavaScript action gets the Celesto cache proxy as ACTIONS_RESULTS_URL.
-runs:
-  using: node20
-  main: index.js

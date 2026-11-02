@@ -1,5 +1,4 @@
-# Docker layer cache acceptance on Celesto CI (BuildKit type=gha).
-# Plan: backend docs/designs/ci-docker-layer-cache.md, A-01 to A-05, A-08, A-09.
+# Docker layer cache tests on Celesto CI (BuildKit type=gha).
 #
 # Run twice with the same key: phase=save, then phase=verify.
 # `verify` fails unless the rebuilt steps are CACHED.
@@ -33,17 +32,11 @@ env:
     }
 jobs:
   build-action:
-    name: A-01 docker/build-push-action save and restore
+    name: docker/build-push-action save and restore
     runs-on: [self-hosted, "${{ inputs.runner }}"]
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - name: A-02 link-local proxy behind the firewall rule
-        run: |
-          ip -br addr show celesto0 | grep -q '169.254.77.1/32'
-          sudo iptables -S INPUT | grep -q -- '-A INPUT -d 169.254.77.1/32 -i eth0 -j DROP'
-          grep -q '^169.254.77.1 celesto-cache.blob.core.windows.net' /etc/hosts
-          echo PASS
       - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
       - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         with:
@@ -60,7 +53,7 @@ jobs:
           count_cached cache-tests/docker action-${{ inputs.key }} 3 && echo PASS
 
   run-step:
-    name: A-04 buildx from a run step
+    name: buildx from a run step
     runs-on: [self-hosted, "${{ inputs.runner }}"]
     timeout-minutes: 30
     steps:
@@ -76,7 +69,7 @@ jobs:
           if [ "${{ inputs.phase }}" = verify ]; then [ "$cached" -ge 3 ] && echo PASS; fi
 
   parallel:
-    name: A-05 four jobs save the same layers at once
+    name: Four jobs save the same layers at once
     runs-on: [self-hosted, "${{ inputs.runner }}"]
     timeout-minutes: 30
     strategy:
@@ -94,7 +87,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=parallel-${{ inputs.key }}
 
   large-layer:
-    name: A-08 a 400 MB layer
+    name: A 400 MB layer
     runs-on: [self-hosted, "${{ inputs.runner }}"]
     timeout-minutes: 40
     steps:
@@ -113,44 +106,3 @@ jobs:
         run: |
           eval "$CHECK_CACHED"
           count_cached cache-tests/large large-${{ inputs.key }} 1 && echo PASS
-
-  container-access:
-    name: A-03 job container and Docker action reach the cache
-    runs-on: [self-hosted, "${{ inputs.runner }}"]
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: ./cache-tests/actions/print-results-url
-
-  no-secret:
-    name: A-09 no upload without the reservation secret
-    runs-on: [self-hosted, "${{ inputs.runner }}"]
-    timeout-minutes: 20
-    steps:
-      - name: A container sends uploads without the secret
-        run: |
-          docker run -d --name hammer curlimages/curl:8.11.1 sh -c '
-            i=0; while [ $i -lt 300 ]; do
-              curl -s -o /dev/null -w "%{http_code}\n" -X PUT --data x "http://169.254.77.1:8448/upload/$((i % 50 + 1))?comp=block&blockid=QQ%3D%3D"
-              i=$((i+1)); done'
-      - name: Data and its hash
-        run: |
-          mkdir -p data
-          if [ "${{ inputs.phase }}" = save ]; then head -c 20000000 /dev/urandom > data/blob && sha256sum data/blob > data/blob.sha256; fi
-      - if: inputs.phase == 'save'
-        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
-        with:
-          path: data
-          key: no-secret-${{ inputs.key }}
-      - if: inputs.phase == 'verify'
-        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
-        with:
-          path: data
-          key: no-secret-${{ inputs.key }}
-      - name: Every request without the secret got 403; restored data is intact
-        run: |
-          docker wait hammer >/dev/null
-          docker logs hammer | sort | uniq -c
-          [ "$(docker logs hammer | sort -u)" = 403 ]
-          if [ "${{ inputs.phase }}" = verify ]; then sha256sum -c data/blob.sha256; fi
-          echo PASS

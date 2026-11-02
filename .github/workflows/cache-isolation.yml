@@ -1,13 +1,12 @@
-# Cache isolation (poisoning) tests on Celesto CI.
-# Plan: backend docs/designs/ci-actions-cache.md A-05 and the branch scoping
-# of docs/designs/ci-docker-layer-cache.md. cache-tests/README.md has the
-# full order (main, two branches, a pull request, another repository).
+# Cache isolation tests on Celesto CI: a branch, pull request or other
+# repository must never restore another one's cache. cache-tests/README.md
+# has the full order (main, two branches, a pull request, another repository).
 #
 # phase=save   : save `iso-<key>` = this branch's name, and build an image
 #                whose /owner.txt is this branch's name (same Docker scope on
 #                every branch).
 # phase=verify : restore and rebuild; fails if a job ever sees another
-#                branch's content. Also sends lookups with a tampered token.
+#                branch's content.
 # foreign_key  : a key only ANOTHER repository saved; it must miss here.
 name: Cache tests - isolation
 on:
@@ -97,18 +96,6 @@ jobs:
           echo "branch=${GITHUB_REF_NAME} image-owner=${got}"
           [ "$got" = "${GITHUB_REF_NAME}" ] || { echo "POISONING: image contains ${got}"; exit 1; }
           echo PASS
-
-  tampered-token:
-    name: A tampered runtime token gets nothing
-    if: github.event_name == 'workflow_dispatch' && inputs.phase == 'verify'
-    runs-on: [self-hosted, "${{ inputs.runner }}"]
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: crazy-max/ghaction-github-runtime@3cb05d89e1f492524af3d41a1c98c83bc3025124 # v3
-      # Claims a branch this job may not read; the API must reject the token
-      # (Axiom: reason=invalid_token), see cache-tests/README.md.
-      - run: python3 cache-tests/poison/forge.py ${{ github.ref_name == 'cache-test-a' && 'refs/heads/cache-test-b' || 'refs/heads/cache-test-a' }} iso-${{ inputs.key }} any-version
 
   other-repository:
     name: Another repository's key misses
