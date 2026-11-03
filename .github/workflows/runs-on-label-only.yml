@@ -1,0 +1,24 @@
+# Runs a Celesto CI job with the size label alone, without self-hosted.
+# The job prints the runner that took it.
+name: runs-on label only
+
+on:
+  push:
+    branches: [test/runs-on-label-forms]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  label-only:
+    runs-on: celesto-micro
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show the runner
+        run: |
+          echo "runner=$RUNNER_NAME os=$RUNNER_OS arch=$RUNNER_ARCH"
+          uname -a
+          nproc
+          free -h
