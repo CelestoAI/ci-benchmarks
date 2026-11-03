@@ -1,0 +1,168 @@
+# Cache isolation tests on Celesto CI: a branch, pull request or other
+# repository must never restore another one's cache. cache-tests/README.md
+# has the full order (main, two branches, a pull request, another repository).
+#
+# phase=save   : save `iso-<key>` = this branch's name, and build an image
+#                whose /owner.txt is this branch's name (same Docker scope on
+#                every branch).
+# phase=verify : restore and rebuild; fails if a job ever sees another
+#                branch's content.
+# foreign_key  : a key only ANOTHER repository saved; it must miss here.
+name: Cache tests - isolation
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        type: choice
+        options: [save, verify]
+        default: save
+      key:
+        type: string
+        required: true
+      foreign_key:
+        description: Optional key saved only by another repository (must miss)
+        type: string
+        default: ''
+      providers:
+        description: Where to run (JSON list of celesto, github)
+        type: string
+        default: '["celesto-memory","github"]'
+      runner:
+        description: Celesto runner label
+        type: string
+        default: celesto-memory
+  # PR scope: a pull request saves under its own scope; main must not see it.
+  pull_request:
+    paths: [cache-tests/pr-scope/**]
+permissions:
+  contents: read
+jobs:
+  dependency:
+    name: Branch-scoped actions/cache (${{ matrix.provider }})
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ${{ fromJSON(matrix.provider == 'github' && '["ubuntu-24.04"]' || format('["self-hosted","{0}"]', inputs.runner)) }}
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: ${{ fromJSON(inputs.providers) }}
+    timeout-minutes: 20
+    steps:
+      - name: Content for this branch
+        if: inputs.phase == 'save'
+        run: mkdir -p iso && echo "${GITHUB_REF_NAME}" > iso/owner.txt
+      - if: inputs.phase == 'save'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: iso
+          key: iso-${{ inputs.key }}
+      - if: inputs.phase == 'verify'
+        id: restore
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: iso
+          key: iso-${{ inputs.key }}
+      - name: Only this branch's (or main's fallback) content
+        if: inputs.phase == 'verify'
+        run: |
+          got=$(cat iso/owner.txt 2>/dev/null || echo "<miss>")
+          echo "branch=${GITHUB_REF_NAME} hit=${{ steps.restore.outputs.cache-hit }} restored-owner=${got}"
+          case "$got" in
+            "${GITHUB_REF_NAME}"|main) echo PASS ;;
+            *) echo "POISONING or miss: ${GITHUB_REF_NAME} restored ${got}"; exit 1 ;;
+          esac
+      - name: A PR's cache never reaches this branch
+        if: inputs.phase == 'verify'
+        id: pr
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: pr
+          key: pr-scope-${{ inputs.key }}
+      - if: inputs.phase == 'verify'
+        run: |
+          echo "PR entry hit=${{ steps.pr.outputs.cache-hit }}"
+          [ "${{ steps.pr.outputs.cache-hit }}" != true ] || { echo "POISONING: read a pull request's cache"; exit 1; }
+          echo PASS
+
+  docker:
+    name: Branch-scoped Docker layers (${{ matrix.provider }})
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ${{ fromJSON(matrix.provider == 'github' && '["ubuntu-24.04"]' || format('["self-hosted","{0}"]', inputs.runner)) }}
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: ${{ fromJSON(inputs.providers) }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: cache-tests/poison
+          load: true
+          tags: cache-isolation:local
+          build-args: CONTENT=${{ github.ref_name }}
+          cache-from: type=gha,scope=iso-${{ inputs.key }}
+          cache-to: type=gha,mode=max,scope=iso-${{ inputs.key }}
+      - name: The image holds this branch's content
+        run: |
+          got=$(docker run --rm cache-isolation:local cat /owner.txt)
+          echo "branch=${GITHUB_REF_NAME} image-owner=${got}"
+          [ "$got" = "${GITHUB_REF_NAME}" ] || { echo "POISONING: image contains ${got}"; exit 1; }
+          echo PASS
+
+  other-repository:
+    name: Another repository's key misses (${{ matrix.provider }})
+    if: github.event_name == 'workflow_dispatch' && inputs.foreign_key != ''
+    runs-on: ${{ fromJSON(matrix.provider == 'github' && '["ubuntu-24.04"]' || format('["self-hosted","{0}"]', inputs.runner)) }}
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: ${{ fromJSON(inputs.providers) }}
+    timeout-minutes: 10
+    steps:
+      - id: restore
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: iso
+          key: iso-${{ inputs.foreign_key }}
+      - run: |
+          echo "foreign key hit=${{ steps.restore.outputs.cache-hit }}"
+          [ "${{ steps.restore.outputs.cache-hit }}" != true ] || { echo "POISONING: read another repository's cache"; exit 1; }
+          echo PASS
+
+  pull-request:
+    name: A pull request saves under its own scope
+    # Only branches of this repository: fork pull requests never reach Celesto runners.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [celesto, github]
+    runs-on: ${{ fromJSON(matrix.provider == 'github' && '["ubuntu-24.04"]' || '["self-hosted","celesto-memory"]') }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Key from the marker file
+        id: key
+        # Runs only when the pull request put a test key (t<digits>) on the last line.
+        run: |
+          key=$(tail -1 cache-tests/pr-scope/marker.txt)
+          if echo "$key" | grep -qE '^t[0-9]+$'; then echo "key=$key" >> "$GITHUB_OUTPUT"; else echo "No test key in marker.txt; nothing to check."; fi
+      - if: steps.key.outputs.key != ''
+        run: mkdir -p pr && echo "pull-request" > pr/owner.txt
+      - if: steps.key.outputs.key != ''
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: pr
+          key: pr-scope-${{ steps.key.outputs.key }}
+      - name: The pull request still reads main's entry (fallback)
+        if: steps.key.outputs.key != ''
+        id: fallback
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: iso
+          key: iso-${{ steps.key.outputs.key }}
+      - if: steps.key.outputs.key != ''
+        run: |
+          echo "main fallback hit=${{ steps.fallback.outputs.cache-hit }} owner=$(cat iso/owner.txt 2>/dev/null || echo '<miss>')"
+          test "$(cat iso/owner.txt)" = main && echo PASS
