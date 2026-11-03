@@ -147,10 +147,11 @@ def manifest(ref, token):
 
 
 def containerd_socket():
+    # dockerd's own containerd lives under root-only /var/run/docker.
     for sock in CONTAINERD_SOCKETS:
-        if os.path.exists(sock):
+        if subprocess.run(["sudo", "test", "-S", sock]).returncode == 0:
             return sock
-    raise SystemExit("no containerd socket found")
+    raise SystemExit("no containerd socket found: " + out("sudo ls -la /var/run/docker /run/containerd 2>&1"))
 
 
 def clean(image):
@@ -179,7 +180,7 @@ def cmd_env(_args):
         "docker_root": out("docker info -f '{{.DockerRootDir}}'"),
         "unpigz": shutil.which("unpigz") or "absent",
         "ctr": out("ctr --version") or "absent",
-        "containerd_socket": next((s for s in CONTAINERD_SOCKETS if os.path.exists(s)), "absent"),
+        "containerd_socket": next((s for s in CONTAINERD_SOCKETS if subprocess.run(["sudo", "test", "-S", s]).returncode == 0), "absent"),
         "df": out("df -h / /var/lib/docker 2>/dev/null"),
         "lsblk": out("lsblk -o NAME,SIZE,ROTA,TYPE,MOUNTPOINT 2>/dev/null"),
         "ghcr_cdn_ip": out("getent hosts pkg-containers.githubusercontent.com | head -1"),
