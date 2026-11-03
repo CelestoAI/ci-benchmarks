@@ -1,0 +1,129 @@
+name: GHCR hosts.toml mirror probe
+# Proves whether dockerd in a Celesto github-ci VM sends ghcr.io pulls to a
+# mirror set in /etc/docker/certs.d/ghcr.io/hosts.toml. A local CNCF
+# distribution registry in proxy mode stands in for the mirror and logs each
+# request, so each test checks the mirror log, not only that the pull worked.
+on:
+  push:
+    branches: [test/ghcr-hosts-toml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: [self-hosted, celesto-small]
+    timeout-minutes: 15
+    env:
+      MIRROR: 127.0.0.1:5000
+      CERTS_DIR: /etc/docker/certs.d/ghcr.io
+    steps:
+      - name: Record Docker image store
+        run: |
+          docker version --format 'client {{.Client.Version}} server {{.Server.Version}}'
+          docker info -f 'driver={{.Driver}} status={{json .DriverStatus}} mirrors={{json .RegistryConfig.Mirrors}}'
+
+      # The mirror image comes from Docker Hub through mirror.gcr.io, so it
+      # does not touch ghcr.io and cannot pollute the probe.
+      - name: Start a logging ghcr.io pull-through mirror
+        run: |
+          docker run -d --name ghcr-mirror --network host \
+            -e REGISTRY_HTTP_ADDR="$MIRROR" \
+            -e REGISTRY_PROXY_REMOTEURL=https://ghcr.io \
+            -e REGISTRY_LOG_LEVEL=info \
+            registry:2
+          for i in $(seq 1 30); do
+            curl -fsS "http://$MIRROR/v2/" >/dev/null && break
+            sleep 1
+          done
+          curl -fsS "http://$MIRROR/v2/" && echo "mirror is up"
+
+      - name: Write hosts.toml for ghcr.io (no dockerd restart)
+        run: |
+          sudo mkdir -p "$CERTS_DIR"
+          printf '%s\n' \
+            'server = "https://ghcr.io"' \
+            '' \
+            "[host.\"http://$MIRROR\"]" \
+            '  capabilities = ["pull", "resolve"]' \
+            | sudo tee "$CERTS_DIR/hosts.toml"
+
+      # Helper: count mirror log lines that name a repository.
+      - name: Define mirror-hit helper
+        run: |
+          cat > "$RUNNER_TEMP/hits.sh" <<'SH'
+          #!/usr/bin/env bash
+          # Usage: hits.sh <repo path>, prints the number of mirror requests for it.
+          docker logs ghcr-mirror 2>&1 | grep -c "/v2/$1/" || true
+          SH
+          chmod +x "$RUNNER_TEMP/hits.sh"
+
+      - name: "Test A: docker pull goes through the mirror (no restart)"
+        id: a
+        continue-on-error: true
+        run: |
+          docker pull ghcr.io/containerd/busybox:1.36
+          hits=$("$RUNNER_TEMP/hits.sh" containerd/busybox)
+          echo "mirror requests for containerd/busybox: $hits"
+          test "$hits" -gt 0
+
+      # If Test A failed, dockerd may read hosts.toml only at start. The guest
+      # agent restarts dockerd when it exits, so kill it and wait for the socket.
+      - name: Restart dockerd and retry Test A
+        if: steps.a.outcome == 'failure'
+        id: a2
+        continue-on-error: true
+        run: |
+          docker rm -f ghcr-mirror || true
+          docker rmi ghcr.io/containerd/busybox:1.36 || true
+          sudo pkill -x dockerd
+          for i in $(seq 1 90); do docker info >/dev/null 2>&1 && break; sleep 1; done
+          docker info -f 'driver={{.Driver}}'
+          docker run -d --name ghcr-mirror --network host \
+            -e REGISTRY_HTTP_ADDR="$MIRROR" -e REGISTRY_PROXY_REMOTEURL=https://ghcr.io \
+            registry:2
+          for i in $(seq 1 30); do curl -fsS "http://$MIRROR/v2/" >/dev/null && break; sleep 1; done
+          docker pull ghcr.io/containerd/busybox:1.36
+          hits=$("$RUNNER_TEMP/hits.sh" containerd/busybox)
+          echo "mirror requests for containerd/busybox after restart: $hits"
+          test "$hits" -gt 0
+
+      - name: "Test B: docker build FROM ghcr.io goes through the mirror"
+        id: b
+        continue-on-error: true
+        run: |
+          printf 'FROM ghcr.io/containerd/alpine:3.14.0\nRUN echo ok\n' | docker build -t ghcr-probe-build -
+          hits=$("$RUNNER_TEMP/hits.sh" containerd/alpine)
+          echo "mirror requests for containerd/alpine: $hits"
+          test "$hits" -gt 0
+
+      - name: "Test C: mirror catalog holds what was pulled"
+        id: c
+        continue-on-error: true
+        run: curl -fsS "http://$MIRROR/v2/_catalog"
+
+      - name: "Test D: mirror down falls back to ghcr.io"
+        id: d
+        continue-on-error: true
+        run: |
+          docker stop ghcr-mirror
+          docker pull ghcr.io/containerd/busybox:1.28
+
+      - name: Mirror log
+        if: always()
+        run: |
+          docker start ghcr-mirror >/dev/null 2>&1 || true
+          docker logs ghcr-mirror 2>&1 | grep -E '"(GET|HEAD) /v2/|msg=|level=(warn|error)' | tail -n 80 || true
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## GHCR hosts.toml mirror probe"
+            echo "| Test | Outcome |"
+            echo "|---|---|"
+            echo "| A: docker pull via mirror, no restart | ${{ steps.a.outcome }} |"
+            echo "| A2: docker pull via mirror after dockerd restart | ${{ steps.a2.outcome || 'skipped' }} |"
+            echo "| B: docker build FROM via mirror | ${{ steps.b.outcome }} |"
+            echo "| C: mirror catalog | ${{ steps.c.outcome }} |"
+            echo "| D: fallback to ghcr.io when mirror is down | ${{ steps.d.outcome }} |"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
