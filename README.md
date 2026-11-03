@@ -2,7 +2,7 @@
 
 **Compare Celesto CI and GitHub Actions on CPU speed and cache performance.** Same benchmark, same CPU count, same RAM. Runs and raw data are public.
 
-[CPU/cache results](results/2026-10-17-matched/README.md) · [Docker results](results/docker-2026-10-17/README.md) · [Run the CPU comparison](https://github.com/CelestoAI/ci-benchmarks/actions/workflows/matched.yml)
+[CPU/cache results](results/2026-11-02-matched/README.md) · [Docker results](results/docker-2026-10-17/README.md) · [Run the CPU comparison](https://github.com/CelestoAI/ci-benchmarks/actions/workflows/matched.yml)
 
 ## Docker benchmarks
 
@@ -14,24 +14,26 @@ Read the caveats before migrating: direct BuildKit GHA caching and Docker's expl
 
 ## CPU/cache results
 
-October 17, 2026. Both runners: **4 vCPUs, 16 GiB RAM, Ubuntu 24.04.5, Node 22.23.3**. Three cold/warm pairs per provider; all 12 jobs passed.
+November 2, 2026. Both runners: **4 vCPUs, 16 GiB RAM, Ubuntu 24.04.5, Node 22.23.3**. Three runs of the matched workflow, 36 jobs, all passed.
 
-[![Matched four-core benchmark: Celesto has higher median CPU throughput; GitHub has lower cache restore and save times.](docs/images/matched-benchmark.svg)](results/2026-10-17-matched/README.md)
+[![Matched four-core benchmark: Celesto has higher median CPU throughput and faster cache restore; GitHub has faster cache save.](docs/images/matched-benchmark.svg)](results/2026-11-02-matched/README.md)
 
 | Measurement | GitHub Actions | Celesto Large | Better |
 | --- | ---: | ---: | --- |
-| Single-core CPU ↑ | 199.4 million iterations/s | 233.2 million iterations/s | Celesto +16.9% |
-| Four-core CPU ↑ | 786.7 million iterations/s | 927.5 million iterations/s | Celesto +17.9% |
-| Restore a 512 MiB cache ↓ | 3.93 s | 5.33 s | GitHub 1.36× faster |
-| Save a 512 MiB cache ↓ | 2.50 s | 5.18 s | GitHub 2.08× faster |
+| Single-core CPU ↑ | 221.5 million iterations/s | 234.3 million iterations/s | Celesto +5.8% |
+| Four-core CPU ↑ | 827.7 million iterations/s | 924.1 million iterations/s | Celesto +11.6% |
+| Restore a 512 MiB cache ↓ | 4.04 s | 3.60 s | Celesto 1.12× faster |
+| Save a 512 MiB cache ↓ | 3.01 s | 6.09 s | GitHub 2.02× faster |
 
-↑ More work per second is better. ↓ Less time is better. Values are medians: six CPU measurements and three save measurements per provider from October 17; five restore measurements per provider from the [October 19 rerun](results/2026-10-19-readahead-restore/README.md).
+↑ More work per second is better. ↓ Less time is better. Values are medians: 18 CPU measurements, 9 restore measurements and 9 save measurements per provider.
 
-**Restore updated October 19:** Celesto now downloads cache archives in parallel ranges with read-ahead. Celesto's median restore dropped from 6.23 s to 5.33 s, and GitHub's lead from 1.89× to 1.36×. GitHub's own median in the rerun was 3.93 s (3.30 s on October 17).
+**CPU depends on GitHub's hardware.** Celesto ran every job on AMD EPYC-Milan, and its results stayed within 2%. GitHub ran jobs on three CPU models. Its EPYC 9V45 jobs were faster than Celesto (268.8 single-core) and its EPYC 7763 and 9V74 jobs were slower (199.6 and 188.5). The GitHub median depends on the mix of hardware, so Celesto's lead dropped from about 17% on [October 17](results/2026-10-17-matched/README.md) to 6–12% now.
 
-**In this test:** Celesto had higher median CPU throughput. GitHub saved and restored the cache faster. CPU models, kernels, and disks differed despite matching CPU/RAM capacity. These are synthetic workloads, not a prediction for every build.
+**Cache:** Celesto now restores faster and with less variation (3.35–4.06 s, GitHub 2.71–9.56 s). GitHub still saves about 2× faster, and Celesto's save times vary (4.46–28.47 s).
 
-[Full methodology, ranges, outliers, and raw data →](results/2026-10-17-matched/README.md)
+**In this test:** Celesto had higher median CPU throughput and faster restores. GitHub saved the cache faster. CPU models, kernels and disks differed, even with matched CPU and RAM. These are synthetic workloads, not a prediction for every build.
+
+[Full results, ranges, outliers and raw data →](results/2026-11-02-matched/README.md) · Earlier: [October 17](results/2026-10-17-matched/README.md), [October 19 restore rerun](results/2026-10-19-readahead-restore/README.md)
 
 ## Run it yourself
 
@@ -59,7 +61,7 @@ Open the completed run in **Actions**:
 - **Artifacts:** download a job's archive. `benchmark-summary.md` is the readable report; `benchmark-events.jsonl` contains raw timings and machine details.
 - **Success check:** all 12 jobs should pass. Cold jobs should miss; warm jobs should hit. Save time is absent on warm runs because an existing cache is reused.
 
-The workflow does not calculate a cross-provider median for you. The [published report](results/2026-10-17-matched/README.md) shows how this experiment was summarized.
+The workflow does not calculate a cross-provider median for you. The [published report](results/2026-11-02-matched/README.md) shows how three runs were pooled and summarized.
 
 ## Something stuck?
 
