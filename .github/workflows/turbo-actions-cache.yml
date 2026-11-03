@@ -1,0 +1,53 @@
+name: turbo-actions-cache
+
+# Proves the Turborepo "Remote Caching with GitHub actions/cache" pattern
+# on Celesto runners: actions/cache saves/restores the local .turbo folder.
+on:
+  push:
+    branches: [test/turbo-actions-cache]
+    paths:
+      - "turbo-actions-cache/**"
+      - ".github/workflows/turbo-actions-cache.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: [self-hosted, celesto-memory]
+    defaults:
+      run:
+        working-directory: turbo-actions-cache
+    env:
+      # Make sure turbo uses only the local cache folder (no Vercel remote cache).
+      TURBO_API: ""
+      TURBO_TOKEN: ""
+      TURBO_TEAM: ""
+      TURBO_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Cache turbo build setup
+        uses: actions/cache@v4
+        with:
+          path: turbo-actions-cache/.turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npx turbo run build --cache-dir=.turbo
+
+      - name: Evidence
+        if: always()
+        run: |
+          # URL values only; for CELESTO* print names only (no secret values).
+          env | grep -E '^ACTIONS_(RESULTS|CACHE)_URL=' || true
+          env | grep -i celesto | cut -d= -f1 || true
+          ls -la .turbo || true
+          du -sh .turbo || true

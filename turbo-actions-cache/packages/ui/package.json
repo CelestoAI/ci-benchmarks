@@ -1,0 +1,9 @@
+{
+  "name": "@demo/ui",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": { "@demo/utils": "*" },
+  "scripts": {
+    "build": "node ../../build.js"
+  }
+}

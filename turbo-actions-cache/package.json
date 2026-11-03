@@ -1,0 +1,15 @@
+{
+  "name": "turbo-actions-cache",
+  "private": true,
+  "packageManager": "npm@10.8.2",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "turbo run build"
+  },
+  "devDependencies": {
+    "turbo": "2.11.10"
+  }
+}
