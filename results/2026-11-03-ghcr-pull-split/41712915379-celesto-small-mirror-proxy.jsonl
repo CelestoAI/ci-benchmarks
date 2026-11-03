@@ -1,0 +1,15 @@
+{"case": "docker-pull"}
+{"method": "HEAD", "path": "/v2/celestoai/ci-pull-probe/manifests/small", "auth": "none", "status": 401, "ua": "docker/29.1.3 go/go1.24."}
+{"method": "GET", "path": "/token", "auth": "none", "status": 401, "ua": "containerd/2.2.0+unknown"}
+{"case": "docker-build-from"}
+{"method": "HEAD", "path": "/v2/celestoai/ci-pull-probe/manifests/small", "auth": "none", "status": 401, "ua": "buildkit/v0.26"}
+{"method": "GET", "path": "/token", "auth": "none", "status": 401, "ua": "containerd/2.2.0+unknown"}
+{"method": "GET", "path": "/token", "auth": "none", "status": 401, "ua": "containerd/2.2.0+unknown"}
+{"method": "GET", "path": "/token", "auth": "none", "status": 401, "ua": "containerd/2.2.0+unknown"}
+{"method": "GET", "path": "/token", "auth": "none", "status": 401, "ua": "containerd/2.2.0+unknown"}
+{"case": "buildx-container-from"}
+{"method": "HEAD", "path": "/v2/celestoai/ci-pull-probe/manifests/small", "auth": "none", "status": 401, "ua": "buildkit/v0.34"}
+{"method": "GET", "path": "/token", "auth": "none", "status": 401, "ua": "containerd/2.2.0+unknown"}
+{"method": "GET", "path": "/token", "auth": "none", "status": 401, "ua": "containerd/2.2.0+unknown"}
+{"method": "GET", "path": "/token", "auth": "none", "status": 401, "ua": "containerd/2.2.0+unknown"}
+{"method": "GET", "path": "/token", "auth": "none", "status": 401, "ua": "containerd/2.2.0+unknown"}
