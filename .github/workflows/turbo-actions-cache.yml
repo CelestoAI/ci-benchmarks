@@ -49,5 +49,9 @@ jobs:
           # URL values only; for CELESTO* print names only (no secret values).
           env | grep -E '^ACTIONS_(RESULTS|CACHE)_URL=' || true
           env | grep -i celesto | cut -d= -f1 || true
+          # Host part only of the cache service URLs (no path, no query).
+          echo "ACTIONS_RESULTS_URL host: $(echo "${ACTIONS_RESULTS_URL:-unset}" | sed -E 's#^([a-z]+://[^/]+).*#\1#')"
+          echo "CELESTO_ACTIONS_RESULTS_URL host: $(echo "${CELESTO_ACTIONS_RESULTS_URL:-unset}" | sed -E 's#^([a-z]+://[^/]+).*#\1#')"
+          ls -la .turbo/cache || true
           ls -la .turbo || true
           du -sh .turbo || true
