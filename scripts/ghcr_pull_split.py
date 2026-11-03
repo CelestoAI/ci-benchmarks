@@ -102,15 +102,37 @@ def _cpu():
     return sum(vals), idle, iowait
 
 
+LABEL = os.environ.get("SPLIT_LABEL", "stock")
+
+
+def _decompressors_seen(stop, seen):
+    while not stop.is_set():
+        for name in ("igzip", "unpigz"):
+            if subprocess.run(["pgrep", "-x", name], capture_output=True).returncode == 0:
+                seen.add(name)
+        stop.wait(0.5)
+
+
 def measure(phase, image, rep, fn):
     rx0, wr0, (t0, idle0, io0) = _rx_bytes(), _disk_write_bytes(), _cpu()
+    stop, seen = threading.Event(), set()
+    sampler = threading.Thread(target=_decompressors_seen, args=(stop, seen), daemon=True)
+    sampler.start()
     start = time.monotonic()
-    extra = fn() or {}
+    try:
+        extra = fn() or {}
+    except subprocess.CalledProcessError as exc:
+        # Keep measuring the other phases; the record says this one failed.
+        extra = {"error": f"exit {exc.returncode}"}
     wall = time.monotonic() - start
+    stop.set()
+    sampler.join()
     rx1, wr1, (t1, idle1, io1) = _rx_bytes(), _disk_write_bytes(), _cpu()
     dt = max(t1 - t0, 1)
     record(
         "phase",
+        label=LABEL,
+        decompressor=",".join(sorted(seen)) or "go-gzip",
         phase=phase,
         image=image,
         rep=rep,
@@ -198,6 +220,7 @@ def cmd_split(args):
     sock = containerd_socket()
     fetch_help = out(f"sudo ctr -a {sock} content fetch --help")
     conc = "--max-concurrent-downloads 3" if "max-concurrent-downloads" in fetch_help else ""
+    phases = set(args.phases.split(","))
     for image in args.images:
         repo = image.removeprefix("ghcr.io/").rsplit(":", 1)[0]
         token = registry_token(repo, user, password)
@@ -237,7 +260,8 @@ def cmd_split(args):
                     rates = list(pool.map(get, layers))
                 return {"max_layer_mb_s": round(max(rates), 1)}
 
-            measure("network", image, rep, network)
+            if "network" in phases:
+                measure("network", image, rep, network)
             measure(
                 "fetch",
                 image,
@@ -252,7 +276,15 @@ def cmd_split(args):
                 for digest, _ in layers:
                     sh(f"sudo cat {blob_dir}/{digest.split(':')[1]} | gzip -dc >/dev/null", quiet=True)
 
-            measure("gunzip", image, rep, gunzip)
+            if "gunzip" in phases:
+                measure("gunzip", image, rep, gunzip)
+            for tool in ("igzip", "unpigz"):
+                if tool in phases and shutil.which(tool):
+                    def run_tool(tool=tool):
+                        blob_dir = next(d for d in CONTENT_DIRS if sh(f"sudo test -d {d}", check=False, quiet=True).returncode == 0)
+                        for digest, _ in layers:
+                            sh(f"sudo cat {blob_dir}/{digest.split(':')[1]} | {tool} -dc >/dev/null", quiet=True)
+                    measure(tool, image, rep, run_tool)
 
 
 # --- mirror credential probe ---------------------------------------------------
@@ -357,6 +389,7 @@ def main():
     sub.add_parser("env")
     split = sub.add_parser("split")
     split.add_argument("--reps", type=int, default=2)
+    split.add_argument("--phases", default="network,gunzip")
     split.add_argument("images", nargs="+")
     mirror = sub.add_parser("mirror-auth")
     mirror.add_argument("image")

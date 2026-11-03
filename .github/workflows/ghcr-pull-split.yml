@@ -67,6 +67,12 @@ jobs:
         run: python3 scripts/ghcr_pull_split.py split --reps 2 "$PROBE:playwright" "$PROBE:scipy"
       - name: Does dockerd send the ghcr.io login to a hosts.toml mirror?
         run: python3 scripts/ghcr_pull_split.py mirror-auth "$PROBE:small"
+      - name: dockerd restarts, OOM kills and the guest agent's dockerd log
+        if: always()
+        run: |
+          echo "dockerd starts: $(sudo grep -c 'API listen on' /var/log/celesto-docker.log)"
+          sudo grep -iE 'API listen on|context canceled|failed to commit|Processing signal|shutting down' /var/log/celesto-docker.log | tail -n 20 || true
+          sudo dmesg 2>/dev/null | grep -iE 'oom|killed process|hung task|blocked for more' | tail -n 20 || true
       - name: Summary
         if: always()
         run: |
@@ -81,6 +87,64 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: ghcr-pull-split-${{ matrix.size }}
+          path: pull-results/
+          retention-days: 30
+
+  # Same split after installing igzip (isal) and unpigz (pigz): containerd
+  # decompresses gzip layers with the first one it finds on PATH, else Go's
+  # gzip. It looks once per process, so dockerd (and its containerd) restart.
+  measure-igzip:
+    needs: seed
+    strategy:
+      fail-fast: false
+      matrix:
+        size: [celesto-small, celesto-large]
+    runs-on: [self-hosted, "${{ matrix.size }}"]
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: read
+    env:
+      GHCR_USER: ${{ github.actor }}
+      GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      RESULTS_DIR: pull-results
+      SPLIT_LABEL: igzip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Install igzip and unpigz, restart dockerd
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq isal pigz >/dev/null
+          command -v igzip unpigz
+          sudo pkill -x dockerd
+          for i in $(seq 1 90); do sleep 1; docker info >/dev/null 2>&1 && break; done
+          docker info -f '{{.ServerVersion}} {{.Driver}}'
+      - name: Record machine
+        run: python3 scripts/ghcr_pull_split.py env
+      - name: docker login ghcr.io with GITHUB_TOKEN
+        run: echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+      - name: Cold pull, fetch, unpack and decompressor phases
+        run: python3 scripts/ghcr_pull_split.py split --reps 2 --phases gunzip,igzip,unpigz "$PROBE:playwright" "$PROBE:scipy"
+      - name: dockerd restarts, OOM kills and the guest agent's dockerd log
+        if: always()
+        run: |
+          echo "dockerd starts: $(sudo grep -c 'API listen on' /var/log/celesto-docker.log)"
+          sudo grep -iE 'API listen on|context canceled|failed to commit|Processing signal|shutting down' /var/log/celesto-docker.log | tail -n 20 || true
+          sudo dmesg 2>/dev/null | grep -iE 'oom|killed process|hung task|blocked for more' | tail -n 20 || true
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## ${{ matrix.size }} with igzip"
+            echo '```'
+            cat pull-results/results.jsonl 2>/dev/null
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ghcr-pull-split-igzip-${{ matrix.size }}
           path: pull-results/
           retention-days: 30
 
