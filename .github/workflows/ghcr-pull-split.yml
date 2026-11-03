@@ -1,0 +1,103 @@
+name: GHCR private image cold pull split
+# Where does a cold pull of a large private ghcr.io image spend its time on a
+# Celesto runner: downloading or unpacking? And does dockerd send the job's
+# ghcr.io login to a hosts.toml mirror? Input for Celesto's decision log
+# docs/designs/ci-image-pull-cache.md. scripts/ghcr_pull_split.py has the method.
+on:
+  push:
+    branches: [test/ghcr-pull-split]
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  PROBE: ghcr.io/celestoai/ci-pull-probe
+jobs:
+  # Copies large public images, layers and compression unchanged, into one
+  # private package owned by this repository.
+  seed:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    env:
+      GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Copy images into ghcr.io/celestoai/ci-pull-probe
+        run: |
+          echo "$GHCR_TOKEN" | skopeo login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          copy() {
+            skopeo copy --retry-times 3 --override-os linux --override-arch amd64 "docker://$2" "docker://$PROBE:$1"
+          }
+          copy playwright mcr.microsoft.com/playwright@sha256:70e367e0cbf60340a5b5fd562f6247a34eb3196efab9f88a3dd56482d9fe09d2
+          copy scipy quay.io/jupyter/scipy-notebook@sha256:a8dd44932e91a6fa942c1b9976d0322302bfaf1d8c2f41b0bacc5f775cc94ce6
+          copy small ghcr.io/containerd/busybox:1.36
+      - name: The package is private (anonymous pull is refused)
+        run: |
+          skopeo logout ghcr.io
+          if skopeo inspect --raw "docker://$PROBE:small" >/dev/null 2>&1; then
+            echo "::error::$PROBE is public; make it private before measuring"; exit 1
+          fi
+          echo "anonymous inspect refused: private"
+
+  measure:
+    needs: seed
+    strategy:
+      fail-fast: false
+      matrix:
+        size: [celesto-small, celesto-large]
+    runs-on: [self-hosted, "${{ matrix.size }}"]
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: read
+    env:
+      GHCR_USER: ${{ github.actor }}
+      GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      RESULTS_DIR: pull-results
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Record machine
+        run: python3 scripts/ghcr_pull_split.py env
+      - name: Anonymous docker pull is refused
+        run: |
+          if docker pull -q "$PROBE:small"; then echo "::error::anonymous pull worked"; exit 1; fi
+      - name: docker login ghcr.io with GITHUB_TOKEN
+        run: echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+      - name: Cold pull, network, fetch, unpack and gunzip phases
+        run: python3 scripts/ghcr_pull_split.py split --reps 2 "$PROBE:playwright" "$PROBE:scipy"
+      - name: Does dockerd send the ghcr.io login to a hosts.toml mirror?
+        run: python3 scripts/ghcr_pull_split.py mirror-auth "$PROBE:small"
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## ${{ matrix.size }}"
+            echo '```'
+            cat pull-results/results.jsonl 2>/dev/null
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ghcr-pull-split-${{ matrix.size }}
+          path: pull-results/
+          retention-days: 30
+
+  # The runner pulls a `container:` job image before any step runs; GitHub
+  # times it as "Initialize containers".
+  container-job:
+    needs: seed
+    runs-on: [self-hosted, celesto-small]
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: read
+    container:
+      image: ghcr.io/celestoai/ci-pull-probe:playwright
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Inside the job container
+        run: cat /etc/os-release | head -2
