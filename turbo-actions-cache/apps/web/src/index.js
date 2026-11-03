@@ -1,1 +1,1 @@
-module.exports = { name: "@demo/web", version: 1 };
+module.exports = { name: "@demo/web", version: 2 };
