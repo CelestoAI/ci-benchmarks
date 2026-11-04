@@ -1,0 +1,57 @@
+name: GHCR auto-login without credentials
+# Does a Celesto JIT runner log in to ghcr.io with the job's GITHUB_TOKEN for a
+# private container: or services: image that has no credentials block?
+# Tests Q-04 in Celesto's docs/designs/ci-image-pull-cache.md.
+on:
+  push:
+    branches: [test/ghcr-auto-login]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  # Must fail to pull: proves the probe image is private and steps start with no login.
+  control-anonymous:
+    runs-on: [self-hosted, celesto-small]
+    timeout-minutes: 10
+    steps:
+      - name: Anonymous pull is refused
+        run: |
+          if docker pull ghcr.io/celestoai/ci-pull-probe:small; then
+            echo "probe image is NOT private; this test proves nothing"
+            exit 1
+          fi
+
+  # Baseline: proves the token and package access are good for this repository.
+  hosted-container:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: read
+    container:
+      image: ghcr.io/celestoai/ci-pull-probe:playwright
+    steps:
+      - run: head -2 /etc/os-release
+
+  celesto-container:
+    runs-on: [self-hosted, celesto-small]
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: read
+    container:
+      image: ghcr.io/celestoai/ci-pull-probe:playwright
+    steps:
+      - run: head -2 /etc/os-release
+
+  celesto-service:
+    runs-on: [self-hosted, celesto-small]
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: read
+    services:
+      probe:
+        image: ghcr.io/celestoai/ci-pull-probe:small
+    steps:
+      - run: docker ps -a
