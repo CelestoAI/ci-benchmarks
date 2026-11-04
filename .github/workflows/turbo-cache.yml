@@ -1,0 +1,82 @@
+# Tests Celesto's transparent Turborepo cache on production: no TURBO_* in this file.
+name: Turbo cache test
+on:
+  push:
+    branches: ["test/turbo-cache-prod"]
+permissions:
+  contents: read
+env:
+  TURBO_TELEMETRY_DISABLED: "1"
+  DO_NOT_TRACK: "1"
+  TURBO: "npx -y turbo@2.11.10"
+defaults:
+  run:
+    working-directory: turbo-test
+jobs:
+  cold:
+    runs-on: [self-hosted, celesto-standard]
+    timeout-minutes: 15
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Report settings (names only)
+        run: for v in TURBO_API TURBO_TEAM TURBO_TOKEN TURBO_CACHE ACTIONS_RUNTIME_TOKEN; do if [ -n "${!v+x}" ]; then echo "$v set"; else echo "$v unset"; fi; done
+      - name: Build, expect a miss
+        id: build
+        run: |
+          for p in a b; do echo "$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" > packages/$p/src/salt.txt; done
+          $TURBO run build --output-logs=hash-only | tee /tmp/turbo.log
+          grep -q "cache miss" /tmp/turbo.log
+          ! grep -q "FULL TURBO" /tmp/turbo.log
+          echo "digest=$(cat packages/*/dist/out.txt | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+      - name: Proxy log
+        if: always()
+        run: cat /tmp/celesto-ci-cache-proxy.log || true
+  warm:
+    needs: cold
+    runs-on: [self-hosted, celesto-standard]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build on a new VM, expect FULL TURBO from the remote cache
+        run: |
+          for p in a b; do echo "$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" > packages/$p/src/salt.txt; done
+          $TURBO run build --output-logs=hash-only | tee /tmp/turbo.log
+          grep -q "FULL TURBO" /tmp/turbo.log
+          test "$(cat packages/*/dist/out.txt | sha256sum | cut -d' ' -f1)" = "${{ needs.cold.outputs.digest }}"
+      - name: Proxy log
+        if: always()
+        run: cat /tmp/celesto-ci-cache-proxy.log || true
+  big-cold:
+    runs-on: [self-hosted, celesto-standard]
+    timeout-minutes: 20
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and upload a 300 MiB artifact
+        id: build
+        run: |
+          echo "$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" > packages/big/src/salt.txt
+          time $TURBO run bigbuild --output-logs=hash-only | tee /tmp/turbo.log
+          grep -q "cache miss" /tmp/turbo.log
+          echo "digest=$(sha256sum packages/big/dist/big.bin | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+      - name: Proxy log
+        if: always()
+        run: cat /tmp/celesto-ci-cache-proxy.log || true
+  big-warm:
+    needs: big-cold
+    runs-on: [self-hosted, celesto-standard]
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore the 300 MiB artifact on a new VM and compare bytes
+        run: |
+          echo "$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" > packages/big/src/salt.txt
+          time $TURBO run bigbuild --output-logs=hash-only | tee /tmp/turbo.log
+          grep -q "FULL TURBO" /tmp/turbo.log
+          test "$(sha256sum packages/big/dist/big.bin | cut -d' ' -f1)" = "${{ needs.big-cold.outputs.digest }}"
+      - name: Proxy log
+        if: always()
+        run: cat /tmp/celesto-ci-cache-proxy.log || true
