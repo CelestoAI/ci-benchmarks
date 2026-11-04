@@ -1,0 +1,48 @@
+name: GHCR store rename
+# Does a repeat pull stay fast after image names are removed from Docker's store?
+# Tests D-07 in Celesto's docs/designs/ci-image-pull-cache.md.
+# scripts/ghcr_store_rename.sh has the method.
+on:
+  push:
+    branches: [test/ghcr-store-rename]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  rename:
+    strategy:
+      fail-fast: false
+      matrix:
+        size: [celesto-small, celesto-large]
+    runs-on: [self-hosted, "${{ matrix.size }}"]
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: read
+    env:
+      GHCR_USER: ${{ github.actor }}
+      GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      RESULTS_FILE: results.txt
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Rename test on the scipy image
+        run: bash scripts/ghcr_store_rename.sh ghcr.io/celestoai/ci-pull-probe:scipy
+      - name: dockerd log
+        if: always()
+        run: sudo grep -iE 'API listen on|context canceled|failed to commit|shutting down' /var/log/celesto-docker.log | tail -n 20 || true
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## ${{ matrix.size }}"
+            echo '```'
+            cat results.txt 2>/dev/null
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ghcr-store-rename-${{ matrix.size }}
+          path: results.txt
+          retention-days: 30
