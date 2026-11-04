@@ -1,0 +1,80 @@
+name: GHCR store in a new VM
+# Does a saved Docker image store work in a new VM? Tests D-04, D-07 and D-08 in
+# Celesto's docs/designs/ci-image-pull-cache.md with no host change.
+# scripts/ghcr_store_clone.sh has the method and limits.
+on:
+  push:
+    branches: [test/ghcr-store-clone]
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  IMAGE: ghcr.io/celestoai/ci-pull-probe:scipy
+jobs:
+  save:
+    strategy:
+      fail-fast: false
+      matrix:
+        size: [celesto-small, celesto-large]
+    runs-on: [self-hosted, "${{ matrix.size }}"]
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: read
+    env:
+      GHCR_USER: ${{ github.actor }}
+      GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Fill and save a store
+        run: bash scripts/ghcr_store_clone.sh save "$IMAGE"
+      - name: Upload store
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: store-${{ matrix.size }}
+          path: |
+            store.img.zst
+            digest.txt
+          compression-level: 0
+          retention-days: 1
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: results-save-${{ matrix.size }}
+          path: results.txt
+          retention-days: 30
+
+  verify:
+    needs: save
+    strategy:
+      fail-fast: false
+      matrix:
+        size: [celesto-small, celesto-large]
+    runs-on: [self-hosted, "${{ matrix.size }}"]
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: read
+      actions: read
+    env:
+      GHCR_USER: ${{ github.actor }}
+      GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Download store
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: store-${{ matrix.size }}
+      - name: Use the store in a new VM
+        run: bash scripts/ghcr_store_clone.sh verify "$IMAGE"
+      - name: dockerd log
+        if: always()
+        run: sudo tail -n 40 /var/log/celesto-docker.log || true
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: results-verify-${{ matrix.size }}
+          path: results.txt
+          retention-days: 30
