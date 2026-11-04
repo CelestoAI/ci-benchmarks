@@ -94,6 +94,8 @@ jobs:
   # decompresses gzip layers with the first one it finds on PATH, else Go's
   # gzip. It looks once per process, so dockerd (and its containerd) restart.
   measure-igzip:
+    # github-ci 2026-11-03.3 ships igzip, so `measure` above is now the test.
+    if: false
     needs: seed
     strategy:
       fail-fast: false
@@ -151,6 +153,7 @@ jobs:
   # The runner pulls a `container:` job image before any step runs; GitHub
   # times it as "Initialize containers".
   container-job:
+    if: false
     needs: seed
     runs-on: [self-hosted, celesto-small]
     timeout-minutes: 20
