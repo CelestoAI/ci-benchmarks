@@ -2,7 +2,7 @@
 name: Turbo fork check
 on:
   push:
-    branches: ["test/turbo-fork-check"]
+    branches: ["test/turbo-fork-seed"]
   pull_request:
     branches: [main]
 permissions:
@@ -11,7 +11,7 @@ env:
   TURBO_TELEMETRY_DISABLED: "1"
   DO_NOT_TRACK: "1"
   TURBO: "npx -y turbo@2.11.10"
-  SEED_SALT: fork-check-seed-1
+  SEED_SALT: fork-check-seed-2
 defaults:
   run:
     working-directory: turbo-test
@@ -46,7 +46,9 @@ jobs:
           grep -q "FULL TURBO" /tmp/turbo.log
           grep -o "cache hit, [a-z ]* [0-9a-f]\{16\}" /tmp/turbo.log | awk '{print $NF}' | head -1 > /tmp/seed-hash
           echo "seed hash: $(cat /tmp/seed-hash)"
+      # Forks only: a same-repo job may replace an artifact (D-27), which would break this test.
       - name: Try to replace the trusted artifact with another tag
+        if: github.event.pull_request.head.repo.fork
         run: |
           code=$(printf 'not-the-real-artifact' | curl -s -o /dev/null -w '%{http_code}' -X PUT -H "Authorization: Bearer $TURBO_TOKEN" -H 'x-artifact-tag: other-tag' -H 'x-artifact-duration: 1' --data-binary @- "$TURBO_API/v8/artifacts/$(cat /tmp/seed-hash)")
           echo "replace attempt answered $code"
