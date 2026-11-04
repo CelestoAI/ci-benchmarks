@@ -1,0 +1,81 @@
+# D-31: a fork reads the Turbo cache and cannot write or replace; a same-repo pull request saves.
+name: Turbo fork check
+on:
+  push:
+    branches: ["test/turbo-fork-check"]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+env:
+  TURBO_TELEMETRY_DISABLED: "1"
+  DO_NOT_TRACK: "1"
+  TURBO: "npx -y turbo@2.11.10"
+  SEED_SALT: fork-check-seed-1
+defaults:
+  run:
+    working-directory: turbo-test
+jobs:
+  seed:
+    if: github.event_name == 'push'
+    runs-on: [self-hosted, celesto-standard]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Save a trusted artifact
+        run: |
+          for p in a b; do echo "$SEED_SALT" > packages/$p/src/salt.txt; done
+          $TURBO run build --output-logs=hash-only | tee /tmp/turbo.log
+  probe:
+    if: github.event_name == 'pull_request'
+    runs-on: [self-hosted, celesto-standard]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show this job's cache scopes (no token)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const claims = JSON.parse(Buffer.from(process.env.ACTIONS_RUNTIME_TOKEN.split('.')[1], 'base64url').toString());
+            core.info('head is a fork: ' + context.payload.pull_request.head.repo.fork);
+            core.info('ac scopes: ' + claims.ac);
+      - name: Read the trusted artifact
+        run: |
+          for p in a b; do echo "$SEED_SALT" > packages/$p/src/salt.txt; done
+          $TURBO run build --output-logs=hash-only | tee /tmp/turbo.log
+          grep -q "FULL TURBO" /tmp/turbo.log
+          grep -o "cache hit, [a-z ]* [0-9a-f]\{16\}" /tmp/turbo.log | awk '{print $NF}' | head -1 > /tmp/seed-hash
+          echo "seed hash: $(cat /tmp/seed-hash)"
+      - name: Try to replace the trusted artifact with another tag
+        run: |
+          code=$(printf 'not-the-real-artifact' | curl -s -o /dev/null -w '%{http_code}' -X PUT -H "Authorization: Bearer $TURBO_TOKEN" -H 'x-artifact-tag: other-tag' -H 'x-artifact-duration: 1' --data-binary @- "$TURBO_API/v8/artifacts/$(cat /tmp/seed-hash)")
+          echo "replace attempt answered $code"
+      - name: Try to save a new artifact
+        run: |
+          rm -rf packages/*/dist .turbo node_modules/.cache
+          for p in a b; do echo "$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" > packages/$p/src/salt.txt; done
+          $TURBO run build --output-logs=hash-only | tee /tmp/turbo.log
+          grep -q "cache miss" /tmp/turbo.log
+      - name: Proxy log
+        if: always()
+        run: cat /tmp/celesto-ci-cache-proxy.log || true
+  verify:
+    needs: probe
+    runs-on: [self-hosted, celesto-standard]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: The trusted artifact is unchanged
+        run: |
+          for p in a b; do echo "$SEED_SALT" > packages/$p/src/salt.txt; done
+          $TURBO run build --output-logs=hash-only | tee /tmp/turbo.log
+          grep -q "FULL TURBO" /tmp/turbo.log
+          grep -q "$SEED_SALT" packages/a/dist/out.txt
+      - name: A fork's artifact was not saved; a same-repo one was
+        env:
+          IS_FORK: ${{ github.event.pull_request.head.repo.fork }}
+        run: |
+          rm -rf packages/*/dist .turbo node_modules/.cache
+          for p in a b; do echo "$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" > packages/$p/src/salt.txt; done
+          $TURBO run build --output-logs=hash-only | tee /tmp/turbo.log
+          if [ "$IS_FORK" = "true" ]; then grep -q "cache miss" /tmp/turbo.log; ! grep -q "cache hit" /tmp/turbo.log || exit 1; else grep -q "FULL TURBO" /tmp/turbo.log; fi
