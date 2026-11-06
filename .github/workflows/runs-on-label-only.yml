@@ -1,4 +1,4 @@
-# Runs a Celesto CI job with the size label alone, without self-hosted.
+# Runs one Micro CI job with an optional set of default runner labels.
 # The job prints the runner that took it.
 name: runs-on label only
 
@@ -6,19 +6,52 @@ on:
   push:
     branches: [test/runs-on-label-forms]
   workflow_dispatch:
+    inputs:
+      runner_label:
+        description: Micro runner label for this single job.
+        type: choice
+        required: true
+        default: celesto-micro
+        options:
+          - celesto-micro
+          - celesto
+          - celesto-cloud
+          - celesto-cloud-micro
+      default_labels:
+        description: Also request self-hosted, Linux and X64.
+        type: boolean
+        required: true
+        default: false
+      hold_seconds:
+        description: Seconds to hold this runner, from 0 to 600.
+        type: string
+        required: true
+        default: '0'
 
 permissions:
   contents: read
 
 jobs:
   label-only:
-    runs-on: celesto-micro
-    timeout-minutes: 10
+    runs-on: ${{ fromJSON(format(inputs.default_labels && '["self-hosted","Linux","X64","{0}"]' || '["{0}"]', inputs.runner_label || 'celesto-micro')) }}
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - name: Show the runner
+        shell: bash
+        env:
+          HOLD_SECONDS: ${{ inputs.hold_seconds || '0' }}
         run: |
           echo "runner=$RUNNER_NAME os=$RUNNER_OS arch=$RUNNER_ARCH"
           uname -a
           nproc
           free -h
+          set -euo pipefail
+          if [[ ! "$HOLD_SECONDS" =~ ^[0-9]{1,3}$ ]] || (( 10#$HOLD_SECONDS > 600 )); then
+            echo "hold_seconds must be an integer from 0 to 600" >&2
+            exit 2
+          fi
+          HOLD_SECONDS=$((10#$HOLD_SECONDS))
+          echo "hold_started_at=$(date -u +%FT%TZ) runner=$RUNNER_NAME"
+          sleep "$HOLD_SECONDS"
+          echo "hold_completed_at=$(date -u +%FT%TZ) runner=$RUNNER_NAME"
