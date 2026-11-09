@@ -89,7 +89,7 @@ function hostNetwork() {
   const out = sh('curl', ['-sS', '-f', '--max-time', '10', 'https://ipinfo.io/json']);
   try { const j = JSON.parse(out); return { org: j.org, region: [j.city, j.region, j.country].filter(Boolean).join(', ') }; } catch { return { org: 'unknown' }; }
 }
-const hostKind = (org = '') => /amazon|aws/i.test(org) ? 'aws' : /ovh/i.test(org) ? 'ovh' : /microsoft|azure/i.test(org) ? 'azure' : /google/i.test(org) ? 'gcp' : 'other';
+function hostKind(org = '') { return /amazon|aws/i.test(org) ? 'aws' : /ovh/i.test(org) ? 'ovh' : /microsoft|azure/i.test(org) ? 'azure' : /google/i.test(org) ? 'gcp' : 'other'; }
 
 async function probe() {
   const spec = {
