@@ -4,7 +4,9 @@
 import os, re, shutil, subprocess, sys, time, threading
 T = '/sys/kernel/tracing'
 subprocess.run(f'mountpoint -q {T} || mount -t tracefs nodev {T}', shell=True)
-dev = os.path.basename(subprocess.run("findmnt -no SOURCE /", shell=True, capture_output=True, text=True).stdout.strip())
+src = subprocess.run("findmnt -no SOURCE /", shell=True, capture_output=True, text=True).stdout.strip()
+parent = subprocess.run(f"lsblk -no PKNAME {src}", shell=True, capture_output=True, text=True).stdout.strip()
+dev = parent or os.path.basename(src)   # whole disk: block_rq events carry the disk's device number
 mj, mn = open(f'/sys/block/{dev}/dev').read().strip().split(':')
 w = lambda f, v: open(f'{T}/{f}', 'w').write(v)
 w('trace', ''); w('buffer_size_kb', '65536'); w('trace_clock', 'mono')

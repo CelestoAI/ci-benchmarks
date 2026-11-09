@@ -26,6 +26,11 @@ on:
       sample:
         required: true
         type: string
+      tune:
+        description: Guest disk tuning applied at job start on Celesto (empty = none; t1, t2, ...)
+        required: false
+        type: string
+        default: ''
 permissions:
   contents: read
 jobs:
@@ -43,9 +48,14 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22.16.0'
+      - name: Guest disk tuning (${{ inputs.tune || 'none' }})
+        if: inputs.tune != '' && inputs.provider == 'celesto'
+        env:
+          TUNE: ${{ inputs.tune }}
+        run: sudo bash cache-bench/tune.sh "$TUNE"
       - name: Record host
         run: |
-          $MARK host '{"cache":"${{ inputs.cache }}","phase":"${{ inputs.phase }}","provider":"${{ inputs.provider }}","sample":"${{ inputs.sample }}","key":"${{ inputs.key }}"}'
+          $MARK host '{"cache":"${{ inputs.cache }}","phase":"${{ inputs.phase }}","provider":"${{ inputs.provider }}","sample":"${{ inputs.sample }}","key":"${{ inputs.key }}","tune":"${{ inputs.tune }}"}'
           $MARK job_start
       - name: Machine probe (spec, CPU, disk, network)
         run: node cache-bench/machine.mjs probe

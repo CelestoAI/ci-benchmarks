@@ -34,6 +34,7 @@ jobs:
       runs_on: ${{ matrix.provider == 'github' && '["ubuntu-24.04"]' || format('["self-hosted","{0}"]', inputs.celesto_runner || 'celesto-large') }}
       key: ${{ inputs.namespace || format('run{0}-{1}', github.run_id, github.run_attempt) }}-dependency-${{ matrix.provider }}-s${{ matrix.sample }}
       sample: ${{ matrix.sample }}
+      tune: ${{ contains(github.ref_name, '/tune-') && format('{0}', github.ref_name) || '' }}
   warm:
     needs: cold
     if: always()
@@ -50,3 +51,4 @@ jobs:
       runs_on: ${{ matrix.provider == 'github' && '["ubuntu-24.04"]' || format('["self-hosted","{0}"]', inputs.celesto_runner || 'celesto-large') }}
       key: ${{ inputs.namespace || format('run{0}-{1}', github.run_id, github.run_attempt) }}-dependency-${{ matrix.provider }}-s${{ matrix.sample }}
       sample: ${{ matrix.sample }}
+      tune: ${{ contains(github.ref_name, '/tune-') && format('{0}', github.ref_name) || '' }}
