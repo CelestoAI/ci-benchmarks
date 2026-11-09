@@ -1,0 +1,150 @@
+# One job of the cache benchmark: one cache kind, one provider, one phase.
+# Called by cache-bench.yml. Timings go to bench-events.jsonl (artifact).
+name: Cache benchmark job
+on:
+  workflow_call:
+    inputs:
+      cache:
+        description: dependency, docker or turbo
+        required: true
+        type: string
+      phase:
+        description: cold (empty cache, saves) or warm (restores what cold saved)
+        required: true
+        type: string
+      provider:
+        description: github or celesto
+        required: true
+        type: string
+      runs_on:
+        required: true
+        type: string
+      key:
+        description: Unique per experiment and sample; cold and warm share it
+        required: true
+        type: string
+      sample:
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  bench:
+    name: ${{ inputs.cache }} ${{ inputs.phase }} ${{ inputs.provider }} s${{ inputs.sample }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    timeout-minutes: 45
+    env:
+      BENCH_EVENTS: bench-events.jsonl
+      BENCH_NAMESPACE: ${{ inputs.key }}
+      MARK: node cache-bench/mark.mjs
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22.16.0'
+      - name: Record host
+        run: |
+          $MARK host '{"cache":"${{ inputs.cache }}","phase":"${{ inputs.phase }}","provider":"${{ inputs.provider }}","sample":"${{ inputs.sample }}","key":"${{ inputs.key }}"}'
+          $MARK job_start
+
+      # ---- Dependency cache: actions/cache on ~/.npm, then npm ci ----
+      - if: inputs.cache == 'dependency'
+        run: $MARK restore_start
+      - if: inputs.cache == 'dependency'
+        id: dep_restore
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.npm
+          key: bench-dep-${{ inputs.key }}
+      - if: inputs.cache == 'dependency'
+        run: $MARK restore_end '{"hit":"${{ steps.dep_restore.outputs.cache-hit || 'false' }}"}'
+      - name: npm ci (web-app dependency tree)
+        if: inputs.cache == 'dependency'
+        working-directory: cache-bench/deps
+        run: |
+          $MARK work_start
+          npm ci --prefer-offline --no-audit --no-fund --ignore-scripts
+          $MARK work_end "{\"node_modules_mib\":$(du -sm node_modules | cut -f1),\"npm_cache_mib\":$(du -sm ~/.npm | cut -f1)}"
+        env:
+          MARK: node ../mark.mjs
+          BENCH_EVENTS: ../../bench-events.jsonl
+      - if: inputs.cache == 'dependency' && steps.dep_restore.outputs.cache-hit != 'true'
+        run: $MARK save_start
+      - if: inputs.cache == 'dependency' && steps.dep_restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.npm
+          key: bench-dep-${{ inputs.key }}
+      - if: inputs.cache == 'dependency' && steps.dep_restore.outputs.cache-hit != 'true'
+        run: $MARK save_end
+
+      # ---- Docker layer cache: build-push-action with type=gha ----
+      # cache-to stays on in both phases, as in a real workflow, so the warm
+      # time includes the (no-op) export.
+      - if: inputs.cache == 'docker'
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - if: inputs.cache == 'docker'
+        run: $MARK work_start
+      - if: inputs.cache == 'docker'
+        id: docker_build
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: cache-bench
+          file: cache-bench/docker/Dockerfile
+          push: false
+          cache-from: type=gha,scope=bench-docker-${{ inputs.key }}
+          cache-to: type=gha,mode=max,scope=bench-docker-${{ inputs.key }}
+      - if: inputs.cache == 'docker'
+        run: $MARK work_end
+
+      # ---- Turborepo cache ----
+      # GitHub has no Turbo remote cache, so the GitHub side uses the pattern
+      # from Turborepo's docs: actions/cache on .turbo/cache. Celesto serves
+      # Turbo's remote cache API with no workflow change, so the Celesto side
+      # has no cache step.
+      - name: Install the monorepo
+        if: inputs.cache == 'turbo'
+        working-directory: cache-bench/turbo
+        run: |
+          node gen.mjs
+          npm ci --no-audit --no-fund
+          echo "TURBO_API set: ${TURBO_API:+yes}"
+      - if: inputs.cache == 'turbo' && inputs.provider == 'github'
+        run: $MARK restore_start
+      - if: inputs.cache == 'turbo' && inputs.provider == 'github'
+        id: turbo_restore
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: cache-bench/turbo/.turbo/cache
+          key: bench-turbo-${{ inputs.key }}
+      - if: inputs.cache == 'turbo' && inputs.provider == 'github'
+        run: $MARK restore_end '{"hit":"${{ steps.turbo_restore.outputs.cache-hit || 'false' }}"}'
+      - name: turbo run build
+        if: inputs.cache == 'turbo'
+        working-directory: cache-bench/turbo
+        env:
+          MARK: node ../mark.mjs
+          BENCH_EVENTS: ../../bench-events.jsonl
+        run: |
+          $MARK work_start
+          npx turbo run build 2>&1 | tee turbo.log
+          cached=$(grep -oE 'Cached: +[0-9]+ cached' turbo.log | grep -oE '[0-9]+' | head -1)
+          $MARK work_end "{\"turbo_cached\":${cached:-0},\"turbo_tasks\":8,\"remote\":\"${TURBO_API:+yes}\"}"
+      - if: inputs.cache == 'turbo' && inputs.provider == 'github' && steps.turbo_restore.outputs.cache-hit != 'true'
+        run: $MARK save_start
+      - if: inputs.cache == 'turbo' && inputs.provider == 'github' && steps.turbo_restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: cache-bench/turbo/.turbo/cache
+          key: bench-turbo-${{ inputs.key }}
+      - if: inputs.cache == 'turbo' && inputs.provider == 'github' && steps.turbo_restore.outputs.cache-hit != 'true'
+        run: $MARK save_end
+
+      - name: Upload timings
+        if: always()
+        run: $MARK job_end
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: bench-${{ inputs.cache }}-${{ inputs.provider }}-${{ inputs.phase }}-s${{ inputs.sample }}
+          path: bench-events.jsonl
