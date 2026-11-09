@@ -271,6 +271,48 @@ function copyAB() {
   appendFileSync(process.env.BENCH_EVENTS ?? 'bench-events.jsonl', JSON.stringify(event) + '\n');
 }
 
+
+// ---- journalab: is the ext4 journal size what makes copies collapse? ----
+// Records the root filesystem's ext4 setup, then copies 20,000 files on loop-mounted ext4
+// filesystems in the same workspace (same VM disk path) with a small and a large journal,
+// interleaved, three rounds each; jbd2 statistics are kept per round.
+function journalAB() {
+  const rootDev = sh('findmnt', ['-no', 'SOURCE', '/']);
+  const wsDev = sh('findmnt', ['-no', 'SOURCE', '-T', process.cwd()]);
+  const fsInfo = (dev) => sh('sudo', ['dumpe2fs', '-h', dev]).split('\n').filter((l) => /^(Journal size|Journal length|Filesystem features|Default mount options|Block size|Journal features|Filesystem created|Inode count)/.test(l));
+  const jbd2 = () => { const o = {}; for (const d of readdirSync('/proc/fs/jbd2')) o[d] = read(`/proc/fs/jbd2/${d}/info`).trim().split('\n').slice(0, 12); return o; };
+  const root = { rootDev, wsDev, mount: sh('findmnt', ['-no', 'OPTIONS', '-T', process.cwd()]), fs: fsInfo(wsDev), jbd2: jbd2() };
+  console.log(JSON.stringify(root, null, 2));
+  const rows = [];
+  const sizes = [64, 1024];
+  const dirs = {};
+  for (const mb of sizes) {
+    const img = join(process.cwd(), `jtest-${mb}.img`), mnt = join(process.cwd(), `jtest-${mb}`);
+    sh('fallocate', ['-l', '6G', img]);
+    sh('sudo', ['mkfs.ext4', '-q', '-F', '-J', `size=${mb}`, img]);
+    mkdirSync(mnt, { recursive: true });
+    sh('sudo', ['mount', '-o', 'loop', img, mnt]); sh('sudo', ['chown', process.env.USER || 'runner', mnt]);
+    dirs[mb] = mnt;
+  }
+  try {
+    for (let rep = 1; rep <= 3; rep++) {
+      for (const mb of rep % 2 ? sizes : [...sizes].reverse()) {
+        const t0 = Date.now(); const r = smallFileTest(dirs[mb]); const t1 = Date.now();
+        rows.push({ label: `journal-${mb}M-${rep}`, journal_mb: mb, rep, t0, t1, ...r });
+        console.log(`journal ${mb} MiB rep ${rep}: copy/s=${r.copy_per_s} create/s=${r.create_per_s}`);
+      }
+      // the root filesystem itself, same test, for reference
+      const t0 = Date.now(); const r = smallFileTest(process.cwd()); const t1 = Date.now();
+      rows.push({ label: `root-${rep}`, journal_mb: 'root', rep, t0, t1, ...r });
+      console.log(`root fs rep ${rep}: copy/s=${r.copy_per_s}`);
+    }
+  } finally {
+    for (const mb of sizes) { sh('sudo', ['umount', dirs[mb]]); rmSync(join(process.cwd(), `jtest-${mb}.img`), { force: true }); }
+  }
+  const event = { name: 'journalab', t_ms: Date.now(), data: { root, rows, jbd2_after: jbd2(), ip: sh('hostname', ['-I']).split(/\s+/)[0] } };
+  appendFileSync(process.env.BENCH_EVENTS ?? 'bench-events.jsonl', JSON.stringify(event) + '\n');
+}
+
 // Entry point last, so every constant above is initialized first.
 // ---- CPU worker: a fixed integer hash loop, timed for DURATION_MS ----
 if (!isMainThread) {
@@ -287,6 +329,7 @@ if (!isMainThread) {
   else if (mode === 'fs') console.log(JSON.stringify(filesystems(), null, 2));
   else if (mode === 'copytrace') copyTrace();
   else if (mode === 'copyab') copyAB();
+  else if (mode === 'journalab') journalAB();
   else if (mode === 'iosample') ioSample(process.argv[3]);
   else if (mode === 'sample') sample();
   else { console.error('usage: machine.mjs probe|fs|copytrace|sample'); process.exit(1); }

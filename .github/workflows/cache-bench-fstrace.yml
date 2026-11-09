@@ -31,6 +31,7 @@ jobs:
           node-version: '22.16.0'
       - run: node cache-bench/mark.mjs host '{"provider":"${{ matrix.provider }}","sample":"${{ matrix.sample }}"}'
       - run: node cache-bench/machine.mjs probe
+      - run: node cache-bench/machine.mjs journalab
       - run: node cache-bench/machine.mjs copytrace
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
