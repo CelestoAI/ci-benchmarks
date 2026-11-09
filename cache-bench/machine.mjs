@@ -221,7 +221,7 @@ function copyTrace() {
       avg_write_ms: b.wios > a.wios ? +((b.wms - a.wms) / (b.wios - a.wios)).toFixed(2) : null, flushes: b.fl - a.fl, avg_flush_ms: b.fl > a.fl ? +((b.flms - a.flms) / (b.fl - a.fl)).toFixed(1) : null,
       disk_busy_pct: +(100 * (b.ticks - a.ticks) / (b.t - a.t)).toFixed(0), max_inflight: Math.max(...w.map((x) => x.inflight)), max_dirty_mib: Math.round(Math.max(...w.map((x) => x.Dirty || 0)) / 1024), max_psi_io: Math.max(...w.map((x) => x.psi_io || 0)) });
   }
-  const event = { name: 'copytrace', t_ms: Date.now(), data: { rows, disk: samples[0]?.dev, scheduler: read('/sys/block/vda/queue/scheduler').trim() || read('/sys/block/nvme0n1/queue/scheduler').trim(), nr_requests: read('/sys/block/vda/queue/nr_requests').trim(), write_cache: read('/sys/block/vda/queue/write_cache').trim(), dirty_ratio: read('/proc/sys/vm/dirty_ratio').trim(), dirty_bg_ratio: read('/proc/sys/vm/dirty_background_ratio').trim() } };
+  const event = { name: 'copytrace', t_ms: Date.now(), data: { rows, ip: sh('hostname', ['-I']).split(/\s+/)[0], disk: samples[0]?.dev, scheduler: read('/sys/block/vda/queue/scheduler').trim() || read('/sys/block/nvme0n1/queue/scheduler').trim(), nr_requests: read('/sys/block/vda/queue/nr_requests').trim(), write_cache: read('/sys/block/vda/queue/write_cache').trim(), dirty_ratio: read('/proc/sys/vm/dirty_ratio').trim(), dirty_bg_ratio: read('/proc/sys/vm/dirty_background_ratio').trim() } };
   appendFileSync(process.env.BENCH_EVENTS ?? 'bench-events.jsonl', JSON.stringify(event) + '\n');
   console.log(JSON.stringify(event.data, null, 2));
 }
