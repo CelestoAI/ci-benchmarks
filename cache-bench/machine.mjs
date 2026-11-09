@@ -313,6 +313,59 @@ function journalAB() {
   appendFileSync(process.env.BENCH_EVENTS ?? 'bench-events.jsonl', JSON.stringify(event) + '\n');
 }
 
+
+// ---- blktrace: where do the guest's disk requests spend their time? ----
+// Copy rounds on the root filesystem while the kernel's block tracepoints record every request
+// (insert, issue, complete) for the root disk; plus virtio interrupt counts per vCPU per round.
+function blkTrace() {
+  const dev = sh('bash', ['-c', `lsblk -no PKNAME $(findmnt -no SOURCE -T ${process.cwd()}) | head -1`]) || sh('bash', ['-c', `basename $(findmnt -no SOURCE -T ${process.cwd()})`]);
+  const majmin = read(`/sys/block/${dev}/dev`).trim();
+  const T = '/sys/kernel/tracing';
+  sh('sudo', ['bash', '-c', `mountpoint -q ${T} || mount -t tracefs nodev ${T}`]);
+  const tw = (f, v) => sh('sudo', ['bash', '-c', `echo '${v}' > ${T}/${f}`]);
+  tw('trace', ''); tw('buffer_size_kb', '65536'); tw('trace_clock', 'mono');
+  for (const e of ['block_rq_insert', 'block_rq_issue', 'block_rq_complete']) { tw(`events/block/${e}/filter`, `dev == ${(+majmin.split(':')[0] << 20) | +majmin.split(':')[1]}`); tw(`events/block/${e}/enable`, '1'); }
+  const out = join(process.cwd(), 'blktrace.txt');
+  const reader = childProcess.spawn('sudo', ['bash', '-c', `cat ${T}/trace_pipe > ${out}`], { stdio: 'ignore', detached: true });
+  const irqs = () => read('/proc/interrupts').split('\n').filter((l) => /virtio/.test(l)).map((l) => l.trim().split(/\s+/));
+  const mono0 = Number(process.hrtime.bigint() / 1000000n), epoch0 = Date.now();
+  const rows = [];
+  try {
+    for (let i = 1; i <= 6; i++) {
+      const before = irqs(); const t0 = Date.now(); const r = smallFileTest(process.cwd()); const t1 = Date.now(); const after = irqs();
+      rows.push({ label: `root-${i}`, t0, t1, ...r, irq_before: before, irq_after: after });
+      console.log(`root ${i}: copy/s=${r.copy_per_s}`);
+    }
+  } finally {
+    for (const e of ['block_rq_insert', 'block_rq_issue', 'block_rq_complete']) tw(`events/block/${e}/enable`, '0');
+    sh('sudo', ['pkill', '-f', `cat ${T}/trace_pipe`]);
+  }
+  // Per round: per-request issue->complete (D2C) and insert->issue (Q2D) from the trace.
+  const ins = new Map(), iss = new Map(); const reqs = [];
+  for (const l of read(out).split('\n')) {
+    const m = l.match(/\s(\d+\.\d+): block_rq_(insert|issue|complete): \d+,\d+ (\S+) .*? (\d+) \+ (\d+)/);
+    if (!m) continue;
+    const t = parseFloat(m[1]) * 1000, kind = m[2], rw = m[3], key = `${m[4]}+${m[5]}`;
+    if (kind === 'insert') ins.set(key, t);
+    else if (kind === 'issue') iss.set(key, t);
+    else if (iss.has(key)) { reqs.push({ t, d2c: t - iss.get(key), q2d: ins.has(key) ? iss.get(key) - ins.get(key) : null, rw }); iss.delete(key); ins.delete(key); }
+  }
+  const toEpoch = (mono) => mono - mono0 + epoch0;
+  for (const r of rows) {
+    const w = reqs.filter((x) => toEpoch(x.t) >= r.t0 && toEpoch(x.t) <= r.t1);
+    const d = w.map((x) => x.d2c).sort((a, b) => a - b), q = w.map((x) => x.q2d).filter((x) => x != null).sort((a, b) => a - b);
+    const pct = (a, p) => (a.length ? +a[Math.min(a.length - 1, Math.floor(a.length * p))].toFixed(3) : null);
+    Object.assign(r, { requests: w.length, d2c_p50: pct(d, 0.5), d2c_p90: pct(d, 0.9), d2c_p99: pct(d, 0.99), d2c_max: pct(d, 1),
+      q2d_p50: pct(q, 0.5), q2d_p99: pct(q, 0.99), writes: w.filter((x) => x.rw.includes('W')).length, flush_fua: w.filter((x) => /F/.test(x.rw)).length });
+    // virtio interrupts during the round, per vCPU, per virtio line
+    r.virtio_irqs = r.irq_after.map((a) => { const b = r.irq_before.find((x) => x[0] === a[0]) ?? []; const cpus = a.slice(1).filter((x) => /^\d+$/.test(x)); return { irq: a[0], name: a.slice(1 + cpus.length).join(' '), per_cpu: cpus.map((v, i) => +v - +(b[1 + i] ?? 0)) }; }).filter((x) => x.per_cpu.some((v) => v > 0));
+    delete r.irq_before; delete r.irq_after;
+  }
+  const event = { name: 'blktrace', t_ms: Date.now(), data: { dev, rows, trace_lines: reqs.length, ip: sh('hostname', ['-I']).split(/\s+/)[0] } };
+  appendFileSync(process.env.BENCH_EVENTS ?? 'bench-events.jsonl', JSON.stringify(event) + '\n');
+  console.log(JSON.stringify(rows.map(({ label, copy_per_s, requests, d2c_p50, d2c_p90, d2c_p99, d2c_max, q2d_p50, q2d_p99 }) => ({ label, copy_per_s, requests, d2c_p50, d2c_p90, d2c_p99, d2c_max, q2d_p50, q2d_p99 })), null, 1));
+}
+
 // Entry point last, so every constant above is initialized first.
 // ---- CPU worker: a fixed integer hash loop, timed for DURATION_MS ----
 if (!isMainThread) {
@@ -330,6 +383,7 @@ if (!isMainThread) {
   else if (mode === 'copytrace') copyTrace();
   else if (mode === 'copyab') copyAB();
   else if (mode === 'journalab') journalAB();
+  else if (mode === 'blktrace') blkTrace();
   else if (mode === 'iosample') ioSample(process.argv[3]);
   else if (mode === 'sample') sample();
   else { console.error('usage: machine.mjs probe|fs|copytrace|sample'); process.exit(1); }
