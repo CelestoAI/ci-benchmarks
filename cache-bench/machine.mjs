@@ -361,7 +361,7 @@ function blkTrace() {
     r.virtio_irqs = r.irq_after.map((a) => { const b = r.irq_before.find((x) => x[0] === a[0]) ?? []; const cpus = a.slice(1).filter((x) => /^\d+$/.test(x)); return { irq: a[0], name: a.slice(1 + cpus.length).join(' '), per_cpu: cpus.map((v, i) => +v - +(b[1 + i] ?? 0)) }; }).filter((x) => x.per_cpu.some((v) => v > 0));
     delete r.irq_before; delete r.irq_after;
   }
-  const event = { name: 'blktrace', t_ms: Date.now(), data: { dev, rows, trace_lines: reqs.length, ip: sh('hostname', ['-I']).split(/\s+/)[0] } };
+  const event = { name: 'blktrace', t_ms: Date.now(), data: { dev, rows, trace_lines: reqs.length, mono0, epoch0, ip: sh('hostname', ['-I']).split(/\s+/)[0] } };
   appendFileSync(process.env.BENCH_EVENTS ?? 'bench-events.jsonl', JSON.stringify(event) + '\n');
   console.log(JSON.stringify(rows.map(({ label, copy_per_s, requests, d2c_p50, d2c_p90, d2c_p99, d2c_max, q2d_p50, q2d_p99 }) => ({ label, copy_per_s, requests, d2c_p50, d2c_p90, d2c_p99, d2c_max, q2d_p50, q2d_p99 })), null, 1));
 }
