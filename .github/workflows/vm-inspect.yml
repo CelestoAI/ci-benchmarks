@@ -1,0 +1,25 @@
+name: VM inspect
+on:
+  push:
+    branches: ['inspect/**']
+jobs:
+  inspect:
+    strategy:
+      matrix:
+        n: [1, 2, 3, 4]
+    runs-on: [self-hosted, celesto-large]
+    steps:
+      - run: |
+          set +e
+          echo "== /.dockerenv"; ls -la /.dockerenv /run/.containerenv 2>&1
+          echo "== systemd-detect-virt"; systemd-detect-virt; systemd-detect-virt --container; systemd-detect-virt --vm
+          echo "== PID 1"; ps -o pid,comm,args -p 1; cat /proc/1/cmdline | tr '\0' ' '; echo
+          echo "== /proc/1/cgroup"; cat /proc/1/cgroup
+          echo "== self cgroup"; cat /proc/self/cgroup
+          echo "== dmi/hypervisor"; cat /sys/class/dmi/id/sys_vendor /sys/class/dmi/id/product_name 2>&1; grep -m1 -o hypervisor /proc/cpuinfo
+          echo "== mounts"; findmnt -o TARGET,SOURCE,FSTYPE,OPTIONS | head -40
+          echo "== lsblk"; lsblk -o NAME,TYPE,FSTYPE,SIZE,ROTA,MOUNTPOINTS
+          echo "== scheduler"; for d in /sys/block/*/queue; do echo "$d $(cat $d/scheduler) rota=$(cat $d/rotational) nr_req=$(cat $d/nr_requests) wbt=$(cat $d/wbt_lat_usec 2>/dev/null)"; done
+          echo "== dirty"; sysctl vm.dirty_ratio vm.dirty_background_ratio vm.dirty_bytes vm.dirty_background_bytes vm.dirty_expire_centisecs
+          echo "== docker"; command -v docker; docker info --format '{{.Driver}} {{.DockerRootDir}}' 2>&1 | head -2; ps aux | grep -E "[d]ockerd|[c]ontainerd" | head -3
+          echo "== egress"; curl -s --max-time 8 https://ipinfo.io/org
