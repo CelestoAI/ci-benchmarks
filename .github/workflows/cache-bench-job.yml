@@ -32,11 +32,11 @@ jobs:
   bench:
     name: ${{ inputs.cache }} ${{ inputs.phase }} ${{ inputs.provider }} s${{ inputs.sample }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
-    timeout-minutes: 45
+    timeout-minutes: 60
     env:
-      BENCH_EVENTS: bench-events.jsonl
+      BENCH_EVENTS: ${{ github.workspace }}/bench-events.jsonl
       BENCH_NAMESPACE: ${{ inputs.key }}
-      MARK: node cache-bench/mark.mjs
+      MARK: node ${{ github.workspace }}/cache-bench/mark.mjs
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -47,67 +47,98 @@ jobs:
           $MARK host '{"cache":"${{ inputs.cache }}","phase":"${{ inputs.phase }}","provider":"${{ inputs.provider }}","sample":"${{ inputs.sample }}","key":"${{ inputs.key }}"}'
           $MARK job_start
 
-      # ---- Dependency cache: actions/cache on ~/.npm, then npm ci ----
+      # ---- Dependency cache: excalidraw/excalidraw (yarn 1), yarn cache via actions/cache ----
       - if: inputs.cache == 'dependency'
-        run: $MARK restore_start
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: excalidraw/excalidraw
+          ref: 701b901a0f1ba3d0b390d9cdf63d112e25abac4b
+          path: target
+          persist-credentials: false
+      - if: inputs.cache == 'dependency'
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '20'
+      - if: inputs.cache == 'dependency'
+        run: |
+          corepack enable
+          echo "YARN_CACHE=$(cd target && yarn cache dir)" >> "$GITHUB_ENV"
+          $MARK restore_start
       - if: inputs.cache == 'dependency'
         id: dep_restore
         uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
-          path: ~/.npm
+          path: ${{ env.YARN_CACHE }}
           key: bench-dep-${{ inputs.key }}
       - if: inputs.cache == 'dependency'
         run: $MARK restore_end '{"hit":"${{ steps.dep_restore.outputs.cache-hit || 'false' }}"}'
-      - name: npm ci (web-app dependency tree)
+      - name: yarn install (excalidraw)
         if: inputs.cache == 'dependency'
-        working-directory: cache-bench/deps
+        working-directory: target
         run: |
           $MARK work_start
-          npm ci --prefer-offline --no-audit --no-fund --ignore-scripts
-          $MARK work_end "{\"node_modules_mib\":$(du -sm node_modules | cut -f1),\"npm_cache_mib\":$(du -sm ~/.npm | cut -f1)}"
-        env:
-          MARK: node ../mark.mjs
-          BENCH_EVENTS: ../../bench-events.jsonl
+          yarn install --frozen-lockfile --prefer-offline --non-interactive
+          $MARK work_end "{\"node_modules_mib\":$(du -sm node_modules | cut -f1),\"yarn_cache_mib\":$(du -sm "$YARN_CACHE" | cut -f1)}"
       - if: inputs.cache == 'dependency' && steps.dep_restore.outputs.cache-hit != 'true'
         run: $MARK save_start
       - if: inputs.cache == 'dependency' && steps.dep_restore.outputs.cache-hit != 'true'
         uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
-          path: ~/.npm
+          path: ${{ env.YARN_CACHE }}
           key: bench-dep-${{ inputs.key }}
       - if: inputs.cache == 'dependency' && steps.dep_restore.outputs.cache-hit != 'true'
         run: $MARK save_end
 
-      # ---- Docker layer cache: build-push-action with type=gha ----
-      # cache-to stays on in both phases, as in a real workflow, so the warm
-      # time includes the (no-op) export.
+      # ---- Docker layer cache: plausible/analytics Dockerfile (Elixir + Node release) ----
+      # Same build-push-action settings as Plausible's own image workflow.
+      # cache-to stays on in both phases, so warm includes the (no-op) export.
+      - if: inputs.cache == 'docker'
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: plausible/analytics
+          ref: 126499850310a22a2f4fbebf9ba2904a04aef7fe
+          path: target
+          persist-credentials: false
       - if: inputs.cache == 'docker'
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
       - if: inputs.cache == 'docker'
         run: $MARK work_start
       - if: inputs.cache == 'docker'
-        id: docker_build
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         with:
-          context: cache-bench
-          file: cache-bench/docker/Dockerfile
+          context: target
           push: false
+          build-args: MIX_ENV=ce
           cache-from: type=gha,scope=bench-docker-${{ inputs.key }}
           cache-to: type=gha,mode=max,scope=bench-docker-${{ inputs.key }}
       - if: inputs.cache == 'docker'
         run: $MARK work_end
 
-      # ---- Turborepo cache ----
-      # GitHub has no Turbo remote cache, so the GitHub side uses the pattern
-      # from Turborepo's docs: actions/cache on .turbo/cache. Celesto serves
-      # Turbo's remote cache API with no workflow change, so the Celesto side
-      # has no cache step.
-      - name: Install the monorepo
+      # ---- Turborepo cache: formbricks/formbricks, `pnpm build --filter=@formbricks/web^...` ----
+      # The build command and placeholder env come from Formbricks' own
+      # docker-build-validation workflow. GitHub has no Turbo remote cache, so
+      # the GitHub side uses Turborepo's documented pattern (actions/cache on
+      # .turbo/cache); Celesto serves Turbo's remote cache with no workflow
+      # change, so the Celesto side has no cache step.
+      - if: inputs.cache == 'turbo'
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: formbricks/formbricks
+          ref: 94ae9705fc8e6e355d90c743460110ae829c0378
+          path: target
+          persist-credentials: false
+      - if: inputs.cache == 'turbo'
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: target/.nvmrc
+      - name: Install Formbricks (not timed)
         if: inputs.cache == 'turbo'
-        working-directory: cache-bench/turbo
+        working-directory: target
         run: |
-          node gen.mjs
-          npm ci --no-audit --no-fund
+          corepack enable
+          # Give every sample its own Turbo hashes (Celesto's Turbo cache is shared per repository).
+          jq '.globalEnv += ["BENCH_NAMESPACE"]' turbo.json > turbo.json.new && mv turbo.json.new turbo.json
+          pnpm install --frozen-lockfile --config.platform=linux --config.architecture=x64
           echo "TURBO_API set: ${TURBO_API:+yes}"
       - if: inputs.cache == 'turbo' && inputs.provider == 'github'
         run: $MARK restore_start
@@ -115,27 +146,34 @@ jobs:
         id: turbo_restore
         uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
-          path: cache-bench/turbo/.turbo/cache
+          path: target/.turbo/cache
           key: bench-turbo-${{ inputs.key }}
       - if: inputs.cache == 'turbo' && inputs.provider == 'github'
         run: $MARK restore_end '{"hit":"${{ steps.turbo_restore.outputs.cache-hit || 'false' }}"}'
-      - name: turbo run build
+      - name: turbo build (formbricks web dependencies)
         if: inputs.cache == 'turbo'
-        working-directory: cache-bench/turbo
+        working-directory: target
         env:
-          MARK: node ../mark.mjs
-          BENCH_EVENTS: ../../bench-events.jsonl
+          DATABASE_URL: postgresql://test:test@127.0.0.1:5432/formbricks
+          POSTGRES_PASSWORD: build-time-placeholder
+          ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+          REDIS_URL: redis://127.0.0.1:6379
+          CUBEJS_API_URL: http://127.0.0.1:4000
+          CUBEJS_API_SECRET: build-time-placeholder
+          HUB_API_URL: http://127.0.0.1:4000
+          HUB_API_KEY: build-time-placeholder
         run: |
           $MARK work_start
-          npx turbo run build 2>&1 | tee turbo.log
-          cached=$(grep -oE 'Cached: +[0-9]+ cached' turbo.log | grep -oE '[0-9]+' | head -1)
-          $MARK work_end "{\"turbo_cached\":${cached:-0},\"turbo_tasks\":8,\"remote\":\"${TURBO_API:+yes}\"}"
+          pnpm build --filter=@formbricks/web^... 2>&1 | tee turbo.log
+          counts=$(grep -oE 'Cached: +[0-9]+ cached, [0-9]+ total' turbo.log | tail -1 | grep -oE '[0-9]+' | tr '\n' ' ')
+          set -- $counts
+          $MARK work_end "{\"turbo_cached\":${1:-0},\"turbo_tasks\":${2:-0},\"remote\":\"${TURBO_API:+yes}\"}"
       - if: inputs.cache == 'turbo' && inputs.provider == 'github' && steps.turbo_restore.outputs.cache-hit != 'true'
         run: $MARK save_start
       - if: inputs.cache == 'turbo' && inputs.provider == 'github' && steps.turbo_restore.outputs.cache-hit != 'true'
         uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
-          path: cache-bench/turbo/.turbo/cache
+          path: target/.turbo/cache
           key: bench-turbo-${{ inputs.key }}
       - if: inputs.cache == 'turbo' && inputs.provider == 'github' && steps.turbo_restore.outputs.cache-hit != 'true'
         run: $MARK save_end

@@ -1,7 +1,0 @@
-{
-  "$schema": "https://turborepo.com/schema.json",
-  "globalEnv": ["BENCH_NAMESPACE"],
-  "tasks": {
-    "build": { "dependsOn": ["^build"], "outputs": ["dist/**"] }
-  }
-}

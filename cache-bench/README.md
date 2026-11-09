@@ -1,22 +1,23 @@
 # Cache benchmark: GitHub Actions vs Celesto CI
 
-Times the three caches Celesto CI serves, against GitHub's own cache, on matched
-4 vCPU / 16 GiB runners (`ubuntu-24.04` vs `celesto-large`).
+Times the three caches Celesto CI serves against GitHub's own cache, on real
+open-source projects, on matched 4 vCPU / 16 GiB runners (`ubuntu-24.04` vs
+`celesto-large`). Each job checks the project out at a pinned commit; nothing
+from it is copied into this repository.
 
-| Cache | Workload | GitHub side | Celesto side |
-| --- | --- | --- | --- |
-| Dependency | `npm ci` of a web-app tree (Next, AWS SDK, Jest, ESLint, webpack; [`deps/`](deps)) | `actions/cache` on `~/.npm` | same workflow, served by Celesto's cache |
-| Docker layers | [`docker/Dockerfile`](docker/Dockerfile): `npm ci` layer + `tsc` compile layer | `build-push-action`, `type=gha,mode=max` | same workflow, served by Celesto's cache |
-| Turborepo | 8-package TypeScript monorepo, 3,200 files ([`turbo/gen.mjs`](turbo/gen.mjs)) | `actions/cache` on `.turbo/cache` (GitHub has no Turbo remote cache; this is Turborepo's documented pattern) | no cache step: Celesto's transparent Turbo remote cache |
+| Cache | Project (pinned commit) | Timed work | GitHub side | Celesto side |
+| --- | --- | --- | --- | --- |
+| Dependency | [excalidraw/excalidraw](https://github.com/excalidraw/excalidraw) `701b901` | `yarn install --frozen-lockfile` (yarn 1 workspace) | `actions/cache` on the yarn cache | same workflow, served by Celesto's cache |
+| Docker layers | [plausible/analytics](https://github.com/plausible/analytics) `1264998` | its `Dockerfile` (Elixir deps, npm assets, release) | `build-push-action`, `type=gha,mode=max`, as in Plausible's own image workflow | same workflow, served by Celesto's cache |
+| Turborepo | [formbricks/formbricks](https://github.com/formbricks/formbricks) `94ae970` | `pnpm build --filter=@formbricks/web^...`, the command and placeholder env from Formbricks' own CI | `actions/cache` on `.turbo/cache` (GitHub has no Turbo remote cache; this is Turborepo's documented pattern) | no cache step: Celesto's transparent Turbo remote cache |
 
-Each cache runs 3 samples per provider. **Cold** jobs start empty, do the work and
-save. **Warm** jobs run later on fresh runners and restore what cold saved. Every
-sample uses its own key, and the Turbo hash includes it (`BENCH_NAMESPACE`), so no
-sample reads another's cache.
+Each workflow runs 3 samples per provider. **Cold** jobs start empty, do the
+work and save. **Warm** jobs run later on fresh runners and restore what cold
+saved. Every sample uses its own cache key. For Turbo, the job adds
+`BENCH_NAMESPACE` to the project's `turbo.json` `globalEnv`, so each sample gets
+its own hashes (Celesto's Turbo cache is shared per repository).
 
 ## Run
-
-Each cache has its own workflow, run separately:
 
 | Workflow | File | Push to run with defaults |
 | --- | --- | --- |
@@ -31,6 +32,7 @@ from the table). Each run is 12 jobs: 3 samples × 2 providers × cold/warm. The
 node cache-bench/collect.mjs <run-id> [more run ids]   # Markdown table of medians
 ```
 
-Reported per cache × phase × provider: restore, work (`npm ci` / build + cache
-export / `turbo run build`), save, and their total. Docker restore and save happen
-inside the build, so only its total is meaningful.
+Reported per phase and provider: restore, work, save, and their total. Docker
+restore and save happen inside the build, so only its total is meaningful. The
+Formbricks install is not timed. To move to newer project commits, change the
+`ref:` values in `.github/workflows/cache-bench-job.yml`.

@@ -35,8 +35,8 @@ const cell = (xs) => {
   xs = xs.filter((x) => x !== undefined);
   return xs.length ? `${median(xs).toFixed(1)} s (${Math.min(...xs).toFixed(1)}–${Math.max(...xs).toFixed(1)})` : '—';
 };
-const label = { dependency: 'Dependency (npm ci, ~/.npm)', docker: 'Docker layers (type=gha)', turbo: 'Turborepo' };
-const work = { dependency: 'npm ci', docker: 'build + cache export', turbo: 'turbo run build' };
+const label = { dependency: 'Dependency: excalidraw yarn install', docker: 'Docker: plausible image (type=gha)', turbo: 'Turborepo: formbricks build' };
+const work = { dependency: 'yarn install', docker: 'build + cache export', turbo: 'pnpm build --filter=@formbricks/web^...' };
 
 console.log('| Cache | Phase | Provider | n | Restore | Work | Save | Total | Notes |');
 console.log('| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |');
@@ -46,7 +46,7 @@ for (const cache of ['dependency', 'docker', 'turbo']) for (const phase of ['col
   const notes = [];
   const hits = g.filter((s) => s.hit !== undefined);
   if (hits.length) notes.push(`hits ${hits.filter((s) => s.hit === 'true').length}/${hits.length}`);
-  if (cache === 'turbo') notes.push(`turbo cached ${g.map((s) => s.turbo_cached).join(',')}/8` + (provider === 'celesto' ? `, remote ${g.map((s) => s.remote || 'no').join(',')}` : ''));
+  if (cache === 'turbo') notes.push(`turbo cached ${g.map((s) => s.turbo_cached).join(',')}/${g[0].turbo_tasks}` + (provider === 'celesto' ? `, remote ${g.map((s) => s.remote || 'no').join(',')}` : ''));
   notes.push(g[0].cpu_model ?? '');
   console.log(`| ${label[cache]} | ${phase} | ${provider} | ${g.length} | ${cell(g.map((s) => s.restore))} | ${cell(g.map((s) => s.work))} | ${cell(g.map((s) => s.save))} | ${cell(g.map((s) => s.total))} | ${notes.join('; ')} |`);
 }
