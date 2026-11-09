@@ -3,7 +3,7 @@
 // Downloads each run's bench-* artifacts with `gh`, pairs <x>_start/<x>_end
 // marks and prints medians (min–max) per cache, provider and phase.
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -25,6 +25,17 @@ for (const run of args) {
     const s = { run, ...host, restore: span('restore'), work: span('work'), save: span('save'),
       hit: at('restore_end')?.data.hit, ...at('work_end')?.data };
     s.total = (s.restore ?? 0) + (s.work ?? 0) + (s.save ?? 0);
+    s.machine = at('machine')?.data;
+    // Resource use while the timed work ran (sampler, one row per second).
+    const sf = join(dir, art, 'machine-samples.jsonl');
+    if (existsSync(sf) && at('work_start') && at('work_end')) {
+      const rows = readFileSync(sf, 'utf8').trim().split('\n').filter(Boolean).map((l) => JSON.parse(l))
+        .filter((r) => r.t_ms > at('work_start').t_ms && r.t_ms <= at('work_end').t_ms + 1000);
+      const avg = (k) => rows.length ? rows.reduce((a, r) => a + (r[k] || 0), 0) / rows.length : undefined;
+      const peak = (k) => rows.length ? Math.max(...rows.map((r) => r[k] || 0)) : undefined;
+      s.during = { cpu_busy: avg('cpu_busy_pct'), iowait: avg('cpu_iowait_pct'), steal: avg('cpu_steal_pct'), psi_io: avg('psi_io'),
+        mem_peak_gib: peak('mem_used_mib') / 1024, disk_w_peak: peak('disk_write_mib_s'), disk_r_peak: peak('disk_read_mib_s'), net_rx_peak: peak('net_rx_mib_s') };
+    }
     samples.push(s);
   }
 }
@@ -51,3 +62,25 @@ for (const cache of ['dependency', 'docker', 'turbo']) for (const phase of ['col
   console.log(`| ${label[cache]} | ${phase} | ${provider} | ${g.length} | ${cell(g.map((s) => s.restore))} | ${cell(g.map((s) => s.work))} | ${cell(g.map((s) => s.save))} | ${cell(g.map((s) => s.total))} | ${notes.join('; ')} |`);
 }
 console.log('\nWork = ' + Object.entries(work).map(([k, v]) => `${k}: ${v}`).join(', ') + '. Total = restore + work + save. Median (min–max).');
+
+// ---- Machines: what each provider gave us, probed at the start of every job ----
+const med = (xs) => { xs = xs.filter((x) => typeof x === 'number' && !Number.isNaN(x)); return xs.length ? median(xs) : undefined; };
+const f = (x, d = 0) => (x === undefined ? '—' : x.toFixed(d));
+console.log('\n### Machines (median of every job\'s probe)\n');
+console.log('| Provider | Jobs | CPU models | Single-core M it/s | All-core M it/s | Disk write MiB/s | Disk read MiB/s | Small files/s | Download MiB/s | npm TTFB ms | Virt |');
+console.log('| --- | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |');
+for (const provider of ['github', 'celesto']) {
+  const m = samples.filter((s) => s.provider === provider && s.machine).map((s) => s.machine);
+  if (!m.length) continue;
+  const models = Object.entries(m.reduce((a, x) => ((a[x.cpu_model] = (a[x.cpu_model] ?? 0) + 1), a), {})).map(([k, v]) => `${k} ×${v}`).join('<br>');
+  console.log(`| ${provider} | ${m.length} | ${models} | ${f(med(m.map((x) => x.cpu_single_mips)), 1)} | ${f(med(m.map((x) => x.cpu_all_mips)), 1)} | ${f(med(m.map((x) => x.disk.write_mib_s)))} | ${f(med(m.map((x) => x.disk.read_mib_s)))} | ${f(med(m.map((x) => x.disk.small_files_per_s)))} | ${f(med(m.map((x) => x.net.cloudflare_100mb?.mib_s)), 1)} | ${f(med(m.map((x) => x.net.npm_registry?.ttfb_ms)))} | ${[...new Set(m.map((x) => x.virtualization))].join(', ')} |`);
+}
+console.log('\n### Resource use during the timed work (median across samples)\n');
+console.log('| Cache | Phase | Provider | CPU busy % | iowait % | steal % | IO pressure | Peak RAM GiB | Peak disk write MiB/s | Peak disk read MiB/s | Peak download MiB/s |');
+console.log('| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |');
+for (const cache of ['dependency', 'docker', 'turbo']) for (const phase of ['cold', 'warm']) for (const provider of ['github', 'celesto']) {
+  const d = samples.filter((s) => s.cache === cache && s.phase === phase && s.provider === provider && s.during).map((s) => s.during);
+  if (!d.length) continue;
+  const c = (k, n = 0) => f(med(d.map((x) => x[k])), n);
+  console.log(`| ${cache} | ${phase} | ${provider} | ${c('cpu_busy')} | ${c('iowait', 1)} | ${c('steal', 1)} | ${c('psi_io', 1)} | ${c('mem_peak_gib', 1)} | ${c('disk_w_peak')} | ${c('disk_r_peak')} | ${c('net_rx_peak')} |`);
+}

@@ -37,6 +37,7 @@ jobs:
       BENCH_EVENTS: ${{ github.workspace }}/bench-events.jsonl
       BENCH_NAMESPACE: ${{ inputs.key }}
       MARK: node ${{ github.workspace }}/cache-bench/mark.mjs
+      BENCH_SAMPLES: ${{ github.workspace }}/machine-samples.jsonl
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -46,6 +47,12 @@ jobs:
         run: |
           $MARK host '{"cache":"${{ inputs.cache }}","phase":"${{ inputs.phase }}","provider":"${{ inputs.provider }}","sample":"${{ inputs.sample }}","key":"${{ inputs.key }}"}'
           $MARK job_start
+      - name: Machine probe (spec, CPU, disk, network)
+        run: node cache-bench/machine.mjs probe
+      - name: Start the resource sampler
+        run: |
+          nohup node cache-bench/machine.mjs sample > /dev/null 2>&1 &
+          echo $! > "$RUNNER_TEMP/sampler.pid"
 
       # ---- Dependency cache: excalidraw/excalidraw (yarn 1), yarn cache via actions/cache ----
       - if: inputs.cache == 'dependency'
@@ -180,9 +187,13 @@ jobs:
 
       - name: Upload timings
         if: always()
-        run: $MARK job_end
+        run: |
+          $MARK job_end
+          kill "$(cat "$RUNNER_TEMP/sampler.pid")" 2>/dev/null || true
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: bench-${{ inputs.cache }}-${{ inputs.provider }}-${{ inputs.phase }}-s${{ inputs.sample }}
-          path: bench-events.jsonl
+          path: |
+            bench-events.jsonl
+            machine-samples.jsonl
