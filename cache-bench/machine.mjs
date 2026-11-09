@@ -196,6 +196,9 @@ function copyTrace() {
   const { spawn } = childProcess;
   const out = join(process.cwd(), 'copytrace-samples.jsonl');
   const sampler = spawn(process.execPath, [fileURLToPath(import.meta.url), 'iosample', out], { stdio: 'ignore' });
+  // Where does this (copying) process wait? Sample its kernel stack and state every 20 ms (needs root).
+  const stackOut = join(process.cwd(), 'copytrace-stacks.txt');
+  const stackSampler = spawn('sudo', ['bash', '-c', `while kill -0 ${process.pid} 2>/dev/null; do echo "S $(date +%s%3N) $(awk '{print $3}' /proc/${process.pid}/stat) $(tr '\\n' '|' < /proc/${process.pid}/stack)"; sleep 0.02; done > ${stackOut}`], { stdio: 'ignore', detached: true });
   const rows = [];
   const round = (label) => {
     const t0 = Date.now(); const r = smallFileTest(process.cwd()); const t1 = Date.now();
@@ -210,7 +213,9 @@ function copyTrace() {
     const fill_s = secs(tf); rmSync('machine-fill.bin', { force: true }); sh('sync', []);
     rows.push({ label: 'fill-4GiB', fill_s: +fill_s.toFixed(1) }); console.log('fill-4GiB', fill_s.toFixed(1), 's');
     for (let i = 1; i <= 3; i++) round(`after-fill-${i}`);
-  } finally { sampler.kill(); }
+  } finally { sampler.kill(); sh('sudo', ['pkill', '-f', `kill -0 ${process.pid}`]); }
+  // Where the copy waited in each round: top kernel frames of the sampled stacks.
+  const stacks = read(stackOut).split('\n').filter((l) => l.startsWith('S ')).map((l) => { const m = l.match(/^S (\d+) (\S+) ?(.*)$/) ?? []; return { t: +m[1], state: m[2], st: m[3] ?? '' }; });
   // Disk activity inside each round's window.
   const samples = read(out).trim().split('\n').filter(Boolean).map((l) => JSON.parse(l));
   for (const r of rows.filter((x) => x.t0)) {
@@ -219,6 +224,7 @@ function copyTrace() {
     const a = w[0], b = w[w.length - 1], sec = (b.t - a.t) / 1000;
     Object.assign(r, { window_s: +sec.toFixed(1), write_ios: b.wios - a.wios, write_mib: +((b.wsec - a.wsec) * 512 / 2 ** 20).toFixed(0),
       avg_write_ms: b.wios > a.wios ? +((b.wms - a.wms) / (b.wios - a.wios)).toFixed(2) : null, flushes: b.fl - a.fl, avg_flush_ms: b.fl > a.fl ? +((b.flms - a.flms) / (b.fl - a.fl)).toFixed(1) : null,
+      waits: (() => { const c = {}; let n = 0; for (const x of stacks.filter((x) => x.t >= r.t0 && x.t <= r.t1)) { n++; const fr = x.st.split('|').map((f) => f.replace(/^\[<[0-9a-f]+>\] /, '').split('+')[0]).filter((f) => f && !/^(__schedule|schedule|schedule_timeout|io_schedule|schedule_preempt_disabled)$/.test(f)); const k = x.state === 'R' ? 'running' : `${x.state}:${fr.slice(0, 4).join('<') || '(user)'}`; c[k] = (c[k] || 0) + 1; } return { n, top: Object.entries(c).sort((a, b) => b[1] - a[1]).slice(0, 6) }; })(),
       disk_busy_pct: +(100 * (b.ticks - a.ticks) / (b.t - a.t)).toFixed(0), max_inflight: Math.max(...w.map((x) => x.inflight)), max_dirty_mib: Math.round(Math.max(...w.map((x) => x.Dirty || 0)) / 1024), max_psi_io: Math.max(...w.map((x) => x.psi_io || 0)) });
   }
   const event = { name: 'copytrace', t_ms: Date.now(), data: { rows, ip: sh('hostname', ['-I']).split(/\s+/)[0], disk: samples[0]?.dev, scheduler: read('/sys/block/vda/queue/scheduler').trim() || read('/sys/block/nvme0n1/queue/scheduler').trim(), nr_requests: read('/sys/block/vda/queue/nr_requests').trim(), write_cache: read('/sys/block/vda/queue/write_cache').trim(), dirty_ratio: read('/proc/sys/vm/dirty_ratio').trim(), dirty_bg_ratio: read('/proc/sys/vm/dirty_background_ratio').trim() } };
