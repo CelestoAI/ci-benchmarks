@@ -226,6 +226,45 @@ function copyTrace() {
   console.log(JSON.stringify(event.data, null, 2));
 }
 
+
+// ---- copyab: does a guest block-layer setting remove the slow copies? ----
+// Interleaves copy rounds under different settings of the VM's root disk, three times each,
+// and samples the disk during each round. Settings are restored after every round.
+function copyAB() {
+  const dev = (sh('lsblk', ['-no', 'PKNAME', sh('findmnt', ['-no', 'SOURCE', '-T', process.cwd()])]) || '').trim() || sh('bash', ['-c', `basename $(findmnt -no SOURCE -T ${process.cwd()})`]);
+  const q = (k) => `/sys/block/${dev}/queue/${k}`;
+  const get = (k) => read(q(k)).trim();
+  const set = (k, v) => sh('bash', ['-c', `echo ${v} | sudo tee ${q(k)} >/dev/null`]);
+  const base = { scheduler: (get('scheduler').match(/\[(\S+)\]/) ?? [])[1], rotational: get('rotational'), wbt_lat_usec: get('wbt_lat_usec'), nr_requests: get('nr_requests') };
+  const modes = [['default', {}], ['sched-none', { scheduler: 'none' }], ['nonrot', { rotational: '0' }], ['wbt-off', { wbt_lat_usec: '0' }]];
+  const out = join(process.cwd(), 'copyab-samples.jsonl');
+  const sampler = childProcess.spawn(process.execPath, [fileURLToPath(import.meta.url), 'iosample', out], { stdio: 'ignore' });
+  const rows = [];
+  try {
+    for (let rep = 1; rep <= 3; rep++) {
+      const order = rep % 2 ? modes : [...modes].reverse();
+      for (const [name, cfg] of order) {
+        for (const [k, v] of Object.entries(cfg)) set(k, v);
+        const applied = { scheduler: get('scheduler'), rotational: get('rotational'), wbt_lat_usec: get('wbt_lat_usec') };
+        const t0 = Date.now(); const r = smallFileTest(process.cwd()); const t1 = Date.now();
+        // restore every setting to its starting value
+        set('scheduler', base.scheduler); set('rotational', base.rotational); set('wbt_lat_usec', base.wbt_lat_usec);
+        rows.push({ label: `${name}-${rep}`, mode: name, rep, t0, t1, applied, ...r });
+        console.log(name, rep, r.copy_per_s, JSON.stringify(applied));
+      }
+    }
+  } finally { sampler.kill(); }
+  const samples = read(out).trim().split('\n').filter(Boolean).map((l) => JSON.parse(l));
+  for (const r of rows) {
+    const w = samples.filter((s) => s.t >= r.t0 && s.t <= r.t1);
+    if (w.length < 2) continue;
+    const a = w[0], b = w[w.length - 1];
+    Object.assign(r, { write_ios: b.wios - a.wios, avg_write_ms: b.wios > a.wios ? +((b.wms - a.wms) / (b.wios - a.wios)).toFixed(2) : null, max_inflight: Math.max(...w.map((x) => x.inflight)) });
+  }
+  const event = { name: 'copyab', t_ms: Date.now(), data: { dev, base, rows, ip: sh('hostname', ['-I']).split(/\s+/)[0] } };
+  appendFileSync(process.env.BENCH_EVENTS ?? 'bench-events.jsonl', JSON.stringify(event) + '\n');
+}
+
 // Entry point last, so every constant above is initialized first.
 // ---- CPU worker: a fixed integer hash loop, timed for DURATION_MS ----
 if (!isMainThread) {
@@ -241,6 +280,7 @@ if (!isMainThread) {
   if (mode === 'probe') await probe();
   else if (mode === 'fs') console.log(JSON.stringify(filesystems(), null, 2));
   else if (mode === 'copytrace') copyTrace();
+  else if (mode === 'copyab') copyAB();
   else if (mode === 'iosample') ioSample(process.argv[3]);
   else if (mode === 'sample') sample();
   else { console.error('usage: machine.mjs probe|fs|copytrace|sample'); process.exit(1); }
