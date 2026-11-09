@@ -8,7 +8,9 @@
 //
 // Probe results go to $BENCH_EVENTS as a "machine" event. collect.mjs turns the
 // samples into per-phase averages and peaks (for example during `work`).
-import { appendFileSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { appendFileSync, closeSync, copyFileSync, fdatasyncSync, mkdirSync, mkdtempSync, openSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync, writeSync } from 'node:fs';
+import { homedir, tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { availableParallelism, cpus, release, totalmem } from 'node:os';
 import { Worker, isMainThread, parentPort, workerData } from 'node:worker_threads';
@@ -16,22 +18,6 @@ import { fileURLToPath } from 'node:url';
 
 const read = (p) => { try { return readFileSync(p, 'utf8'); } catch { return ''; } };
 const sh = (cmd, args, opts = {}) => { try { return execFileSync(cmd, args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], ...opts }).trim(); } catch (e) { return `error: ${e.message.split('\n')[0]}`; } };
-
-// ---- CPU worker: a fixed integer hash loop, timed for DURATION_MS ----
-if (!isMainThread) {
-  const end = Date.now() + workerData.ms;
-  let acc = workerData.seed >>> 0, ops = 0;
-  while (Date.now() < end) {
-    for (let i = 0; i < 1_000_000; i++) { acc = Math.imul(acc ^ i, 0x45d9f3b) >>> 0; acc = (acc ^ (acc >>> 16)) >>> 0; }
-    ops += 1_000_000;
-  }
-  parentPort.postMessage({ ops, acc });
-} else {
-  const mode = process.argv[2];
-  if (mode === 'probe') await probe();
-  else if (mode === 'sample') sample();
-  else { console.error('usage: machine.mjs probe|sample'); process.exit(1); }
-}
 
 async function cpuTest(workers, ms = 5000) {
   const results = await Promise.all([...Array(workers).keys()].map((seed) => new Promise((resolve, reject) => {
@@ -52,12 +38,66 @@ function diskTest() {
   };
   const write_mib_s = dd(['if=/dev/zero', `of=${file}`, 'bs=4M', 'count=256', 'oflag=direct', 'conv=fsync']);
   const read_mib_s = dd([`if=${file}`, 'of=/dev/null', 'bs=4M', 'iflag=direct']);
-  // Small-file metadata work, like unpacking node_modules: 5,000 files of 4 KiB.
-  const t = process.hrtime.bigint();
-  sh('bash', ['-c', 'mkdir -p machine-small && cd machine-small && for i in $(seq 1 5000); do head -c 4096 /dev/zero > f$i; done && sync']);
-  const small_files_per_s = +(5000 / (Number(process.hrtime.bigint() - t) / 1e9)).toFixed(0);
-  rmSync(file, { force: true }); rmSync('machine-small', { recursive: true, force: true });
-  return { write_mib_s, read_mib_s, small_files_per_s };
+  rmSync(file, { force: true });
+  return { write_mib_s, read_mib_s };
+}
+
+// ---- Filesystems: what each place a job writes to is mounted on, and how
+// fast it handles many small files (what tar extraction and yarn linking do).
+const secs = (t) => Number(process.hrtime.bigint() - t) / 1e9;
+const DIRS = 200, PER_DIR = 100, FILES = DIRS * PER_DIR; // 20,000 files of 4 KiB, like a node_modules tree
+const BLOCK = Buffer.alloc(4096, 7);
+
+function smallFileTest(base) {
+  let root;
+  try {
+    root = mkdtempSync(join(base, 'machine-fs-'));
+    const src = join(root, 'a'), dst = join(root, 'b');
+    let t = process.hrtime.bigint();
+    for (let d = 0; d < DIRS; d++) { const dir = join(src, `d${d}`); mkdirSync(dir, { recursive: true }); for (let f = 0; f < PER_DIR; f++) writeFileSync(join(dir, `f${f}.js`), BLOCK); }
+    const create = secs(t);
+    t = process.hrtime.bigint(); sh('sync', []); const sync_s = secs(t);
+    t = process.hrtime.bigint();
+    for (let d = 0; d < DIRS; d++) for (let f = 0; f < PER_DIR; f++) statSync(join(src, `d${d}`, `f${f}.js`));
+    const stat = secs(t);
+    // yarn 1 "Linking dependencies" copies every file from its cache into node_modules.
+    t = process.hrtime.bigint();
+    for (let d = 0; d < DIRS; d++) { const dir = join(dst, `d${d}`); mkdirSync(dir, { recursive: true }); for (let f = 0; f < PER_DIR; f++) copyFileSync(join(src, `d${d}`, `f${f}.js`), join(dir, `f${f}.js`)); }
+    const copy = secs(t);
+    t = process.hrtime.bigint(); rmSync(root, { recursive: true, force: true }); const remove = secs(t);
+    // Synced 4 KiB writes: the latency of a durable small write (metadata journals, lock files).
+    const sync4k = syncWriteTest(base);
+    const rate = (x) => Math.round(FILES / x);
+    return { create_per_s: rate(create), sync_after_create_s: +sync_s.toFixed(2), stat_per_s: rate(stat), copy_per_s: rate(copy), delete_per_s: rate(remove), ...sync4k };
+  } catch (e) { if (root) rmSync(root, { recursive: true, force: true }); return { error: e.message }; }
+}
+
+function syncWriteTest(base, ms = 2000) {
+  const file = join(base, `machine-sync-${process.pid}.bin`);
+  const fd = openSync(file, 'w');
+  const lat = []; const end = Date.now() + ms;
+  try {
+    while (Date.now() < end) { const t = process.hrtime.bigint(); writeSync(fd, BLOCK, 0, 4096, Math.floor(Math.random() * 16384) * 4096); fdatasyncSync(fd); lat.push(secs(t) * 1000); }
+  } finally { closeSync(fd); rmSync(file, { force: true }); }
+  lat.sort((a, b) => a - b);
+  return { sync_write_iops: Math.round(lat.length / (ms / 1000)), sync_write_p50_ms: +lat[lat.length >> 1].toFixed(2), sync_write_p99_ms: +lat[Math.floor(lat.length * 0.99)].toFixed(2) };
+}
+
+function filesystems() {
+  // Every distinct filesystem behind the places a job writes to; /dev/shm (RAM) is the baseline.
+  const places = { workspace: process.cwd(), home: homedir(), tmp: tmpdir(), runner_temp: process.env.RUNNER_TEMP, shm: '/dev/shm' };
+  const seen = new Map();
+  for (const [name, path] of Object.entries(places)) {
+    if (!path) continue;
+    const info = sh('findmnt', ['-n', '-o', 'TARGET,SOURCE,FSTYPE,OPTIONS', '-T', path]);
+    const [target, source, fstype, options = ''] = info.startsWith('error') ? [path, '?', '?', ''] : info.split(/\s+/);
+    if (seen.has(target)) { seen.get(target).places.push(name); continue; }
+    seen.set(target, { places: [name], target, source, fstype, options: options.slice(0, 200), ...smallFileTest(path) });
+  }
+  return { list: [...seen.values()],
+    root_mount: sh('findmnt', ['-n', '-o', 'SOURCE,FSTYPE,OPTIONS', '/']).slice(0, 400),
+    block_devices: sh('lsblk', ['-n', '-o', 'NAME,TYPE,FSTYPE,SIZE,ROTA,MOUNTPOINTS']).slice(0, 1500),
+    in_container: /docker|containerd|kubepods/.test(read('/proc/1/cgroup')) || readdirSync('/').includes('.dockerenv') };
 }
 
 function netTest() {
@@ -102,7 +142,7 @@ async function probe() {
   spec.network = hostNetwork();
   spec.host = hostKind(spec.network.org);
   const ok = spec.available_cpus === 4 && spec.memory_gib >= 14;
-  const machine = { ...spec, matched: ok, cpu_single_mips: await cpuTest(1), cpu_all_mips: await cpuTest(spec.available_cpus), disk: { ...spec.disk, ...diskTest() }, net: netTest() };
+  const machine = { ...spec, matched: ok, cpu_single_mips: await cpuTest(1), cpu_all_mips: await cpuTest(spec.available_cpus), disk: { ...spec.disk, ...diskTest() }, fs: filesystems(), net: netTest() };
   const event = { name: 'machine', t_ms: Date.now(), data: machine };
   appendFileSync(process.env.BENCH_EVENTS ?? 'bench-events.jsonl', JSON.stringify(event) + '\n');
   console.log(JSON.stringify(machine, null, 2));
@@ -137,4 +177,22 @@ function sample() {
       psi_cpu: now.psi_cpu, psi_io: now.psi_io, psi_mem: now.psi_mem }) + '\n');
     prev = now; prevT = t;
   }, 1000);
+}
+
+// Entry point last, so every constant above is initialized first.
+// ---- CPU worker: a fixed integer hash loop, timed for DURATION_MS ----
+if (!isMainThread) {
+  const end = Date.now() + workerData.ms;
+  let acc = workerData.seed >>> 0, ops = 0;
+  while (Date.now() < end) {
+    for (let i = 0; i < 1_000_000; i++) { acc = Math.imul(acc ^ i, 0x45d9f3b) >>> 0; acc = (acc ^ (acc >>> 16)) >>> 0; }
+    ops += 1_000_000;
+  }
+  parentPort.postMessage({ ops, acc });
+} else {
+  const mode = process.argv[2];
+  if (mode === 'probe') await probe();
+  else if (mode === 'fs') console.log(JSON.stringify(filesystems(), null, 2));
+  else if (mode === 'sample') sample();
+  else { console.error('usage: machine.mjs probe|fs|sample'); process.exit(1); }
 }
