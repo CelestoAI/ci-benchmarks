@@ -1,0 +1,34 @@
+# IRQ lab: reproduce the Celesto CI disk stall while the host watches the VM's interrupt state.
+# Each job writes a 3 GB marker (so the host can find its QEMU process), waits, then runs
+# small-file copy rounds with the guest block trace (cache-bench/vmstall.py).
+name: Cache benchmark - IRQ lab
+on:
+  push:
+    branches: ['cache-bench/irqlab/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lab:
+    name: irqlab s${{ matrix.sample }}
+    strategy:
+      fail-fast: false
+      matrix:
+        sample: ['1', '2', '3', '4']
+    runs-on: [self-hosted, celesto-large]
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Identify this VM to the host watcher
+        run: |
+          echo "ip=$(hostname -I | awk '{print $1}') start=$(date -u +%FT%TZ)"
+          grep virtio /proc/interrupts
+          dd if=/dev/urandom of=marker.bin bs=4M count=768 conv=fsync status=none && rm -f marker.bin && sync
+          sleep 45
+      - name: Small-file copy rounds with block trace
+        run: sudo python3 cache-bench/vmstall.py 8 | tee vmstall.txt
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: irqlab-s${{ matrix.sample }}
+          path: vmstall.txt
