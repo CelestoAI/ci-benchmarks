@@ -63,13 +63,13 @@ function diskTest() {
 function netTest() {
   // Download speed and latency to the places cache and package traffic go.
   const curl = (url) => {
-    const out = sh('curl', ['-sS', '-o', '/dev/null', '--max-time', '60', '-w', '%{speed_download} %{time_connect} %{time_starttransfer}', url]);
+    const out = sh('curl', ['-sS', '-o', '/dev/null', '--max-time', '60', '-f', '-w', '%{speed_download} %{time_connect} %{time_starttransfer}', url]);
     if (out.startsWith('error')) return { error: out };
     const [speed, connect, ttfb] = out.split(' ').map(Number);
     return { mib_s: +(speed / 2 ** 20).toFixed(1), connect_ms: +(connect * 1000).toFixed(0), ttfb_ms: +(ttfb * 1000).toFixed(0) };
   };
   return {
-    cloudflare_100mb: curl('https://speed.cloudflare.com/__down?bytes=104857600'),
+    node_tarball_29mb: curl('https://nodejs.org/dist/v22.16.0/node-v22.16.0-linux-x64.tar.xz'),
     npm_registry: curl('https://registry.npmjs.org/next'),
     github_api: curl('https://api.github.com/zen'),
   };

@@ -23,7 +23,7 @@ Every job also measures the runner it got ([`machine.mjs`](machine.mjs)):
 
 - **Probe at job start:** CPU model, CPU count, RAM, kernel, virtualization,
   disk; single- and all-core CPU throughput (5 s each); 1 GiB direct-I/O disk
-  write and read; 5,000 small-file writes; 100 MB download from Cloudflare and
+  write and read; 5,000 small-file writes; 29 MB Node.js tarball download from nodejs.org (CDN) and
   latency to the npm registry and GitHub API. The job **fails** unless it has 4
   CPUs and at least 14 GiB RAM, so both sides stay matched.
 - **Sampler during the job (every second):** CPU busy, iowait and steal %,

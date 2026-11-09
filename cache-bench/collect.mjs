@@ -73,7 +73,7 @@ for (const provider of ['github', 'celesto']) {
   const m = samples.filter((s) => s.provider === provider && s.machine).map((s) => s.machine);
   if (!m.length) continue;
   const models = Object.entries(m.reduce((a, x) => ((a[x.cpu_model] = (a[x.cpu_model] ?? 0) + 1), a), {})).map(([k, v]) => `${k} ×${v}`).join('<br>');
-  console.log(`| ${provider} | ${m.length} | ${models} | ${f(med(m.map((x) => x.cpu_single_mips)), 1)} | ${f(med(m.map((x) => x.cpu_all_mips)), 1)} | ${f(med(m.map((x) => x.disk.write_mib_s)))} | ${f(med(m.map((x) => x.disk.read_mib_s)))} | ${f(med(m.map((x) => x.disk.small_files_per_s)))} | ${f(med(m.map((x) => x.net.cloudflare_100mb?.mib_s)), 1)} | ${f(med(m.map((x) => x.net.npm_registry?.ttfb_ms)))} | ${[...new Set(m.map((x) => x.virtualization))].join(', ')} |`);
+  console.log(`| ${provider} | ${m.length} | ${models} | ${f(med(m.map((x) => x.cpu_single_mips)), 1)} | ${f(med(m.map((x) => x.cpu_all_mips)), 1)} | ${f(med(m.map((x) => x.disk.write_mib_s)))} | ${f(med(m.map((x) => x.disk.read_mib_s)))} | ${f(med(m.map((x) => x.disk.small_files_per_s)))} | ${f(med(m.map((x) => x.net.node_tarball_29mb?.mib_s)), 1)} | ${f(med(m.map((x) => x.net.npm_registry?.ttfb_ms)))} | ${[...new Set(m.map((x) => x.virtualization))].join(', ')} |`);
 }
 console.log('\n### Resource use during the timed work (median across samples)\n');
 console.log('| Cache | Phase | Provider | CPU busy % | iowait % | steal % | IO pressure | Peak RAM GiB | Peak disk write MiB/s | Peak disk read MiB/s | Peak download MiB/s |');
