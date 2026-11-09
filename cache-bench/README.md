@@ -16,8 +16,16 @@ sample reads another's cache.
 
 ## Run
 
-Actions → **Cache benchmark** → Run workflow with a new `namespace`
-(or push a `cache-bench/**` branch). Then:
+Each cache has its own workflow, run separately:
+
+| Workflow | File | Push to run with defaults |
+| --- | --- | --- |
+| Cache benchmark - Dependency cache | `cache-bench-dependency.yml` | `cache-bench/dependency/<name>` |
+| Cache benchmark - Docker layer cache | `cache-bench-docker.yml` | `cache-bench/docker/<name>` |
+| Cache benchmark - Turborepo cache | `cache-bench-turbo.yml` | `cache-bench/turbo/<name>` |
+
+Actions → pick one → Run workflow with a new `namespace` (or push a branch
+from the table). Each run is 12 jobs: 3 samples × 2 providers × cold/warm. Then:
 
 ```sh
 node cache-bench/collect.mjs <run-id> [more run ids]   # Markdown table of medians

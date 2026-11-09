@@ -1,13 +1,12 @@
-# Cache benchmark: dependency, Docker layer and Turborepo caches,
-# GitHub Actions vs Celesto CI. Cold jobs start empty and save; warm jobs run
-# on fresh runners and restore what cold saved. Summarize with
-#   node cache-bench/collect.mjs <run-id>
-name: Cache benchmark
+# Cache benchmark: Dependency cache, GitHub Actions vs Celesto CI. Cold jobs start empty
+# and save; warm jobs run on fresh runners and restore what cold saved.
+# Summarize with: node cache-bench/collect.mjs <run-id>
+name: Cache benchmark - Dependency cache
 on:
   # A new workflow can be dispatched only from the default branch; until this
-  # lands on main, pushing a cache-bench/** branch runs it with the defaults.
+  # lands on main, pushing a cache-bench/dependency/** branch runs it with the defaults.
   push:
-    branches: ['cache-bench/**']
+    branches: ['cache-bench/dependency/**']
   workflow_dispatch:
     inputs:
       namespace:
@@ -18,10 +17,6 @@ on:
         description: Celesto runner label (match GitHub's 4 vCPU / 16 GiB)
         type: string
         default: celesto-large
-      caches:
-        description: JSON list of dependency, docker, turbo
-        type: string
-        default: '["dependency","docker","turbo"]'
 permissions:
   contents: read
 jobs:
@@ -29,16 +24,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cache: ${{ fromJSON(inputs.caches || '["dependency","docker","turbo"]') }}
         sample: ['1', '2', '3']
         provider: [github, celesto]
     uses: ./.github/workflows/cache-bench-job.yml
     with:
-      cache: ${{ matrix.cache }}
+      cache: dependency
       phase: cold
       provider: ${{ matrix.provider }}
       runs_on: ${{ matrix.provider == 'github' && '["ubuntu-24.04"]' || format('["self-hosted","{0}"]', inputs.celesto_runner || 'celesto-large') }}
-      key: ${{ inputs.namespace || format('run{0}-{1}', github.run_id, github.run_attempt) }}-${{ matrix.provider }}-s${{ matrix.sample }}
+      key: ${{ inputs.namespace || format('run{0}-{1}', github.run_id, github.run_attempt) }}-dependency-${{ matrix.provider }}-s${{ matrix.sample }}
       sample: ${{ matrix.sample }}
   warm:
     needs: cold
@@ -46,14 +40,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cache: ${{ fromJSON(inputs.caches || '["dependency","docker","turbo"]') }}
         sample: ['1', '2', '3']
         provider: [github, celesto]
     uses: ./.github/workflows/cache-bench-job.yml
     with:
-      cache: ${{ matrix.cache }}
+      cache: dependency
       phase: warm
       provider: ${{ matrix.provider }}
       runs_on: ${{ matrix.provider == 'github' && '["ubuntu-24.04"]' || format('["self-hosted","{0}"]', inputs.celesto_runner || 'celesto-large') }}
-      key: ${{ inputs.namespace || format('run{0}-{1}', github.run_id, github.run_attempt) }}-${{ matrix.provider }}-s${{ matrix.sample }}
+      key: ${{ inputs.namespace || format('run{0}-{1}', github.run_id, github.run_attempt) }}-dependency-${{ matrix.provider }}-s${{ matrix.sample }}
       sample: ${{ matrix.sample }}

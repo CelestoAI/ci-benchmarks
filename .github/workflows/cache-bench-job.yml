@@ -1,5 +1,5 @@
 # One job of the cache benchmark: one cache kind, one provider, one phase.
-# Called by cache-bench.yml. Timings go to bench-events.jsonl (artifact).
+# Called by cache-bench-{dependency,docker,turbo}.yml. Timings go to bench-events.jsonl (artifact).
 name: Cache benchmark job
 on:
   workflow_call:
