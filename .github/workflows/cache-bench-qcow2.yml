@@ -1,0 +1,26 @@
+# Reproduce the qcow2 small-write behavior of Celesto CI VM disks with qemu-img bench.
+name: Cache benchmark - qcow2 reproduction
+on:
+  push:
+    branches: ['cache-bench/qcow2/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  qcow2:
+    name: qcow2 ${{ matrix.provider }} s${{ matrix.sample }}
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [github, celesto]
+        sample: ['1', '2']
+    runs-on: ${{ matrix.provider == 'github' && fromJSON('["ubuntu-24.04"]') || fromJSON('["self-hosted","celesto-large"]') }}
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq qemu-utils >/dev/null
+      - run: cache-bench/qcow2-bench.sh "$RUNNER_TEMP/qcow2-bench" | tee qcow2-bench.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: qcow2-${{ matrix.provider }}-s${{ matrix.sample }}
+          path: qcow2-bench.txt
