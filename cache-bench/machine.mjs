@@ -11,6 +11,7 @@
 import { appendFileSync, closeSync, copyFileSync, fdatasyncSync, mkdirSync, mkdtempSync, openSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync, writeSync } from 'node:fs';
 import { homedir, tmpdir } from 'node:os';
 import { join } from 'node:path';
+import * as childProcess from 'node:child_process';
 import { execFileSync } from 'node:child_process';
 import { availableParallelism, cpus, release, totalmem } from 'node:os';
 import { Worker, isMainThread, parentPort, workerData } from 'node:worker_threads';
@@ -179,6 +180,52 @@ function sample() {
   }, 1000);
 }
 
+
+// ---- copytrace: why does copying small files sometimes collapse? ----
+// Runs the 20,000-file copy several times while a separate process samples the
+// disk every 100 ms, before and after pre-writing (then deleting) 4 GiB so the
+// VM disk's qcow2 clusters are already allocated. If the collapse comes from
+// first-write allocation in the qcow2 overlay, the "after" rounds are fast.
+function ioSample(out) {
+  const disk = () => { for (const l of read('/proc/diskstats').split('\n')) { const f = l.trim().split(/\s+/); if (/^(vd[a-z]|nvme\d+n\d+|sd[a-z])$/.test(f[2]) && +f[3] + +f[7] > 0) return { dev: f[2], wios: +f[7], wsec: +f[9], wms: +f[10], inflight: +f[11], ticks: +f[12], fl: +(f[18] ?? 0), flms: +(f[19] ?? 0) }; } return {}; };
+  const mem = () => Object.fromEntries(read('/proc/meminfo').split('\n').filter((l) => /^(Dirty|Writeback):/.test(l)).map((l) => [l.split(':')[0], parseInt(l.split(':')[1], 10)]));
+  setInterval(() => appendFileSync(out, JSON.stringify({ t: Date.now(), ...disk(), ...mem(), psi_io: +((read('/proc/pressure/io').match(/full avg10=([\d.]+)/) ?? [])[1] ?? NaN) }) + '\n'), 100);
+}
+
+function copyTrace() {
+  const { spawn } = childProcess;
+  const out = join(process.cwd(), 'copytrace-samples.jsonl');
+  const sampler = spawn(process.execPath, [fileURLToPath(import.meta.url), 'iosample', out], { stdio: 'ignore' });
+  const rows = [];
+  const round = (label) => {
+    const t0 = Date.now(); const r = smallFileTest(process.cwd()); const t1 = Date.now();
+    rows.push({ label, t0, t1, ...r }); console.log(label, JSON.stringify(r));
+  };
+  try {
+    sh('sync', []); sh('bash', ['-c', 'echo 3 | sudo tee /proc/sys/vm/drop_caches >/dev/null']);
+    for (let i = 1; i <= 3; i++) round(`fresh-${i}`);
+    // Pre-write 4 GiB of real data, sync, delete: ext4 then reuses those now-allocated blocks.
+    const tf = process.hrtime.bigint();
+    sh('dd', ['if=/dev/urandom', 'of=machine-fill.bin', 'bs=4M', 'count=1024', 'conv=fsync']);
+    const fill_s = secs(tf); rmSync('machine-fill.bin', { force: true }); sh('sync', []);
+    rows.push({ label: 'fill-4GiB', fill_s: +fill_s.toFixed(1) }); console.log('fill-4GiB', fill_s.toFixed(1), 's');
+    for (let i = 1; i <= 3; i++) round(`after-fill-${i}`);
+  } finally { sampler.kill(); }
+  // Disk activity inside each round's window.
+  const samples = read(out).trim().split('\n').filter(Boolean).map((l) => JSON.parse(l));
+  for (const r of rows.filter((x) => x.t0)) {
+    const w = samples.filter((s) => s.t >= r.t0 && s.t <= r.t1);
+    if (w.length < 2) continue;
+    const a = w[0], b = w[w.length - 1], sec = (b.t - a.t) / 1000;
+    Object.assign(r, { window_s: +sec.toFixed(1), write_ios: b.wios - a.wios, write_mib: +((b.wsec - a.wsec) * 512 / 2 ** 20).toFixed(0),
+      avg_write_ms: b.wios > a.wios ? +((b.wms - a.wms) / (b.wios - a.wios)).toFixed(2) : null, flushes: b.fl - a.fl, avg_flush_ms: b.fl > a.fl ? +((b.flms - a.flms) / (b.fl - a.fl)).toFixed(1) : null,
+      disk_busy_pct: +(100 * (b.ticks - a.ticks) / (b.t - a.t)).toFixed(0), max_inflight: Math.max(...w.map((x) => x.inflight)), max_dirty_mib: Math.round(Math.max(...w.map((x) => x.Dirty || 0)) / 1024), max_psi_io: Math.max(...w.map((x) => x.psi_io || 0)) });
+  }
+  const event = { name: 'copytrace', t_ms: Date.now(), data: { rows, disk: samples[0]?.dev, scheduler: read('/sys/block/vda/queue/scheduler').trim() || read('/sys/block/nvme0n1/queue/scheduler').trim(), nr_requests: read('/sys/block/vda/queue/nr_requests').trim(), write_cache: read('/sys/block/vda/queue/write_cache').trim(), dirty_ratio: read('/proc/sys/vm/dirty_ratio').trim(), dirty_bg_ratio: read('/proc/sys/vm/dirty_background_ratio').trim() } };
+  appendFileSync(process.env.BENCH_EVENTS ?? 'bench-events.jsonl', JSON.stringify(event) + '\n');
+  console.log(JSON.stringify(event.data, null, 2));
+}
+
 // Entry point last, so every constant above is initialized first.
 // ---- CPU worker: a fixed integer hash loop, timed for DURATION_MS ----
 if (!isMainThread) {
@@ -193,6 +240,8 @@ if (!isMainThread) {
   const mode = process.argv[2];
   if (mode === 'probe') await probe();
   else if (mode === 'fs') console.log(JSON.stringify(filesystems(), null, 2));
+  else if (mode === 'copytrace') copyTrace();
+  else if (mode === 'iosample') ioSample(process.argv[3]);
   else if (mode === 'sample') sample();
-  else { console.error('usage: machine.mjs probe|fs|sample'); process.exit(1); }
+  else { console.error('usage: machine.mjs probe|fs|copytrace|sample'); process.exit(1); }
 }

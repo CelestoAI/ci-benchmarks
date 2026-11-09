@@ -1,0 +1,41 @@
+# Disk trace: copy 20,000 small files several times while sampling the disk,
+# before and after pre-writing 4 GiB (see machine.mjs copytrace).
+# Summarize with: node cache-bench/fstrace.mjs <run-id>
+name: Cache benchmark - filesystem trace
+on:
+  push:
+    branches: ['cache-bench/fstrace/**']
+  workflow_dispatch:
+    inputs:
+      celesto_runner:
+        type: string
+        default: celesto-large
+permissions:
+  contents: read
+jobs:
+  trace:
+    name: fstrace ${{ matrix.provider }} s${{ matrix.sample }}
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [github, celesto]
+        sample: ['1', '2', '3', '4']
+    runs-on: ${{ matrix.provider == 'github' && fromJSON('["ubuntu-24.04"]') || fromJSON(format('["self-hosted","{0}"]', inputs.celesto_runner || 'celesto-large')) }}
+    timeout-minutes: 30
+    env:
+      BENCH_EVENTS: ${{ github.workspace }}/bench-events.jsonl
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22.16.0'
+      - run: node cache-bench/mark.mjs host '{"provider":"${{ matrix.provider }}","sample":"${{ matrix.sample }}"}'
+      - run: node cache-bench/machine.mjs probe
+      - run: node cache-bench/machine.mjs copytrace
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fstrace-${{ matrix.provider }}-s${{ matrix.sample }}
+          path: |
+            bench-events.jsonl
+            copytrace-samples.jsonl
