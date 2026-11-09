@@ -26,6 +26,14 @@ on:
       sample:
         required: true
         type: string
+      dep_repository:
+        description: Project whose dependencies the dependency benchmark installs (yarn 1)
+        type: string
+        default: excalidraw/excalidraw
+      dep_ref:
+        description: Pinned commit of dep_repository
+        type: string
+        default: 701b901a0f1ba3d0b390d9cdf63d112e25abac4b
 permissions:
   contents: read
 jobs:
@@ -58,8 +66,8 @@ jobs:
       - if: inputs.cache == 'dependency'
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          repository: excalidraw/excalidraw
-          ref: 701b901a0f1ba3d0b390d9cdf63d112e25abac4b
+          repository: ${{ inputs.dep_repository }}
+          ref: ${{ inputs.dep_ref }}
           path: target
           persist-credentials: false
       - if: inputs.cache == 'dependency'
@@ -79,7 +87,7 @@ jobs:
           key: bench-dep-${{ inputs.key }}
       - if: inputs.cache == 'dependency'
         run: $MARK restore_end '{"hit":"${{ steps.dep_restore.outputs.cache-hit || 'false' }}"}'
-      - name: yarn install (excalidraw)
+      - name: yarn install (${{ inputs.dep_repository }})
         if: inputs.cache == 'dependency'
         working-directory: target
         run: |
