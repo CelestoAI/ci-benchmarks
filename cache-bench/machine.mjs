@@ -82,6 +82,15 @@ function diskInfo() {
     model: read(`/sys/block/${dev}/device/model`).trim() || undefined, free: sh('df', ['-h', '--output=size,avail', '.']).split('\n')[1]?.trim() };
 }
 
+// Who runs the machine: the owner of the egress IP (AWS, OVH, Microsoft...)
+// and its region. Celesto has no label that picks a host provider, so this is
+// how results are grouped by provider afterwards.
+function hostNetwork() {
+  const out = sh('curl', ['-sS', '-f', '--max-time', '10', 'https://ipinfo.io/json']);
+  try { const j = JSON.parse(out); return { org: j.org, region: [j.city, j.region, j.country].filter(Boolean).join(', ') }; } catch { return { org: 'unknown' }; }
+}
+const hostKind = (org = '') => /amazon|aws/i.test(org) ? 'aws' : /ovh/i.test(org) ? 'ovh' : /microsoft|azure/i.test(org) ? 'azure' : /google/i.test(org) ? 'gcp' : 'other';
+
 async function probe() {
   const spec = {
     cpu_model: cpus()[0]?.model, logical_cpus: cpus().length, available_cpus: availableParallelism(),
@@ -90,6 +99,8 @@ async function probe() {
     virtualization: sh('systemd-detect-virt', []), cgroup_cpu_max: read('/sys/fs/cgroup/cpu.max').trim() || undefined,
     cpu_flags_avx512: /avx512f/.test(read('/proc/cpuinfo')), disk: diskInfo(),
   };
+  spec.network = hostNetwork();
+  spec.host = hostKind(spec.network.org);
   const ok = spec.available_cpus === 4 && spec.memory_gib >= 14;
   const machine = { ...spec, matched: ok, cpu_single_mips: await cpuTest(1), cpu_all_mips: await cpuTest(spec.available_cpus), disk: { ...spec.disk, ...diskTest() }, net: netTest() };
   const event = { name: 'machine', t_ms: Date.now(), data: machine };

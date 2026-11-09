@@ -14,6 +14,7 @@ const jsonOut = opt('--json');
 if (!args.length) { console.error('usage: collect.mjs <run-id> [...] [--repo o/r] [--json file]'); process.exit(1); }
 
 const samples = [];
+const providers = () => ['github', ...[...new Set(samples.map((s) => s.provider))].filter((p) => p !== 'github').sort()];
 for (const run of args) {
   const dir = mkdtempSync(join(tmpdir(), `cache-bench-${run}-`));
   execFileSync('gh', ['run', 'download', run, '--repo', repo, '--pattern', 'bench-*', '--dir', dir], { stdio: 'inherit' });
@@ -26,6 +27,8 @@ for (const run of args) {
       hit: at('restore_end')?.data.hit, ...at('work_end')?.data };
     s.total = (s.restore ?? 0) + (s.work ?? 0) + (s.save ?? 0);
     s.machine = at('machine')?.data;
+    // Celesto runs on several clouds; report each as its own provider.
+    if (s.provider === 'celesto') s.provider = `celesto-${s.machine?.host ?? 'unknown'}`;
     // Resource use while the timed work ran (sampler, one row per second).
     const sf = join(dir, art, 'machine-samples.jsonl');
     if (existsSync(sf) && at('work_start') && at('work_end')) {
@@ -51,13 +54,13 @@ const work = { dependency: 'yarn install', docker: 'build + cache export', turbo
 
 console.log('| Cache | Phase | Provider | n | Restore | Work | Save | Total | Notes |');
 console.log('| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |');
-for (const cache of ['dependency', 'docker', 'turbo']) for (const phase of ['cold', 'warm']) for (const provider of ['github', 'celesto']) {
+for (const cache of ['dependency', 'docker', 'turbo']) for (const phase of ['cold', 'warm']) for (const provider of providers()) {
   const g = samples.filter((s) => s.cache === cache && s.phase === phase && s.provider === provider);
   if (!g.length) continue;
   const notes = [];
   const hits = g.filter((s) => s.hit !== undefined);
   if (hits.length) notes.push(`hits ${hits.filter((s) => s.hit === 'true').length}/${hits.length}`);
-  if (cache === 'turbo') notes.push(`turbo cached ${g.map((s) => s.turbo_cached).join(',')}/${g[0].turbo_tasks}` + (provider === 'celesto' ? `, remote ${g.map((s) => s.remote || 'no').join(',')}` : ''));
+  if (cache === 'turbo') notes.push(`turbo cached ${g.map((s) => s.turbo_cached).join(',')}/${g[0].turbo_tasks}` + (provider.startsWith('celesto') ? `, remote ${g.map((s) => s.remote || 'no').join(',')}` : ''));
   notes.push(g[0].cpu_model ?? '');
   console.log(`| ${label[cache]} | ${phase} | ${provider} | ${g.length} | ${cell(g.map((s) => s.restore))} | ${cell(g.map((s) => s.work))} | ${cell(g.map((s) => s.save))} | ${cell(g.map((s) => s.total))} | ${notes.join('; ')} |`);
 }
@@ -67,18 +70,19 @@ console.log('\nWork = ' + Object.entries(work).map(([k, v]) => `${k}: ${v}`).joi
 const med = (xs) => { xs = xs.filter((x) => typeof x === 'number' && !Number.isNaN(x)); return xs.length ? median(xs) : undefined; };
 const f = (x, d = 0) => (x === undefined ? '—' : x.toFixed(d));
 console.log('\n### Machines (median of every job\'s probe)\n');
-console.log('| Provider | Jobs | CPU models | Single-core M it/s | All-core M it/s | Disk write MiB/s | Disk read MiB/s | Small files/s | Download MiB/s | npm TTFB ms | Virt |');
-console.log('| --- | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |');
-for (const provider of ['github', 'celesto']) {
+console.log('| Provider | Jobs | Network | CPU models | Single-core M it/s | All-core M it/s | Disk write MiB/s | Disk read MiB/s | Small files/s | Download MiB/s | npm TTFB ms | Virt |');
+console.log('| --- | ---: | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |');
+for (const provider of providers()) {
   const m = samples.filter((s) => s.provider === provider && s.machine).map((s) => s.machine);
   if (!m.length) continue;
   const models = Object.entries(m.reduce((a, x) => ((a[x.cpu_model] = (a[x.cpu_model] ?? 0) + 1), a), {})).map(([k, v]) => `${k} ×${v}`).join('<br>');
-  console.log(`| ${provider} | ${m.length} | ${models} | ${f(med(m.map((x) => x.cpu_single_mips)), 1)} | ${f(med(m.map((x) => x.cpu_all_mips)), 1)} | ${f(med(m.map((x) => x.disk.write_mib_s)))} | ${f(med(m.map((x) => x.disk.read_mib_s)))} | ${f(med(m.map((x) => x.disk.small_files_per_s)))} | ${f(med(m.map((x) => x.net.node_tarball_29mb?.mib_s)), 1)} | ${f(med(m.map((x) => x.net.npm_registry?.ttfb_ms)))} | ${[...new Set(m.map((x) => x.virtualization))].join(', ')} |`);
+  const nets = [...new Set(m.map((x) => `${x.network?.org ?? '?'} (${x.network?.region ?? '?'})`))].join('<br>');
+  console.log(`| ${provider} | ${m.length} | ${nets} | ${models} | ${f(med(m.map((x) => x.cpu_single_mips)), 1)} | ${f(med(m.map((x) => x.cpu_all_mips)), 1)} | ${f(med(m.map((x) => x.disk.write_mib_s)))} | ${f(med(m.map((x) => x.disk.read_mib_s)))} | ${f(med(m.map((x) => x.disk.small_files_per_s)))} | ${f(med(m.map((x) => x.net.node_tarball_29mb?.mib_s)), 1)} | ${f(med(m.map((x) => x.net.npm_registry?.ttfb_ms)))} | ${[...new Set(m.map((x) => x.virtualization))].join(', ')} |`);
 }
 console.log('\n### Resource use during the timed work (median across samples)\n');
 console.log('| Cache | Phase | Provider | CPU busy % | iowait % | steal % | IO pressure | Peak RAM GiB | Peak disk write MiB/s | Peak disk read MiB/s | Peak download MiB/s |');
 console.log('| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |');
-for (const cache of ['dependency', 'docker', 'turbo']) for (const phase of ['cold', 'warm']) for (const provider of ['github', 'celesto']) {
+for (const cache of ['dependency', 'docker', 'turbo']) for (const phase of ['cold', 'warm']) for (const provider of providers()) {
   const d = samples.filter((s) => s.cache === cache && s.phase === phase && s.provider === provider && s.during).map((s) => s.during);
   if (!d.length) continue;
   const c = (k, n = 0) => f(med(d.map((x) => x[k])), n);
