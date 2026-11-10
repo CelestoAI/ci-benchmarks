@@ -21,7 +21,7 @@ on:
 permissions:
   contents: read
 env:
-  ROUND: "1"
+  ROUND: "2"
   EXCALIDRAW_SHA: 701b901a0f1ba3d0b390d9cdf63d112e25abac4b
 defaults:
   run:
@@ -65,15 +65,19 @@ jobs:
           cat > "$RUNNER_TEMP/h/sampler.py" <<'PY'
           import os, sys, time
           dev, out = sys.argv[1], sys.argv[2]
+          # Columns 8-9: guest tasks blocked in D state, and guest CPU steal (jiffies).
           with open(out, "w", buffering=1) as f:
-              f.write("t_ms,rd_done,wr_done,fl_done,wr_sectors,wr_ticks,inflight\n")
+              f.write("t_ms,rd_done,wr_done,fl_done,wr_sectors,wr_ticks,inflight,procs_blocked,steal\n")
               while True:
+                  st = open("/proc/stat").read().split("\n")
+                  steal = st[0].split()[8]
+                  blocked = next(l.split()[1] for l in st if l.startswith("procs_blocked"))
                   with open("/proc/diskstats") as d:
                       for line in d:
                           p = line.split()
                           if p[2] == dev:
                               fl = p[17] if len(p) > 17 else "0"
-                              f.write(f"{int(time.time()*1000)},{p[3]},{p[7]},{fl},{p[9]},{p[10]},{p[11]}\n")
+                              f.write(f"{int(time.time()*1000)},{p[3]},{p[7]},{fl},{p[9]},{p[10]},{p[11]},{blocked},{steal}\n")
                               break
                   time.sleep(0.05)
           PY
@@ -221,9 +225,17 @@ jobs:
           echo "::endgroup::"
           echo "::group::yarn install --offline (warm install from the filled cache)"
           mkdir -p "$SHM/app"; tar -xf "$SHM/src.tar" -C "$SHM/app"; rm -f "$SHM/nm.tar"
+          # Control: ext4 (with its journal) on a RAM-backed loop device, to separate the guest
+          # filesystem from the virtual disk path.
+          RAMEXT=/mnt/ramext4; truncate -s 4G "$SHM/ramext4.img"; mkfs.ext4 -q -F "$SHM/ramext4.img"
+          TARGETS="ws shm"
+          sudo mkdir -p $RAMEXT
+          if sudo mount -o loop "$SHM/ramext4.img" $RAMEXT; then
+            sudo chown "$(id -u):$(id -g)" $RAMEXT; mkdir -p $RAMEXT/app; tar -xf "$SHM/src.tar" -C $RAMEXT/app; TARGETS="ws shm ramext4"
+          else echo "no loop device support: skipping the ramext4 control"; fi
           for rep in 1 2 3; do
-            for tgt in ws shm; do
-              [ $tgt = ws ] && a="$PWD" || a="$SHM/app"
+            for tgt in $TARGETS; do
+              case $tgt in ws) a="$PWD";; shm) a="$SHM/app";; ramext4) a="$RAMEXT/app";; esac
               (cd "$a" && find . -type d -name node_modules -prune -exec rm -rf {} +); sync
               phase yarn_offline $tgt $rep bash -c "cd '$a' && yarn install --frozen-lockfile --offline --non-interactive"
               phase yarn_offline_sync $tgt $rep sync
@@ -241,7 +253,7 @@ jobs:
           phases = [json.loads(l) for l in open(f"{out}/phases.jsonl")] if os.path.exists(f"{out}/phases.jsonl") else []
           rows = []
           if os.path.exists(f"{out}/disk.csv"):
-              rows = [list(map(int, r)) for r in list(csv.reader(open(f"{out}/disk.csv")))[1:] if len(r) == 7]
+              rows = [list(map(int, r)) for r in list(csv.reader(open(f"{out}/disk.csv")))[1:] if len(r) >= 7 and all(x.isdigit() for x in r)]
           def disk(s, e):
               """Guest-side disk activity inside [s, e]: write count, MB, mean write latency, stalls."""
               w = [r for r in rows if s <= r[0] <= e]
@@ -260,7 +272,9 @@ jobs:
               return {"writes": dw, "write_mb": round((b[4] - a[4]) * 512 / 2**20, 1),
                       "write_lat_ms": round((b[5] - a[5]) / dw, 2) if dw else None,
                       "max_inflight": max(r[6] for r in w), "stall_max_ms": max(stalls, default=0),
-                      "stall_ms_ge500": sum(big), "stalls_ge500": len(big)}
+                      "stall_ms_ge500": sum(big), "stalls_ge500": len(big),
+                      "max_procs_blocked": max(r[7] for r in w) if len(a) > 8 else None,
+                      "steal_jiffies": (b[8] - a[8]) if len(a) > 8 else None}
           for p in phases:
               p.update(disk(p["start"], p["end"]))
           fio = []
