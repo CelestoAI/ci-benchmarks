@@ -9,7 +9,8 @@ const median = (values) => {
   const middle = Math.floor(sorted.length / 2);
   return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
 };
-const niceMax = (v) => { const steps = [1, 2, 3, 4, 5, 6, 8, 10]; const p = 10 ** Math.floor(Math.log10(v)); return steps.map((s) => s * p).find((s) => s >= v * 1.15); };
+// Axis step of 1, 2, 2.5 or 5 x 10^k giving 3-5 ticks, with room for the value label.
+const niceStep = (v) => { const raw = (v * 1.15) / 4; const p = 10 ** Math.floor(Math.log10(raw)); return [1, 2, 2.5, 5, 10].map((s) => s * p).find((s) => s >= raw); };
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
 function render({ source, output, title, heading, subtitle, footer, note, series, metrics, desc }) {
@@ -27,8 +28,9 @@ function render({ source, output, title, heading, subtitle, footer, note, series
       if (selected.length !== metric.count) throw new Error(`Unexpected sample count for ${s.label} ${metric.title}: ${selected.length}`);
       return median(selected.map(metric.value)) / 1000;
     });
-    const max = metric.max ?? niceMax(Math.max(...values));
-    const ticks = [0, 1, 2, 3, 4].map((i) => (max * i) / 4).map((tick) => {
+    const step = niceStep(Math.max(...values));
+    const max = step * Math.ceil((Math.max(...values) * 1.15) / step);
+    const ticks = Array.from({ length: Math.round(max / step) + 1 }, (_, i) => i * step).map((tick) => {
       const tx = plotX + (tick / max) * plotWidth;
       return `<line x1="${tx}" x2="${tx}" y1="${barY - 8}" y2="${barY + series.length * rowH - 20}" stroke="#e2e8f0"/><text x="${tx}" y="${barY + series.length * rowH + 8}" text-anchor="middle" class="tick">${+tick.toFixed(1)}</text>`;
     }).join('');
