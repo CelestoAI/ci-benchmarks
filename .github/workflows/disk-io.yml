@@ -21,7 +21,7 @@ on:
 permissions:
   contents: read
 env:
-  ROUND: "2"
+  ROUND: "3"
   EXCALIDRAW_SHA: 701b901a0f1ba3d0b390d9cdf63d112e25abac4b
 defaults:
   run:
@@ -240,6 +240,17 @@ jobs:
               phase yarn_offline $tgt $rep bash -c "cd '$a' && yarn install --frozen-lockfile --offline --non-interactive"
               phase yarn_offline_sync $tgt $rep sync
             done
+          done
+          echo "::endgroup::"
+          echo "::group::CPU and memory micro-benchmarks (no disk)"
+          for rep in 1 2 3; do
+            phase cpu_loop cpu $rep python3 -c 's=0
+          for i in range(30_000_000): s += i'
+            phase spawn2000 cpu $rep bash -c 'for i in $(seq 2000); do /bin/true; done'
+            phase pagefault2g cpu $rep python3 -c 'import mmap
+          n = 2 << 30; m = mmap.mmap(-1, n)
+          for i in range(0, n, 4096): m[i] = 1'
+            phase node_start30 cpu $rep bash -c 'for i in $(seq 30); do node -e 0; done'
           done
           echo "::endgroup::"
           kill $SAMPLER
