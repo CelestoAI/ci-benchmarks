@@ -2,11 +2,14 @@
 # then warm (restore the cold save), 3 samples per provider. Use a new namespace every run.
 name: Real-repo dependency cache benchmark
 on:
+  push:
+    branches: [deps-real-repo-bench]
+    paths: ['.github/workflows/deps-real-repo*.yml', '.bench-trigger']
   workflow_dispatch:
     inputs:
       cache_namespace:
         description: Unique per run (cold and warm share it)
-        required: true
+        required: false
         type: string
       repo: { type: string, default: excalidraw/excalidraw }
       sha: { type: string, default: 701b901a0f1ba3d0b390d9cdf63d112e25abac4b }
@@ -26,10 +29,10 @@ jobs:
       phase: cold
       provider: ${{ matrix.runner.provider }}
       runs_on: ${{ matrix.runner.labels }}
-      cache_key: deps-${{ inputs.cache_namespace }}-s${{ matrix.sample }}
+      cache_key: deps-${{ inputs.cache_namespace || format('push-{0}-{1}', github.run_id, github.run_attempt) }}-s${{ matrix.sample }}
       sample: ${{ matrix.sample }}
-      repo: ${{ inputs.repo }}
-      sha: ${{ inputs.sha }}
+      repo: ${{ inputs.repo || 'excalidraw/excalidraw' }}
+      sha: ${{ inputs.sha || '701b901a0f1ba3d0b390d9cdf63d112e25abac4b' }}
   warm:
     needs: cold
     strategy:
@@ -44,7 +47,7 @@ jobs:
       phase: warm
       provider: ${{ matrix.runner.provider }}
       runs_on: ${{ matrix.runner.labels }}
-      cache_key: deps-${{ inputs.cache_namespace }}-s${{ matrix.sample }}
+      cache_key: deps-${{ inputs.cache_namespace || format('push-{0}-{1}', github.run_id, github.run_attempt) }}-s${{ matrix.sample }}
       sample: ${{ matrix.sample }}
-      repo: ${{ inputs.repo }}
-      sha: ${{ inputs.sha }}
+      repo: ${{ inputs.repo || 'excalidraw/excalidraw' }}
+      sha: ${{ inputs.sha || '701b901a0f1ba3d0b390d9cdf63d112e25abac4b' }}
