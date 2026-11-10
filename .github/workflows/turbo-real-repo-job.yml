@@ -24,6 +24,11 @@ jobs:
     name: ${{ inputs.phase }} ${{ inputs.provider }} ${{ inputs.method }} s${{ inputs.sample }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     timeout-minutes: 30
+    env:
+      # Added to turbo.json's globalEnv below, so every run/variant/sample gets its own task
+      # hashes. Without it, samples of the same commit share hashes in Celesto's
+      # repository-wide Turbo cache and a "cold" job hits another job's uploads.
+      BENCH_CACHE_NS: ${{ inputs.key }}
     steps:
       - name: Check out ${{ inputs.repo }}@${{ inputs.sha }}
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -38,6 +43,7 @@ jobs:
           echo "cpu=$(nproc) mem=$(free -g | awk '/Mem/{print $2}')"; test "$(nproc)" = 4
           corepack enable
           [ -f .env.example ] && cp .env.example .env
+          jq '.globalEnv = ((.globalEnv // []) + ["BENCH_CACHE_NS"])' turbo.json > turbo.json.new && mv turbo.json.new turbo.json
           pnpm install --frozen-lockfile
           echo "turbo api set: ${TURBO_API:+yes}${TURBO_API:-no}"
           if [ "${{ inputs.method }}" = turbo-remote ] && [ -z "$TURBO_API" ]; then echo "::error::no TURBO_API from the Celesto runner"; exit 1; fi
@@ -91,6 +97,7 @@ jobs:
           jq -r '"| \(.provider) | \(.method) | \(.phase) | \(.cached_tasks)/\(.tasks) (remote \(.remote_hits)) | \((.restore_ms // 0)/1000) | \(.turbo_ms/1000) | \((.save_ms // 0)/1000) |"' result/result.json \
             | { echo "| provider | method | phase | cached tasks | restore s | turbo s | save s |"; echo "|---|---|---|--:|--:|--:|--:|"; cat; } >> "$GITHUB_STEP_SUMMARY"
           if [ "${{ inputs.phase }}" = warm ] && ! jq -e '.cached_tasks == .tasks' result/result.json >/dev/null; then echo "::warning::warm run was not a full cache hit"; fi
+          if [ "${{ inputs.phase }}" = cold ] && ! jq -e '.cached_tasks == 0' result/result.json >/dev/null; then echo "::error::cold run hit the cache; hashes are not isolated"; exit 1; fi
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
