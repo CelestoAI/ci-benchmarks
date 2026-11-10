@@ -1,0 +1,420 @@
+# Why do large actions/cache uploads run slower on Celesto than on GitHub?
+# Each job measures upload and download MB/s on the same VM over three paths:
+#   (a) actions/cache save (64 MiB blocks; 8 streams stock, 1/4/16 patched),
+#       and one restore of the 8-stream entry as the download control;
+#   (b) plain HTTPS to Cloudflare's edge (speed.cloudflare.com) and to a
+#       non-Cloudflare sink (Netflix fast.com servers), 1/4/8/16 streams;
+#   (c) Ookla speedtest (its own server choice and stream count).
+# During every test a sampler records NIC bytes (100 ms), CPU, steal, softirq,
+# per-process CPU and `ss -ti` for every :443 connection (500 ms).
+# Results: one JSON per job in the `ubw-*` artifacts and in the step summary.
+name: Upload bandwidth investigation
+
+on:
+  push:
+    branches: [investigate-upload-bandwidth]
+    paths: ['.github/workflows/upload-bandwidth.yml']
+
+permissions:
+  contents: read
+  actions: write # delete this run's entries from GitHub's cache at the end
+
+env:
+  ACTIONS_CACHE_SHA: 0057852bfaa89a56745cba8c7296529d2fc39830 # actions/cache v4.3.0
+
+jobs:
+  bench:
+    name: ${{ matrix.provider }} s${{ matrix.sample }}
+    runs-on: ${{ fromJSON(matrix.runs_on) }}
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        include:
+          - { provider: github, sample: 1, runs_on: '["ubuntu-24.04"]' }
+          - { provider: celesto, sample: 1, runs_on: '["self-hosted","celesto-large"]' }
+    env:
+      UBW_ID: ubw-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.provider }}-s${{ matrix.sample }}
+      UBW_PROVIDER: ${{ matrix.provider }}
+      UBW_SAMPLE: ${{ matrix.sample }}
+    steps:
+      - name: Write helpers
+        run: |
+          T="$RUNNER_TEMP/ubw"; O="$T/out"; mkdir -p "$T" "$O"
+          echo "T=$T" >> "$GITHUB_ENV"; echo "O=$O" >> "$GITHUB_ENV"
+          echo "{\"job_start\": \"$(date -u +%FT%TZ)\"}" > "$O/timeline.json"
+          need=""
+          for t in python3 ethtool jq zstd curl ss; do command -v $t >/dev/null || need="$need $t"; done
+          if [ -n "$need" ]; then
+            echo "installing:$need"
+            pk=$(echo "$need" | sed 's/\bss\b/iproute2/')
+            sudo apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq $pk >/dev/null
+          fi
+
+          # Sampler: NIC bytes every 100 ms; CPU, processes and ss -ti every 500 ms.
+          cat > "$T/sampler.py" <<'PY'
+          import json, os, signal, subprocess, sys, time
+          out = open(sys.argv[1], "w", buffering=1)
+          stop = False
+          def handler(*_):
+              global stop
+              stop = True
+          signal.signal(signal.SIGTERM, handler)
+          NAMES = ("celesto-ci-cach", "node", "zstd", "tar", "curl", "speedtest")
+          def netdev():
+              d = {}
+              for line in open("/proc/net/dev").read().splitlines()[2:]:
+                  name, rest = line.split(":", 1)
+                  name = name.strip()
+                  if name != "lo":
+                      v = rest.split()
+                      d[name] = [int(v[0]), int(v[8])]
+              return d
+          def procs():
+              r = {}
+              for pid in os.listdir("/proc"):
+                  if not pid.isdigit():
+                      continue
+                  try:
+                      s = open(f"/proc/{pid}/stat").read()
+                  except OSError:
+                      continue
+                  comm = s[s.index("(") + 1 : s.rindex(")")]
+                  if comm.startswith(NAMES):
+                      f = s[s.rindex(")") + 2 :].split()
+                      r[pid] = [comm, int(f[11]) + int(f[12])]
+              return r
+          i = 0
+          while not stop:
+              t = time.time()
+              rec = {"t": round(t, 3), "net": netdev()}
+              if i % 5 == 0:
+                  rec["cpu"] = [int(x) for x in open("/proc/stat").readline().split()[1:]]
+                  rec["procs"] = procs()
+                  try:
+                      rec["ss"] = subprocess.run(["ss", "-tinH", "state", "established", "( dport = :443 )"],
+                                                 capture_output=True, text=True, timeout=2).stdout
+                  except Exception:
+                      rec["ss"] = ""
+              out.write(json.dumps(rec) + "\n")
+              i += 1
+              time.sleep(max(0.0, 0.1 - (time.time() - t)))
+          PY
+
+          # Analyzer: one test's samples -> MB/s on the NIC, CPU, per-connection TCP state.
+          cat > "$T/analyze.py" <<'PY'
+          import json, re, statistics, sys
+          path, label, direction, payload = sys.argv[1], sys.argv[2], sys.argv[3], int(sys.argv[4])
+          extra = json.loads(sys.argv[5]) if len(sys.argv) > 5 else {}
+          recs = [json.loads(l) for l in open(path) if l.strip()]
+          k = 1 if direction == "up" else 0
+          first, last = recs[0]["net"], recs[-1]["net"]
+          iface = max(last, key=lambda n: last[n][k] - first.get(n, last[n])[k])
+          base = first[iface][k]
+          series = [(r["t"], r["net"][iface][k] - base) for r in recs if iface in r["net"]]
+          moved = series[-1][1]
+          def t_at(frac):
+              for t, b in series:
+                  if b >= frac * moved:
+                      return t
+          t02, t98 = t_at(0.02), t_at(0.98)
+          payload = payload or moved  # 0: report wire bytes
+          scale = payload / moved if moved else 0  # wire bytes -> payload bytes
+          bulk = 0.96 * payload / (t98 - t02) / 1e6 if t98 and t02 and t98 > t02 else None
+          peak = 0.0
+          j = 0
+          for i, (t, b) in enumerate(series):
+              while j < len(series) and series[j][0] < t + 1.0:
+                  j += 1
+              if j < len(series):
+                  peak = max(peak, (series[j][1] - b) * scale / (series[j][0] - t) / 1e6)
+          win = [r for r in recs if "cpu" in r and t02 is not None and t02 <= r["t"] <= t98]
+          cpu = {}
+          if len(win) >= 2:
+              a, z = win[0]["cpu"], win[-1]["cpu"]
+              d = [y - x for x, y in zip(a, z)]
+              tot = sum(d[:8]) or 1
+              cpu = {"busy_pct": round(100 * (tot - d[3] - d[4]) / tot, 1), "sys_pct": round(100 * d[2] / tot, 1),
+                     "softirq_pct": round(100 * d[6] / tot, 1), "steal_pct": round(100 * d[7] / tot, 1)}
+              dt = win[-1]["t"] - win[0]["t"]
+              per = {}
+              for pid, (comm, ticks) in win[-1]["procs"].items():
+                  before = win[0]["procs"].get(pid)
+                  if before:
+                      per[comm] = per.get(comm, 0) + (ticks - before[1]) / 100 / dt
+              cpu["proc_cores"] = {c: round(v, 2) for c, v in sorted(per.items(), key=lambda x: -x[1]) if v > 0.02}
+          # ss -ti: per-connection payload rate from bytes_acked (up) or bytes_received (down).
+          conns, flags = {}, {}
+          field = "bytes_acked" if direction == "up" else "bytes_received"
+          for r in recs:
+              if "ss" not in r or t02 is None or not (t02 - 0.5 <= r["t"] <= t98 + 0.5):
+                  continue
+              pairs, cur = [], None
+              for line in r["ss"].splitlines():
+                  if line[:1].isspace() and cur:
+                      pairs.append((cur, line))
+                  else:
+                      cur = line
+              for a, b in pairs:
+                  ends = [p for p in a.split() if re.match(r".+:\d+$", p)]
+                  if len(ends) < 2:
+                      continue
+                  key = ends[-2] + ">" + ends[-1]
+                  m = re.search(field + r":(\d+)", b)
+                  if m:
+                      conns.setdefault(key, []).append((r["t"], int(m.group(1))))
+                  info = {}
+                  for name in ("rtt", "minrtt", "cwnd", "mss", "retrans", "rwnd_limited", "sndbuf_limited", "busy", "delivery_rate", "snd_wnd", "rcv_space"):
+                      mm = re.search(r"(?:^|\s)" + name + r"[: ]([^\s]+)", b)
+                      if mm:
+                          info[name] = mm.group(1)
+                  flags[key] = info
+          rates = []
+          for key, pts in conns.items():
+              if len(pts) >= 2 and pts[-1][1] - pts[0][1] > 4 << 20:
+                  rates.append((pts[-1][1] - pts[0][1]) / (pts[-1][0] - pts[0][0]) / 1e6)
+          busy = [f for f in flags.values() if "busy" in f]
+          res = {"test": label, "dir": direction, "iface": iface, "payload_bytes": payload,
+                 "wire_bytes": moved, "bulk_MBps": round(bulk, 1) if bulk else None,
+                 "peak_1s_MBps": round(peak, 1), "bulk_seconds": round(t98 - t02, 2) if bulk else None,
+                 "cpu": cpu, "tcp_streams": len(rates),
+                 "tcp_stream_MBps_median": round(statistics.median(rates), 1) if rates else None,
+                 "tcp_stream_MBps_sum": round(sum(rates), 1) if rates else None,
+                 "tcp_samples": dict(list(sorted(flags.items(), key=lambda kv: kv[0]))[:20])}
+          res.update(extra)
+          print(json.dumps(res))
+          PY
+
+          # One HTTP request of a plain-HTTPS test; prints one line of curl timings.
+          cat > "$T/req.sh" <<'SH'
+          #!/usr/bin/env bash
+          kind=$1; i=$2
+          fmt="$kind $i %{http_code} %{size_upload} %{size_download} %{time_connect} %{time_appconnect} %{time_starttransfer} %{time_total} %{remote_ip}\n"
+          c=(curl --http1.1 -sS -o /dev/null --max-time 120 -w "$fmt")
+          case $kind in
+            cf_up) "${c[@]}" -H 'Expect:' -H 'Content-Type: application/octet-stream' -X POST -T "$T/p64/$(printf %02d $i)" https://speed.cloudflare.com/__up ;;
+            cf_down) "${c[@]}" "https://speed.cloudflare.com/__down?bytes=67108864" ;;
+            oca_up|oca_down)
+              mapfile -t urls < "$T/oca_urls"; u=${urls[$((i % ${#urls[@]}))]}; b=${u%%\?*}; q=${u#*\?}
+              if [ $kind = oca_up ]; then
+                "${c[@]}" -H 'Expect:' -H 'Content-Type: application/octet-stream' -X POST -T "$T/p25/$(printf %02d $i)" "$b/range/0-26214400?$q"
+              else
+                "${c[@]}" "$b/range/0-26214399?$q"
+              fi ;;
+          esac
+          SH
+          chmod +x "$T/req.sh"
+
+          # Run one sampled test: label, direction, payload bytes, command...
+          cat > "$T/sampled.sh" <<'SH'
+          #!/usr/bin/env bash
+          label=$1; dir=$2; payload=$3; shift 3
+          python3 "$T/sampler.py" "$O/$label.samples.jsonl" & sp=$!
+          sleep 0.5
+          s=$(date +%s.%N); start_utc=$(date -u +%FT%T.%3NZ)
+          "$@"; rc=$?
+          e=$(date +%s.%N)
+          sleep 0.5; kill $sp; wait $sp 2>/dev/null
+          wall=$(awk "BEGIN {print $e - $s}")
+          python3 "$T/analyze.py" "$O/$label.samples.jsonl" "$label" "$dir" "$payload" \
+            "{\"start_utc\": \"$start_utc\", \"wall_s\": $wall, \"rc\": $rc}" | tee -a "$O/results.jsonl"
+          SH
+          chmod +x "$T/sampled.sh"
+
+          # One plain-HTTPS test: kind, streams, requests.
+          cat > "$T/http_test.sh" <<'SH'
+          #!/usr/bin/env bash
+          kind=$1; c=$2; n=$3
+          seq 0 $((n - 1)) | xargs -P "$c" -I{} "$T/req.sh" "$kind" {} > "$O/${kind}_c$c.req.txt"
+          awk '$3 != 200 {bad++} END {exit bad > 0}' "$O/${kind}_c$c.req.txt"
+          SH
+          chmod +x "$T/http_test.sh"
+
+          # One toolkit save through the patched bundle: streams, key.
+          cat > "$T/toolkit_save.sh" <<'SH'
+          #!/usr/bin/env bash
+          c=$1; key=$2
+          cd "$GITHUB_WORKSPACE"
+          UBW_CONCURRENCY=$c INPUT_PATH=bench-data INPUT_KEY="$key" AZURE_LOG_LEVEL=info "$NODE_BIN" "$T/save.js" 2>&1 \
+            | while IFS= read -r l; do printf '%s %s\n' "$(date +%s.%3N)" "${l%%\?*}"; done > "$O/toolkit_up_c$c.log"
+          grep -E "Sent [0-9]+ of|Cache saved|Warning|warning|Error|error" "$O/toolkit_up_c$c.log" | grep -v "azure:" | tail -4
+          grep -q "Cache saved with key" "$O/toolkit_up_c$c.log"
+          SH
+          chmod +x "$T/toolkit_save.sh"
+          echo "helpers ready"
+
+      - name: Environment (runner, CPU, IP, provider, NIC)
+        run: |
+          set +e
+          ip_json=$(curl -sS -m 10 https://ipinfo.io/json); echo "$ip_json" | jq -e . >/dev/null || ip_json='{}'
+          trace=$(curl -sS -m 10 https://speed.cloudflare.com/cdn-cgi/trace)
+          org=$(echo "$ip_json" | jq -r .org)
+          case "$org" in
+            *Amazon*) hp=aws ;; *OVH*) hp=ovh ;; *Microsoft*) hp=azure ;; *) hp="other:$org" ;;
+          esac
+          dev=$(ip route show default | awk '{print $5; exit}')
+          jq -n --arg runner "$RUNNER_NAME" --arg cpu "$(grep -m1 'model name' /proc/cpuinfo | cut -d: -f2 | xargs)" \
+            --arg nproc "$(nproc)" --arg mem "$(free -m | awk '/Mem/{print $2}')" --argjson ip "$ip_json" \
+            --arg host_provider "$hp" --arg colo "$(echo "$trace" | sed -n 's/^colo=//p')" \
+            --arg dev "$dev" --arg mtu "$(cat /sys/class/net/$dev/mtu)" \
+            --arg driver "$(basename "$(readlink -f /sys/class/net/$dev/device/driver)" 2>/dev/null)" \
+            --arg txq "$(ls /sys/class/net/$dev/queues | grep -c tx-)" --arg rxq "$(ls /sys/class/net/$dev/queues | grep -c rx-)" \
+            --arg kernel "$(uname -r)" --arg cc "$(sysctl -n net.ipv4.tcp_congestion_control)" \
+            --arg qdisc "$(tc qdisc show dev $dev 2>/dev/null | head -1)" --arg wmem "$(sysctl -n net.ipv4.tcp_wmem)" \
+            --arg rmem "$(sysctl -n net.ipv4.tcp_rmem)" --arg virt "$(systemd-detect-virt 2>/dev/null)" \
+            --arg mac "$(cat /sys/class/net/$dev/address)" --arg guest_ip "$(ip -4 -br addr show $dev | awk '{print $3}')" \
+            '{runner:$runner, cpu:$cpu, nproc:$nproc, mem_mb:$mem, public_ip:$ip.ip, org:$ip.org, city:$ip.city,
+              region:$ip.region, host_provider:$host_provider, cf_colo:$colo, nic:$dev, mtu:$mtu, driver:$driver,
+              tx_queues:$txq, rx_queues:$rxq, kernel:$kernel, tcp_cc:$cc, qdisc:$qdisc, tcp_wmem:$wmem,
+              tcp_rmem:$rmem, virt:$virt, mac:$mac, guest_ip:$guest_ip}' | tee "$O/env.json"
+          echo "UBW_DEV=$dev" >> "$GITHUB_ENV"
+          {
+            echo "## ethtool -i"; ethtool -i $dev
+            echo "## ethtool -l"; ethtool -l $dev
+            echo "## ethtool -g"; ethtool -g $dev
+            echo "## ethtool -k"; ethtool -k $dev | grep -E "segmentation|scatter|checksum|receive-offload"
+            echo "## ethtool (speed)"; ethtool $dev | grep -E "Speed|Duplex"
+            echo "## ip -s link"; ip -s link
+            echo "## queues"; for n in /sys/class/net/*; do echo "$n: $(ls $n/queues 2>/dev/null | xargs)"; done
+            echo "## tc qdisc"; tc qdisc show
+            echo "## routes"; ip route; ip -br addr
+            echo "## interrupts"; grep -i -E "virtio|eth|mlx|hv_" /proc/interrupts | cut -c1-160
+            echo "## sysctls"; sysctl net.core.wmem_max net.core.rmem_max net.core.default_qdisc net.ipv4.tcp_wmem net.ipv4.tcp_rmem net.ipv4.tcp_congestion_control
+            echo "## cache proxy"; ps -eo pid,args | grep -E "[c]elesto-ci-cache-proxy" | sed 's/--api-url [^ ]*/--api-url <api>/'
+            echo "## env (names only)"; env | grep -E "^ACTIONS_|^CACHE_" | cut -d= -f1
+            echo "## connect times"
+            for u in https://speed.cloudflare.com/cdn-cgi/trace https://api.celesto.ai/ https://results-receiver.actions.githubusercontent.com/; do
+              for k in 1 2 3; do curl -sS -o /dev/null -m 10 -w "$u connect=%{time_connect} tls=%{time_appconnect} ip=%{remote_ip}\n" "$u"; done
+            done
+          } > "$O/env.txt" 2>&1
+          cat "$O/env.txt"
+
+      - name: Make 1023 MiB of incompressible data
+        run: |
+          mkdir -p bench-data "$T/p64" "$T/p25"
+          head -c 1023M /dev/urandom > bench-data/blob.bin
+          split -b 64M -d -a 2 bench-data/blob.bin "$T/p64/"
+          split -b 26214400 -d -a 2 bench-data/blob.bin "$T/p25/"
+          rm -f "$T/p25/40"
+          ls "$T/p64" | wc -l; ls "$T/p25" | wc -l
+          sha256sum bench-data/blob.bin | tee "$O/blob.sha256"
+
+      - name: (b)+(c) Plain HTTPS, Cloudflare edge and Netflix, 1/4/8/16 streams
+        run: |
+          set +e
+          curl -sS -m 15 'https://api.fast.com/netflix/speedtest/v2?https=true&token=YXNkZmFzZGxmbnNkYWZoYXNkZmhrYWxm&urlCount=5' > "$T/fast.json"
+          jq -r '.targets[].url' "$T/fast.json" > "$T/oca_urls"
+          jq -c '{client: .client.location, targets: [.targets[] | {name: (.name|split(".")[0]), location}]}' "$T/fast.json" | tee "$O/oca_targets.json"
+          echo "{\"http_start\": \"$(date -u +%FT%TZ)\"}" >> "$O/timeline.json"
+          for c in 1 4 8 16; do
+            "$T/sampled.sh" cf_up_c$c up $((1023 << 20)) "$T/http_test.sh" cf_up $c 16
+            "$T/sampled.sh" oca_up_c$c up $((40 * 26214400)) "$T/http_test.sh" oca_up $c 40
+            "$T/sampled.sh" cf_down_c$c down $((16 << 26)) "$T/http_test.sh" cf_down $c 16
+            "$T/sampled.sh" oca_down_c$c down $((40 * 26214400)) "$T/http_test.sh" oca_down $c 40
+          done
+          true
+
+      - name: Ookla speedtest (multi-stream, its own server)
+        run: |
+          set +e
+          curl -sSfL -m 60 https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-x86_64.tgz | tar xz -C "$T" speedtest
+          "$T/sampled.sh" ookla up 0 bash -c '"$T/speedtest" --accept-license --accept-gdpr -f json -p no > "$O/ookla.json" 2> "$O/ookla.err"'
+          jq -c '{down_MBps: (.download.bandwidth/1e6), up_MBps: (.upload.bandwidth/1e6), up_elapsed_ms: .upload.elapsed,
+                  server: (.server.name + " / " + .server.location), isp: .isp, ping_ms: .ping.latency}' "$O/ookla.json" | tee "$O/ookla_summary.json"
+          true
+
+      - name: Prepare the toolkit bundle (stock save code, streams from UBW_CONCURRENCY)
+        run: |
+          curl -sSfL -o "$T/save.js" "https://raw.githubusercontent.com/actions/cache/$ACTIONS_CACHE_SHA/dist/save-only/index.js"
+          sha256sum "$T/save.js"
+          echo "7f64677407a4befe523854fb28794faa4e2d344dfed5d6cd4887fa9ae5428b3f  $T/save.js" | sha256sum -c
+          sed -i 's/uploadConcurrency: 8, useAzureSdk: true/uploadConcurrency: Number(process.env.UBW_CONCURRENCY || 8), useAzureSdk: true/' "$T/save.js"
+          test "$(grep -c 'process.env.UBW_CONCURRENCY' "$T/save.js")" = 1
+          echo "{\"toolkit_start\": \"$(date -u +%FT%TZ)\"}" >> "$O/timeline.json"
+
+      - name: (a) Start sampler for stock actions/cache save (8 streams)
+        run: |
+          nohup python3 "$T/sampler.py" "$O/toolkit_up_c8.samples.jsonl" > /dev/null 2>&1 &
+          echo $! > "$T/sampler.pid"
+          echo "$(date +%s.%N)" > "$T/stock_start"; date -u +%FT%T.%3NZ > "$T/stock_start_utc"
+          sleep 0.5
+
+      - name: (a) Stock actions/cache save, 8 x 64 MiB
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: bench-data
+          key: ${{ env.UBW_ID }}-c8
+
+      - name: (a) Analyze stock save
+        run: |
+          e=$(date +%s.%N); sleep 0.3; kill "$(cat "$T/sampler.pid")"; sleep 0.3
+          wall=$(awk "BEGIN {print $e - $(cat "$T/stock_start")}")
+          python3 "$T/analyze.py" "$O/toolkit_up_c8.samples.jsonl" toolkit_up_c8 up $((1023 << 20)) \
+            "{\"start_utc\": \"$(cat "$T/stock_start_utc")\", \"wall_s\": $wall, \"rc\": 0}" | tee -a "$O/results.jsonl"
+
+      - name: (a) Toolkit save with 1, 4 and 16 streams (same bundle, patched concurrency)
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const { spawnSync } = require('child_process');
+            const T = process.env.T;
+            const env = { ...process.env, NODE_BIN: process.execPath };
+            for (const c of [1, 4, 16]) {
+              const key = `${process.env.UBW_ID}-c${c}`;
+              const r = spawnSync(`${T}/sampled.sh`, [`toolkit_up_c${c}`, 'up', String(1023 << 20), `${T}/toolkit_save.sh`, String(c), key],
+                                  { stdio: 'inherit', env });
+              if (r.status !== 0) core.warning(`toolkit save c=${c} exited ${r.status}`);
+            }
+
+      - name: (c) Start sampler for stock restore of the 8-stream entry
+        run: |
+          rm -rf bench-data
+          nohup python3 "$T/sampler.py" "$O/toolkit_down.samples.jsonl" > /dev/null 2>&1 &
+          echo $! > "$T/sampler.pid"
+          echo "$(date +%s.%N)" > "$T/stock_start"; date -u +%FT%T.%3NZ > "$T/stock_start_utc"
+          sleep 0.5
+
+      - name: (c) Stock actions/cache restore
+        id: restore
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: bench-data
+          key: ${{ env.UBW_ID }}-c8
+
+      - name: (c) Analyze restore and write the job result
+        if: always()
+        run: |
+          set +e
+          e=$(date +%s.%N); sleep 0.3; kill "$(cat "$T/sampler.pid")"; sleep 0.3
+          wall=$(awk "BEGIN {print $e - $(cat "$T/stock_start")}")
+          python3 "$T/analyze.py" "$O/toolkit_down.samples.jsonl" toolkit_down down $((1023 << 20)) \
+            "{\"start_utc\": \"$(cat "$T/stock_start_utc")\", \"wall_s\": $wall, \"rc\": 0, \"hit\": \"${{ steps.restore.outputs.cache-hit }}\"}" | tee -a "$O/results.jsonl"
+          sha256sum -c "$O/blob.sha256" && echo "restore bytes match"
+          [ -r /tmp/celesto-ci-cache-proxy.log ] && sed -E 's/(sig|X-Amz-[A-Za-z]+)=[^& ]*/\1=<x>/g' /tmp/celesto-ci-cache-proxy.log > "$O/proxy.log"
+          echo "{\"job_end\": \"$(date -u +%FT%TZ)\"}" >> "$O/timeline.json"
+          jq -s --slurpfile env "$O/env.json" --slurpfile ookla "$O/ookla_summary.json" --slurpfile t "$O/timeline.json" \
+            --arg run "${{ github.run_id }}" --arg provider "$UBW_PROVIDER" --arg sample "$UBW_SAMPLE" \
+            '{run_id: $run, provider: $provider, sample: $sample, env: $env[0], ookla: $ookla[0], timeline: ($t | add),
+              tests: [.[] | del(.tcp_samples)]}' "$O/results.jsonl" > "$O/job.json"
+          {
+            echo "### $UBW_PROVIDER s$UBW_SAMPLE: $(jq -r '.env.host_provider + " " + .env.cpu + " " + .env.public_ip' "$O/job.json")"
+            echo "| test | MB/s (2-98% window) | peak 1 s | streams seen | per-stream MB/s | busy % | steal % | top processes (cores) |"
+            echo "|---|--:|--:|--:|--:|--:|--:|---|"
+            jq -r '.tests[] | "| \(.test) | \(.bulk_MBps) | \(.peak_1s_MBps) | \(.tcp_streams) | \(.tcp_stream_MBps_median) | \(.cpu.busy_pct) | \(.cpu.steal_pct) | \(.cpu.proc_cores // {} | to_entries | map("\(.key)=\(.value)") | join(" ")) |"' "$O/job.json"
+            echo; echo "Ookla: $(cat "$O/ookla_summary.json")"
+          } >> "$GITHUB_STEP_SUMMARY"
+          cat "$GITHUB_STEP_SUMMARY"
+
+      - name: Delete this job's entries from GitHub's cache
+        if: always() && matrix.provider == 'github'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for c in 1 4 8 16; do gh cache delete "$UBW_ID-c$c" -R "$GITHUB_REPOSITORY" || true; done
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: ${{ env.UBW_ID }}
+          path: ${{ env.O }}
