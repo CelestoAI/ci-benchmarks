@@ -1,12 +1,13 @@
 # Why do large actions/cache uploads run slower on Celesto than on GitHub?
 # Each job measures upload and download MB/s on the same VM over three paths:
-#   (a) actions/cache save (64 MiB blocks; 8 streams stock, 1/4/16 patched),
-#       and one restore of the 8-stream entry as the download control;
+#   (a) actions/cache save of 1023 MiB of random data: the stock action (8 x 64 MiB
+#       blocks), then the same toolkit bundle patched to other stream counts and
+#       block sizes (UBW_TOOLKIT); one restore of the stock entry as the download control;
 #   (b) plain HTTPS to Cloudflare's edge (speed.cloudflare.com) and to a
-#       non-Cloudflare sink (Netflix fast.com servers), 1/4/8/16 streams;
-#   (c) Ookla speedtest (its own server choice and stream count).
+#       non-Cloudflare sink (Netflix fast.com servers) at UBW_HTTP_LEVELS streams;
+#   (c) Ookla speedtest (Ashburn server, its own stream count).
 # During every test a sampler records NIC bytes (100 ms), CPU, steal, softirq,
-# per-process CPU and `ss -ti` for every :443 connection (500 ms).
+# per-process CPU, /proc/net/tcp and `ss -ti` for every :443 connection.
 # Results: one JSON per job in the `ubw-*` artifacts and in the step summary.
 name: Upload bandwidth investigation
 
@@ -21,6 +22,11 @@ permissions:
 
 env:
   ACTIONS_CACHE_SHA: 0057852bfaa89a56745cba8c7296529d2fc39830 # actions/cache v4.3.0
+  # Round 1 (run 42875716811): '1 4 8 16', '1', '1x64 4x64 16x64 32x16', 9 + 9 jobs.
+  # Round 2 (this setting): Celesto only, more hosts, and how far more R2 streams go.
+  UBW_HTTP_LEVELS: '1 8' # plain-HTTPS stream counts
+  UBW_CF: '0' # 1: also test speed.cloudflare.com
+  UBW_TOOLKIT: '1x64 16x64 32x16 64x16 32x32' # patched toolkit saves: <streams>x<block MiB>, after the stock 8x64
 
 jobs:
   bench:
@@ -29,27 +35,16 @@ jobs:
     timeout-minutes: 40
     strategy:
       fail-fast: false
-      max-parallel: 6 # at most ~3-6 Celesto jobs at once (limit 9)
+      max-parallel: 3 # round 1 used 6 with GitHub and Celesto interleaved (at most 6 Celesto at once; limit 9)
       matrix:
         include:
-          - { provider: github, sample: 1, runs_on: '["ubuntu-24.04"]' }
-          - { provider: celesto, sample: 1, runs_on: '["self-hosted","celesto-large"]' }
-          - { provider: github, sample: 2, runs_on: '["ubuntu-24.04"]' }
-          - { provider: celesto, sample: 2, runs_on: '["self-hosted","celesto-large"]' }
-          - { provider: github, sample: 3, runs_on: '["ubuntu-24.04"]' }
-          - { provider: celesto, sample: 3, runs_on: '["self-hosted","celesto-large"]' }
-          - { provider: github, sample: 4, runs_on: '["ubuntu-24.04"]' }
-          - { provider: celesto, sample: 4, runs_on: '["self-hosted","celesto-large"]' }
-          - { provider: github, sample: 5, runs_on: '["ubuntu-24.04"]' }
-          - { provider: celesto, sample: 5, runs_on: '["self-hosted","celesto-large"]' }
-          - { provider: github, sample: 6, runs_on: '["ubuntu-24.04"]' }
-          - { provider: celesto, sample: 6, runs_on: '["self-hosted","celesto-large"]' }
-          - { provider: github, sample: 7, runs_on: '["ubuntu-24.04"]' }
-          - { provider: celesto, sample: 7, runs_on: '["self-hosted","celesto-large"]' }
-          - { provider: github, sample: 8, runs_on: '["ubuntu-24.04"]' }
-          - { provider: celesto, sample: 8, runs_on: '["self-hosted","celesto-large"]' }
-          - { provider: github, sample: 9, runs_on: '["ubuntu-24.04"]' }
-          - { provider: celesto, sample: 9, runs_on: '["self-hosted","celesto-large"]' }
+          # Round 1: github and celesto samples 1-9, interleaved.
+          - { provider: celesto, sample: 10, runs_on: '["self-hosted","celesto-large"]' }
+          - { provider: celesto, sample: 11, runs_on: '["self-hosted","celesto-large"]' }
+          - { provider: celesto, sample: 12, runs_on: '["self-hosted","celesto-large"]' }
+          - { provider: celesto, sample: 13, runs_on: '["self-hosted","celesto-large"]' }
+          - { provider: celesto, sample: 14, runs_on: '["self-hosted","celesto-large"]' }
+          - { provider: celesto, sample: 15, runs_on: '["self-hosted","celesto-large"]' }
     env:
       UBW_ID: ubw-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.provider }}-s${{ matrix.sample }}
       UBW_PROVIDER: ${{ matrix.provider }}
@@ -381,11 +376,11 @@ jobs:
           echo "{\"http_start\": \"$(date -u +%FT%TZ)\"}" >> "$O/timeline.json"
           # speed.cloudflare.com rate-limits bulk use (429/502/504), so it gets 8 requests a level
           # (16 at 16 streams) and downloads only at 1 and 4 streams; read its per-request MB/s.
-          for c in 1 4 8 16; do
+          for c in $UBW_HTTP_LEVELS; do
             n=$(( c > 8 ? c : 8 ))
-            "$T/sampled.sh" cf_up_c$c up $((n << 26)) "$T/http_test.sh" cf_up $c $n
+            if [ "$UBW_CF" = 1 ]; then "$T/sampled.sh" cf_up_c$c up $((n << 26)) "$T/http_test.sh" cf_up $c $n; fi
             "$T/sampled.sh" oca_up_c$c up $((40 * 26214400)) "$T/http_test.sh" oca_up $c 40
-            if [ $c -le 4 ]; then "$T/sampled.sh" cf_down_c$c down $((8 << 26)) "$T/http_test.sh" cf_down $c 8; fi
+            if [ "$UBW_CF" = 1 ] && [ $c -le 4 ]; then "$T/sampled.sh" cf_down_c$c down $((8 << 26)) "$T/http_test.sh" cf_down $c 8; fi
             "$T/sampled.sh" oca_down_c$c down $((40 * 26214400)) "$T/http_test.sh" oca_down $c 40
           done
           true
@@ -429,15 +424,15 @@ jobs:
           python3 "$T/analyze.py" "$O/toolkit_up_c8.samples.jsonl" toolkit_up_c8 up $((1023 << 20)) \
             "{\"start_utc\": \"$(cat "$T/stock_start_utc")\", \"wall_s\": $wall, \"rc\": 0}" | tee -a "$O/results.jsonl"
 
-      - name: (a) Toolkit save with 1, 4 and 16 streams (same bundle, patched concurrency)
+      - name: (a) Toolkit saves from UBW_TOOLKIT (same bundle, patched streams and block size)
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
             const { spawnSync } = require('child_process');
             const T = process.env.T;
             const env = { ...process.env, NODE_BIN: process.execPath };
-            // [streams, block MiB]; the last one asks whether more, smaller R2 parts help.
-            for (const [c, mb] of [[1, 64], [4, 64], [16, 64], [32, 16]]) {
+            // UBW_TOOLKIT: "<streams>x<block MiB> ..."; 32x16 asks whether more, smaller R2 parts help.
+            for (const [c, mb] of process.env.UBW_TOOLKIT.split(/\s+/).filter(Boolean).map(s => s.split('x').map(Number))) {
               const label = mb === 64 ? `toolkit_up_c${c}` : `toolkit_up_c${c}_b${mb}`;
               const key = `${process.env.UBW_ID}-${label}`;
               const r = spawnSync(`${T}/sampled.sh`, [label, 'up', String(1023 << 20), `${T}/toolkit_save.sh`, String(c), key, String(mb), label],
@@ -489,7 +484,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          for k in c8 toolkit_up_c1 toolkit_up_c4 toolkit_up_c16 toolkit_up_c32_b16; do gh cache delete "$UBW_ID-$k" -R "$GITHUB_REPOSITORY" || true; done
+          for s in $UBW_TOOLKIT; do
+            c=${s%x*}; mb=${s#*x}; k=toolkit_up_c$c; [ "$mb" = 64 ] || k=${k}_b$mb
+            gh cache delete "$UBW_ID-$k" -R "$GITHUB_REPOSITORY" || true
+          done
+          gh cache delete "$UBW_ID-c8" -R "$GITHUB_REPOSITORY" || true
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
