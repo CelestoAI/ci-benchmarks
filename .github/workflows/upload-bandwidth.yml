@@ -29,11 +29,27 @@ jobs:
     timeout-minutes: 40
     strategy:
       fail-fast: false
-      max-parallel: 4
+      max-parallel: 6 # at most ~3-6 Celesto jobs at once (limit 9)
       matrix:
         include:
           - { provider: github, sample: 1, runs_on: '["ubuntu-24.04"]' }
           - { provider: celesto, sample: 1, runs_on: '["self-hosted","celesto-large"]' }
+          - { provider: github, sample: 2, runs_on: '["ubuntu-24.04"]' }
+          - { provider: celesto, sample: 2, runs_on: '["self-hosted","celesto-large"]' }
+          - { provider: github, sample: 3, runs_on: '["ubuntu-24.04"]' }
+          - { provider: celesto, sample: 3, runs_on: '["self-hosted","celesto-large"]' }
+          - { provider: github, sample: 4, runs_on: '["ubuntu-24.04"]' }
+          - { provider: celesto, sample: 4, runs_on: '["self-hosted","celesto-large"]' }
+          - { provider: github, sample: 5, runs_on: '["ubuntu-24.04"]' }
+          - { provider: celesto, sample: 5, runs_on: '["self-hosted","celesto-large"]' }
+          - { provider: github, sample: 6, runs_on: '["ubuntu-24.04"]' }
+          - { provider: celesto, sample: 6, runs_on: '["self-hosted","celesto-large"]' }
+          - { provider: github, sample: 7, runs_on: '["ubuntu-24.04"]' }
+          - { provider: celesto, sample: 7, runs_on: '["self-hosted","celesto-large"]' }
+          - { provider: github, sample: 8, runs_on: '["ubuntu-24.04"]' }
+          - { provider: celesto, sample: 8, runs_on: '["self-hosted","celesto-large"]' }
+          - { provider: github, sample: 9, runs_on: '["ubuntu-24.04"]' }
+          - { provider: celesto, sample: 9, runs_on: '["self-hosted","celesto-large"]' }
     env:
       UBW_ID: ubw-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.provider }}-s${{ matrix.sample }}
       UBW_PROVIDER: ${{ matrix.provider }}
@@ -85,10 +101,43 @@ jobs:
                       f = s[s.rindex(")") + 2 :].split()
                       r[pid] = [comm, int(f[11]) + int(f[12])]
               return r
+          def hexaddr(h):
+              ip, port = h.split(":")
+              b = bytes.fromhex(ip)
+              if len(b) == 16:
+                  b = b[12:] if b[:12] == bytes(10) + b"\xff\xff" or b[:12] == b"\x00" * 8 + b"\xff\xff\x00\x00" else b
+              ip4 = ".".join(str(x) for x in b[::-1][:4]) if len(b) == 4 else b.hex()
+              return f"{ip4}:{int(port, 16)}"
+          def proctcp():
+              # Kernels without inet_diag (the Celesto guest) still have /proc/net/tcp:
+              # tx_queue = bytes written but not yet acked, plus cwnd and ssthresh.
+              r = []
+              for f in ("/proc/net/tcp", "/proc/net/tcp6"):
+                  try:
+                      lines = open(f).read().splitlines()[1:]
+                  except OSError:
+                      continue
+                  for line in lines:
+                      v = line.split()
+                      if v[3] != "01" or not v[2].endswith(":01BB"):
+                          continue
+                      txq, rxq = (int(x, 16) for x in v[4].split(":"))
+                      r.append([hexaddr(v[1]), hexaddr(v[2]), txq, rxq, int(v[15]), int(v[16])])
+              return r
+          def snmp():
+              lines = [l.split() for l in open("/proc/net/snmp") if l.startswith("Tcp:")]
+              d = dict(zip(lines[0][1:], lines[1][1:]))
+              return [int(d["OutSegs"]), int(d["RetransSegs"])]
           i = 0
           while not stop:
               t = time.time()
               rec = {"t": round(t, 3), "net": netdev()}
+              if i % 2 == 0:
+                  try:
+                      rec["tcp"] = proctcp()
+                      rec["snmp"] = snmp()
+                  except Exception as e:
+                      rec["tcp_error"] = repr(e)
               if i % 5 == 0:
                   rec["cpu"] = [int(x) for x in open("/proc/stat").readline().split()[1:]]
                   rec["procs"] = procs()
@@ -174,8 +223,31 @@ jobs:
           for key, pts in conns.items():
               if len(pts) >= 2 and pts[-1][1] - pts[0][1] > 4 << 20:
                   rates.append((pts[-1][1] - pts[0][1]) / (pts[-1][0] - pts[0][0]) / 1e6)
-          busy = [f for f in flags.values() if "busy" in f]
-          res = {"test": label, "dir": direction, "iface": iface, "payload_bytes": payload,
+          # /proc/net/tcp: is the sender's queue backed up (network or receiver limited)
+          # or nearly empty (the sending application is the limit)?
+          socks, snmps = {}, []
+          for r in recs:
+              if "tcp" not in r or t02 is None or not (t02 <= r["t"] <= t98):
+                  continue
+              snmps.append(r["snmp"])
+              for loc, rem, txq, rxq, cwnd, ssth in r["tcp"]:
+                  socks.setdefault(loc + ">" + rem, []).append((txq, rxq, cwnd, ssth))
+          active = {k: v for k, v in socks.items() if max(x[0] if direction == "up" else x[1] for x in v) >= 256 << 10}
+          procnet = {}
+          if active:
+              med = lambda xs: statistics.median(xs) if xs else None
+              qi = 0 if direction == "up" else 1
+              allq = [x[qi] for v in active.values() for x in v]
+              cw = [x[2] for v in active.values() for x in v]
+              st = [x[3] for v in active.values() for x in v if x[3] > 0]
+              backlog = [x[0] > x[2] * 1448 for v in active.values() for x in v] if direction == "up" else []
+              procnet = {"sockets": len(active), "remotes": sorted({k.split(">")[1].rsplit(":", 1)[0] for k in active}),
+                         "queue_KB_median": round(med(allq) / 1024), "queue_KB_p90": round(sorted(allq)[int(0.9 * (len(allq) - 1))] / 1024),
+                         "cwnd_median": med(cw), "cwnd_max": max(cw), "ssthresh_median": med(st),
+                         "backlog_pct": round(100 * sum(backlog) / len(backlog), 1) if backlog else None}
+          if len(snmps) >= 2 and snmps[-1][0] > snmps[0][0]:
+              procnet["retrans_pct"] = round(100 * (snmps[-1][1] - snmps[0][1]) / (snmps[-1][0] - snmps[0][0]), 3)
+          res = {"test": label, "dir": direction, "iface": iface, "payload_bytes": payload, "procnet": procnet,
                  "wire_bytes": moved, "bulk_MBps": round(bulk, 1) if bulk else None,
                  "peak_1s_MBps": round(peak, 1), "bulk_seconds": round(t98 - t02, 2) if bulk else None,
                  "cpu": cpu, "tcp_streams": len(rates),
@@ -234,12 +306,12 @@ jobs:
           # One toolkit save through the patched bundle: streams, key.
           cat > "$T/toolkit_save.sh" <<'SH'
           #!/usr/bin/env bash
-          c=$1; key=$2
+          c=$1; key=$2; mb=${3:-64}; log="$O/$4.log"
           cd "$GITHUB_WORKSPACE"
-          UBW_CONCURRENCY=$c INPUT_PATH=bench-data INPUT_KEY="$key" AZURE_LOG_LEVEL=info "$NODE_BIN" "$T/save.js" 2>&1 \
-            | while IFS= read -r l; do printf '%s %s\n' "$(date +%s.%3N)" "${l%%\?*}"; done > "$O/toolkit_up_c$c.log"
-          grep -E "Sent [0-9]+ of|Cache saved|Warning|warning|Error|error" "$O/toolkit_up_c$c.log" | grep -v "azure:" | tail -4
-          grep -q "Cache saved with key" "$O/toolkit_up_c$c.log"
+          UBW_CONCURRENCY=$c UBW_CHUNK_MB=$mb INPUT_PATH=bench-data INPUT_KEY="$key" AZURE_LOG_LEVEL=info "$NODE_BIN" "$T/save.js" 2>&1 \
+            | while IFS= read -r l; do printf '%s %s\n' "$(date +%s.%3N)" "${l%%\?*}"; done > "$log"
+          grep -E "Sent [0-9]+ of|Cache saved|Warning|warning|Error|error" "$log" | grep -v "azure:" | tail -4
+          grep -q "Cache saved with key" "$log"
           SH
           chmod +x "$T/toolkit_save.sh"
           echo "helpers ready"
@@ -307,10 +379,13 @@ jobs:
           jq -r '.targets[].url' "$T/fast.json" > "$T/oca_urls"
           jq -c '{client: .client.location, targets: [.targets[] | {name: (.name|split(".")[0]), location}]}' "$T/fast.json" | tee "$O/oca_targets.json"
           echo "{\"http_start\": \"$(date -u +%FT%TZ)\"}" >> "$O/timeline.json"
+          # speed.cloudflare.com rate-limits bulk use (429/502/504), so it gets 8 requests a level
+          # (16 at 16 streams) and downloads only at 1 and 4 streams; read its per-request MB/s.
           for c in 1 4 8 16; do
-            "$T/sampled.sh" cf_up_c$c up $((1023 << 20)) "$T/http_test.sh" cf_up $c 16
+            n=$(( c > 8 ? c : 8 ))
+            "$T/sampled.sh" cf_up_c$c up $((n << 26)) "$T/http_test.sh" cf_up $c $n
             "$T/sampled.sh" oca_up_c$c up $((40 * 26214400)) "$T/http_test.sh" oca_up $c 40
-            "$T/sampled.sh" cf_down_c$c down $((16 << 26)) "$T/http_test.sh" cf_down $c 16
+            if [ $c -le 4 ]; then "$T/sampled.sh" cf_down_c$c down $((8 << 26)) "$T/http_test.sh" cf_down $c 8; fi
             "$T/sampled.sh" oca_down_c$c down $((40 * 26214400)) "$T/http_test.sh" oca_down $c 40
           done
           true
@@ -319,7 +394,8 @@ jobs:
         run: |
           set +e
           curl -sSfL -m 60 https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-x86_64.tgz | tar xz -C "$T" speedtest
-          "$T/sampled.sh" ookla up 0 bash -c '"$T/speedtest" --accept-license --accept-gdpr -f json -p no > "$O/ookla.json" 2> "$O/ookla.err"'
+          # Pin Shentel Ashburn (id 5132), next to both clouds' Virginia regions; auto-pick if it is down.
+          "$T/sampled.sh" ookla up 0 bash -c '"$T/speedtest" --accept-license --accept-gdpr -f json -p no -s 5132 > "$O/ookla.json" 2> "$O/ookla.err" || "$T/speedtest" --accept-license --accept-gdpr -f json -p no > "$O/ookla.json" 2>> "$O/ookla.err"'
           jq -c '{down_MBps: (.download.bandwidth/1e6), up_MBps: (.upload.bandwidth/1e6), up_elapsed_ms: .upload.elapsed,
                   server: (.server.name + " / " + .server.location), isp: .isp, ping_ms: .ping.latency}' "$O/ookla.json" | tee "$O/ookla_summary.json"
           true
@@ -329,7 +405,7 @@ jobs:
           curl -sSfL -o "$T/save.js" "https://raw.githubusercontent.com/actions/cache/$ACTIONS_CACHE_SHA/dist/save-only/index.js"
           sha256sum "$T/save.js"
           echo "7f64677407a4befe523854fb28794faa4e2d344dfed5d6cd4887fa9ae5428b3f  $T/save.js" | sha256sum -c
-          sed -i 's/uploadConcurrency: 8, useAzureSdk: true/uploadConcurrency: Number(process.env.UBW_CONCURRENCY || 8), useAzureSdk: true/' "$T/save.js"
+          sed -i 's/uploadChunkSize: 64 \* 1024 \* 1024, uploadConcurrency: 8, useAzureSdk: true/uploadChunkSize: Number(process.env.UBW_CHUNK_MB || 64) * 1024 * 1024, uploadConcurrency: Number(process.env.UBW_CONCURRENCY || 8), useAzureSdk: true/' "$T/save.js"
           test "$(grep -c 'process.env.UBW_CONCURRENCY' "$T/save.js")" = 1
           echo "{\"toolkit_start\": \"$(date -u +%FT%TZ)\"}" >> "$O/timeline.json"
 
@@ -360,11 +436,13 @@ jobs:
             const { spawnSync } = require('child_process');
             const T = process.env.T;
             const env = { ...process.env, NODE_BIN: process.execPath };
-            for (const c of [1, 4, 16]) {
-              const key = `${process.env.UBW_ID}-c${c}`;
-              const r = spawnSync(`${T}/sampled.sh`, [`toolkit_up_c${c}`, 'up', String(1023 << 20), `${T}/toolkit_save.sh`, String(c), key],
+            // [streams, block MiB]; the last one asks whether more, smaller R2 parts help.
+            for (const [c, mb] of [[1, 64], [4, 64], [16, 64], [32, 16]]) {
+              const label = mb === 64 ? `toolkit_up_c${c}` : `toolkit_up_c${c}_b${mb}`;
+              const key = `${process.env.UBW_ID}-${label}`;
+              const r = spawnSync(`${T}/sampled.sh`, [label, 'up', String(1023 << 20), `${T}/toolkit_save.sh`, String(c), key, String(mb), label],
                                   { stdio: 'inherit', env });
-              if (r.status !== 0) core.warning(`toolkit save c=${c} exited ${r.status}`);
+              if (r.status !== 0) core.warning(`toolkit save ${label} exited ${r.status}`);
             }
 
       - name: (c) Start sampler for stock restore of the 8-stream entry
@@ -411,7 +489,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          for c in 1 4 8 16; do gh cache delete "$UBW_ID-c$c" -R "$GITHUB_REPOSITORY" || true; done
+          for k in c8 toolkit_up_c1 toolkit_up_c4 toolkit_up_c16 toolkit_up_c32_b16; do gh cache delete "$UBW_ID-$k" -R "$GITHUB_REPOSITORY" || true; done
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
