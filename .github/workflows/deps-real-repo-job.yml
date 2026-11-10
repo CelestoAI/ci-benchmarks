@@ -1,0 +1,81 @@
+# One dependency-cache sample: install excalidraw's yarn dependencies with actions/cache.
+name: Real-repo dependency cache job
+on:
+  workflow_call:
+    inputs:
+      phase: { type: string, required: true }        # cold | warm
+      provider: { type: string, required: true }
+      runs_on: { type: string, required: true }
+      cache_key: { type: string, required: true }
+      sample: { type: string, required: true }
+      repo: { type: string, required: true }
+      sha: { type: string, required: true }
+permissions:
+  contents: read
+jobs:
+  install:
+    name: ${{ inputs.phase }} ${{ inputs.provider }} s${{ inputs.sample }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    timeout-minutes: 30
+    env:
+      YARN_CACHE_FOLDER: ${{ github.workspace }}/.yarn-cache
+    steps:
+      - name: Check out ${{ inputs.repo }}@${{ inputs.sha }}
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: ${{ inputs.repo }}
+          ref: ${{ inputs.sha }}
+          path: app
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - name: Host check (4 CPUs, 14+ GiB)
+        run: |
+          corepack enable
+          echo "cpu=$(nproc) mem=$(free -g | awk '/Mem/{print $2}') model=$(grep -m1 'model name' /proc/cpuinfo | cut -d: -f2)"
+          test "$(nproc)" = 4
+          echo "T_RESTORE_START=$(date +%s%3N)" >> "$GITHUB_ENV"
+      - name: Restore yarn cache
+        id: restore
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .yarn-cache
+          key: ${{ inputs.cache_key }}
+      - name: Install
+        working-directory: app
+        run: |
+          echo "T_RESTORE_END=$(date +%s%3N)" >> "$GITHUB_ENV"
+          if [ "${{ inputs.phase }}" = warm ] && [ "${{ steps.restore.outputs.cache-hit }}" != true ]; then
+            echo "::error::warm job missed the cache"; exit 1
+          fi
+          s=$(date +%s%3N)
+          yarn install --frozen-lockfile --prefer-offline --non-interactive --network-concurrency 16
+          e=$(date +%s%3N)
+          echo "INSTALL_MS=$((e-s))" >> "$GITHUB_ENV"
+          echo "CACHE_BYTES=$(du -sb ../.yarn-cache | cut -f1)" >> "$GITHUB_ENV"
+          echo "T_SAVE_START=$(date +%s%3N)" >> "$GITHUB_ENV"
+      - name: Save yarn cache
+        if: inputs.phase == 'cold'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .yarn-cache
+          key: ${{ inputs.cache_key }}
+      - name: Record result
+        run: |
+          now=$(date +%s%3N)
+          save_ms=null; [ "${{ inputs.phase }}" = cold ] && save_ms=$((now-T_SAVE_START))
+          mkdir -p result
+          cat > result/result.json <<JSON
+          {"provider":"${{ inputs.provider }}","phase":"${{ inputs.phase }}","sample":${{ inputs.sample }},
+           "repo":"${{ inputs.repo }}","sha":"${{ inputs.sha }}","run_id":${{ github.run_id }},
+           "cache_hit":"${{ steps.restore.outputs.cache-hit }}","restore_ms":$((T_RESTORE_END-T_RESTORE_START)),
+           "install_ms":$INSTALL_MS,"save_ms":$save_ms,"cache_bytes":$CACHE_BYTES,
+           "cpu_model":"$(grep -m1 'model name' /proc/cpuinfo | cut -d: -f2 | xargs)","runner":"$RUNNER_NAME"}
+          JSON
+          cat result/result.json
+          { echo "| provider | phase | hit | restore s | install s | save s | cache MiB |"; echo "|---|---|---|--:|--:|--:|--:|"
+            jq -r '"| \(.provider) | \(.phase) | \(.cache_hit) | \(.restore_ms/1000) | \(.install_ms/1000) | \((.save_ms // 0)/1000) | \(.cache_bytes/1048576|floor) |"' result/result.json; } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: deps-${{ inputs.phase }}-${{ inputs.provider }}-s${{ inputs.sample }}
+          path: result/result.json
