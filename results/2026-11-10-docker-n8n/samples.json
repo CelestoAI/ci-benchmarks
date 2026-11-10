@@ -1,0 +1,3622 @@
+{
+  "run_ids": [
+    42842966842,
+    42847912840,
+    42852263141
+  ],
+  "revision": "180e1213573add4b5f164acd6a467754bc355a48",
+  "repo": "n8n-io/n8n",
+  "repo_sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+  "statistics": {
+    "celesto-large": {
+      "cold": {
+        "n": 9,
+        "build_ms": 341682,
+        "build_range": [
+          306196,
+          351441
+        ],
+        "import_ms": 200,
+        "import_range": [
+          200,
+          300
+        ],
+        "export_ms": 122100,
+        "export_range": [
+          105700,
+          139000
+        ],
+        "cached_steps": 0,
+        "cached_steps_range": [
+          0,
+          0
+        ],
+        "cpu_models": [
+          "AMD EPYC-Milan Processor",
+          "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz"
+        ]
+      },
+      "warm": {
+        "n": 9,
+        "build_ms": 41413,
+        "build_range": [
+          34470,
+          259059
+        ],
+        "import_ms": 400,
+        "import_range": [
+          300,
+          600
+        ],
+        "export_ms": 10400,
+        "export_range": [
+          9200,
+          45500
+        ],
+        "cached_steps": 26,
+        "cached_steps_range": [
+          25,
+          26
+        ],
+        "cpu_models": [
+          "AMD EPYC-Milan Processor",
+          "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz"
+        ]
+      },
+      "partial": {
+        "n": 9,
+        "build_ms": 153145,
+        "build_range": [
+          108702,
+          291620
+        ],
+        "import_ms": 400,
+        "import_range": [
+          300,
+          500
+        ],
+        "export_ms": 65300,
+        "export_range": [
+          60200,
+          73300
+        ],
+        "cached_steps": 20,
+        "cached_steps_range": [
+          19,
+          20
+        ],
+        "cpu_models": [
+          "AMD EPYC-Milan Processor",
+          "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz"
+        ]
+      }
+    },
+    "github-hosted": {
+      "cold": {
+        "n": 9,
+        "build_ms": 289165,
+        "build_range": [
+          249211,
+          334781
+        ],
+        "import_ms": 100,
+        "import_range": [
+          100,
+          200
+        ],
+        "export_ms": 80800,
+        "export_range": [
+          66200,
+          96500
+        ],
+        "cached_steps": 0,
+        "cached_steps_range": [
+          0,
+          0
+        ],
+        "cpu_models": [
+          "AMD EPYC 9V74 80-Core Processor",
+          "AMD EPYC 7763 64-Core Processor",
+          "AMD EPYC 9V45 96-Core Processor",
+          "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+          "INTEL(R) XEON(R) PLATINUM 8573C"
+        ]
+      },
+      "warm": {
+        "n": 9,
+        "build_ms": 32273,
+        "build_range": [
+          23759,
+          36065
+        ],
+        "import_ms": 400,
+        "import_range": [
+          100,
+          500
+        ],
+        "export_ms": 3800,
+        "export_range": [
+          2100,
+          4600
+        ],
+        "cached_steps": 26,
+        "cached_steps_range": [
+          26,
+          26
+        ],
+        "cpu_models": [
+          "AMD EPYC 9V74 80-Core Processor",
+          "AMD EPYC 7763 64-Core Processor",
+          "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+          "INTEL(R) XEON(R) PLATINUM 8573C"
+        ]
+      },
+      "partial": {
+        "n": 9,
+        "build_ms": 136480,
+        "build_range": [
+          106518,
+          145878
+        ],
+        "import_ms": 400,
+        "import_range": [
+          100,
+          500
+        ],
+        "export_ms": 59600,
+        "export_range": [
+          48000,
+          69700
+        ],
+        "cached_steps": 20,
+        "cached_steps_range": [
+          20,
+          20
+        ],
+        "cpu_models": [
+          "AMD EPYC 9V45 96-Core Processor",
+          "AMD EPYC 7763 64-Core Processor",
+          "AMD EPYC 9V74 80-Core Processor",
+          "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz"
+        ]
+      }
+    }
+  },
+  "samples": [
+    {
+      "provider": "celesto-large",
+      "phase": "cold",
+      "sample": 1,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42842966842,
+      "build_ms": 345710,
+      "import_ms": 200,
+      "export_ms": 122100,
+      "steps": 26,
+      "cached_steps": 0,
+      "rebuilt": [
+        {
+          "step": "[toolchain 2/2] RUN apk add --no-cache python3 make g++",
+          "s": 8.4
+        },
+        {
+          "step": "[stage-2 2/8] WORKDIR /home/node",
+          "s": 3.5
+        },
+        {
+          "step": "[native-builder  1/18] COPY ./compiled/node_modules/.pnpm/isolated-vm@*/node_modules/isola",
+          "s": 13
+        },
+        {
+          "step": "[native-builder  2/18] WORKDIR /build/isolated-vm",
+          "s": 1.5
+        },
+        {
+          "step": "[native-builder  3/18] RUN rm -rf prebuilds && node \"/usr/local/lib/node_modules/npm/node_",
+          "s": 55.1
+        },
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 20.9
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 43.9
+        },
+        {
+          "step": "[native-builder  4/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/node-addo",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  5/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/tar /buil",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder  6/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/@isaacs/fs-mi",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder  7/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/chownr /build",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder  8/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minipass /bui",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder  9/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minizlib /bui",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 10/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/yallist /buil",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder 11/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/sqlite3 /",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 12/18] WORKDIR /build/node_modules/sqlite3",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 13/18] RUN node \"/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin",
+          "s": 81.5
+        },
+        {
+          "step": "[native-builder 14/18] RUN apk add --no-cache librdkafka-dev",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder 15/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 16/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 17/18] WORKDIR /build/node_modules/@confluentinc/kafka-javascript",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 18/18] RUN BUILD_LIBRDKAFKA=0 node \"/usr/local/lib/node_modules/npm/node_m",
+          "s": 29
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0.1
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC-Milan Processor",
+      "runner": "celesto-rs-c3c009d4bfdabdc0d7bbcb601a800a9a",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42842966842/job/129925368039",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "warm",
+      "sample": 1,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42842966842,
+      "build_ms": 41413,
+      "import_ms": 600,
+      "export_ms": 10400,
+      "steps": 26,
+      "cached_steps": 26,
+      "rebuilt": [],
+      "cpu_model": "AMD EPYC-Milan Processor",
+      "runner": "celesto-rs-715d8397d8d055cb1bd2cfc43dc7768d",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42842966842/job/129929778428",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": true
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "partial",
+      "sample": 1,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42842966842,
+      "build_ms": 153145,
+      "import_ms": 500,
+      "export_ms": 73300,
+      "steps": 26,
+      "cached_steps": 20,
+      "rebuilt": [
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 15.1
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 36
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0.4
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0.1
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC-Milan Processor",
+      "runner": "celesto-rs-88344b6e9adb8efdc83696f14458754c",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42842966842/job/129931066979",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "cold",
+      "sample": 2,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42842966842,
+      "build_ms": 345696,
+      "import_ms": 300,
+      "export_ms": 123200,
+      "steps": 26,
+      "cached_steps": 0,
+      "rebuilt": [
+        {
+          "step": "[toolchain 2/2] RUN apk add --no-cache python3 make g++",
+          "s": 25.8
+        },
+        {
+          "step": "[stage-2 2/8] WORKDIR /home/node",
+          "s": 23.8
+        },
+        {
+          "step": "[native-builder  1/18] COPY ./compiled/node_modules/.pnpm/isolated-vm@*/node_modules/isola",
+          "s": 11.2
+        },
+        {
+          "step": "[native-builder  2/18] WORKDIR /build/isolated-vm",
+          "s": 0.2
+        },
+        {
+          "step": "[native-builder  3/18] RUN rm -rf prebuilds && node \"/usr/local/lib/node_modules/npm/node_",
+          "s": 49.5
+        },
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 18.2
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 29.8
+        },
+        {
+          "step": "[native-builder  4/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/node-addo",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  5/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/tar /buil",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  6/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/@isaacs/fs-mi",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  7/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/chownr /build",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  8/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minipass /bui",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  9/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minizlib /bui",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder 10/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/yallist /buil",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 11/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/sqlite3 /",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder 12/18] WORKDIR /build/node_modules/sqlite3",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 13/18] RUN node \"/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin",
+          "s": 79.2
+        },
+        {
+          "step": "[native-builder 14/18] RUN apk add --no-cache librdkafka-dev",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder 15/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 16/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder 17/18] WORKDIR /build/node_modules/@confluentinc/kafka-javascript",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 18/18] RUN BUILD_LIBRDKAFKA=0 node \"/usr/local/lib/node_modules/npm/node_m",
+          "s": 27.6
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "runner": "celesto-rs-1e262be79567cf44990f20ef84dcc2e6",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42842966842/job/129925368360",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "warm",
+      "sample": 2,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42842966842,
+      "build_ms": 42594,
+      "import_ms": 300,
+      "export_ms": 9500,
+      "steps": 26,
+      "cached_steps": 26,
+      "rebuilt": [],
+      "cpu_model": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "runner": "celesto-rs-983072f276479ade443697e224d376a0",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42842966842/job/129929778543",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": true
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "partial",
+      "sample": 2,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42842966842,
+      "build_ms": 121226,
+      "import_ms": 400,
+      "export_ms": 65300,
+      "steps": 26,
+      "cached_steps": 20,
+      "rebuilt": [
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 8.5
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 22.7
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 2.5
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "runner": "celesto-rs-0ac7429fdf7e1805cdb3a90a0ff10757",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42842966842/job/129931067130",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "cold",
+      "sample": 3,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42842966842,
+      "build_ms": 348826,
+      "import_ms": 300,
+      "export_ms": 139000,
+      "steps": 26,
+      "cached_steps": 0,
+      "rebuilt": [
+        {
+          "step": "[toolchain 2/2] RUN apk add --no-cache python3 make g++",
+          "s": 7.7
+        },
+        {
+          "step": "[stage-2 2/8] WORKDIR /home/node",
+          "s": 4.8
+        },
+        {
+          "step": "[native-builder  1/18] COPY ./compiled/node_modules/.pnpm/isolated-vm@*/node_modules/isola",
+          "s": 15
+        },
+        {
+          "step": "[native-builder  2/18] WORKDIR /build/isolated-vm",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  3/18] RUN rm -rf prebuilds && node \"/usr/local/lib/node_modules/npm/node_",
+          "s": 49.5
+        },
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 22.6
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 38.3
+        },
+        {
+          "step": "[native-builder  4/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/node-addo",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder  5/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/tar /buil",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder  6/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/@isaacs/fs-mi",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder  7/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/chownr /build",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder  8/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minipass /bui",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder  9/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minizlib /bui",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder 10/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/yallist /buil",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder 11/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/sqlite3 /",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder 12/18] WORKDIR /build/node_modules/sqlite3",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 13/18] RUN node \"/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin",
+          "s": 73.4
+        },
+        {
+          "step": "[native-builder 14/18] RUN apk add --no-cache librdkafka-dev",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 15/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder 16/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 17/18] WORKDIR /build/node_modules/@confluentinc/kafka-javascript",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 18/18] RUN BUILD_LIBRDKAFKA=0 node \"/usr/local/lib/node_modules/npm/node_m",
+          "s": 26.2
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC-Milan Processor",
+      "runner": "celesto-rs-231bf7b8cb25b2a6ba706e007a98e5bc",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42842966842/job/129925368413",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "warm",
+      "sample": 3,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42842966842,
+      "build_ms": 40419,
+      "import_ms": 400,
+      "export_ms": 10600,
+      "steps": 26,
+      "cached_steps": 26,
+      "rebuilt": [],
+      "cpu_model": "AMD EPYC-Milan Processor",
+      "runner": "celesto-rs-3f9de007032bf9a34aa0c83f674f7f0f",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42842966842/job/129929778421",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": true
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "partial",
+      "sample": 3,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42842966842,
+      "build_ms": 172672,
+      "import_ms": 400,
+      "export_ms": 63900,
+      "steps": 26,
+      "cached_steps": 20,
+      "rebuilt": [
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 29.6
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 31.8
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0.2
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0.1
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC-Milan Processor",
+      "runner": "celesto-rs-cb31ab6ef39dd023c6c7cdf8c3d262d5",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42842966842/job/129931067041",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "cold",
+      "sample": 1,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42842966842,
+      "build_ms": 267668,
+      "import_ms": 100,
+      "export_ms": 66200,
+      "steps": 26,
+      "cached_steps": 0,
+      "rebuilt": [
+        {
+          "step": "[stage-2 2/8] WORKDIR /home/node",
+          "s": 8.2
+        },
+        {
+          "step": "[toolchain 2/2] RUN apk add --no-cache python3 make g++",
+          "s": 11.4
+        },
+        {
+          "step": "[native-builder  1/18] COPY ./compiled/node_modules/.pnpm/isolated-vm@*/node_modules/isola",
+          "s": 11
+        },
+        {
+          "step": "[native-builder  2/18] WORKDIR /build/isolated-vm",
+          "s": 5.5
+        },
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 13.4
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 39.1
+        },
+        {
+          "step": "[native-builder  3/18] RUN rm -rf prebuilds && node \"/usr/local/lib/node_modules/npm/node_",
+          "s": 57.4
+        },
+        {
+          "step": "[native-builder  4/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/node-addo",
+          "s": 1.1
+        },
+        {
+          "step": "[native-builder  5/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/tar /buil",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  6/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/@isaacs/fs-mi",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  7/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/chownr /build",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder  8/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minipass /bui",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder  9/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minizlib /bui",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 10/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/yallist /buil",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 11/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/sqlite3 /",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 12/18] WORKDIR /build/node_modules/sqlite3",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 13/18] RUN node \"/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin",
+          "s": 68.1
+        },
+        {
+          "step": "[native-builder 14/18] RUN apk add --no-cache librdkafka-dev",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder 15/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 16/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 17/18] WORKDIR /build/node_modules/@confluentinc/kafka-javascript",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 18/18] RUN BUILD_LIBRDKAFKA=0 node \"/usr/local/lib/node_modules/npm/node_m",
+          "s": 23.2
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0.1
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+      "runner": "GitHub Actions 1000038909",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42842966842/job/129925368445",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "warm",
+      "sample": 1,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42842966842,
+      "build_ms": 29140,
+      "import_ms": 100,
+      "export_ms": 2100,
+      "steps": 26,
+      "cached_steps": 26,
+      "rebuilt": [],
+      "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+      "runner": "GitHub Actions 1000038917",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42842966842/job/129929778478",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": true
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "partial",
+      "sample": 1,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42842966842,
+      "build_ms": 106518,
+      "import_ms": 300,
+      "export_ms": 49100,
+      "steps": 26,
+      "cached_steps": 20,
+      "rebuilt": [
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 12.3
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 24.7
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0.4
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0.2
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+      "runner": "GitHub Actions 1000038920",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42842966842/job/129931066891",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "cold",
+      "sample": 2,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42842966842,
+      "build_ms": 334781,
+      "import_ms": 100,
+      "export_ms": 87800,
+      "steps": 26,
+      "cached_steps": 0,
+      "rebuilt": [
+        {
+          "step": "[stage-2 2/8] WORKDIR /home/node",
+          "s": 1.1
+        },
+        {
+          "step": "[toolchain 2/2] RUN apk add --no-cache python3 make g++",
+          "s": 4.6
+        },
+        {
+          "step": "[native-builder  1/18] COPY ./compiled/node_modules/.pnpm/isolated-vm@*/node_modules/isola",
+          "s": 3.1
+        },
+        {
+          "step": "[native-builder  2/18] WORKDIR /build/isolated-vm",
+          "s": 0
+        },
+        {
+          "step": "[native-builder  3/18] RUN rm -rf prebuilds && node \"/usr/local/lib/node_modules/npm/node_",
+          "s": 83.8
+        },
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 19.2
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 49.6
+        },
+        {
+          "step": "[native-builder  4/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/node-addo",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  5/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/tar /buil",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  6/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/@isaacs/fs-mi",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  7/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/chownr /build",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  8/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minipass /bui",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  9/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minizlib /bui",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 10/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/yallist /buil",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 11/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/sqlite3 /",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 12/18] WORKDIR /build/node_modules/sqlite3",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 13/18] RUN node \"/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin",
+          "s": 88.5
+        },
+        {
+          "step": "[native-builder 14/18] RUN apk add --no-cache librdkafka-dev",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 15/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 16/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 17/18] WORKDIR /build/node_modules/@confluentinc/kafka-javascript",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 18/18] RUN BUILD_LIBRDKAFKA=0 node \"/usr/local/lib/node_modules/npm/node_m",
+          "s": 30.1
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC 7763 64-Core Processor",
+      "runner": "GitHub Actions 1000038907",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42842966842/job/129925368117",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "warm",
+      "sample": 2,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42842966842,
+      "build_ms": 33340,
+      "import_ms": 100,
+      "export_ms": 2100,
+      "steps": 26,
+      "cached_steps": 26,
+      "rebuilt": [],
+      "cpu_model": "AMD EPYC 7763 64-Core Processor",
+      "runner": "GitHub Actions 1000038918",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42842966842/job/129929778429",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": true
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "partial",
+      "sample": 2,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42842966842,
+      "build_ms": 134339,
+      "import_ms": 300,
+      "export_ms": 59600,
+      "steps": 26,
+      "cached_steps": 20,
+      "rebuilt": [
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 15
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 29.2
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0.3
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0.1
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC 7763 64-Core Processor",
+      "runner": "GitHub Actions 1000038921",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42842966842/job/129931067109",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "cold",
+      "sample": 3,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42842966842,
+      "build_ms": 249211,
+      "import_ms": 200,
+      "export_ms": 87900,
+      "steps": 26,
+      "cached_steps": 0,
+      "rebuilt": [
+        {
+          "step": "[stage-2 2/8] WORKDIR /home/node",
+          "s": 6.5
+        },
+        {
+          "step": "[toolchain 2/2] RUN apk add --no-cache python3 make g++",
+          "s": 9.3
+        },
+        {
+          "step": "[native-builder  1/18] COPY ./compiled/node_modules/.pnpm/isolated-vm@*/node_modules/isola",
+          "s": 11
+        },
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 11.5
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 31.3
+        },
+        {
+          "step": "[native-builder  2/18] WORKDIR /build/isolated-vm",
+          "s": 2.5
+        },
+        {
+          "step": "[native-builder  3/18] RUN rm -rf prebuilds && node \"/usr/local/lib/node_modules/npm/node_",
+          "s": 45.4
+        },
+        {
+          "step": "[native-builder  4/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/node-addo",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  5/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/tar /buil",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  6/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/@isaacs/fs-mi",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  7/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/chownr /build",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  8/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minipass /bui",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  9/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minizlib /bui",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 10/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/yallist /buil",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 11/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/sqlite3 /",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 12/18] WORKDIR /build/node_modules/sqlite3",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 13/18] RUN node \"/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin",
+          "s": 55.6
+        },
+        {
+          "step": "[native-builder 14/18] RUN apk add --no-cache librdkafka-dev",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 15/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 16/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder 17/18] WORKDIR /build/node_modules/@confluentinc/kafka-javascript",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 18/18] RUN BUILD_LIBRDKAFKA=0 node \"/usr/local/lib/node_modules/npm/node_m",
+          "s": 17.6
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0.1
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0
+        }
+      ],
+      "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+      "runner": "GitHub Actions 1000038908",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42842966842/job/129925368177",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "warm",
+      "sample": 3,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42842966842,
+      "build_ms": 35157,
+      "import_ms": 500,
+      "export_ms": 4600,
+      "steps": 26,
+      "cached_steps": 26,
+      "rebuilt": [],
+      "cpu_model": "AMD EPYC 7763 64-Core Processor",
+      "runner": "GitHub Actions 1000038916",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42842966842/job/129929778296",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": true
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "partial",
+      "sample": 3,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42842966842,
+      "build_ms": 122562,
+      "import_ms": 100,
+      "export_ms": 48000,
+      "steps": 26,
+      "cached_steps": 20,
+      "rebuilt": [
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 15.2
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 29.5
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 1
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC 7763 64-Core Processor",
+      "runner": "GitHub Actions 1000038919",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42842966842/job/129931066943",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "cold",
+      "sample": 1,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42847912840,
+      "build_ms": 341682,
+      "import_ms": 200,
+      "export_ms": 120800,
+      "steps": 26,
+      "cached_steps": 0,
+      "rebuilt": [
+        {
+          "step": "[stage-2 2/8] WORKDIR /home/node",
+          "s": 2
+        },
+        {
+          "step": "[toolchain 2/2] RUN apk add --no-cache python3 make g++",
+          "s": 5
+        },
+        {
+          "step": "[native-builder  1/18] COPY ./compiled/node_modules/.pnpm/isolated-vm@*/node_modules/isola",
+          "s": 10.1
+        },
+        {
+          "step": "[native-builder  2/18] WORKDIR /build/isolated-vm",
+          "s": 1.2
+        },
+        {
+          "step": "[native-builder  3/18] RUN rm -rf prebuilds && node \"/usr/local/lib/node_modules/npm/node_",
+          "s": 57.1
+        },
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 17.7
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 46
+        },
+        {
+          "step": "[native-builder  4/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/node-addo",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder  5/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/tar /buil",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder  6/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/@isaacs/fs-mi",
+          "s": 3.7
+        },
+        {
+          "step": "[native-builder  7/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/chownr /build",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder  8/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minipass /bui",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder  9/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minizlib /bui",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 10/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/yallist /buil",
+          "s": 1.1
+        },
+        {
+          "step": "[native-builder 11/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/sqlite3 /",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 12/18] WORKDIR /build/node_modules/sqlite3",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 13/18] RUN node \"/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin",
+          "s": 82
+        },
+        {
+          "step": "[native-builder 14/18] RUN apk add --no-cache librdkafka-dev",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 15/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 16/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 17/18] WORKDIR /build/node_modules/@confluentinc/kafka-javascript",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 18/18] RUN BUILD_LIBRDKAFKA=0 node \"/usr/local/lib/node_modules/npm/node_m",
+          "s": 29.5
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0.1
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC-Milan Processor",
+      "runner": "celesto-rs-6c518bb5b49d9e72a93443baabae49d1",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42847912840/job/129942696807",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "warm",
+      "sample": 1,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42847912840,
+      "build_ms": 67917,
+      "import_ms": 500,
+      "export_ms": 9600,
+      "steps": 26,
+      "cached_steps": 26,
+      "rebuilt": [],
+      "cpu_model": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "runner": "celesto-rs-18d9248d28550226bcb931e29fad2c26",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42847912840/job/129946760019",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": true
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "partial",
+      "sample": 1,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42847912840,
+      "build_ms": 291620,
+      "import_ms": 300,
+      "export_ms": 70100,
+      "steps": 26,
+      "cached_steps": 19,
+      "rebuilt": [
+        {
+          "step": "[native-builder 18/18] RUN BUILD_LIBRDKAFKA=0 node \"/usr/local/lib/node_modules/npm/node_m",
+          "s": 80.1
+        },
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 53.5
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 66.6
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "runner": "celesto-rs-47282297940c9d6d166c2d2c85996530",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42847912840/job/129949789695",
+      "missing_blob_errors": 1,
+      "missing_blobs": [
+        "9ed384de72a6"
+      ],
+      "fully_cached": false
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "cold",
+      "sample": 2,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42847912840,
+      "build_ms": 333984,
+      "import_ms": 200,
+      "export_ms": 127400,
+      "steps": 26,
+      "cached_steps": 0,
+      "rebuilt": [
+        {
+          "step": "[toolchain 2/2] RUN apk add --no-cache python3 make g++",
+          "s": 5.1
+        },
+        {
+          "step": "[stage-2 2/8] WORKDIR /home/node",
+          "s": 1.9
+        },
+        {
+          "step": "[native-builder  1/18] COPY ./compiled/node_modules/.pnpm/isolated-vm@*/node_modules/isola",
+          "s": 5.4
+        },
+        {
+          "step": "[native-builder  2/18] WORKDIR /build/isolated-vm",
+          "s": 0.3
+        },
+        {
+          "step": "[native-builder  3/18] RUN rm -rf prebuilds && node \"/usr/local/lib/node_modules/npm/node_",
+          "s": 51.1
+        },
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 13.4
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 42.7
+        },
+        {
+          "step": "[native-builder  4/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/node-addo",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder  5/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/tar /buil",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder  6/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/@isaacs/fs-mi",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder  7/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/chownr /build",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder  8/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minipass /bui",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder  9/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minizlib /bui",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 10/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/yallist /buil",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 11/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/sqlite3 /",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder 12/18] WORKDIR /build/node_modules/sqlite3",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 13/18] RUN node \"/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin",
+          "s": 83.1
+        },
+        {
+          "step": "[native-builder 14/18] RUN apk add --no-cache librdkafka-dev",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder 15/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 16/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 17/18] WORKDIR /build/node_modules/@confluentinc/kafka-javascript",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 18/18] RUN BUILD_LIBRDKAFKA=0 node \"/usr/local/lib/node_modules/npm/node_m",
+          "s": 28.4
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0.1
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC-Milan Processor",
+      "runner": "celesto-rs-fa3774f828f782e22595a3af398cd7d3",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42847912840/job/129942697926",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "warm",
+      "sample": 2,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42847912840,
+      "build_ms": 42314,
+      "import_ms": 400,
+      "export_ms": 10900,
+      "steps": 26,
+      "cached_steps": 26,
+      "rebuilt": [],
+      "cpu_model": "AMD EPYC-Milan Processor",
+      "runner": "celesto-rs-eb5b2ec27d4700768bfb48a08df0a6b4",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42847912840/job/129946766041",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": true
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "partial",
+      "sample": 2,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42847912840,
+      "build_ms": 155805,
+      "import_ms": 400,
+      "export_ms": 67100,
+      "steps": 26,
+      "cached_steps": 20,
+      "rebuilt": [
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 24.9
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 33.2
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 2.8
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0.1
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC-Milan Processor",
+      "runner": "celesto-rs-73a654133182d88d9d7421fc36253037",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42847912840/job/129949789776",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "cold",
+      "sample": 3,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42847912840,
+      "build_ms": 315904,
+      "import_ms": 200,
+      "export_ms": 129000,
+      "steps": 26,
+      "cached_steps": 0,
+      "rebuilt": [
+        {
+          "step": "[stage-2 2/8] WORKDIR /home/node",
+          "s": 0.7
+        },
+        {
+          "step": "[toolchain 2/2] RUN apk add --no-cache python3 make g++",
+          "s": 2.7
+        },
+        {
+          "step": "[native-builder  1/18] COPY ./compiled/node_modules/.pnpm/isolated-vm@*/node_modules/isola",
+          "s": 3.1
+        },
+        {
+          "step": "[native-builder  2/18] WORKDIR /build/isolated-vm",
+          "s": 0.4
+        },
+        {
+          "step": "[native-builder  3/18] RUN rm -rf prebuilds && node \"/usr/local/lib/node_modules/npm/node_",
+          "s": 45.2
+        },
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 7.3
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 29.7
+        },
+        {
+          "step": "[native-builder  4/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/node-addo",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  5/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/tar /buil",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  6/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/@isaacs/fs-mi",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  7/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/chownr /build",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder  8/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minipass /bui",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  9/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minizlib /bui",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder 10/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/yallist /buil",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder 11/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/sqlite3 /",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 12/18] WORKDIR /build/node_modules/sqlite3",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 13/18] RUN node \"/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin",
+          "s": 82.5
+        },
+        {
+          "step": "[native-builder 14/18] RUN apk add --no-cache librdkafka-dev",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder 15/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder 16/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder 17/18] WORKDIR /build/node_modules/@confluentinc/kafka-javascript",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 18/18] RUN BUILD_LIBRDKAFKA=0 node \"/usr/local/lib/node_modules/npm/node_m",
+          "s": 31
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "runner": "celesto-rs-6119e62580fcda948592704ead136abe",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42847912840/job/129942696602",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "warm",
+      "sample": 3,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42847912840,
+      "build_ms": 259059,
+      "import_ms": 400,
+      "export_ms": 45500,
+      "steps": 26,
+      "cached_steps": 25,
+      "rebuilt": [
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.5
+        }
+      ],
+      "cpu_model": "AMD EPYC-Milan Processor",
+      "runner": "celesto-rs-e750c683385966caa2e6099b3fff242f",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42847912840/job/129946760522",
+      "missing_blob_errors": 16,
+      "missing_blobs": [
+        "d3f3ac558129",
+        "cfd62185df5e",
+        "b0abdf84e75d"
+      ],
+      "fully_cached": false
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "partial",
+      "sample": 3,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42847912840,
+      "build_ms": 191591,
+      "import_ms": 400,
+      "export_ms": 66400,
+      "steps": 26,
+      "cached_steps": 20,
+      "rebuilt": [
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 47
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 38.5
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0.4
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0.1
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC-Milan Processor",
+      "runner": "celesto-rs-73167fbc6d7e3cbcf4840a4996ed7cf4",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42847912840/job/129949789463",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "cold",
+      "sample": 1,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42847912840,
+      "build_ms": 318839,
+      "import_ms": 100,
+      "export_ms": 71700,
+      "steps": 26,
+      "cached_steps": 0,
+      "rebuilt": [
+        {
+          "step": "[stage-2 2/8] WORKDIR /home/node",
+          "s": 1.1
+        },
+        {
+          "step": "[toolchain 2/2] RUN apk add --no-cache python3 make g++",
+          "s": 4.8
+        },
+        {
+          "step": "[native-builder  1/18] COPY ./compiled/node_modules/.pnpm/isolated-vm@*/node_modules/isola",
+          "s": 3.3
+        },
+        {
+          "step": "[native-builder  2/18] WORKDIR /build/isolated-vm",
+          "s": 0.1
+        },
+        {
+          "step": "[native-builder  3/18] RUN rm -rf prebuilds && node \"/usr/local/lib/node_modules/npm/node_",
+          "s": 83.4
+        },
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 19
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 50.5
+        },
+        {
+          "step": "[native-builder  4/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/node-addo",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  5/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/tar /buil",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  6/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/@isaacs/fs-mi",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  7/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/chownr /build",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  8/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minipass /bui",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  9/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minizlib /bui",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 10/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/yallist /buil",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 11/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/sqlite3 /",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 12/18] WORKDIR /build/node_modules/sqlite3",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 13/18] RUN node \"/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin",
+          "s": 89.5
+        },
+        {
+          "step": "[native-builder 14/18] RUN apk add --no-cache librdkafka-dev",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder 15/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 16/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 17/18] WORKDIR /build/node_modules/@confluentinc/kafka-javascript",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 18/18] RUN BUILD_LIBRDKAFKA=0 node \"/usr/local/lib/node_modules/npm/node_m",
+          "s": 30.2
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC 7763 64-Core Processor",
+      "runner": "GitHub Actions 1000038941",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42847912840/job/129942696648",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "warm",
+      "sample": 1,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42847912840,
+      "build_ms": 23759,
+      "import_ms": 100,
+      "export_ms": 2100,
+      "steps": 26,
+      "cached_steps": 26,
+      "rebuilt": [],
+      "cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+      "runner": "GitHub Actions 1000038945",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42847912840/job/129946762735",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": true
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "partial",
+      "sample": 1,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42847912840,
+      "build_ms": 141181,
+      "import_ms": 400,
+      "export_ms": 64100,
+      "steps": 26,
+      "cached_steps": 20,
+      "rebuilt": [
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 14.9
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 30.1
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0.1
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC 7763 64-Core Processor",
+      "runner": "GitHub Actions 1000038949",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42847912840/job/129949789466",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "cold",
+      "sample": 2,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42847912840,
+      "build_ms": 288241,
+      "import_ms": 100,
+      "export_ms": 74600,
+      "steps": 26,
+      "cached_steps": 0,
+      "rebuilt": [
+        {
+          "step": "[stage-2 2/8] WORKDIR /home/node",
+          "s": 1.1
+        },
+        {
+          "step": "[toolchain 2/2] RUN apk add --no-cache python3 make g++",
+          "s": 5
+        },
+        {
+          "step": "[native-builder  1/18] COPY ./compiled/node_modules/.pnpm/isolated-vm@*/node_modules/isola",
+          "s": 4.5
+        },
+        {
+          "step": "[native-builder  2/18] WORKDIR /build/isolated-vm",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder  3/18] RUN rm -rf prebuilds && node \"/usr/local/lib/node_modules/npm/node_",
+          "s": 68.8
+        },
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 9.5
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 35.6
+        },
+        {
+          "step": "[native-builder  4/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/node-addo",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  5/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/tar /buil",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  6/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/@isaacs/fs-mi",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  7/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/chownr /build",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  8/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minipass /bui",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  9/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minizlib /bui",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 10/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/yallist /buil",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 11/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/sqlite3 /",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 12/18] WORKDIR /build/node_modules/sqlite3",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 13/18] RUN node \"/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin",
+          "s": 81.4
+        },
+        {
+          "step": "[native-builder 14/18] RUN apk add --no-cache librdkafka-dev",
+          "s": 1.2
+        },
+        {
+          "step": "[native-builder 15/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 16/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder 17/18] WORKDIR /build/node_modules/@confluentinc/kafka-javascript",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 18/18] RUN BUILD_LIBRDKAFKA=0 node \"/usr/local/lib/node_modules/npm/node_m",
+          "s": 27.3
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+      "runner": "GitHub Actions 1000038942",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42847912840/job/129942696627",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "warm",
+      "sample": 2,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42847912840,
+      "build_ms": 36065,
+      "import_ms": 500,
+      "export_ms": 4600,
+      "steps": 26,
+      "cached_steps": 26,
+      "rebuilt": [],
+      "cpu_model": "AMD EPYC 7763 64-Core Processor",
+      "runner": "GitHub Actions 1000038944",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42847912840/job/129946761959",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": true
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "partial",
+      "sample": 2,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42847912840,
+      "build_ms": 145878,
+      "import_ms": 500,
+      "export_ms": 69700,
+      "steps": 26,
+      "cached_steps": 20,
+      "rebuilt": [
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 14.1
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 29.3
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0.4
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC 7763 64-Core Processor",
+      "runner": "GitHub Actions 1000038947",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42847912840/job/129949789605",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "cold",
+      "sample": 3,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42847912840,
+      "build_ms": 251045,
+      "import_ms": 200,
+      "export_ms": 85100,
+      "steps": 26,
+      "cached_steps": 0,
+      "rebuilt": [
+        {
+          "step": "[stage-2 2/8] WORKDIR /home/node",
+          "s": 6.6
+        },
+        {
+          "step": "[toolchain 2/2] RUN apk add --no-cache python3 make g++",
+          "s": 10.1
+        },
+        {
+          "step": "[native-builder  1/18] COPY ./compiled/node_modules/.pnpm/isolated-vm@*/node_modules/isola",
+          "s": 10.4
+        },
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 11.5
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 30.4
+        },
+        {
+          "step": "[native-builder  2/18] WORKDIR /build/isolated-vm",
+          "s": 3
+        },
+        {
+          "step": "[native-builder  3/18] RUN rm -rf prebuilds && node \"/usr/local/lib/node_modules/npm/node_",
+          "s": 45.2
+        },
+        {
+          "step": "[native-builder  4/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/node-addo",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  5/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/tar /buil",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  6/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/@isaacs/fs-mi",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  7/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/chownr /build",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  8/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minipass /bui",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  9/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minizlib /bui",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 10/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/yallist /buil",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 11/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/sqlite3 /",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 12/18] WORKDIR /build/node_modules/sqlite3",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 13/18] RUN node \"/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin",
+          "s": 57.9
+        },
+        {
+          "step": "[native-builder 14/18] RUN apk add --no-cache librdkafka-dev",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder 15/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 16/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder 17/18] WORKDIR /build/node_modules/@confluentinc/kafka-javascript",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 18/18] RUN BUILD_LIBRDKAFKA=0 node \"/usr/local/lib/node_modules/npm/node_m",
+          "s": 19.2
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0.1
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0
+        }
+      ],
+      "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+      "runner": "GitHub Actions 1000038943",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42847912840/job/129942698105",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "warm",
+      "sample": 3,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42847912840,
+      "build_ms": 30751,
+      "import_ms": 400,
+      "export_ms": 3800,
+      "steps": 26,
+      "cached_steps": 26,
+      "rebuilt": [],
+      "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+      "runner": "GitHub Actions 1000038946",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42847912840/job/129946762447",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": true
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "partial",
+      "sample": 3,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42847912840,
+      "build_ms": 138754,
+      "import_ms": 400,
+      "export_ms": 62100,
+      "steps": 26,
+      "cached_steps": 20,
+      "rebuilt": [
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 15.8
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 29.7
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 2
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0.2
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+      "runner": "GitHub Actions 1000038948",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42847912840/job/129949789474",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "cold",
+      "sample": 1,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42852263141,
+      "build_ms": 351441,
+      "import_ms": 200,
+      "export_ms": 113100,
+      "steps": 26,
+      "cached_steps": 0,
+      "rebuilt": [
+        {
+          "step": "[stage-2 2/8] WORKDIR /home/node",
+          "s": 2.8
+        },
+        {
+          "step": "[toolchain 2/2] RUN apk add --no-cache python3 make g++",
+          "s": 9.2
+        },
+        {
+          "step": "[native-builder  1/18] COPY ./compiled/node_modules/.pnpm/isolated-vm@*/node_modules/isola",
+          "s": 14.5
+        },
+        {
+          "step": "[native-builder  2/18] WORKDIR /build/isolated-vm",
+          "s": 1.2
+        },
+        {
+          "step": "[native-builder  3/18] RUN rm -rf prebuilds && node \"/usr/local/lib/node_modules/npm/node_",
+          "s": 60.1
+        },
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 25.5
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 49.7
+        },
+        {
+          "step": "[native-builder  4/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/node-addo",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  5/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/tar /buil",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  6/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/@isaacs/fs-mi",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  7/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/chownr /build",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  8/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minipass /bui",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder  9/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minizlib /bui",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 10/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/yallist /buil",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 11/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/sqlite3 /",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 12/18] WORKDIR /build/node_modules/sqlite3",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 13/18] RUN node \"/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin",
+          "s": 85.1
+        },
+        {
+          "step": "[native-builder 14/18] RUN apk add --no-cache librdkafka-dev",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder 15/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 16/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 17/18] WORKDIR /build/node_modules/@confluentinc/kafka-javascript",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 18/18] RUN BUILD_LIBRDKAFKA=0 node \"/usr/local/lib/node_modules/npm/node_m",
+          "s": 29.6
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0.1
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC-Milan Processor",
+      "runner": "celesto-rs-530fb6d2fa280a5154eb0004c070f223",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42852263141/job/129958024017",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "warm",
+      "sample": 1,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42852263141,
+      "build_ms": 40426,
+      "import_ms": 400,
+      "export_ms": 11800,
+      "steps": 26,
+      "cached_steps": 26,
+      "rebuilt": [],
+      "cpu_model": "AMD EPYC-Milan Processor",
+      "runner": "celesto-rs-3b8e697a690090a9e30d1b642ca31da1",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42852263141/job/129962130802",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": true
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "partial",
+      "sample": 1,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42852263141,
+      "build_ms": 139456,
+      "import_ms": 400,
+      "export_ms": 62300,
+      "steps": 26,
+      "cached_steps": 20,
+      "rebuilt": [
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 16.5
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 29.6
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 1.6
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC-Milan Processor",
+      "runner": "celesto-rs-405534a25deb0b16cb35a75498c01b4b",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42852263141/job/129963172479",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "cold",
+      "sample": 2,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42852263141,
+      "build_ms": 306196,
+      "import_ms": 200,
+      "export_ms": 109000,
+      "steps": 26,
+      "cached_steps": 0,
+      "rebuilt": [
+        {
+          "step": "[toolchain 2/2] RUN apk add --no-cache python3 make g++",
+          "s": 13.7
+        },
+        {
+          "step": "[stage-2 2/8] WORKDIR /home/node",
+          "s": 12.9
+        },
+        {
+          "step": "[native-builder  1/18] COPY ./compiled/node_modules/.pnpm/isolated-vm@*/node_modules/isola",
+          "s": 5
+        },
+        {
+          "step": "[native-builder  2/18] WORKDIR /build/isolated-vm",
+          "s": 0.4
+        },
+        {
+          "step": "[native-builder  3/18] RUN rm -rf prebuilds && node \"/usr/local/lib/node_modules/npm/node_",
+          "s": 46.3
+        },
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 9.4
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 27.8
+        },
+        {
+          "step": "[native-builder  4/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/node-addo",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  5/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/tar /buil",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  6/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/@isaacs/fs-mi",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  7/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/chownr /build",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  8/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minipass /bui",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  9/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minizlib /bui",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 10/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/yallist /buil",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder 11/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/sqlite3 /",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder 12/18] WORKDIR /build/node_modules/sqlite3",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 13/18] RUN node \"/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin",
+          "s": 79.7
+        },
+        {
+          "step": "[native-builder 14/18] RUN apk add --no-cache librdkafka-dev",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder 15/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder 16/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder 17/18] WORKDIR /build/node_modules/@confluentinc/kafka-javascript",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 18/18] RUN BUILD_LIBRDKAFKA=0 node \"/usr/local/lib/node_modules/npm/node_m",
+          "s": 27.1
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "runner": "celesto-rs-2991d526f0207fa36d3c8c1e324d1220",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42852263141/job/129958024002",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "warm",
+      "sample": 2,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42852263141,
+      "build_ms": 34470,
+      "import_ms": 600,
+      "export_ms": 9200,
+      "steps": 26,
+      "cached_steps": 26,
+      "rebuilt": [],
+      "cpu_model": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "runner": "celesto-rs-51d81b4e2686874cc29ebab8e72a1926",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42852263141/job/129962130697",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": true
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "partial",
+      "sample": 2,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42852263141,
+      "build_ms": 108702,
+      "import_ms": 300,
+      "export_ms": 62700,
+      "steps": 26,
+      "cached_steps": 20,
+      "rebuilt": [
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 7.5
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 18.9
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 1.1
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "runner": "celesto-rs-9499ca430066e27c1d753236d7e8566f",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42852263141/job/129963171809",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "cold",
+      "sample": 3,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42852263141,
+      "build_ms": 306216,
+      "import_ms": 200,
+      "export_ms": 105700,
+      "steps": 26,
+      "cached_steps": 0,
+      "rebuilt": [
+        {
+          "step": "[stage-2 2/8] WORKDIR /home/node",
+          "s": 2.3
+        },
+        {
+          "step": "[toolchain 2/2] RUN apk add --no-cache python3 make g++",
+          "s": 6.5
+        },
+        {
+          "step": "[native-builder  1/18] COPY ./compiled/node_modules/.pnpm/isolated-vm@*/node_modules/isola",
+          "s": 7.3
+        },
+        {
+          "step": "[native-builder  2/18] WORKDIR /build/isolated-vm",
+          "s": 0.5
+        },
+        {
+          "step": "[native-builder  3/18] RUN rm -rf prebuilds && node \"/usr/local/lib/node_modules/npm/node_",
+          "s": 52.7
+        },
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 14.4
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 41.6
+        },
+        {
+          "step": "[native-builder  4/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/node-addo",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder  5/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/tar /buil",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder  6/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/@isaacs/fs-mi",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder  7/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/chownr /build",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder  8/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minipass /bui",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder  9/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minizlib /bui",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder 10/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/yallist /buil",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder 11/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/sqlite3 /",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 12/18] WORKDIR /build/node_modules/sqlite3",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 13/18] RUN node \"/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin",
+          "s": 73.2
+        },
+        {
+          "step": "[native-builder 14/18] RUN apk add --no-cache librdkafka-dev",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 15/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder 16/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.9
+        },
+        {
+          "step": "[native-builder 17/18] WORKDIR /build/node_modules/@confluentinc/kafka-javascript",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 18/18] RUN BUILD_LIBRDKAFKA=0 node \"/usr/local/lib/node_modules/npm/node_m",
+          "s": 26.4
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0.1
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC-Milan Processor",
+      "runner": "celesto-rs-b78ddb9ada34540062b831e9f1184fcb",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42852263141/job/129958023880",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "warm",
+      "sample": 3,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42852263141,
+      "build_ms": 41037,
+      "import_ms": 500,
+      "export_ms": 9900,
+      "steps": 26,
+      "cached_steps": 26,
+      "rebuilt": [],
+      "cpu_model": "AMD EPYC-Milan Processor",
+      "runner": "celesto-rs-bdc09e7ac2c0183e44baae427914a771",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42852263141/job/129962130477",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": true
+    },
+    {
+      "provider": "celesto-large",
+      "phase": "partial",
+      "sample": 3,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42852263141,
+      "build_ms": 136173,
+      "import_ms": 400,
+      "export_ms": 60200,
+      "steps": 26,
+      "cached_steps": 20,
+      "rebuilt": [
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 17.2
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 29.2
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0.1
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC-Milan Processor",
+      "runner": "celesto-rs-0e26c7c7b4e40dec70d96388b3a4a33f",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42852263141/job/129963172819",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "cold",
+      "sample": 1,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42852263141,
+      "build_ms": 289165,
+      "import_ms": 100,
+      "export_ms": 76400,
+      "steps": 26,
+      "cached_steps": 0,
+      "rebuilt": [
+        {
+          "step": "[stage-2 2/8] WORKDIR /home/node",
+          "s": 1.2
+        },
+        {
+          "step": "[toolchain 2/2] RUN apk add --no-cache python3 make g++",
+          "s": 4.8
+        },
+        {
+          "step": "[native-builder  1/18] COPY ./compiled/node_modules/.pnpm/isolated-vm@*/node_modules/isola",
+          "s": 4.9
+        },
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 8.1
+        },
+        {
+          "step": "[native-builder  2/18] WORKDIR /build/isolated-vm",
+          "s": 1.2
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 33.1
+        },
+        {
+          "step": "[native-builder  3/18] RUN rm -rf prebuilds && node \"/usr/local/lib/node_modules/npm/node_",
+          "s": 65.7
+        },
+        {
+          "step": "[native-builder  4/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/node-addo",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  5/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/tar /buil",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  6/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/@isaacs/fs-mi",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  7/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/chownr /build",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  8/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minipass /bui",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder  9/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minizlib /bui",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 10/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/yallist /buil",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder 11/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/sqlite3 /",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder 12/18] WORKDIR /build/node_modules/sqlite3",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 13/18] RUN node \"/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin",
+          "s": 81.4
+        },
+        {
+          "step": "[native-builder 14/18] RUN apk add --no-cache librdkafka-dev",
+          "s": 1.1
+        },
+        {
+          "step": "[native-builder 15/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 16/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder 17/18] WORKDIR /build/node_modules/@confluentinc/kafka-javascript",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 18/18] RUN BUILD_LIBRDKAFKA=0 node \"/usr/local/lib/node_modules/npm/node_m",
+          "s": 27.4
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+      "runner": "GitHub Actions 1000038951",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42852263141/job/129958023923",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "warm",
+      "sample": 1,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42852263141,
+      "build_ms": 35257,
+      "import_ms": 500,
+      "export_ms": 4500,
+      "steps": 26,
+      "cached_steps": 26,
+      "rebuilt": [],
+      "cpu_model": "AMD EPYC 7763 64-Core Processor",
+      "runner": "GitHub Actions 1000038955",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42852263141/job/129962130707",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": true
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "partial",
+      "sample": 1,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42852263141,
+      "build_ms": 107055,
+      "import_ms": 100,
+      "export_ms": 55800,
+      "steps": 26,
+      "cached_steps": 20,
+      "rebuilt": [
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 8.2
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 19.8
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 1.7
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0.1
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+      "runner": "GitHub Actions 1000038958",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42852263141/job/129963172006",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "cold",
+      "sample": 2,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42852263141,
+      "build_ms": 329683,
+      "import_ms": 100,
+      "export_ms": 80800,
+      "steps": 26,
+      "cached_steps": 0,
+      "rebuilt": [
+        {
+          "step": "[stage-2 2/8] WORKDIR /home/node",
+          "s": 1.1
+        },
+        {
+          "step": "[toolchain 2/2] RUN apk add --no-cache python3 make g++",
+          "s": 4.4
+        },
+        {
+          "step": "[native-builder  1/18] COPY ./compiled/node_modules/.pnpm/isolated-vm@*/node_modules/isola",
+          "s": 4.4
+        },
+        {
+          "step": "[native-builder  2/18] WORKDIR /build/isolated-vm",
+          "s": 0.5
+        },
+        {
+          "step": "[native-builder  3/18] RUN rm -rf prebuilds && node \"/usr/local/lib/node_modules/npm/node_",
+          "s": 83.4
+        },
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 17.7
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 51.1
+        },
+        {
+          "step": "[native-builder  4/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/node-addo",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  5/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/tar /buil",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  6/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/@isaacs/fs-mi",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  7/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/chownr /build",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  8/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minipass /bui",
+          "s": 1
+        },
+        {
+          "step": "[native-builder  9/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minizlib /bui",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 10/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/yallist /buil",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 11/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/sqlite3 /",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 12/18] WORKDIR /build/node_modules/sqlite3",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 13/18] RUN node \"/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin",
+          "s": 89.7
+        },
+        {
+          "step": "[native-builder 14/18] RUN apk add --no-cache librdkafka-dev",
+          "s": 0.6
+        },
+        {
+          "step": "[native-builder 15/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 16/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 1
+        },
+        {
+          "step": "[native-builder 17/18] WORKDIR /build/node_modules/@confluentinc/kafka-javascript",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 18/18] RUN BUILD_LIBRDKAFKA=0 node \"/usr/local/lib/node_modules/npm/node_m",
+          "s": 30.8
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC 7763 64-Core Processor",
+      "runner": "GitHub Actions 1000038953",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42852263141/job/129958024055",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "warm",
+      "sample": 2,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42852263141,
+      "build_ms": 27345,
+      "import_ms": 300,
+      "export_ms": 3100,
+      "steps": 26,
+      "cached_steps": 26,
+      "rebuilt": [],
+      "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+      "runner": "GitHub Actions 1000038956",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42852263141/job/129962130459",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": true
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "partial",
+      "sample": 2,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42852263141,
+      "build_ms": 145029,
+      "import_ms": 500,
+      "export_ms": 68000,
+      "steps": 26,
+      "cached_steps": 20,
+      "rebuilt": [
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 14.2
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 30
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 1
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC 7763 64-Core Processor",
+      "runner": "GitHub Actions 1000038959",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42852263141/job/129963173203",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "cold",
+      "sample": 3,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42852263141,
+      "build_ms": 310402,
+      "import_ms": 200,
+      "export_ms": 96500,
+      "steps": 26,
+      "cached_steps": 0,
+      "rebuilt": [
+        {
+          "step": "[toolchain 2/2] RUN apk add --no-cache python3 make g++",
+          "s": 9.1
+        },
+        {
+          "step": "[stage-2 2/8] WORKDIR /home/node",
+          "s": 5
+        },
+        {
+          "step": "[native-builder  1/18] COPY ./compiled/node_modules/.pnpm/isolated-vm@*/node_modules/isola",
+          "s": 14
+        },
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 9.4
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 29.4
+        },
+        {
+          "step": "[native-builder  2/18] WORKDIR /build/isolated-vm",
+          "s": 2.9
+        },
+        {
+          "step": "[native-builder  3/18] RUN rm -rf prebuilds && node \"/usr/local/lib/node_modules/npm/node_",
+          "s": 58.6
+        },
+        {
+          "step": "[native-builder  4/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/node-addo",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  5/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/tar /buil",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  6/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/@isaacs/fs-mi",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  7/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/chownr /build",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  8/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minipass /bui",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder  9/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/minizlib /bui",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 10/18] COPY ./compiled/node_modules/.pnpm/tar@*/node_modules/yallist /buil",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 11/18] COPY ./compiled/node_modules/.pnpm/sqlite3@*/node_modules/sqlite3 /",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 12/18] WORKDIR /build/node_modules/sqlite3",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 13/18] RUN node \"/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin",
+          "s": 79.8
+        },
+        {
+          "step": "[native-builder 14/18] RUN apk add --no-cache librdkafka-dev",
+          "s": 1.2
+        },
+        {
+          "step": "[native-builder 15/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.7
+        },
+        {
+          "step": "[native-builder 16/18] COPY ./compiled/node_modules/.pnpm/@confluentinc+kafka-javascript@*",
+          "s": 0.8
+        },
+        {
+          "step": "[native-builder 17/18] WORKDIR /build/node_modules/@confluentinc/kafka-javascript",
+          "s": 0
+        },
+        {
+          "step": "[native-builder 18/18] RUN BUILD_LIBRDKAFKA=0 node \"/usr/local/lib/node_modules/npm/node_m",
+          "s": 25.7
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0.2
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+      "runner": "GitHub Actions 1000038952",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42852263141/job/129958024068",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "warm",
+      "sample": 3,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42852263141,
+      "build_ms": 32273,
+      "import_ms": 400,
+      "export_ms": 4600,
+      "steps": 26,
+      "cached_steps": 26,
+      "rebuilt": [],
+      "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+      "runner": "GitHub Actions 1000038954",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42852263141/job/129962130558",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": true
+    },
+    {
+      "provider": "github-hosted",
+      "phase": "partial",
+      "sample": 3,
+      "repo": "n8n-io/n8n",
+      "sha": "f8a6d135eaa844f1abd55c3796816346ea586928",
+      "run_id": 42852263141,
+      "build_ms": 136480,
+      "import_ms": 400,
+      "export_ms": 59500,
+      "steps": 26,
+      "cached_steps": 20,
+      "rebuilt": [
+        {
+          "step": "[stage-2 3/8] COPY --link ./compiled /usr/local/lib/node_modules/n8n",
+          "s": 14.7
+        },
+        {
+          "step": "[stage-2 4/8] COPY --link docker/images/n8n/docker-entrypoint.sh /",
+          "s": 29.3
+        },
+        {
+          "step": "[stage-2 5/8] COPY --from=native-builder /build/node_modules/sqlite3/build/Release/node_sq",
+          "s": 0.4
+        },
+        {
+          "step": "[stage-2 6/8] COPY --from=native-builder /build/isolated-vm/build/Release/isolated_vm.node",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 7/8] COPY --from=native-builder /build/node_modules/@confluentinc/kafka-javascrip",
+          "s": 0
+        },
+        {
+          "step": "[stage-2 8/8] RUN set -e;     N8N=/usr/local/lib/node_modules/n8n;     for coder in msl mv",
+          "s": 0.1
+        }
+      ],
+      "cpu_model": "AMD EPYC 7763 64-Core Processor",
+      "runner": "GitHub Actions 1000038957",
+      "job_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/42852263141/job/129963172092",
+      "missing_blob_errors": 0,
+      "missing_blobs": [],
+      "fully_cached": false
+    }
+  ]
+}

@@ -101,7 +101,7 @@ if (existsSync(new URL('results/2026-11-10-docker-n8n/samples.json', root))) ren
   ],
   metrics: [
     { title: 'No cache', unit: 'Seconds · cold build, cache export included', phase: 'cold', value: (r) => r.build_ms, count: 9 },
-    { title: 'Same input again', unit: 'Seconds · warm build, all layers cached', phase: 'warm', value: (r) => r.build_ms, count: 9 },
+    { title: 'Same input again', unit: 'Seconds · warm build, layers from the cache', phase: 'warm', value: (r) => r.build_ms, count: 9 },
     { title: 'App changed', unit: 'Seconds · partial build, native layers cached', phase: 'partial', value: (r) => r.build_ms, count: 9 },
     { title: 'Cache export, cold build', unit: 'Seconds · writing layers to the cache', phase: 'cold', value: (r) => r.export_ms, count: 9 },
   ],
