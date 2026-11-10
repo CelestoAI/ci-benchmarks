@@ -2,7 +2,7 @@
 
 **Compare Celesto CI and GitHub Actions on CPU speed and cache performance.** Same benchmark, same CPU count, same RAM. Runs and raw data are public.
 
-[CPU/cache results](results/2026-11-02-matched/README.md) · [Docker results](results/docker-2026-10-17/README.md) · [Run the CPU comparison](https://github.com/CelestoAI/ci-benchmarks/actions/workflows/matched.yml)
+[CPU/cache results](results/2026-11-02-matched/README.md) · [Real-repo dependency cache](results/2026-11-10-deps-excalidraw/README.md) · [Docker results](results/docker-2026-10-17/README.md) · [Run the CPU comparison](https://github.com/CelestoAI/ci-benchmarks/actions/workflows/matched.yml)
 
 ## Docker benchmarks
 
@@ -34,6 +34,25 @@ November 2, 2026. Both runners: **4 vCPUs, 16 GiB RAM, Ubuntu 24.04.5, Node 22.2
 **In this test:** Celesto had higher median CPU throughput and faster restores. GitHub saved the cache faster. CPU models, kernels and disks differed, even with matched CPU and RAM. These are synthetic workloads, not a prediction for every build.
 
 [Full results, ranges, outliers and raw data →](results/2026-11-02-matched/README.md) · Earlier: [October 17](results/2026-10-17-matched/README.md), [October 19 restore rerun](results/2026-10-19-readahead-restore/README.md)
+
+## Real-repo dependency cache
+
+November 10, 2026. **excalidraw's `yarn install` with `actions/cache`** (2.8 GiB yarn cache), 4 vCPUs and 16 GiB RAM on both providers. Three runs, 36 jobs, all passed.
+
+[![excalidraw dependency cache: with a warm cache, restore plus install takes 39 s on GitHub and 41 s on Celesto, against 47 s and 53 s with no cache.](docs/images/deps-excalidraw.svg)](results/2026-11-10-deps-excalidraw/README.md)
+
+| Measurement | GitHub Actions | Celesto Large | Better |
+| --- | ---: | ---: | --- |
+| No cache: install ↓ | 47.2 s | 53.3 s | GitHub 1.13× faster |
+| With cache: restore + install ↓ | 38.5 s | 40.7 s | GitHub 1.06× faster |
+| Restore the cache ↓ | 23.5 s | 21.1 s | Celesto 1.12× faster |
+| Save the cache ↓ | 12.2 s | 19.3 s | GitHub 1.58× faster |
+
+↓ Less time is better. Medians of 9 jobs per provider and phase.
+
+**The cache saves little here:** restoring 2.8 GiB takes about 20 s, so a warm job is only 9 s (GitHub) to 13 s (Celesto) faster than a cold one. Celesto restores faster; GitHub installs and saves faster. Celesto ran jobs on two CPU models, and its install times varied more.
+
+[Full results, ranges and per-job data →](results/2026-11-10-deps-excalidraw/README.md)
 
 ## Run it yourself
 
