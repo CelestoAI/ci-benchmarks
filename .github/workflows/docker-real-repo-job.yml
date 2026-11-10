@@ -1,0 +1,93 @@
+# One Docker layer cache sample: build n8n's image (docker/images/n8n/Dockerfile) with
+# BuildKit type=gha. On Celesto the same type=gha settings go to Celesto's cache.
+# The build context (n8n's compiled app) comes from the run's prepare job, so every
+# job on both providers builds from the same bytes.
+name: Real-repo Docker layer cache job
+on:
+  workflow_call:
+    inputs:
+      phase: { type: string, required: true }        # cold | warm | partial
+      provider: { type: string, required: true }
+      runs_on: { type: string, required: true }
+      scope: { type: string, required: true }
+      sample: { type: string, required: true }
+      repo: { type: string, required: true }
+      sha: { type: string, required: true }
+permissions:
+  contents: read
+jobs:
+  build:
+    name: ${{ inputs.phase }} ${{ inputs.provider }} s${{ inputs.sample }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    timeout-minutes: 60
+    steps:
+      - name: Host check (4 CPUs)
+        run: |
+          echo "cpu=$(nproc) mem=$(free -g | awk '/Mem/{print $2}')"; df -h .
+          test "$(nproc)" = 4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: n8n-docker-context
+      - name: Unpack the build context
+        run: mkdir app && tar -C app --zstd -xf n8n-docker-context.tar.zst && rm n8n-docker-context.tar.zst && du -sh app/compiled
+      - name: Change the app (partial phase)
+        if: inputs.phase == 'partial'
+        run: mkdir -p app/compiled/dist && echo "benchmark change ${{ github.run_id }}" > app/compiled/dist/.benchmark-change
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - uses: crazy-max/ghaction-github-runtime@3cb05d89e1f492524af3d41a1c98c83bc3025124 # v3
+      - name: Build with type=gha cache
+        run: |
+          # Base images pinned in n8n's docker/docker-bake.hcl at this commit.
+          s=$(date +%s%3N)
+          docker buildx build app -f app/docker/images/n8n/Dockerfile --progress=plain \
+            --build-arg BUILDER_IMAGE=node:26.13.0-alpine3.24@sha256:8996bb5821d62a8fd9bb27c1cb07462f3fdce6e47d640c6a881ead0b064ce216 \
+            --build-arg RUNTIME_IMAGE=n8nio/base:26.13.0@sha256:f4db5ffdbde188b568911640907797830033f2af2eb06b700a2c252bde960695 \
+            --cache-from "type=gha,scope=${{ inputs.scope }}" \
+            --cache-to "type=gha,mode=max,scope=${{ inputs.scope }}" 2>&1 | tee build.log
+          rc=${PIPESTATUS[0]}
+          e=$(date +%s%3N)
+          echo "BUILD_MS=$((e-s))" >> "$GITHUB_ENV"
+          exit $rc
+      - name: Record result
+        run: |
+          # Step durations from BuildKit's plain log ("#N DONE 12.3s"), keyed by each step's first line.
+          node - <<'JS' > step-times.json
+          const log = require('fs').readFileSync('build.log', 'utf8').split('\n');
+          const names = {}, done = {}, cached = new Set();
+          for (const l of log) {
+            let m = l.match(/^#(\d+) (\[.*|importing cache.*|exporting.*)$/);
+            if (m && !names[m[1]]) names[m[1]] = m[2];
+            if ((m = l.match(/^#(\d+) CACHED$/))) cached.add(m[1]);
+            if ((m = l.match(/^#(\d+) DONE ([\d.]+)s$/))) done[m[1]] = parseFloat(m[2]);
+          }
+          const sum = (re) => Object.entries(names).filter(([, n]) => re.test(n)).reduce((a, [id]) => a + (done[id] || 0), 0);
+          // Dockerfile steps that can be CACHED; FROM lines are resolved, never CACHED.
+          const steps = Object.entries(names).filter(([, n]) => /^\[[^\]]*\d+\/\d+\] (RUN|COPY|ADD|WORKDIR)/.test(n));
+          console.log(JSON.stringify({
+            import_s: sum(/^importing cache/), export_s: sum(/^exporting.*cache/i),
+            steps: steps.length, cached: steps.filter(([id]) => cached.has(id)).length,
+            rebuilt: steps.filter(([id]) => !cached.has(id)).map(([id, n]) => ({ step: n.slice(0, 90), s: done[id] ?? null })),
+          }));
+          JS
+          cat step-times.json
+          mkdir -p result
+          jq -n --argjson t "$(cat step-times.json)" \
+            --arg provider "${{ inputs.provider }}" --arg phase "${{ inputs.phase }}" --argjson sample ${{ inputs.sample }} \
+            --arg repo "${{ inputs.repo }}" --arg sha "${{ inputs.sha }}" --argjson run_id ${{ github.run_id }} \
+            --argjson build_ms "$BUILD_MS" --arg cpu "$(grep -m1 'model name' /proc/cpuinfo | cut -d: -f2 | xargs)" --arg runner "$RUNNER_NAME" \
+            '{provider:$provider,phase:$phase,sample:$sample,repo:$repo,sha:$sha,run_id:$run_id,build_ms:$build_ms,
+              import_ms:($t.import_s*1000|round),export_ms:($t.export_s*1000|round),steps:$t.steps,cached_steps:$t.cached,
+              rebuilt:$t.rebuilt,cpu_model:$cpu,runner:$runner}' > result/result.json
+          cat result/result.json
+          jq -r '"| \(.provider) | \(.phase) | \(.build_ms/1000) | \(.import_ms/1000) | \(.export_ms/1000) | \(.cached_steps)/\(.steps) |"' result/result.json \
+            | { echo "| provider | phase | build s | import s | export s | cached steps |"; echo "|---|---|--:|--:|--:|--:|"; cat; } >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ inputs.phase }}" = warm ] && ! jq -e '.cached_steps == .steps and .steps > 0' result/result.json >/dev/null; then
+            echo "::warning::warm build was not fully cached"
+          fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: docker-${{ inputs.phase }}-${{ inputs.provider }}-s${{ inputs.sample }}
+          path: |
+            result/result.json
+            build.log

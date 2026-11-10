@@ -1,0 +1,98 @@
+# Real-repo Docker layer cache benchmark: n8n's image (docker/images/n8n/Dockerfile) with
+# BuildKit type=gha. prepare compiles n8n once (pnpm install + turbo build + pnpm deploy,
+# as n8n's own build:docker does); then cold (empty cache, export), warm (same context,
+# all layers cached) and partial (one file added to the app: native-module layers cached,
+# app layers rebuilt). 3 samples per provider per phase.
+name: Real-repo Docker layer cache benchmark
+on:
+  push:
+    branches: [deps-real-repo-bench]
+    paths: ['.bench/docker']
+  workflow_dispatch:
+    inputs:
+      cache_namespace: { type: string, required: false, description: Unique per run }
+permissions:
+  contents: read
+jobs:
+  prepare:
+    name: Compile n8n (n8n-io/n8n@f8a6d13)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: n8n-io/n8n
+          ref: f8a6d135eaa844f1abd55c3796816346ea586928
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+      - name: pnpm install, turbo build, pnpm deploy into compiled/
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
+        run: |
+          corepack enable
+          node scripts/build-n8n.mjs
+      - name: Pack the Docker build context
+        run: |
+          tar --zstd -cf n8n-docker-context.tar.zst compiled docker/images/n8n .dockerignore $(ls THIRD_PARTY_LICENSES.md 2>/dev/null)
+          ls -lh n8n-docker-context.tar.zst; du -sh compiled
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: n8n-docker-context
+          path: n8n-docker-context.tar.zst
+          compression-level: 0
+          retention-days: 3
+  cold:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        sample: [1, 2, 3]
+        runner:
+          - { provider: github-hosted, labels: '["ubuntu-24.04"]' }
+          - { provider: celesto-large, labels: '["self-hosted","celesto-large"]' }
+    uses: ./.github/workflows/docker-real-repo-job.yml
+    with:
+      phase: cold
+      provider: ${{ matrix.runner.provider }}
+      runs_on: ${{ matrix.runner.labels }}
+      scope: docker-${{ inputs.cache_namespace || github.run_id }}-s${{ matrix.sample }}
+      sample: ${{ matrix.sample }}
+      repo: n8n-io/n8n
+      sha: f8a6d135eaa844f1abd55c3796816346ea586928
+  warm:
+    needs: cold
+    strategy:
+      fail-fast: false
+      matrix:
+        sample: [1, 2, 3]
+        runner:
+          - { provider: github-hosted, labels: '["ubuntu-24.04"]' }
+          - { provider: celesto-large, labels: '["self-hosted","celesto-large"]' }
+    uses: ./.github/workflows/docker-real-repo-job.yml
+    with:
+      phase: warm
+      provider: ${{ matrix.runner.provider }}
+      runs_on: ${{ matrix.runner.labels }}
+      scope: docker-${{ inputs.cache_namespace || github.run_id }}-s${{ matrix.sample }}
+      sample: ${{ matrix.sample }}
+      repo: n8n-io/n8n
+      sha: f8a6d135eaa844f1abd55c3796816346ea586928
+  partial:
+    needs: warm
+    strategy:
+      fail-fast: false
+      matrix:
+        sample: [1, 2, 3]
+        runner:
+          - { provider: github-hosted, labels: '["ubuntu-24.04"]' }
+          - { provider: celesto-large, labels: '["self-hosted","celesto-large"]' }
+    uses: ./.github/workflows/docker-real-repo-job.yml
+    with:
+      phase: partial
+      provider: ${{ matrix.runner.provider }}
+      runs_on: ${{ matrix.runner.labels }}
+      scope: docker-${{ inputs.cache_namespace || github.run_id }}-s${{ matrix.sample }}
+      sample: ${{ matrix.sample }}
+      repo: n8n-io/n8n
+      sha: f8a6d135eaa844f1abd55c3796816346ea586928

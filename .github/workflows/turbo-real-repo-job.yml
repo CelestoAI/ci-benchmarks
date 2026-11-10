@@ -1,0 +1,100 @@
+# One Turborepo cache sample: `turbo run build typecheck lint` in create-t3-turbo.
+# method=actions-cache: .turbo/cache kept with actions/cache (the usual GitHub setup);
+#   turbo runs with --cache=local:rw so it never uses a remote cache.
+# method=turbo-remote: Celesto's Turbo remote cache. The Celesto runner sets TURBO_API,
+#   TURBO_TOKEN and TURBO_TEAM in run: steps; the workflow sets nothing.
+name: Real-repo Turborepo cache job
+on:
+  workflow_call:
+    inputs:
+      phase: { type: string, required: true }        # cold | warm | partial
+      provider: { type: string, required: true }
+      method: { type: string, required: true }       # actions-cache | turbo-remote
+      runs_on: { type: string, required: true }
+      key: { type: string, required: true }
+      sample: { type: string, required: true }
+      repo: { type: string, required: true }
+      sha: { type: string, required: true }
+      edit_file: { type: string, required: true }
+      tasks: { type: string, required: true }
+permissions:
+  contents: read
+jobs:
+  turbo:
+    name: ${{ inputs.phase }} ${{ inputs.provider }} ${{ inputs.method }} s${{ inputs.sample }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    timeout-minutes: 30
+    steps:
+      - name: Check out ${{ inputs.repo }}@${{ inputs.sha }}
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: ${{ inputs.repo }}
+          ref: ${{ inputs.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - name: Host check and install
+        run: |
+          echo "cpu=$(nproc) mem=$(free -g | awk '/Mem/{print $2}')"; test "$(nproc)" = 4
+          corepack enable
+          [ -f .env.example ] && cp .env.example .env
+          pnpm install --frozen-lockfile
+          echo "turbo api set: ${TURBO_API:+yes}${TURBO_API:-no}"
+          if [ "${{ inputs.method }}" = turbo-remote ] && [ -z "$TURBO_API" ]; then echo "::error::no TURBO_API from the Celesto runner"; exit 1; fi
+      - name: Change one source file (partial phase)
+        if: inputs.phase == 'partial'
+        run: printf '\n// benchmark change %s\n' "${{ github.run_id }}" >> "${{ inputs.edit_file }}"
+      - name: Start restore timer
+        run: echo "T0=$(date +%s%3N)" >> "$GITHUB_ENV"
+      - name: Restore .turbo/cache
+        id: restore
+        if: inputs.method == 'actions-cache'
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .turbo/cache
+          key: ${{ inputs.key }}-${{ inputs.phase }}
+          restore-keys: ${{ inputs.key }}-
+      - name: turbo run ${{ inputs.tasks }}
+        run: |
+          t1=$(date +%s%3N); echo "RESTORE_MS=$((t1-T0))" >> "$GITHUB_ENV"
+          flags="--ui=stream --summarize"
+          [ "${{ inputs.method }}" = actions-cache ] && flags="$flags --cache=local:rw"
+          pnpm turbo run ${{ inputs.tasks }} $flags
+          t2=$(date +%s%3N); echo "TURBO_MS=$((t2-t1))" >> "$GITHUB_ENV"
+          du -sb .turbo/cache 2>/dev/null | cut -f1 | sed 's/^/CACHE_BYTES=/' >> "$GITHUB_ENV" || true
+          echo "T3=$(date +%s%3N)" >> "$GITHUB_ENV"
+      - name: Save .turbo/cache
+        if: inputs.method == 'actions-cache'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .turbo/cache
+          key: ${{ inputs.key }}-${{ inputs.phase }}
+      - name: Record result
+        run: |
+          t4=$(date +%s%3N)
+          save_ms=null; [ "${{ inputs.method }}" = actions-cache ] && save_ms=$((t4-T3))
+          restore_ms=null; [ "${{ inputs.method }}" = actions-cache ] && restore_ms=$RESTORE_MS
+          s=$(ls -t .turbo/runs/*.json | head -1)
+          mkdir -p result
+          jq --arg provider "${{ inputs.provider }}" --arg method "${{ inputs.method }}" --arg phase "${{ inputs.phase }}" \
+             --argjson sample ${{ inputs.sample }} --arg repo "${{ inputs.repo }}" --arg sha "${{ inputs.sha }}" --argjson run_id ${{ github.run_id }} \
+             --arg hit "${{ steps.restore.outputs.cache-hit }}" --arg matched "${{ steps.restore.outputs.cache-matched-key }}" \
+             --argjson restore_ms "$restore_ms" --argjson turbo_ms "$TURBO_MS" --argjson save_ms "$save_ms" --argjson cache_bytes "${CACHE_BYTES:-0}" \
+             --arg cpu "$(grep -m1 'model name' /proc/cpuinfo | cut -d: -f2 | xargs)" --arg runner "$RUNNER_NAME" \
+             '{provider:$provider,method:$method,phase:$phase,sample:$sample,repo:$repo,sha:$sha,run_id:$run_id,
+               actions_cache_hit:$hit,actions_cache_matched_key:$matched,restore_ms:$restore_ms,turbo_ms:$turbo_ms,save_ms:$save_ms,
+               local_cache_bytes:$cache_bytes,turbo_version:.turboVersion,
+               tasks:(.tasks|length),cached_tasks:([.tasks[]|select(.cache.status=="HIT")]|length),
+               remote_hits:([.tasks[]|select(.cache.status=="HIT" and (.cache.source=="REMOTE" or .cache.remote==true))]|length),
+               turbo_time_saved_ms:([.tasks[].cache.timeSaved // 0]|add),cpu_model:$cpu,runner:$runner}' "$s" > result/result.json
+          cat result/result.json
+          jq -r '"| \(.provider) | \(.method) | \(.phase) | \(.cached_tasks)/\(.tasks) (remote \(.remote_hits)) | \((.restore_ms // 0)/1000) | \(.turbo_ms/1000) | \((.save_ms // 0)/1000) |"' result/result.json \
+            | { echo "| provider | method | phase | cached tasks | restore s | turbo s | save s |"; echo "|---|---|---|--:|--:|--:|--:|"; cat; } >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ inputs.phase }}" = warm ] && ! jq -e '.cached_tasks == .tasks' result/result.json >/dev/null; then echo "::warning::warm run was not a full cache hit"; fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: turbo-${{ inputs.phase }}-${{ inputs.provider }}-${{ inputs.method }}-s${{ inputs.sample }}
+          path: |
+            result/result.json
+            .turbo/runs/
