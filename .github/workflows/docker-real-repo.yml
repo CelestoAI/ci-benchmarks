@@ -31,6 +31,7 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=8192
         run: |
           corepack enable
+          pnpm install --frozen-lockfile
           node scripts/build-n8n.mjs
       - name: Pack the Docker build context
         run: |
