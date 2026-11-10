@@ -1,0 +1,306 @@
+# Disk I/O investigation: why disk-heavy steps (yarn install, cache unpack) are slower
+# on Celesto CI VMs than on GitHub-hosted runners, and how much the host type matters.
+#
+# Each job records its runner, host, disks and mount settings, then measures:
+#   - fio: 4k random read/write at iodepth 1 and 32, 1 MiB sequential read/write,
+#     and 4k writes with fdatasync after each one;
+#   - small files: extract and delete a tarball of excalidraw's real node_modules
+#     (~100k files), create and delete 100k 4 KiB files from one process, and a
+#     timed `yarn install --offline` from a filled yarn cache.
+# Every test runs 3 times on the workspace disk and on /dev/shm (RAM) as a control.
+# A sampler reads /proc/diskstats every 50 ms to find disk stalls (requests in flight,
+# none completing) inside each step.
+#
+# Runs on push to the investigate-disk-io branch when this file changes. Bump ROUND to
+# start a new run. Celesto jobs stay at 9 or fewer at once (max-parallel 18 over 9+9).
+name: Disk I/O investigation
+on:
+  push:
+    branches: [investigate-disk-io]
+    paths: [.github/workflows/disk-io.yml]
+permissions:
+  contents: read
+env:
+  ROUND: "1"
+  EXCALIDRAW_SHA: 701b901a0f1ba3d0b390d9cdf63d112e25abac4b
+defaults:
+  run:
+    shell: bash
+jobs:
+  disk:
+    name: ${{ matrix.runner.provider }} s${{ matrix.sample }}
+    runs-on: ${{ fromJSON(matrix.runner.labels) }}
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      max-parallel: 18
+      matrix:
+        sample: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        runner:
+          - { provider: github, labels: '["ubuntu-24.04"]' }
+          - { provider: celesto, labels: '["self-hosted","celesto-large"]' }
+    steps:
+      - name: Record start
+        run: |
+          echo "JOB_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
+          echo "job start $(date -u +%FT%T.%3NZ) runner=$RUNNER_NAME"
+      - name: Check out excalidraw
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: excalidraw/excalidraw
+          ref: ${{ env.EXCALIDRAW_SHA }}
+          path: app
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - name: Install fio
+        run: |
+          command -v fio || { sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq fio >/dev/null 2>&1 \
+            || { sudo apt-get update -qq >/dev/null; sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq fio >/dev/null; }; }
+          fio --version
+      - name: Write helpers
+        run: |
+          mkdir -p "$RUNNER_TEMP/h"
+          # Disk sampler: one line every 50 ms for the workspace's block device.
+          cat > "$RUNNER_TEMP/h/sampler.py" <<'PY'
+          import os, sys, time
+          dev, out = sys.argv[1], sys.argv[2]
+          with open(out, "w", buffering=1) as f:
+              f.write("t_ms,rd_done,wr_done,fl_done,wr_sectors,wr_ticks,inflight\n")
+              while True:
+                  with open("/proc/diskstats") as d:
+                      for line in d:
+                          p = line.split()
+                          if p[2] == dev:
+                              fl = p[17] if len(p) > 17 else "0"
+                              f.write(f"{int(time.time()*1000)},{p[3]},{p[7]},{fl},{p[9]},{p[10]},{p[11]}\n")
+                              break
+                  time.sleep(0.05)
+          PY
+          # 100k 4 KiB files from one process, in 1000 directories.
+          cat > "$RUNNER_TEMP/h/mkfiles.py" <<'PY'
+          import os, sys
+          root = sys.argv[1]; data = os.urandom(4096)
+          for d in range(1000):
+              p = os.path.join(root, f"d{d:04}"); os.mkdir(p)
+              for i in range(100):
+                  fd = os.open(os.path.join(p, f"f{i:03}"), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o644)
+                  os.write(fd, data); os.close(fd)
+          PY
+          # Block device that holds a path (parent disk if it is a partition).
+          cat > "$RUNNER_TEMP/h/blockdev.py" <<'PY'
+          import os, sys
+          st = os.stat(sys.argv[1]); p = os.path.realpath(f"/sys/dev/block/{os.major(st.st_dev)}:{os.minor(st.st_dev)}")
+          if os.path.exists(os.path.join(p, "partition")): p = os.path.dirname(p)
+          print(os.path.basename(p))
+          PY
+      - name: Record environment
+        run: |
+          set +e
+          OUT="$RUNNER_TEMP/out"; mkdir -p "$OUT"
+          DEV=$(python3 "$RUNNER_TEMP/h/blockdev.py" "$GITHUB_WORKSPACE"); echo "DEV=$DEV" >> "$GITHUB_ENV"
+          IP=$(curl -s -m 8 https://api.ipify.org); ORG=$(curl -s -m 8 "https://ipinfo.io/$IP/org")
+          {
+            echo "### identity"; echo "date=$(date -u +%FT%TZ) runner=$RUNNER_NAME public_ip=$IP org=$ORG workspace_dev=$DEV"
+            grep -m1 'model name' /proc/cpuinfo; echo "nproc=$(nproc)"; free -m
+            echo "dmi=$(cat /sys/class/dmi/id/sys_vendor 2>/dev/null) / $(cat /sys/class/dmi/id/product_name 2>/dev/null)"
+            echo "virt=$(systemd-detect-virt 2>/dev/null)"; uname -a; cat /proc/cmdline
+            echo "### lsblk"; lsblk -o NAME,SIZE,TYPE,ROTA,SCHED,MODEL,FSTYPE,MOUNTPOINTS
+            echo "### mount"; mount | grep -E '^/dev|on /tmp |on /dev/shm |on / '
+            echo "### df"; df -T "$GITHUB_WORKSPACE" /tmp /dev/shm
+            echo "### findmnt"; findmnt -T "$GITHUB_WORKSPACE"; findmnt -T /tmp; findmnt -T /dev/shm
+            echo "### queues"
+            for b in /sys/block/*; do n=$(basename $b); case $n in loop*|ram*|zram*) continue;; esac
+              echo "$n: $(for f in scheduler rotational nr_requests max_sectors_kb max_hw_sectors_kb write_cache wbt_lat_usec read_ahead_kb fua discard_max_bytes logical_block_size; do printf '%s=%s ' $f "$(cat $b/queue/$f 2>/dev/null | tr ' ' '_')"; done) hw_queues=$(ls $b/mq 2>/dev/null | wc -l) model=$(cat $b/device/model 2>/dev/null | xargs)"
+            done
+            echo "### virtio/nvme"; for v in /sys/bus/virtio/devices/*; do [ -e $v ] && echo "$(basename $v) device=$(cat $v/device) features=$(cat $v/features)"; done
+            grep -iE 'virtio|nvme|hyperv|vmbus' /proc/interrupts | awk '{print $1, $(NF-1), $NF}' | head -12
+            lspci -nn 2>/dev/null | grep -iE 'storage|nvme|scsi|virtio|sata' | head
+            echo "### ext4"; R=$(findmnt -n -o SOURCE -T "$GITHUB_WORKSPACE"); [ "$R" = /dev/root ] && R=$(readlink -f /dev/disk/by-label/cloudimg-rootfs 2>/dev/null || echo /dev/$DEV)
+            sudo tune2fs -l "$R" 2>/dev/null | grep -E 'features|Journal size|Journal backup|Block size|Inode count|Mount options|Filesystem created'
+            sudo dumpe2fs -h "$R" 2>/dev/null | grep -iE 'journal (size|length|features)'
+            echo "### vm"; sysctl vm.dirty_ratio vm.dirty_background_ratio vm.dirty_bytes vm.dirty_background_bytes vm.dirty_expire_centisecs vm.dirty_writeback_centisecs
+          } > "$OUT/env.txt" 2>&1
+          cat "$OUT/env.txt"
+          python3 - "$OUT" "$IP" "$ORG" "$DEV" <<'PY'
+          import json, os, sys
+          out, ip, org, dev = sys.argv[1:5]
+          cpu = next((l.split(":", 1)[1].strip() for l in open("/proc/cpuinfo") if l.startswith("model name")), "")
+          q = lambda f: open(f"/sys/block/{dev}/queue/{f}").read().strip() if os.path.exists(f"/sys/block/{dev}/queue/{f}") else None
+          mnt = {}
+          for line in open("/proc/mounts"):
+              s, m, t, o = line.split()[:4]; mnt[m] = (s, t, o)
+          def mount_of(path):
+              path = os.path.realpath(path)
+              best = max((m for m in mnt if path == m or path.startswith(m.rstrip("/") + "/")), key=len)
+              return {"mount": best, "source": mnt[best][0], "fstype": mnt[best][1], "options": mnt[best][2]}
+          env = {"provider": os.environ["PROVIDER"], "sample": int(os.environ["SAMPLE"]), "round": os.environ["ROUND"],
+                 "run_id": int(os.environ["GITHUB_RUN_ID"]), "runner": os.environ["RUNNER_NAME"], "cpu_model": cpu,
+                 "nproc": os.cpu_count(), "public_ip": ip, "org": org, "kernel": os.uname().release, "dev": dev,
+                 "job_start_ms": int(os.environ["JOB_START_MS"]),
+                 "queue": {k: q(k) for k in ["scheduler", "rotational", "nr_requests", "max_sectors_kb", "write_cache", "wbt_lat_usec", "read_ahead_kb"]},
+                 "workspace_fs": mount_of(os.environ["GITHUB_WORKSPACE"]), "tmp_fs": mount_of("/tmp"), "shm_fs": mount_of("/dev/shm")}
+          json.dump(env, open(f"{out}/env.json", "w"), indent=1)
+          PY
+        env:
+          PROVIDER: ${{ matrix.runner.provider }}
+          SAMPLE: ${{ matrix.sample }}
+      - name: Benchmark
+        working-directory: app
+        run: |
+          set -uo pipefail
+          OUT="$RUNNER_TEMP/out"; H="$RUNNER_TEMP/h"
+          WS="$GITHUB_WORKSPACE/diskio"; SHM=/dev/shm/diskio; mkdir -p "$WS" "$SHM"
+          export YARN_CACHE_FOLDER="$GITHUB_WORKSPACE/yarn-cache" COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+          corepack enable
+          python3 "$H/sampler.py" "$DEV" "$OUT/disk.csv" & SAMPLER=$!
+          ms() { date +%s%3N; }
+          # phase NAME TARGET REP CMD...: time one command, record it in phases.jsonl.
+          phase() {
+            local name=$1 tgt=$2 rep=$3; shift 3; local s e rc
+            s=$(ms); "$@" >>"$OUT/cmd.log" 2>&1; rc=$?; e=$(ms)
+            echo "{\"phase\":\"$name\",\"target\":\"$tgt\",\"rep\":$rep,\"start\":$s,\"end\":$e,\"ms\":$((e-s)),\"rc\":$rc}" >> "$OUT/phases.jsonl"
+            printf '%-14s %-4s r%s %7d ms rc=%s\n' "$name" "$tgt" "$rep" $((e-s)) $rc
+          }
+          dir_of() { [ "$1" = ws ] && echo "$WS" || echo "$SHM"; }
+          # O_DIRECT works on tmpfs only on newer kernels; fall back to buffered there.
+          SHM_DIRECT=1; fio --name=t --filename="$SHM/t" --size=4m --rw=write --bs=4k --direct=1 --ioengine=libaio >/dev/null 2>&1 || SHM_DIRECT=0; rm -f "$SHM/t"
+          echo "shm_direct=$SHM_DIRECT" | tee "$OUT/shm_direct"
+          # runfio TARGET REP NAME ARGS...: one fio test, JSON result per run.
+          runfio() {
+            local tgt=$1 rep=$2 name=$3; shift 3; local d direct size s e
+            d=$(dir_of $tgt); direct=1; size=2g
+            [ $tgt = shm ] && { direct=$SHM_DIRECT; size=1g; }
+            [ $name = fsync ] && direct=0
+            s=$(ms)
+            fio --name=$name --directory="$d" --filename=fio.dat --size=$size --direct=$direct --group_reporting \
+                --output-format=json --output="$OUT/fio-$tgt-$name-r$rep.json" "$@" >>"$OUT/cmd.log" 2>&1
+            e=$(ms)
+            echo "{\"phase\":\"fio_$name\",\"target\":\"$tgt\",\"rep\":$rep,\"start\":$s,\"end\":$e,\"ms\":$((e-s)),\"rc\":0}" >> "$OUT/phases.jsonl"
+            printf 'fio %-12s %-4s r%s %6d ms\n' $name $tgt $rep $((e-s))
+          }
+          echo "::group::fio"
+          for rep in 1 2 3; do
+            for tgt in ws shm; do
+              runfio $tgt $rep seqwrite  --rw=write     --bs=1m --ioengine=libaio --iodepth=8  --runtime=30
+              runfio $tgt $rep seqread   --rw=read      --bs=1m --ioengine=libaio --iodepth=8  --runtime=8 --time_based --ramp_time=1
+              runfio $tgt $rep randread1 --rw=randread  --bs=4k --ioengine=libaio --iodepth=1  --runtime=8 --time_based --ramp_time=1
+              runfio $tgt $rep randread32  --rw=randread  --bs=4k --ioengine=libaio --iodepth=32 --runtime=8 --time_based --ramp_time=1
+              runfio $tgt $rep randwrite1  --rw=randwrite --bs=4k --ioengine=libaio --iodepth=1  --runtime=8 --time_based --ramp_time=1
+              runfio $tgt $rep randwrite32 --rw=randwrite --bs=4k --ioengine=libaio --iodepth=32 --runtime=8 --time_based --ramp_time=1
+              rm -f "$(dir_of $tgt)/fio.dat"
+              runfio $tgt $rep fsync     --rw=write     --bs=4k --ioengine=sync --fdatasync=1 --size=256m --runtime=8 --time_based
+              rm -f "$(dir_of $tgt)/fio.dat"
+            done
+          done
+          echo "::endgroup::"
+          echo "::group::cold yarn install (fills the yarn cache; network)"
+          phase yarn_cold ws 0 yarn install --frozen-lockfile --non-interactive --network-concurrency 16
+          tail -3 "$OUT/cmd.log"
+          NM_FILES=$(find . -path '*/node_modules/*' | wc -l); NM_BYTES=$(find . -type d -name node_modules -prune -print0 | du -scb --files0-from=- | tail -1 | cut -f1)
+          echo "{\"nm_files\":$NM_FILES,\"nm_bytes\":$NM_BYTES,\"yarn_cache_bytes\":$(du -sb "$YARN_CACHE_FOLDER" | cut -f1)}" > "$OUT/sizes.json"; cat "$OUT/sizes.json"
+          find . -type d -name node_modules -prune -print0 | tar --null -cf "$SHM/nm.tar" -T -
+          tar --exclude=node_modules -cf "$SHM/src.tar" .
+          ls -la "$SHM"; sync
+          echo "::endgroup::"
+          echo "::group::small files"
+          for rep in 1 2 3; do
+            for tgt in ws shm; do
+              d=$(dir_of $tgt)/x; mkdir -p "$d"
+              phase extract     $tgt $rep tar -xf "$SHM/nm.tar" -C "$d"
+              phase extract_sync $tgt $rep sync
+              phase delete      $tgt $rep rm -rf "$d"
+              phase delete_sync $tgt $rep sync
+              mkdir -p "$d"
+              phase create100k  $tgt $rep python3 "$H/mkfiles.py" "$d"
+              phase create_sync $tgt $rep sync
+              phase delete100k  $tgt $rep rm -rf "$d"
+              phase delete100k_sync $tgt $rep sync
+            done
+          done
+          echo "::endgroup::"
+          echo "::group::yarn install --offline (warm install from the filled cache)"
+          mkdir -p "$SHM/app"; tar -xf "$SHM/src.tar" -C "$SHM/app"; rm -f "$SHM/nm.tar"
+          for rep in 1 2 3; do
+            for tgt in ws shm; do
+              [ $tgt = ws ] && a="$PWD" || a="$SHM/app"
+              (cd "$a" && find . -type d -name node_modules -prune -exec rm -rf {} +); sync
+              phase yarn_offline $tgt $rep bash -c "cd '$a' && yarn install --frozen-lockfile --offline --non-interactive"
+              phase yarn_offline_sync $tgt $rep sync
+            done
+          done
+          echo "::endgroup::"
+          kill $SAMPLER
+      - name: Summarize
+        if: always()
+        run: |
+          python3 - "$RUNNER_TEMP/out" <<'PY' | tee -a "$GITHUB_STEP_SUMMARY"
+          import csv, glob, json, os, sys
+          out = sys.argv[1]
+          env = json.load(open(f"{out}/env.json"))
+          phases = [json.loads(l) for l in open(f"{out}/phases.jsonl")] if os.path.exists(f"{out}/phases.jsonl") else []
+          rows = []
+          if os.path.exists(f"{out}/disk.csv"):
+              rows = [list(map(int, r)) for r in list(csv.reader(open(f"{out}/disk.csv")))[1:] if len(r) == 7]
+          def disk(s, e):
+              """Guest-side disk activity inside [s, e]: write count, MB, mean write latency, stalls."""
+              w = [r for r in rows if s <= r[0] <= e]
+              if len(w) < 2: return {}
+              a, b = w[0], w[-1]
+              dw = b[2] - a[2]; stalls = []; run0 = None
+              for p, c in zip(w, w[1:]):
+                  done_p, done_c = p[1] + p[2] + p[3], c[1] + c[2] + c[3]
+                  if c[6] > 0 and done_c == done_p:
+                      run0 = run0 or p[0]
+                  else:
+                      if run0: stalls.append(c[0] - run0)
+                      run0 = None
+              if run0: stalls.append(w[-1][0] - run0)
+              big = [x for x in stalls if x >= 500]
+              return {"writes": dw, "write_mb": round((b[4] - a[4]) * 512 / 2**20, 1),
+                      "write_lat_ms": round((b[5] - a[5]) / dw, 2) if dw else None,
+                      "max_inflight": max(r[6] for r in w), "stall_max_ms": max(stalls, default=0),
+                      "stall_ms_ge500": sum(big), "stalls_ge500": len(big)}
+          for p in phases:
+              p.update(disk(p["start"], p["end"]))
+          fio = []
+          for f in sorted(glob.glob(f"{out}/fio-*.json")):
+              _, tgt, name, rep = os.path.basename(f)[:-5].split("-")
+              try:
+                  txt = open(f).read(); j = json.loads(txt[txt.index("{"):])["jobs"][0]
+              except Exception as ex:
+                  fio.append({"target": tgt, "test": name, "rep": int(rep[1:]), "error": str(ex)}); continue
+              side = j["read"] if "read" in name else j["write"]
+              pct = side["clat_ns"].get("percentile", {})
+              r = {"target": tgt, "test": name, "rep": int(rep[1:]), "iops": round(side["iops"]), "mbps": round(side["bw_bytes"] / 1e6, 1),
+                   "lat_mean_us": round(side["lat_ns"]["mean"] / 1000, 1), "clat_p99_us": round(pct.get("99.000000", 0) / 1000, 1),
+                   "clat_max_us": round(side["clat_ns"]["max"] / 1000, 1)}
+              if name == "fsync":
+                  s = j.get("sync", {}).get("lat_ns", {})
+                  r.update({"sync_mean_us": round(s.get("mean", 0) / 1000, 1), "sync_p99_us": round(s.get("percentile", {}).get("99.000000", 0) / 1000, 1)})
+              fio.append(r)
+          sizes = json.load(open(f"{out}/sizes.json")) if os.path.exists(f"{out}/sizes.json") else {}
+          res = {**env, "sizes": sizes, "fio": fio, "phases": phases}
+          json.dump(res, open(f"{out}/result.json", "w"), indent=1)
+          print(f"### {env['provider']} s{env['sample']} — {env['cpu_model']} — {env['org']} ({env['public_ip']})\n")
+          print(f"workspace: {env['workspace_fs']}  queue: {env['queue']}\n")
+          print("| fio test | target | IOPS (r1/r2/r3) | MB/s (r1/r2/r3) | p99 µs (r1/r2/r3) |\n|---|---|---|---|---|")
+          by = {}
+          for r in fio: by.setdefault((r["test"], r["target"]), []).append(r)
+          for (t, tg), rs in sorted(by.items()):
+              rs.sort(key=lambda r: r["rep"])
+              print(f"| {t} | {tg} | {' / '.join(str(r.get('iops')) for r in rs)} | {' / '.join(str(r.get('mbps')) for r in rs)} | {' / '.join(str(r.get('clat_p99_us')) for r in rs)} |")
+          print("\n| step | target | rep | s | writes | write MB | write lat ms | stall max ms | stall ms ≥0.5s |\n|---|---|---|--:|--:|--:|--:|--:|--:|")
+          for p in phases:
+              if p["phase"].startswith("fio_"): continue
+              print(f"| {p['phase']} | {p['target']} | {p['rep']} | {p['ms']/1000:.1f} | {p.get('writes','')} | {p.get('write_mb','')} | {p.get('write_lat_ms','')} | {p.get('stall_max_ms','')} | {p.get('stall_ms_ge500','')} |")
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: diskio-r${{ env.ROUND }}-${{ matrix.runner.provider }}-s${{ matrix.sample }}
+          path: |
+            ${{ runner.temp }}/out/result.json
+            ${{ runner.temp }}/out/env.txt
+            ${{ runner.temp }}/out/disk.csv
+            ${{ runner.temp }}/out/cmd.log
