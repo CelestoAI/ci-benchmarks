@@ -1,0 +1,86 @@
+# Cold build and test of aome510/spotify-player. Same commit, toolchain and commands as the runs-on.com rust suite.
+name: Rust benchmark
+
+on:
+  workflow_dispatch:
+  # Temporary: runs the suite from this branch. Remove before merge.
+  push:
+    branches: [hardware-suite]
+    paths: [.github/workflows/suite-rust.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  bench:
+    name: ${{ matrix.provider }} ${{ matrix.iteration }}
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [github, celesto]
+        iteration: [1, 2, 3]
+    runs-on: ${{ fromJSON(matrix.provider == 'github' && '["ubuntu-24.04"]' || '["self-hosted","celesto-large"]') }}
+    timeout-minutes: 45
+    env:
+      CARGO_TERM_COLOR: always
+      RUST_FEATURES: rodio-backend,media-control,image,notify,fzf
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: .harness
+      - name: Host check
+        run: node .harness/scripts/record-event.mjs host_fingerprint "{}"
+        env:
+          BENCHMARK_PROVIDER: ${{ matrix.provider }}
+          BENCHMARK_EVENT_FILE: ${{ runner.temp }}/events.jsonl
+      - name: "phase: checkout"
+        uses: actions/checkout@v5
+        with:
+          repository: aome510/spotify-player
+          ref: 7dc9d17a7bf5671eb6129fdf9127729f659637fc
+          path: work
+          persist-credentials: false
+      - name: "phase: system packages"
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
+            build-essential pkg-config libssl-dev libasound2-dev libdbus-1-dev \
+            libxcb-shape0-dev libxcb-xfixes0-dev
+      - name: "phase: toolchain"
+        uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de
+        with:
+          toolchain: 1.98.1
+          components: clippy, rustfmt
+      - name: "phase: cargo fmt"
+        working-directory: work
+        run: cargo fmt --all -- --check
+      - name: "phase: cargo test"
+        working-directory: work
+        run: cargo test --no-default-features --features "$RUST_FEATURES"
+      - name: "phase: cargo clippy"
+        working-directory: work
+        run: cargo clippy --no-default-features --features "$RUST_FEATURES" -- -D warnings
+      - name: "phase: cargo clippy (no features)"
+        working-directory: work
+        run: cargo clippy --no-default-features -- -D warnings
+
+  collect:
+    needs: bench
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v5
+        with:
+          pattern: metrics-*
+          path: metrics
+      - run: node scripts/collect-suite.mjs rust metrics results.json
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: results-rust
+          path: results.json

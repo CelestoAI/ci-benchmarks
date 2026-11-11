@@ -1,0 +1,88 @@
+# CPU, memory, disk, network, Docker and PostgreSQL tests. Same tools and settings as the runs-on.com hardware suite.
+name: Hardware benchmark
+
+on:
+  workflow_dispatch:
+  # Temporary: runs the suite from this branch. Remove before merge.
+  push:
+    branches: [hardware-suite]
+    paths: [.github/workflows/suite-hardware.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  bench:
+    name: ${{ matrix.provider }} ${{ matrix.iteration }}
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [github, celesto]
+        iteration: [1, 2, 3]
+    runs-on: ${{ fromJSON(matrix.provider == 'github' && '["ubuntu-24.04"]' || '["self-hosted","celesto-large"]') }}
+    timeout-minutes: 45
+    env:
+      METRICS: /tmp/bench-metrics/metrics.json
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: .harness
+      - name: Host check
+        run: node .harness/scripts/record-event.mjs host_fingerprint "{}"
+        env:
+          BENCHMARK_PROVIDER: ${{ matrix.provider }}
+          BENCHMARK_EVENT_FILE: ${{ runner.temp }}/events.jsonl
+      - name: Install tools
+        run: |
+          mkdir -p "$(dirname "$METRICS")"
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq sysbench fio p7zip-full postgresql-client unzip
+      - name: cpu
+        continue-on-error: true
+        run: node .harness/scripts/hardware-bench.mjs cpu "$METRICS"
+      - name: passmark
+        continue-on-error: true
+        run: node .harness/scripts/hardware-bench.mjs passmark "$METRICS"
+      - name: memory
+        continue-on-error: true
+        run: node .harness/scripts/hardware-bench.mjs memory "$METRICS"
+      - name: disk
+        continue-on-error: true
+        run: node .harness/scripts/hardware-bench.mjs disk "$METRICS"
+      - name: network
+        continue-on-error: true
+        run: node .harness/scripts/hardware-bench.mjs network "$METRICS"
+      - name: docker
+        continue-on-error: true
+        run: node .harness/scripts/hardware-bench.mjs docker "$METRICS"
+      - name: postgres
+        continue-on-error: true
+        run: node .harness/scripts/hardware-bench.mjs postgres "$METRICS"
+      - name: Fail if a group failed
+        run: node -e 'const m=require(process.env.METRICS); if (m.errors) { console.log(m.errors); process.exit(1) }'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: metrics-${{ matrix.provider }}-${{ matrix.iteration }}
+          path: /tmp/bench-metrics/metrics.json
+
+  collect:
+    needs: bench
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v5
+        with:
+          pattern: metrics-*
+          path: metrics
+      - run: node scripts/collect-suite.mjs hardware metrics results.json
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: results-hardware
+          path: results.json
