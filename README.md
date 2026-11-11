@@ -4,10 +4,10 @@ Open benchmarks for GitHub Actions runners. Real builds of public projects, pinn
 
 ## Latest results
 
-How fast each provider runs each suite, compared with GitHub-hosted runners (1.0×). Higher is faster.
+p50 (median) workload time for each provider. Lower is faster. Green/red cells are faster/slower than GitHub-hosted runners.
 
-![Speed of each provider relative to GitHub-hosted runners](results/latest/summary-light.svg#gh-light-mode-only)
-![Speed of each provider relative to GitHub-hosted runners](results/latest/summary-dark.svg#gh-dark-mode-only)
+![p50 workload time by provider; lower is faster](results/latest/summary-light.svg#gh-light-mode-only)
+![p50 workload time by provider; lower is faster](results/latest/summary-dark.svg#gh-dark-mode-only)
 
 | Suite | Workload |
 | --- | --- |
@@ -17,6 +17,8 @@ How fast each provider runs each suite, compared with GitHub-hosted runners (1.0
 | Cache | Save and restore a 4 GiB file with `actions/cache` |
 
 All runners have 4 vCPU (x64). Celesto results come from this repository's [runner suites](docs/suites.md). Other providers' results come from the [runs-on.com public benchmark data](https://github.com/runs-on-demo/benchmark-public), which uses the same workloads and settings. Updated daily.
+
+Times are medians across successful jobs; cache includes save and restore. Queue time and runner overhead are excluded. RunsOn also publishes [p50 results](https://runs-on.com/benchmarks/methodology/), but its main chart defaults to whole-job time and ranks by time × cost.
 
 **[Full results: time per phase and hardware →](results/latest/README.md)**
 
