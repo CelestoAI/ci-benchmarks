@@ -39,7 +39,9 @@ jobs:
       - name: Get runs-on.com data
         run: git clone -q --depth 1 https://github.com/runs-on-demo/benchmark-public theirs
       - name: Build comparison
-        run: node scripts/compare.mjs ours theirs/results results/latest 30
+        run: |
+          rm -rf results/latest
+          node scripts/compare.mjs ours theirs/results results/latest 30
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"
