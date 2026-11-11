@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         provider: [celesto]
-        iteration: [1, 2, 3]
+        iteration: [1]
     runs-on: celesto-large
     timeout-minutes: 40
     steps:

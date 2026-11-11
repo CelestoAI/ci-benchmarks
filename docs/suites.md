@@ -6,11 +6,11 @@ Six GitHub Actions workflows that measure a CI runner on real work. Each one bui
 
 | Suite | What runs | Jobs | Typical time |
 | --- | --- | ---: | --- |
-| [Hardware](../.github/workflows/suite-hardware.yml) | CPU (sysbench, 7-Zip, PassMark), memory bandwidth, disk (fio), downloads, `docker pull`, PostgreSQL (pgbench) | 3 | 10 min |
-| [Cache](../.github/workflows/suite-cache.yml) | Save a 4 GiB file with `actions/cache`, delete it, restore it | 3 | 3 min |
-| [Rust](../.github/workflows/suite-rust.yml) | [aome510/spotify-player](https://github.com/aome510/spotify-player) `7dc9d17`: `cargo fmt`, `cargo test`, two `cargo clippy` passes, Rust 1.98.1 | 3 | 5 min |
-| [Node](../.github/workflows/suite-node.yml) | [anomalyco/opencode](https://github.com/anomalyco/opencode) `08fb473`: `bun install`, `turbo typecheck`, Bun 1.3.14 | 3 | 3 min |
-| [Docker](../.github/workflows/suite-docker.yml) | [PostHog](https://github.com/PostHog/posthog) `ba81ecf`: `docker buildx build` of the production Dockerfile, no build cache | 3 | 15 min |
+| [Hardware](../.github/workflows/suite-hardware.yml) | CPU (sysbench, 7-Zip, PassMark), memory bandwidth, disk (fio), downloads, `docker pull`, PostgreSQL (pgbench) | 1 | 10 min |
+| [Cache](../.github/workflows/suite-cache.yml) | Save a 4 GiB file with `actions/cache`, delete it, restore it | 1 | 3 min |
+| [Rust](../.github/workflows/suite-rust.yml) | [aome510/spotify-player](https://github.com/aome510/spotify-player) `7dc9d17`: `cargo fmt`, `cargo test`, two `cargo clippy` passes, Rust 1.98.1 | 1 | 5 min |
+| [Node](../.github/workflows/suite-node.yml) | [anomalyco/opencode](https://github.com/anomalyco/opencode) `08fb473`: `bun install`, `turbo typecheck`, Bun 1.3.14 | 1 | 3 min |
+| [Docker](../.github/workflows/suite-docker.yml) | [PostHog](https://github.com/PostHog/posthog) `ba81ecf`: `docker buildx build` of the production Dockerfile, no build cache | 1 | 15 min |
 | [Burst](../.github/workflows/suite-burst.yml) | 15 jobs queued at the same moment, each holds its runner for 60 s | 15 | 5 min |
 
 Every job starts cold: no cache, no previous build. Each job checks that the runner has 4 CPUs and at least 14 GiB RAM, and fails if not.
@@ -23,13 +23,15 @@ Each suite runs every three days at a fixed time (UTC):
 | --- | --- | --- |
 | Rust 02:00, Node 04:00, Docker 06:00 | Hardware 02:00, Cache 04:00 | Burst 15:00 |
 
-Every day at 18:00, the [Comparison](../.github/workflows/compare.yml) workflow puts the latest results next to other providers' public data and updates [results/latest](../results/latest/README.md).
+Every day at 18:00, the [Comparison](../.github/workflows/compare.yml) workflow pools the last 30 days of results for Celesto and other providers and updates [results/latest](../results/latest/README.md).
 
 ## Run a suite
 
 1. [Fork this repository](https://github.com/CelestoAI/ci-benchmarks/fork) and enable **Actions** in the fork.
 2. Install the [Celesto CI app](https://github.com/apps/celesto-ci) on the fork. The workspace needs credit for the **Large** runner.
 3. Open **Actions**, select a suite (for example **Rust benchmark**), and click **Run workflow** on `main`.
+
+Rust, Node, Docker, Cache and Hardware run one benchmark job per execution, matching RunsOn's scheduled sampling. Burst queues 15 jobs together. Results accumulate as the workflows run on later days.
 
 Run one suite at a time. Suites that run together share the same runner capacity and slow each other down.
 
@@ -98,6 +100,6 @@ The hardware suite also writes its measurements to `metrics`. If one test group 
 
 ## Limits
 
-- Three jobs per suite. Repeat runs on different days before you draw a conclusion.
+- One job per suite by default. Repeat runs on different days before you draw a conclusion.
 - Results depend on the runner's region, time of day and load.
 - The workloads are cold builds. They do not show how a provider's cache speeds up repeat builds.

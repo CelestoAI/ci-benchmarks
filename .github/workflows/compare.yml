@@ -1,4 +1,4 @@
-# Builds results/latest/: Celesto's latest suite results next to the
+# Builds results/latest/: 30 days of Celesto suite results next to the
 # runs-on.com public benchmark data, as charts and a README.
 name: Comparison
 
@@ -26,13 +26,17 @@ jobs:
       - name: Get Celesto results
         run: |
           mkdir -p ours
+          since=$(date -u -d '30 days ago' +%Y-%m-%d)
           for suite in hardware cache rust node docker burst; do
-            # Newest finished run that uploaded a results artifact.
-            for id in $(gh run list -R "$GITHUB_REPOSITORY" -w "suite-$suite.yml" -s completed -L 5 --json databaseId --jq '.[].databaseId'); do
-              if gh run download "$id" -R "$GITHUB_REPOSITORY" -n "results-$suite" -D "tmp-$suite" 2>/dev/null; then
-                mv "tmp-$suite/results.json" "ours/results-$suite.json"
+            # Keep every artifact in the same history window as other providers.
+            for id in $(gh run list -R "$GITHUB_REPOSITORY" -w "suite-$suite.yml" -s completed --created ">=$since" -L 1000 --json databaseId --jq '.[].databaseId'); do
+              if gh run download "$id" -R "$GITHUB_REPOSITORY" -n "results-$suite" -D "tmp-$suite-$id" 2>/dev/null; then
+                mv "tmp-$suite-$id/results.json" "ours/results-$suite-$id.json"
+                if [ "$suite" = hardware ]; then
+                  # Recover measurements from older single-job collectors.
+                  gh run download "$id" -R "$GITHUB_REPOSITORY" -p 'metrics-*' -D "ours/metrics-hardware-$id" 2>/dev/null || true
+                fi
                 echo "$suite: run $id"
-                break
               fi
             done
           done
