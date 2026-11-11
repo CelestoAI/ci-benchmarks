@@ -6,7 +6,7 @@
 
 ## Runner suites
 
-Six suites built on public open-source projects at pinned commits. Each runs 3 jobs per provider on 4 vCPU / 16 GiB runners.
+Six suites built on public open-source projects at pinned commits. Each runs 3 jobs on Celesto Large (4 vCPU / 16 GiB).
 
 | Suite | Workload | Workflow |
 | --- | --- | --- |
@@ -15,7 +15,7 @@ Six suites built on public open-source projects at pinned commits. Each runs 3 j
 | Rust | Cold `cargo test` and `clippy` of aome510/spotify-player | [suite-rust.yml](.github/workflows/suite-rust.yml) |
 | Node | Cold `bun install` and typecheck of anomalyco/opencode | [suite-node.yml](.github/workflows/suite-node.yml) |
 | Docker | `docker buildx build` of PostHog's Dockerfile, no cache | [suite-docker.yml](.github/workflows/suite-docker.yml) |
-| Burst | 15 jobs per provider queued at once, 60 s each | [suite-burst.yml](.github/workflows/suite-burst.yml) |
+| Burst | 15 jobs queued at once, 60 s each | [suite-burst.yml](.github/workflows/suite-burst.yml) |
 
 Timings come from the GitHub Jobs API: queue time, and one time per `phase: …` step. Each run uploads `results-<suite>.json`.
 

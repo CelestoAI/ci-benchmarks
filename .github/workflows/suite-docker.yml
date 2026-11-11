@@ -13,9 +13,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        provider: [github, celesto]
+        provider: [celesto]
         iteration: [1, 2, 3]
-    runs-on: ${{ fromJSON(matrix.provider == 'github' && '["ubuntu-24.04"]' || '["self-hosted","celesto-large"]') }}
+    runs-on: [self-hosted, celesto-large]
     timeout-minutes: 90
     env:
       POSTHOG_SHA: ba81ecf8f5bccbaee4ec5a1613780e0acfd7585b
