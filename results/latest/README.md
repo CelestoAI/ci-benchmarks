@@ -2,15 +2,15 @@
 
 Updated 2026-11-11. All runners: 4 vCPU, x64. Values are p50 (medians).
 
-The summary shows p50 workload time across successful jobs, in minutes and seconds. Lower is faster. Cache time includes save and restore. Queue time and runner overhead are excluded. Colours compare each time with GitHub.
+The summary shows p50 times across successful jobs, in minutes and seconds. Lower is faster. Cache time includes save and restore. Workload times exclude queue time and runner overhead. Queue shows the wait from job creation to runner start for a burst of 15 jobs. Colours compare each time with GitHub.
 
-RunsOn also publishes [p50 (median) results](https://runs-on.com/benchmarks/methodology/). Its main build chart defaults to whole-job time and ranks by time × cost; this comparison shows workload time only.
+RunsOn also publishes [p50 (median) results](https://runs-on.com/benchmarks/methodology/). Its main build chart defaults to whole-job time and ranks by time × cost; the build columns here show workload time only.
 
 - **Celesto:** this repository's [runner suites](../../docs/suites.md), latest run of each suite.
 - **Other providers:** [runs-on.com public benchmark data](https://github.com/runs-on-demo/benchmark-public), last 30 days. Same workloads and settings, measured by runs-on.com on their accounts.
 
-![p50 workload time by provider; lower is faster](summary-light.svg#gh-light-mode-only)
-![p50 workload time by provider; lower is faster](summary-dark.svg#gh-dark-mode-only)
+![p50 workload and queue times by provider; lower is faster](summary-light.svg#gh-light-mode-only)
+![p50 workload and queue times by provider; lower is faster](summary-dark.svg#gh-dark-mode-only)
 
 ## Rust
 
