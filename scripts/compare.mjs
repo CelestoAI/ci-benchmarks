@@ -2,7 +2,7 @@
 // runs, other providers from the runs-on.com public benchmark data.
 //
 // Usage: node scripts/compare.mjs <ours-dir> <theirs-results-dir> <out-dir> [days]
-//   <ours-dir>            results-<suite>.json files from our latest suite runs
+//   <ours-dir>            results-<suite>-<run-id>.json files from our suite history
 //   <theirs-results-dir>  results/ of https://github.com/runs-on-demo/benchmark-public
 //   <out-dir>             gets README.md and light/dark SVG charts
 //
@@ -61,11 +61,17 @@ const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const data = {};
 const dates = {};
 const add = (suite, provider, r) => (((data[suite] ??= {})[provider] ??= []).push(r));
+const since = Date.now() - Number(days) * 86400e3;
+const seen = new Set();
 
 for (const f of readdirSync(oursDir).filter((f) => f.endsWith('.json'))) {
   const run = JSON.parse(readFileSync(join(oursDir, f), 'utf8'));
   if (!SUITES.includes(run.suite)) continue;
-  dates[run.suite] = run.run.date;
+  if (!(Date.parse(run.run.date) >= since)) continue;
+  const key = `${run.suite}:${run.run.id}:${run.run.attempt}`;
+  if (seen.has(key)) continue;
+  seen.add(key);
+  if (!dates[run.suite] || run.run.date > dates[run.suite]) dates[run.suite] = run.run.date;
   for (const r of run.results) {
     if (r.provider !== 'celesto') continue;
     // Hardware jobs keep partial metrics when one group fails, so use them all.
@@ -73,7 +79,6 @@ for (const f of readdirSync(oursDir).filter((f) => f.endsWith('.json'))) {
   }
 }
 
-const since = Date.now() - Number(days) * 86400e3;
 for (const suite of SUITES) {
   let files = [];
   try { files = readdirSync(join(theirsDir, suite)); } catch { continue; }
@@ -233,7 +238,7 @@ const md = [
   '',
   'RunsOn also publishes [p50 (median) results](https://runs-on.com/benchmarks/methodology/). Its main build chart defaults to whole-job time and ranks by time × cost; the build columns here show workload time only.',
   '',
-  `- **Celesto:** this repository's [runner suites](../../docs/suites.md), latest run of each suite.`,
+  `- **Celesto:** this repository's [runner suites](../../docs/suites.md), last ${days} days of runs.`,
   `- **Other providers:** [runs-on.com public benchmark data](${SOURCE}), last ${days} days. Same workloads and settings, measured by runs-on.com on their accounts.`,
   '',
   ...themed('p50 workload and queue times by provider; lower is faster', 'summary'),
@@ -244,7 +249,7 @@ for (const suite of Object.keys(BUILDS)) {
   if (!phaseSvg(suite, 'light')) continue;
   for (const theme of Object.keys(THEMES)) writeFileSync(join(outDir, `${suite}-${theme}.svg`), phaseSvg(suite, theme));
   const jobs = Object.entries(data[suite]).map(([p, rs]) => `${p} ${rs.length}`).join(', ');
-  md.push(`## ${BUILDS[suite][0].split(':')[0]}`, '', `${BUILDS[suite][0].split(': ')[1][0].toUpperCase()}${BUILDS[suite][0].split(': ')[1].slice(1)}.`, '', ...themed(BUILDS[suite][0], suite), '', `Jobs: ${jobs}. Celesto run: ${dates[suite]}.`, '');
+  md.push(`## ${BUILDS[suite][0].split(':')[0]}`, '', `${BUILDS[suite][0].split(': ')[1][0].toUpperCase()}${BUILDS[suite][0].split(': ')[1].slice(1)}.`, '', ...themed(BUILDS[suite][0], suite), '', `Jobs: ${jobs}. Latest Celesto run: ${dates[suite]}.`, '');
 }
 
 if (data.hardware?.Celesto) {
@@ -266,7 +271,7 @@ if (data.hardware?.Celesto) {
     });
     md.push(`| ${label} | ${cells.join(' | ')} |`);
   }
-  md.push('', `Jobs: ${Object.entries(data.hardware).map(([p, rs]) => `${p} ${rs.length}`).join(', ')}. Celesto run: ${dates.hardware}.`, '');
+  md.push('', `Jobs: ${Object.entries(data.hardware).map(([p, rs]) => `${p} ${rs.length}`).join(', ')}. Latest Celesto run: ${dates.hardware}.`, '');
 }
 
 writeFileSync(join(outDir, 'README.md'), md.join('\n'));

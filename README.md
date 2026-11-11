@@ -17,7 +17,7 @@ p50 (median) workload and queue times for each provider. Lower is faster. Green/
 | Cache | Save and restore a 4 GiB file with `actions/cache` |
 | Queue | Wait from job creation to runner start when 15 jobs are queued at once |
 
-All runners have 4 vCPU (x64). Celesto results come from this repository's [runner suites](docs/suites.md). Other providers' results come from the [runs-on.com public benchmark data](https://github.com/runs-on-demo/benchmark-public), which uses the same workloads and settings. Updated daily.
+All runners have 4 vCPU (x64). Celesto results come from this repository's [runner suites](docs/suites.md). Other providers' results come from the [runs-on.com public benchmark data](https://github.com/runs-on-demo/benchmark-public), which uses the same workloads and settings. Both include the last 30 days of runs. Updated daily.
 
 Times are medians across successful jobs; cache includes save and restore. Workload times exclude queue time and runner overhead; Queue measures the wait separately. RunsOn also publishes [p50 results](https://runs-on.com/benchmarks/methodology/), but its main chart defaults to whole-job time and ranks by time × cost.
 

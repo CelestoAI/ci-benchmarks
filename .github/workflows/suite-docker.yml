@@ -5,6 +5,12 @@ on:
   schedule:
     - cron: '0 6 1-31/3 * *'
   workflow_dispatch:
+    inputs:
+      iterations:
+        description: Number of benchmark jobs
+        type: choice
+        options: ['1', '2', '3']
+        default: '3'
 
 permissions:
   contents: read
@@ -16,7 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         provider: [celesto]
-        iteration: [1, 2, 3]
+        iteration: ${{ fromJSON(inputs.iterations == '1' && '[1]' || inputs.iterations == '2' && '[1,2]' || '[1,2,3]') }}
     runs-on: celesto-large
     timeout-minutes: 90
     env:

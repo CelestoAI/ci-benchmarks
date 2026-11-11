@@ -23,13 +23,15 @@ Each suite runs every three days at a fixed time (UTC):
 | --- | --- | --- |
 | Rust 02:00, Node 04:00, Docker 06:00 | Hardware 02:00, Cache 04:00 | Burst 15:00 |
 
-Every day at 18:00, the [Comparison](../.github/workflows/compare.yml) workflow puts the latest results next to other providers' public data and updates [results/latest](../results/latest/README.md).
+Every day at 18:00, the [Comparison](../.github/workflows/compare.yml) workflow pools the last 30 days of results for Celesto and other providers and updates [results/latest](../results/latest/README.md).
 
 ## Run a suite
 
 1. [Fork this repository](https://github.com/CelestoAI/ci-benchmarks/fork) and enable **Actions** in the fork.
 2. Install the [Celesto CI app](https://github.com/apps/celesto-ci) on the fork. The workspace needs credit for the **Large** runner.
 3. Open **Actions**, select a suite (for example **Rust benchmark**), and click **Run workflow** on `main`.
+
+Rust, Node, Docker, Cache and Hardware default to three benchmark jobs per run. For manual runs, **Number of benchmark jobs** can be set to one or two to fill a sample-count gap. Burst always queues 15 jobs together.
 
 Run one suite at a time. Suites that run together share the same runner capacity and slow each other down.
 
