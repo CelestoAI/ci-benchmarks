@@ -44,21 +44,6 @@ Save and restore 4 GiB.
 
 Jobs: Celesto 3, GitHub 10, Blacksmith 10, Namespace 10, WarpBuild 10, Ubicloud 10. Celesto run: 2026-11-11.
 
-## Queue
-
-15 jobs queued at the same moment, each holding its runner for 60 s.
-
-| Provider | Median wait | Slowest wait | Jobs |
-| --- | ---: | ---: | ---: |
-| GitHub | 4 s | 13 s | 120 |
-| Blacksmith | 10 s | 21 s | 120 |
-| Namespace | 10 s | 463 s | 120 |
-| WarpBuild | 14 s | 996 s | 120 |
-| Ubicloud | 37 s | 1,497 s | 120 |
-| **Celesto** | **85 s** | **287 s** | 15 |
-
-Celesto run: 2026-11-11.
-
 ## Hardware
 
 Higher is better, except `docker pull`. ↑ / ↓: better / worse than GitHub by more than 10 %.

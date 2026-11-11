@@ -15,11 +15,10 @@ How fast each provider runs each suite, compared with GitHub-hosted runners (1.0
 | Node | Cold `bun install` and typecheck of [opencode](https://github.com/anomalyco/opencode) |
 | Docker | `docker buildx build` of [PostHog](https://github.com/PostHog/posthog)'s production image, no cache |
 | Cache | Save and restore a 4 GiB file with `actions/cache` |
-| Queue | Median wait when 15 jobs start at the same moment |
 
 All runners have 4 vCPU (x64). Celesto results come from this repository's [runner suites](docs/suites.md). Other providers' results come from the [runs-on.com public benchmark data](https://github.com/runs-on-demo/benchmark-public), which uses the same workloads and settings. Updated daily.
 
-**[Full results: time per phase, queue times and hardware →](results/latest/README.md)**
+**[Full results: time per phase and hardware →](results/latest/README.md)**
 
 ## Benchmarks in this repository
 
