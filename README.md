@@ -6,18 +6,9 @@
 
 ## Runner suites
 
-Six suites built on public open-source projects at pinned commits. Each runs 3 jobs on Celesto Large (4 vCPU / 16 GiB).
+Six workflows that measure a runner on real work: hardware tests, a 4 GiB cache, a Rust build, a Node install and typecheck, a Docker image build, and a burst of 15 jobs. Each builds a public project at a pinned commit.
 
-| Suite | Workload | Workflow |
-| --- | --- | --- |
-| Hardware | sysbench, 7-Zip, PassMark, memory bandwidth, fio, downloads, `docker pull`, pgbench | [suite-hardware.yml](.github/workflows/suite-hardware.yml) |
-| Cache | Save a 4 GiB file with `actions/cache`, delete it, restore it | [suite-cache.yml](.github/workflows/suite-cache.yml) |
-| Rust | Cold `cargo test` and `clippy` of aome510/spotify-player | [suite-rust.yml](.github/workflows/suite-rust.yml) |
-| Node | Cold `bun install` and typecheck of anomalyco/opencode | [suite-node.yml](.github/workflows/suite-node.yml) |
-| Docker | `docker buildx build` of PostHog's Dockerfile, no cache | [suite-docker.yml](.github/workflows/suite-docker.yml) |
-| Burst | 15 jobs queued at once, 60 s each | [suite-burst.yml](.github/workflows/suite-burst.yml) |
-
-Timings come from the GitHub Jobs API: queue time, and one time per `phase: …` step. Each run uploads `results-<suite>.json`.
+[What each suite runs, how to run it, and how to read the results →](docs/suites.md)
 
 ## Docker benchmarks
 
