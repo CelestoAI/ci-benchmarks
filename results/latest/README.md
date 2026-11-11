@@ -5,29 +5,42 @@ Updated 2026-11-11. All runners: 4 vCPU, x64. Values are medians.
 - **Celesto:** this repository's [runner suites](../../docs/suites.md), latest run of each suite.
 - **Other providers:** [runs-on.com public benchmark data](https://github.com/runs-on-demo/benchmark-public), last 30 days. Same workloads and settings, measured by runs-on.com on their accounts.
 
-![Speed relative to GitHub](summary.svg)
+![Speed relative to GitHub](summary-light.svg#gh-light-mode-only)
+![Speed relative to GitHub](summary-dark.svg#gh-dark-mode-only)
 
 ## Rust
 
-![Rust: build and test spotify-player](rust.svg)
+Build and test spotify-player.
+
+![Rust: build and test spotify-player](rust-light.svg#gh-light-mode-only)
+![Rust: build and test spotify-player](rust-dark.svg#gh-dark-mode-only)
 
 Jobs: Celesto 3, GitHub 10, Blacksmith 10, Namespace 10, WarpBuild 10, Ubicloud 10. Celesto run: 2026-11-11.
 
 ## Node
 
-![Node: install and typecheck opencode](node.svg)
+Install and typecheck opencode.
+
+![Node: install and typecheck opencode](node-light.svg#gh-light-mode-only)
+![Node: install and typecheck opencode](node-dark.svg#gh-dark-mode-only)
 
 Jobs: Celesto 3, GitHub 13, Blacksmith 13, Namespace 13, WarpBuild 13, Ubicloud 13. Celesto run: 2026-11-11.
 
 ## Docker
 
-![Docker: build the PostHog image](docker.svg)
+Build the PostHog image.
+
+![Docker: build the PostHog image](docker-light.svg#gh-light-mode-only)
+![Docker: build the PostHog image](docker-dark.svg#gh-dark-mode-only)
 
 Jobs: Celesto 2, GitHub 11, Blacksmith 11, Namespace 10, WarpBuild 10, Ubicloud 11. Celesto run: 2026-11-11.
 
 ## Cache
 
-![Cache: save and restore 4 GiB](cache.svg)
+Save and restore 4 GiB.
+
+![Cache: save and restore 4 GiB](cache-light.svg#gh-light-mode-only)
+![Cache: save and restore 4 GiB](cache-dark.svg#gh-dark-mode-only)
 
 Jobs: Celesto 3, GitHub 10, Blacksmith 10, Namespace 10, WarpBuild 10, Ubicloud 10. Celesto run: 2026-11-11.
 
