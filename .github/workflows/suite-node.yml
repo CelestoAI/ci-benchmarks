@@ -2,6 +2,8 @@
 name: Node benchmark
 
 on:
+  schedule:
+    - cron: '0 4 1-31/3 * *'
   workflow_dispatch:
 
 permissions:

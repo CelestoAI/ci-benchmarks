@@ -2,6 +2,8 @@
 name: Burst benchmark
 
 on:
+  schedule:
+    - cron: '0 15 3-31/3 * *'
   workflow_dispatch:
 
 permissions:
