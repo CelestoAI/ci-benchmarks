@@ -31,7 +31,7 @@ Every day at 18:00, the [Comparison](../.github/workflows/compare.yml) workflow 
 2. Install the [Celesto CI app](https://github.com/apps/celesto-ci) on the fork. The workspace needs credit for the **Large** runner.
 3. Open **Actions**, select a suite (for example **Rust benchmark**), and click **Run workflow** on `main`.
 
-Rust, Node, Docker, Cache and Hardware default to one benchmark job per run, matching RunsOn's scheduled sampling. For manual runs, **Number of benchmark jobs** can be set to two or three for additional repetitions. Burst always queues 15 jobs together.
+Rust, Node, Docker, Cache and Hardware run one benchmark job per execution, matching RunsOn's scheduled sampling. Burst queues 15 jobs together. Results accumulate as the workflows run on later days.
 
 Run one suite at a time. Suites that run together share the same runner capacity and slow each other down.
 
