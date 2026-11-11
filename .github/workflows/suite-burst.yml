@@ -1,0 +1,51 @@
+# 15 jobs per provider queued at the same time, each holding its runner for 60 s. Shows how long jobs wait when a spike arrives.
+name: Burst benchmark
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bench:
+    name: ${{ matrix.provider }} ${{ matrix.iteration }}
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [celesto]
+        iteration: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+    runs-on: celesto-large
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: .harness
+      - name: Host check
+        run: node .harness/scripts/record-event.mjs host_fingerprint "{}"
+        env:
+          BENCHMARK_PROVIDER: ${{ matrix.provider }}
+          BENCHMARK_EVENT_FILE: ${{ runner.temp }}/events.jsonl
+      - name: "phase: hold"
+        run: sleep 60
+
+  collect:
+    needs: bench
+    if: always()
+    runs-on: celesto-large
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v5
+        with:
+          pattern: metrics-*
+          path: metrics
+      - run: node scripts/collect-suite.mjs burst metrics results.json
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: results-burst
+          path: results.json

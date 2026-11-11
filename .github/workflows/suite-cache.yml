@@ -1,0 +1,66 @@
+# Saves a 4 GiB file with actions/cache, deletes it, then restores it on the same runner.
+name: Cache benchmark
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bench:
+    name: ${{ matrix.provider }} ${{ matrix.iteration }}
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [celesto]
+        iteration: [1, 2, 3]
+    runs-on: celesto-large
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: .harness
+      - name: Host check
+        run: node .harness/scripts/record-event.mjs host_fingerprint "{}"
+        env:
+          BENCHMARK_PROVIDER: ${{ matrix.provider }}
+          BENCHMARK_EVENT_FILE: ${{ runner.temp }}/events.jsonl
+      - name: Generate 4 GiB file
+        run: head -c 4G /dev/urandom > cache-file
+      - name: "phase: cache save"
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: cache-file
+          key: bench-${{ matrix.provider }}-${{ matrix.iteration }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Remove file
+        run: rm cache-file
+      - name: "phase: cache restore"
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: cache-file
+          key: bench-${{ matrix.provider }}-${{ matrix.iteration }}-${{ github.run_id }}-${{ github.run_attempt }}
+          fail-on-cache-miss: true
+      - name: "phase: verify"
+        run: test "$(stat -c %s cache-file)" -eq 4294967296
+
+  collect:
+    needs: bench
+    if: always()
+    runs-on: celesto-large
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v5
+        with:
+          pattern: metrics-*
+          path: metrics
+      - run: node scripts/collect-suite.mjs cache metrics results.json
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: results-cache
+          path: results.json

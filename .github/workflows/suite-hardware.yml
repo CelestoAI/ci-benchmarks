@@ -1,0 +1,88 @@
+# CPU, memory, disk, network, Docker and PostgreSQL tests.
+name: Hardware benchmark
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bench:
+    name: ${{ matrix.provider }} ${{ matrix.iteration }}
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [celesto]
+        iteration: [1, 2, 3]
+    runs-on: celesto-large
+    timeout-minutes: 45
+    env:
+      METRICS: /tmp/bench-metrics/metrics.json
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: .harness
+      - name: Host check
+        run: node .harness/scripts/record-event.mjs host_fingerprint "{}"
+        env:
+          BENCHMARK_PROVIDER: ${{ matrix.provider }}
+          BENCHMARK_EVENT_FILE: ${{ runner.temp }}/events.jsonl
+      - name: Install tools
+        run: |
+          mkdir -p "$(dirname "$METRICS")"
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq sysbench fio p7zip-full postgresql-client unzip
+      - name: cpu
+        continue-on-error: true
+        run: node .harness/scripts/hardware-bench.mjs cpu "$METRICS"
+      - name: passmark
+        continue-on-error: true
+        run: |
+          bash .harness/scripts/install-passmark.sh
+          node .harness/scripts/hardware-bench.mjs passmark "$METRICS"
+      - name: memory
+        continue-on-error: true
+        run: node .harness/scripts/hardware-bench.mjs memory "$METRICS"
+      - name: disk
+        continue-on-error: true
+        run: node .harness/scripts/hardware-bench.mjs disk "$METRICS"
+      - name: network
+        continue-on-error: true
+        run: node .harness/scripts/hardware-bench.mjs network "$METRICS"
+      - name: docker
+        continue-on-error: true
+        run: node .harness/scripts/hardware-bench.mjs docker "$METRICS"
+      - name: postgres
+        continue-on-error: true
+        run: node .harness/scripts/hardware-bench.mjs postgres "$METRICS"
+      # A failed group keeps the job green, like a missing metric: the other
+      # groups' numbers still count. The failure shows as a warning.
+      - name: Report failed groups
+        run: node -e 'const m=require(process.env.METRICS); for (const [g, e] of Object.entries(m.errors ?? {})) console.log(`::warning title=${g} failed::${e.split("\n")[0]}`)'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: metrics-${{ matrix.provider }}-${{ matrix.iteration }}
+          path: /tmp/bench-metrics/metrics.json
+
+  collect:
+    needs: bench
+    if: always()
+    runs-on: celesto-large
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v5
+        with:
+          pattern: metrics-*
+          path: metrics
+      - run: node scripts/collect-suite.mjs hardware metrics results.json
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: results-hardware
+          path: results.json
