@@ -2,6 +2,8 @@
 name: Cache benchmark
 
 on:
+  schedule:
+    - cron: '0 4 2-31/3 * *'
   workflow_dispatch:
 
 permissions:

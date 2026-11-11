@@ -6,7 +6,7 @@ Benchmarks for GitHub Actions runners. Every workflow, script and raw result is 
 
 | Benchmark | What it measures | Guide | Results |
 | --- | --- | --- | --- |
-| Runner suites | Real builds of public projects (Rust, Node, Docker), a 4 GiB cache, hardware tests and a burst of 15 jobs | [docs/suites.md](docs/suites.md) | Each run's summary and artifacts |
+| Runner suites | Real builds of public projects (Rust, Node, Docker), a 4 GiB cache, hardware tests and a burst of 15 jobs | [docs/suites.md](docs/suites.md) | [Comparison with other providers](results/latest/README.md), updated daily |
 | Matched CPU and cache | CPU throughput and a 512 MiB cache, GitHub-hosted and Celesto Large side by side | [docs/matched.md](docs/matched.md) | [Nov 2, 2026](results/2026-11-02-matched/README.md) |
 | Docker | Image builds, layer caches and a Python API with PostgreSQL | [docker-bench/README.md](docker-bench/README.md) | [Oct 17, 2026](results/docker-2026-10-17/README.md) |
 

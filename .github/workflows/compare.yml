@@ -1,0 +1,50 @@
+# Builds results/latest/: Celesto's latest suite results next to the
+# runs-on.com public benchmark data, as charts and a README.
+name: Comparison
+
+on:
+  schedule:
+    - cron: '0 18 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: comparison
+  cancel-in-progress: false
+
+jobs:
+  compare:
+    runs-on: celesto-large
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Get Celesto results
+        run: |
+          mkdir -p ours
+          for suite in hardware cache rust node docker burst; do
+            # Newest finished run that uploaded a results artifact.
+            for id in $(gh run list -R "$GITHUB_REPOSITORY" -w "suite-$suite.yml" -s completed -L 5 --json databaseId --jq '.[].databaseId'); do
+              if gh run download "$id" -R "$GITHUB_REPOSITORY" -n "results-$suite" -D "tmp-$suite" 2>/dev/null; then
+                mv "tmp-$suite/results.json" "ours/results-$suite.json"
+                echo "$suite: run $id"
+                break
+              fi
+            done
+          done
+      - name: Get runs-on.com data
+        run: git clone -q --depth 1 https://github.com/runs-on-demo/benchmark-public theirs
+      - name: Build comparison
+        run: node scripts/compare.mjs ours theirs/results results/latest 30
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/latest
+          git diff --cached --quiet && { echo "no change"; exit 0; }
+          git commit -q -m "results: update comparison"
+          git push -q origin HEAD:main

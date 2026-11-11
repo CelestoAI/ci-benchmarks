@@ -15,6 +15,16 @@ Six GitHub Actions workflows that measure a CI runner on real work. Each one bui
 
 Every job starts cold: no cache, no previous build. Each job checks that the runner has 4 CPUs and at least 14 GiB RAM, and fails if not.
 
+## Schedule
+
+Each suite runs every three days at a fixed time (UTC):
+
+| Day 1, 4, 7, … | Day 2, 5, 8, … | Day 3, 6, 9, … |
+| --- | --- | --- |
+| Rust 02:00, Node 04:00, Docker 06:00 | Hardware 02:00, Cache 04:00 | Burst 15:00 |
+
+Every day at 18:00, the [Comparison](../.github/workflows/compare.yml) workflow puts the latest results next to other providers' public data and updates [results/latest](../results/latest/README.md).
+
 ## Run a suite
 
 1. [Fork this repository](https://github.com/CelestoAI/ci-benchmarks/fork) and enable **Actions** in the fork.
