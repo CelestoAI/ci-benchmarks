@@ -1,0 +1,68 @@
+# Splits the 4 GiB actions/cache benchmark into disk and non-disk time:
+# the same save and restore with every file in RAM (tmpfs) or on the VM disk.
+name: Cache split
+
+on:
+  push:
+    branches: [inspect/cache-split]
+    paths: ['.github/workflows/cache-split.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bench:
+    name: ${{ matrix.mode }} ${{ matrix.iteration }}
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [ram, disk]
+        iteration: [1, 2, 3]
+    runs-on: celesto-large
+    timeout-minutes: 30
+    steps:
+      - name: Pick the data directory
+        run: |
+          if [ "${{ matrix.mode }}" = ram ]; then
+            sudo mkdir -p /mnt/ram
+            sudo mount -t tmpfs -o size=12G tmpfs /mnt/ram
+            sudo chown "$(id -u):$(id -g)" /mnt/ram
+            echo "DATA=/mnt/ram" >> "$GITHUB_ENV"
+            echo "CACHE_TMP=/mnt/ram/tmp" >> "$GITHUB_ENV"
+          else
+            echo "DATA=$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+            echo "CACHE_TMP=$RUNNER_TEMP" >> "$GITHUB_ENV"
+          fi
+      - name: Generate 4 GiB file
+        run: |
+          mkdir -p "$CACHE_TMP"
+          s=$(date +%s.%N); head -c 4G /dev/urandom > "$DATA/cache-file"; e=$(date +%s.%N)
+          echo "SPLIT generate_s=$(echo "$e - $s" | bc)"
+      - name: Archive only (CPU, no upload)
+        run: |
+          s=$(date +%s.%N); tar --posix -cf /dev/null --use-compress-program zstdmt -P -C "$DATA" cache-file; e=$(date +%s.%N)
+          echo "SPLIT archive_to_null_s=$(echo "$e - $s" | bc)"
+      - name: "phase: cache save"
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        env:
+          RUNNER_TEMP: ${{ env.CACHE_TMP }}
+        with:
+          path: ${{ env.DATA }}/cache-file
+          key: split-${{ matrix.mode }}-${{ matrix.iteration }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Remove file
+        run: rm "$DATA/cache-file"
+      - name: "phase: cache restore"
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        env:
+          RUNNER_TEMP: ${{ env.CACHE_TMP }}
+        with:
+          path: ${{ env.DATA }}/cache-file
+          key: split-${{ matrix.mode }}-${{ matrix.iteration }}-${{ github.run_id }}-${{ github.run_attempt }}
+          fail-on-cache-miss: true
+      - name: Disk write speed now (4 GiB, direct I/O)
+        run: |
+          s=$(date +%s.%N); dd if="$DATA/cache-file" of="$GITHUB_WORKSPACE/dd-file" bs=4M oflag=direct status=none; e=$(date +%s.%N)
+          echo "SPLIT disk_write_4g_direct_s=$(echo "$e - $s" | bc)"
+          rm -f "$GITHUB_WORKSPACE/dd-file"
+          echo "SPLIT runner=$RUNNER_NAME"
