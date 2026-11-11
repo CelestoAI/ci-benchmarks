@@ -2,6 +2,12 @@
 
 Benchmarks for GitHub Actions runners. Every workflow, script and raw result is in this repository, so you can check the numbers or run them on your own runners.
 
+## Latest comparison
+
+[![Speed of each provider relative to GitHub-hosted runners](results/latest/summary.svg)](results/latest/README.md)
+
+Celesto: this repository's [runner suites](docs/suites.md). Other providers: [runs-on.com public benchmark data](https://github.com/runs-on-demo/benchmark-public). Updated daily. [Phase breakdown, queue times and hardware →](results/latest/README.md)
+
 ## Benchmarks
 
 | Benchmark | What it measures | Guide | Results |
