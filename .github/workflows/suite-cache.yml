@@ -16,6 +16,9 @@ jobs:
     name: ${{ matrix.provider }} ${{ matrix.iteration }}
     strategy:
       fail-fast: false
+      # Two 4 GiB entries at a time, so GitHub's 10 GB repository cache
+      # limit never evicts an entry before it is restored.
+      max-parallel: 2
       matrix:
         provider: [github, celesto]
         iteration: [1, 2, 3]

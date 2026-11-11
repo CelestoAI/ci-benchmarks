@@ -1,0 +1,79 @@
+# docker buildx build of PostHog's production Dockerfile, no build cache. Same commit and settings as the runs-on.com docker suite.
+name: Docker benchmark
+
+on:
+  workflow_dispatch:
+  # Temporary: runs the suite from this branch. Remove before merge.
+  push:
+    branches: [hardware-suite]
+    paths: [.github/workflows/suite-docker.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  bench:
+    name: ${{ matrix.provider }} ${{ matrix.iteration }}
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [github, celesto]
+        iteration: [1, 2, 3]
+    runs-on: ${{ fromJSON(matrix.provider == 'github' && '["ubuntu-24.04"]' || '["self-hosted","celesto-large"]') }}
+    timeout-minutes: 90
+    env:
+      POSTHOG_SHA: ba81ecf8f5bccbaee4ec5a1613780e0acfd7585b
+      DOCKER_BUILD_SUMMARY: 'false'
+      DOCKER_BUILD_RECORD_UPLOAD: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: .harness
+      - name: Host check
+        run: node .harness/scripts/record-event.mjs host_fingerprint "{}"
+        env:
+          BENCHMARK_PROVIDER: ${{ matrix.provider }}
+          BENCHMARK_EVENT_FILE: ${{ runner.temp }}/events.jsonl
+      - name: Free disk space
+        run: |
+          root=$(docker info -f '{{.DockerRootDir}}' 2>/dev/null || echo /)
+          free=$(df -BG --output=avail "$root" | tail -1 | tr -dc 0-9)
+          echo "free at $root: ${free}G"
+          [ "$free" -ge 40 ] || sudo rm -rf /opt/hostedtoolcache /usr/local/lib/android /usr/share/dotnet /opt/ghc
+      - name: "phase: fetch source"
+        run: |
+          mkdir posthog && cd posthog
+          git init -q
+          git remote add origin https://github.com/PostHog/posthog.git
+          git fetch -q --depth=1 --no-tags origin "$POSTHOG_SHA"
+          git checkout -q --detach FETCH_HEAD
+      - name: "phase: buildx setup"
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+      - name: "phase: docker build"
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+        with:
+          context: posthog
+          outputs: type=cacheonly
+          provenance: false
+          sbom: false
+
+  collect:
+    needs: bench
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v5
+        with:
+          pattern: metrics-*
+          path: metrics
+      - run: node scripts/collect-suite.mjs docker metrics results.json
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: results-docker
+          path: results.json
