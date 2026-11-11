@@ -2,7 +2,7 @@
 
 Updated 2026-11-11. All runners: 4 vCPU, x64. Values are p50 (medians).
 
-The summary shows p50 times across successful jobs, in minutes and seconds. Lower is faster. Cache time includes save and restore. Workload times exclude queue time and runner overhead. Queue shows the wait from job creation to runner start for a burst of 15 jobs. Colours compare each time with GitHub.
+The summary shows p50 times across successful jobs, in minutes and seconds. Lower is faster. Cache time includes save and restore. Workload times exclude queue time and runner overhead. Queue shows the wait from job creation to runner start for a burst of 15 jobs.
 
 RunsOn also publishes [p50 (median) results](https://runs-on.com/benchmarks/methodology/). Its main build chart defaults to whole-job time and ranks by time × cost; the build columns here show workload time only.
 

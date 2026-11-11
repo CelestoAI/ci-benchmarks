@@ -4,7 +4,7 @@ Open benchmarks for GitHub Actions runners. Real builds of public projects, pinn
 
 ## Latest results
 
-p50 (median) workload and queue times for each provider. Lower is faster. Green/red cells are faster/slower than GitHub-hosted runners.
+p50 (median) workload and queue times for each provider. Lower is faster.
 
 ![p50 workload and queue times by provider; lower is faster](results/latest/summary-light.svg#gh-light-mode-only)
 ![p50 workload and queue times by provider; lower is faster](results/latest/summary-dark.svg#gh-dark-mode-only)

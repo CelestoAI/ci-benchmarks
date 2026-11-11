@@ -33,7 +33,7 @@ test('comparison pools recent Celesto runs once, ignores failed jobs and expired
   assert.match(readme, /last 30 days of runs/);
   for (const theme of ['light', 'dark']) {
     const svg = readFileSync(join(out, `summary-${theme}.svg`), 'utf8');
-    const row = svg.slice(svg.indexOf('>Celesto</text>'), svg.indexOf('>GitHub</text>'));
+    const row = svg.split('>Celesto</text>')[1]?.split('<text x="16"')[0];
     assert.match(row, />40s<\/text>/);
   }
 });
