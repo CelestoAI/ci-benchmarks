@@ -3,10 +3,6 @@ name: Hardware benchmark
 
 on:
   workflow_dispatch:
-  # Temporary: runs the suite from this branch. Remove before merge.
-  push:
-    branches: [hardware-suite]
-    paths: [.github/workflows/suite-hardware.yml]
 
 permissions:
   contents: read
