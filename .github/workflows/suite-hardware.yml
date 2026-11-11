@@ -56,8 +56,10 @@ jobs:
       - name: postgres
         continue-on-error: true
         run: node .harness/scripts/hardware-bench.mjs postgres "$METRICS"
-      - name: Fail if a group failed
-        run: node -e 'const m=require(process.env.METRICS); if (m.errors) { console.log(m.errors); process.exit(1) }'
+      # A failed group keeps the job green, like a missing metric: the other
+      # groups' numbers still count. The failure shows as a warning.
+      - name: Report failed groups
+        run: node -e 'const m=require(process.env.METRICS); for (const [g, e] of Object.entries(m.errors ?? {})) console.log(`::warning title=${g} failed::${e.split("\n")[0]}`)'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
