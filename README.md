@@ -37,16 +37,6 @@ All runners have 4 vCPU (x64). Celesto results come from this repository's [runn
 
 To test another runner, change `runs-on` in the workflow. [docs/suites.md](docs/suites.md) explains the rest.
 
-## Problems
-
-| Symptom | Check |
-| --- | --- |
-| No **Run workflow** button | You need write access. In a fork, enable Actions first. |
-| Celesto job stays queued | The commit's **Celesto runner setup** check: app access, workspace connection, Large credit. |
-| Host check fails | The runner needs 4 CPUs and at least 14 GiB RAM. |
-
-[Open an issue](https://github.com/CelestoAI/ci-benchmarks/issues/new) with the run URL, job name and error.
-
 ## License
 
 [MIT](LICENSE)
