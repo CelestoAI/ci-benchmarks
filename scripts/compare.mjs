@@ -3,6 +3,7 @@
 //
 // Usage: node scripts/compare.mjs <ours-dir> <theirs-results-dir> <out-dir> [days]
 //   <ours-dir>            results-<suite>-<run-id>.json files from our suite history
+//                         metrics-hardware-<run-id>/ holds original metric artifacts
 //   <theirs-results-dir>  results/ of https://github.com/runs-on-demo/benchmark-public
 //   <out-dir>             gets README.md and light/dark SVG charts
 //
@@ -12,6 +13,7 @@
 //   3. a hardware table
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { readMetrics } from './read-metrics.mjs';
 
 const [oursDir, theirsDir, outDir, days = '30'] = process.argv.slice(2);
 const SOURCE = 'https://github.com/runs-on-demo/benchmark-public';
@@ -72,8 +74,11 @@ for (const f of readdirSync(oursDir).filter((f) => f.endsWith('.json'))) {
   if (seen.has(key)) continue;
   seen.add(key);
   if (!dates[run.suite] || run.run.date > dates[run.suite]) dates[run.suite] = run.run.date;
-  for (const r of run.results) {
-    if (r.provider !== 'celesto') continue;
+  const results = run.results.filter((r) => r.provider === 'celesto');
+  for (const r of results) {
+    if (run.suite === 'hardware' && !r.metrics) {
+      r.metrics = readMetrics(join(oursDir, `metrics-hardware-${run.run.id}`), r.provider, r.iteration, run.results.length === 1);
+    }
     // Hardware jobs keep partial metrics when one group fails, so use them all.
     if (r.status === 'success' || (run.suite === 'hardware' && r.metrics)) add(run.suite, 'Celesto', r);
   }

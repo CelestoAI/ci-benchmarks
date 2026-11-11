@@ -6,8 +6,8 @@
 // Usage: node scripts/collect-suite.mjs <suite> <metrics-dir> <out.json>
 // Bench jobs must be named "<provider> <iteration>". Each job may upload
 // metrics-<provider>-<iteration>/metrics.json, found in <metrics-dir>.
-import { existsSync, readFileSync, writeFileSync, appendFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { writeFileSync, appendFileSync } from 'node:fs';
+import { readMetrics } from './read-metrics.mjs';
 
 const [suite, metricsDir, outFile] = process.argv.slice(2);
 const { GITHUB_TOKEN, GITHUB_REPOSITORY, GITHUB_RUN_ID, GITHUB_RUN_ATTEMPT = '1', GITHUB_STEP_SUMMARY } = process.env;
@@ -31,14 +31,12 @@ const median = (xs) => {
 };
 
 const results = [];
-for (const job of await jobs()) {
-  const m = job.name.match(/^(\S+) (\d+)$/);
-  if (!m) continue; // the collect job and anything else
-  const [, provider, iteration] = m;
+const benchmarkJobs = (await jobs()).filter((job) => /^\S+ \d+$/.test(job.name));
+for (const job of benchmarkJobs) {
+  const [, provider, iteration] = job.name.match(/^(\S+) (\d+)$/);
   const phases = (job.steps ?? [])
     .filter((s) => s.name.startsWith('phase: '))
     .map((s) => ({ name: s.name.slice(7), seconds: seconds(s.started_at, s.completed_at), status: s.conclusion }));
-  const metricsFile = join(metricsDir, `metrics-${provider}-${iteration}`, 'metrics.json');
   results.push({
     provider,
     iteration: Number(iteration),
@@ -49,7 +47,7 @@ for (const job of await jobs()) {
     jobSeconds: seconds(job.started_at, job.completed_at),
     workloadSeconds: phases.length ? phases.reduce((t, p) => t + (p.seconds ?? 0), 0) : null,
     phases,
-    metrics: existsSync(metricsFile) ? JSON.parse(readFileSync(metricsFile, 'utf8')) : null,
+    metrics: readMetrics(metricsDir, provider, iteration, benchmarkJobs.length === 1),
   });
 }
 results.sort((a, b) => a.provider.localeCompare(b.provider) || a.iteration - b.iteration);

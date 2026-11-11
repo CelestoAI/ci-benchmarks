@@ -32,6 +32,10 @@ jobs:
             for id in $(gh run list -R "$GITHUB_REPOSITORY" -w "suite-$suite.yml" -s completed --created ">=$since" -L 1000 --json databaseId --jq '.[].databaseId'); do
               if gh run download "$id" -R "$GITHUB_REPOSITORY" -n "results-$suite" -D "tmp-$suite-$id" 2>/dev/null; then
                 mv "tmp-$suite-$id/results.json" "ours/results-$suite-$id.json"
+                if [ "$suite" = hardware ]; then
+                  # Recover measurements from older single-job collectors.
+                  gh run download "$id" -R "$GITHUB_REPOSITORY" -p 'metrics-*' -D "ours/metrics-hardware-$id" 2>/dev/null || true
+                fi
                 echo "$suite: run $id"
               fi
             done
