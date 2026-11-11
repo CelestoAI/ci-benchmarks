@@ -1,4 +1,4 @@
-# CI benchmarks
+# Celesto CI Benchmark
 
 Open benchmarks for GitHub Actions runners. Real builds of public projects, pinned to a commit, run on a schedule. Every workflow, script and raw result is in this repository.
 
