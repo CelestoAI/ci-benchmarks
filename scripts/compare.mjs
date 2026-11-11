@@ -104,7 +104,7 @@ const metricOf = (path) => (r) => path.split('.').reduce((o, k) => o?.[k], r.met
 
 // ── 2. Summary: p50 workload and queue times ─────────────────────────────
 
-// Each column is a time (lower is better). Speed = GitHub time / provider time.
+// Each column is a time (lower is better).
 const COLUMNS = [
   ['Rust', 'rust', (r) => r.workloadSeconds],
   ['Node', 'node', (r) => r.workloadSeconds],
@@ -113,26 +113,19 @@ const COLUMNS = [
   ['Queue', 'burst', (r) => r.queueSeconds],
 ];
 const p50 = {};
-const speed = {};
 for (const p of providers) {
   p50[p] = COLUMNS.map(([, suite, get]) => med(suite, p, get));
-  speed[p] = COLUMNS.map(([, suite, get], i) => {
-    const base = med(suite, BASE, get);
-    const mine = p50[p][i];
-    return base && mine ? base / mine : null;
-  });
 }
-// Order rows by the geometric mean of the workload columns (queue is separate).
-const geo = (xs) => {
-  const v = xs.filter((x) => x);
-  return v.length ? Math.exp(v.reduce((t, x) => t + Math.log(x), 0) / v.length) : 0;
-};
-const rows = providers.filter((p) => p50[p].some((x) => x != null)).sort((a, b) => geo(speed[b].slice(0, 4)) - geo(speed[a].slice(0, 4)));
+// Keep GitHub's baseline next to Celesto; other providers follow alphabetically.
+const referenceOrder = ['GitHub', 'Celesto'];
+const rows = providers.filter((p) => p50[p].some((x) => x != null)).sort((a, b) =>
+  (referenceOrder.indexOf(a) < 0 ? 2 : referenceOrder.indexOf(a)) -
+  (referenceOrder.indexOf(b) < 0 ? 2 : referenceOrder.indexOf(b)) || a.localeCompare(b));
 
 // Charts are drawn for GitHub's README view: transparent background, colours
 // that work in light and dark mode, and a wide viewBox so they fill the page.
-// Celesto theme (ui/DESIGN.md): Geist type, neutral text, orange for Celesto only,
-// Geist green and red for status. Fonts fall back to the system font.
+// Geist type and neutral text. The summary gives every provider the same
+// treatment; phase charts use orange for Celesto. Fonts fall back to the system font.
 const FONT = 'font-family="Geist,Inter,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"';
 const MONO = 'font-family="Geist Mono,SFMono-Regular,Menlo,Consolas,monospace"';
 // GitHub picks the file by its own theme (#gh-light-mode-only /
@@ -144,13 +137,6 @@ const THEMES = {
 const style = (theme) => `<style>${THEMES[theme]}</style>`;
 const ORANGE = '#F04C24';
 
-// Faster than GitHub: green; slower: red. Opacity grows with the distance
-// from 1.0x (full at 4x either way), so small differences stay quiet.
-function cell(x) {
-  if (x == null || Math.abs(Math.log2(x)) < 0.07) return null; // about 1.0x: neutral
-  const t = Math.min(Math.abs(Math.log2(x)) / 2, 1);
-  return { fill: x >= 1 ? '#45a557' : '#e5484d', op: (0.14 + 0.56 * t).toFixed(2) };
-}
 const duration = (seconds) => {
   if (seconds == null) return '–';
   const rounded = Math.round(seconds);
@@ -171,18 +157,14 @@ function summarySvg(theme) {
   });
   rows.forEach((p, j) => {
     const y = top + j * rh;
-    const me = p === 'Celesto';
-    if (me) s += `<rect x="0" y="${y}" width="${W}" height="${rh}" rx="8" class="hl"/>`;
-    s += `<text x="16" y="${y + rh / 2 + 6}" font-size="17" font-weight="${me ? 600 : 500}" ${me ? `fill="${ORANGE}"` : 'class="t"'}>${p}</text>`;
+    s += `<text x="16" y="${y + rh / 2 + 6}" font-size="17" font-weight="500" class="t">${p}</text>`;
     p50[p].forEach((x, i) => {
-      const c = cell(speed[p][i]);
       const cx = left + i * cw;
-      const fill = c ? `fill="${c.fill}" fill-opacity="${c.op}"` : 'class="n"';
-      s += `<rect x="${cx + gap / 2}" y="${y + 6}" width="${cw - gap}" height="${rh - 12}" rx="6" ${fill}/>`;
-      s += `<text x="${cx + cw / 2}" y="${y + rh / 2 + 6}" text-anchor="middle" font-size="16" font-weight="${me ? 600 : 400}" ${MONO} class="t">${duration(x)}</text>`;
+      s += `<rect x="${cx + gap / 2}" y="${y + 6}" width="${cw - gap}" height="${rh - 12}" rx="6" class="n"/>`;
+      s += `<text x="${cx + cw / 2}" y="${y + rh / 2 + 6}" text-anchor="middle" font-size="16" font-weight="400" ${MONO} class="t">${duration(x)}</text>`;
     });
   });
-  s += `<text x="16" y="${H - 8}" font-size="13" class="m">p50 times (median). Lower is faster. Green/red: faster/slower than GitHub. 4 vCPU x64.</text>`;
+  s += `<text x="16" y="${H - 8}" font-size="13" class="m">p50 times (median). Lower is faster. 4 vCPU x64. GitHub baseline, then Celesto; others alphabetical.</text>`;
   return s + `</svg>\n`;
 }
 
@@ -239,7 +221,7 @@ const md = [
   '',
   `Updated ${today}. All runners: 4 vCPU, x64. Values are p50 (medians).`,
   '',
-  'The summary shows p50 times across successful jobs, in minutes and seconds. Lower is faster. Cache time includes save and restore. Workload times exclude queue time and runner overhead. Queue shows the wait from job creation to runner start for a burst of 15 jobs. Colours compare each time with GitHub.',
+  'The summary shows p50 times across successful jobs, in minutes and seconds. Lower is faster. Cache time includes save and restore. Workload times exclude queue time and runner overhead. Queue shows the wait from job creation to runner start for a burst of 15 jobs.',
   '',
   'RunsOn also publishes [p50 (median) results](https://runs-on.com/benchmarks/methodology/). Its main build chart defaults to whole-job time and ranks by time × cost; the build columns here show workload time only.',
   '',
