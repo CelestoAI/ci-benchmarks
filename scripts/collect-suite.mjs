@@ -1,7 +1,7 @@
 // Reads this workflow run's jobs from the GitHub API and writes the suite
 // result: queue time, a time per `phase: …` step, and the workload total.
-// Timings come from GitHub, not from inside the job. This is the method of
-// the runs-on.com benchmark, so the numbers can be compared with its data.
+// Timings come from GitHub, not from inside the job, so a runner cannot
+// misreport its own speed.
 //
 // Usage: node scripts/collect-suite.mjs <suite> <metrics-dir> <out.json>
 // Bench jobs must be named "<provider> <iteration>". Each job may upload

@@ -1,4 +1,4 @@
-# Cold clone, bun install and typecheck of anomalyco/opencode. Same commit, Bun version and commands as the runs-on.com node suite.
+# Cold clone, bun install and typecheck of anomalyco/opencode.
 name: Node benchmark
 
 on:

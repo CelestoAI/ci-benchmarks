@@ -6,7 +6,7 @@
 
 ## Runner suites
 
-Six suites with the same workloads, commands and settings as the [runs-on.com benchmark](https://github.com/runs-on-demo/benchmark-public), so results can be compared with its public data. Each runs 3 jobs per provider on 4 vCPU / 16 GiB runners.
+Six suites built on public open-source projects at pinned commits. Each runs 3 jobs per provider on 4 vCPU / 16 GiB runners.
 
 | Suite | Workload | Workflow |
 | --- | --- | --- |
@@ -18,13 +18,6 @@ Six suites with the same workloads, commands and settings as the [runs-on.com be
 | Burst | 15 jobs per provider queued at once, 60 s each | [suite-burst.yml](.github/workflows/suite-burst.yml) |
 
 Timings come from the GitHub Jobs API: queue time, and one time per `phase: …` step. Each run uploads `results-<suite>.json`.
-
-Compare with runs-on.com data:
-
-```sh
-git clone https://github.com/runs-on-demo/benchmark-public
-node scripts/compare-runs-on.mjs <dir with results-*.json> benchmark-public/results
-```
 
 ## Docker benchmarks
 

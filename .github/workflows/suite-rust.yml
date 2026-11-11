@@ -1,4 +1,4 @@
-# Cold build and test of aome510/spotify-player. Same commit, toolchain and commands as the runs-on.com rust suite.
+# Cold build and test of aome510/spotify-player.
 name: Rust benchmark
 
 on:

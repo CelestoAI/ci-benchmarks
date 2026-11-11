@@ -1,4 +1,4 @@
-# 15 jobs per provider queued at the same time, each holding its runner for 60 s. Shows how long jobs wait when a spike arrives. Same test as the runs-on.com burst suite.
+# 15 jobs per provider queued at the same time, each holding its runner for 60 s. Shows how long jobs wait when a spike arrives.
 name: Burst benchmark
 
 on:

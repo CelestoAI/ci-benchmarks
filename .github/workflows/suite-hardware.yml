@@ -1,4 +1,4 @@
-# CPU, memory, disk, network, Docker and PostgreSQL tests. Same tools and settings as the runs-on.com hardware suite.
+# CPU, memory, disk, network, Docker and PostgreSQL tests.
 name: Hardware benchmark
 
 on:

@@ -1,4 +1,4 @@
-# Saves a 4 GiB file with actions/cache, deletes it, then restores it on the same runner. Same test as the runs-on.com cache suite.
+# Saves a 4 GiB file with actions/cache, deletes it, then restores it on the same runner.
 name: Cache benchmark
 
 on:

@@ -1,5 +1,4 @@
-// Hardware tests, one group per call. Settings match the runs-on.com
-// hardware suite, so results can be compared with its public data.
+// Hardware tests, one group per call.
 //
 // Usage: node scripts/hardware-bench.mjs <group> <metrics.json>
 // Groups: cpu, passmark, memory, disk, network, docker, postgres

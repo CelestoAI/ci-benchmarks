@@ -1,4 +1,4 @@
-# docker buildx build of PostHog's production Dockerfile, no build cache. Same commit and settings as the runs-on.com docker suite.
+# docker buildx build of PostHog's production Dockerfile, no build cache.
 name: Docker benchmark
 
 on:
