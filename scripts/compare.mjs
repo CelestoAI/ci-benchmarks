@@ -7,7 +7,7 @@
 //   <out-dir>             gets README.md and light/dark SVG charts
 //
 // The page has three parts:
-//   1. summary-<theme>.svg: p50 workload time of each provider on each suite
+//   1. summary-<theme>.svg: p50 workload and queue times by provider
 //   2. one stacked bar chart per build suite: where the time goes, by phase
 //   3. a hardware table
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -25,9 +25,7 @@ const THEIRS = {
   'warpbuild-x64': 'WarpBuild',
   'ubicloud-x64': 'Ubicloud',
 };
-// The burst (queue) suite still runs, but its result is not published here
-// while Celesto's queue time is being worked on.
-const SUITES = ['rust', 'node', 'docker', 'cache', 'hardware'];
+const SUITES = ['rust', 'node', 'docker', 'cache', 'burst', 'hardware'];
 
 // Build suites: title and the phases to show, in order. Phases not listed
 // (for example `verify`) still count in the total.
@@ -94,7 +92,7 @@ const med = (suite, provider, get) => median((data[suite]?.[provider] ?? []).map
 const phaseOf = (name) => (r) => r.phases?.find((p) => p.name === name)?.seconds;
 const metricOf = (path) => (r) => path.split('.').reduce((o, k) => o?.[k], r.metrics);
 
-// ── 2. Summary: p50 workload time ────────────────────────────────────────
+// ── 2. Summary: p50 workload and queue times ─────────────────────────────
 
 // Each column is a time (lower is better). Speed = GitHub time / provider time.
 const COLUMNS = [
@@ -102,6 +100,7 @@ const COLUMNS = [
   ['Node', 'node', (r) => r.workloadSeconds],
   ['Docker', 'docker', (r) => r.workloadSeconds],
   ['Cache', 'cache', (r) => r.workloadSeconds],
+  ['Queue', 'burst', (r) => r.queueSeconds],
 ];
 const p50 = {};
 const speed = {};
@@ -113,12 +112,12 @@ for (const p of providers) {
     return base && mine ? base / mine : null;
   });
 }
-// Order rows by the geometric mean of all columns.
+// Order rows by the geometric mean of the workload columns (queue is separate).
 const geo = (xs) => {
   const v = xs.filter((x) => x);
   return v.length ? Math.exp(v.reduce((t, x) => t + Math.log(x), 0) / v.length) : 0;
 };
-const rows = providers.filter((p) => p50[p].some((x) => x != null)).sort((a, b) => geo(speed[b]) - geo(speed[a]));
+const rows = providers.filter((p) => p50[p].some((x) => x != null)).sort((a, b) => geo(speed[b].slice(0, 4)) - geo(speed[a].slice(0, 4)));
 
 // Charts are drawn for GitHub's README view: transparent background, colours
 // that work in light and dark mode, and a wide viewBox so they fill the page.
@@ -154,7 +153,7 @@ function summarySvg(theme) {
   const H = top + rows.length * rh + 34;
   let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" ${FONT}>${style(theme)}`;
   // Column headers: suite name and what it runs.
-  const sub = { Rust: 'spotify-player', Node: 'opencode', Docker: 'PostHog image', Cache: '4 GiB' };
+  const sub = { Rust: 'spotify-player', Node: 'opencode', Docker: 'PostHog image', Cache: '4 GiB', Queue: '15 jobs at once' };
   COLUMNS.forEach(([label], i) => {
     const cx = left + i * cw + cw / 2;
     s += `<text x="${cx}" y="24" text-anchor="middle" font-size="17" font-weight="600" class="t">${label}</text>`;
@@ -173,7 +172,7 @@ function summarySvg(theme) {
       s += `<text x="${cx + cw / 2}" y="${y + rh / 2 + 6}" text-anchor="middle" font-size="16" font-weight="${me ? 600 : 400}" ${MONO} class="t">${duration(x)}</text>`;
     });
   });
-  s += `<text x="16" y="${H - 8}" font-size="13" class="m">p50 workload time (median). Lower is faster. Green/red: faster/slower than GitHub. 4 vCPU x64.</text>`;
+  s += `<text x="16" y="${H - 8}" font-size="13" class="m">p50 times (median). Lower is faster. Green/red: faster/slower than GitHub. 4 vCPU x64.</text>`;
   return s + `</svg>\n`;
 }
 
@@ -230,14 +229,14 @@ const md = [
   '',
   `Updated ${today}. All runners: 4 vCPU, x64. Values are p50 (medians).`,
   '',
-  'The summary shows p50 workload time across successful jobs, in minutes and seconds. Lower is faster. Cache time includes save and restore. Queue time and runner overhead are excluded. Colours compare each time with GitHub.',
+  'The summary shows p50 times across successful jobs, in minutes and seconds. Lower is faster. Cache time includes save and restore. Workload times exclude queue time and runner overhead. Queue shows the wait from job creation to runner start for a burst of 15 jobs. Colours compare each time with GitHub.',
   '',
-  'RunsOn also publishes [p50 (median) results](https://runs-on.com/benchmarks/methodology/). Its main build chart defaults to whole-job time and ranks by time × cost; this comparison shows workload time only.',
+  'RunsOn also publishes [p50 (median) results](https://runs-on.com/benchmarks/methodology/). Its main build chart defaults to whole-job time and ranks by time × cost; the build columns here show workload time only.',
   '',
   `- **Celesto:** this repository's [runner suites](../../docs/suites.md), latest run of each suite.`,
   `- **Other providers:** [runs-on.com public benchmark data](${SOURCE}), last ${days} days. Same workloads and settings, measured by runs-on.com on their accounts.`,
   '',
-  ...themed('p50 workload time by provider; lower is faster', 'summary'),
+  ...themed('p50 workload and queue times by provider; lower is faster', 'summary'),
   '',
 ];
 
