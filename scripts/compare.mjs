@@ -4,10 +4,10 @@
 // Usage: node scripts/compare.mjs <ours-dir> <theirs-results-dir> <out-dir> [days]
 //   <ours-dir>            results-<suite>.json files from our latest suite runs
 //   <theirs-results-dir>  results/ of https://github.com/runs-on-demo/benchmark-public
-//   <out-dir>             gets README.md, summary.svg and one phase chart per build suite
+//   <out-dir>             gets README.md and light/dark SVG charts
 //
 // The page has three parts:
-//   1. summary.svg: speed of each provider on each suite, relative to GitHub
+//   1. summary-<theme>.svg: speed of each provider on each suite, relative to GitHub
 //   2. one stacked bar chart per build suite: where the time goes, by phase
 //   3. a hardware table
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -116,91 +116,101 @@ const geo = (xs) => {
 };
 const rows = providers.filter((p) => speed[p].some((x) => x)).sort((a, b) => geo(speed[b].slice(0, 4)) - geo(speed[a].slice(0, 4)));
 
-// Green for faster than GitHub, red for slower; stronger with distance.
-function cellColor(x) {
-  if (x == null) return '#f1f5f9';
-  const t = Math.min(Math.abs(Math.log2(x)) / 2, 1); // 4x away = full colour
-  const [r, g, b] = x >= 1 ? [22, 163, 74] : [220, 38, 38];
-  const mix = (c) => Math.round(255 + (c - 255) * (0.15 + 0.75 * t));
-  return `rgb(${mix(r)},${mix(g)},${mix(b)})`;
-}
+// Charts are drawn for GitHub's README view: transparent background, colours
+// that work in light and dark mode, and a wide viewBox so they fill the page.
+const FONT = 'font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif"';
+// GitHub picks the file by its own theme (#gh-light-mode-only /
+// #gh-dark-mode-only), so each chart is written once per theme.
+const THEMES = {
+  light: '.t{fill:#1f2328}.m{fill:#59636e}.hl{fill:#fff1e5}',
+  dark: '.t{fill:#f0f6fc}.m{fill:#9198a1}.hl{fill:#3b2414}',
+};
+const style = (theme) => `<style>${THEMES[theme]}</style>`;
+const ORANGE = '#e16f24';
 
-function summarySvg() {
-  const cw = 96, rh = 34, left = 120, top = 70;
-  const W = left + COLUMNS.length * cw + 16;
-  const H = top + rows.length * rh + 40;
-  let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" font-family="system-ui,-apple-system,Segoe UI,sans-serif">`;
-  s += `<rect width="100%" height="100%" fill="#fff"/>`;
-  s += `<text x="16" y="26" font-size="16" font-weight="600" fill="#0f172a">Speed relative to GitHub-hosted (4 vCPU)</text>`;
-  s += `<text x="16" y="46" font-size="12" fill="#64748b">2.0× = twice as fast as GitHub · 0.5× = half as fast · medians</text>`;
+// Faster than GitHub: green; slower: red. Opacity grows with the distance
+// from 1.0x (full at 4x either way), so small differences stay quiet.
+function cell(x) {
+  if (x == null) return { fill: '#8c959f', op: 0.12 };
+  const t = Math.min(Math.abs(Math.log2(x)) / 2, 1);
+  return { fill: x >= 1 ? '#1a7f37' : '#cf222e', op: (0.12 + 0.6 * t).toFixed(2) };
+}
+const times = (x) => (x == null ? '–' : x >= 10 ? `${Math.round(x)}×` : x < 0.1 ? `${x.toFixed(2)}×` : `${x.toFixed(1)}×`);
+
+function summarySvg(theme) {
+  const W = 960, left = 170, top = 64, rh = 46, gap = 8;
+  const cw = (W - left - 8) / COLUMNS.length;
+  const H = top + rows.length * rh + 34;
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" ${FONT}>${style(theme)}`;
+  // Column headers: suite name and what it runs.
+  const sub = { Rust: 'spotify-player', Node: 'opencode', Docker: 'PostHog image', Cache: '4 GiB', Queue: '15 jobs at once' };
   COLUMNS.forEach(([label], i) => {
-    s += `<text x="${left + i * cw + cw / 2}" y="${top - 8}" text-anchor="middle" font-size="12" font-weight="600" fill="#334155">${label}</text>`;
+    const cx = left + i * cw + cw / 2;
+    s += `<text x="${cx}" y="24" text-anchor="middle" font-size="17" font-weight="600" class="t">${label}</text>`;
+    s += `<text x="${cx}" y="44" text-anchor="middle" font-size="13" class="m">${sub[label]}</text>`;
   });
   rows.forEach((p, j) => {
     const y = top + j * rh;
-    const bold = p === 'Celesto' ? ' font-weight="700"' : '';
-    s += `<text x="${left - 10}" y="${y + rh / 2 + 4}" text-anchor="end" font-size="13" fill="#0f172a"${bold}>${p}</text>`;
+    const me = p === 'Celesto';
+    if (me) s += `<rect x="0" y="${y}" width="${W}" height="${rh}" rx="8" class="hl"/>`;
+    s += `<text x="16" y="${y + rh / 2 + 6}" font-size="17" font-weight="${me ? 700 : 500}" ${me ? `fill="${ORANGE}"` : 'class="t"'}>${p}</text>`;
     speed[p].forEach((x, i) => {
+      const c = cell(x);
       const cx = left + i * cw;
-      s += `<rect x="${cx + 3}" y="${y + 3}" width="${cw - 6}" height="${rh - 6}" rx="4" fill="${cellColor(x)}"/>`;
-      const text = x == null ? '–' : x >= 10 ? `${Math.round(x)}×` : `${x.toFixed(x < 0.1 ? 2 : 1)}×`;
-      s += `<text x="${cx + cw / 2}" y="${y + rh / 2 + 4}" text-anchor="middle" font-size="13" fill="#0f172a"${bold}>${text}</text>`;
+      s += `<rect x="${cx + gap / 2}" y="${y + 6}" width="${cw - gap}" height="${rh - 12}" rx="6" fill="${c.fill}" fill-opacity="${c.op}"/>`;
+      s += `<text x="${cx + cw / 2}" y="${y + rh / 2 + 6}" text-anchor="middle" font-size="17" font-weight="${me ? 700 : 500}" class="t">${times(x)}</text>`;
     });
-    if (p === 'Celesto') s += `<rect x="${left}" y="${y + 1}" width="${COLUMNS.length * cw}" height="${rh - 2}" rx="5" fill="none" stroke="#c2410c" stroke-width="2"/>`;
   });
-  s += `<text x="16" y="${H - 14}" font-size="11" fill="#64748b">Queue: median wait with 15 jobs queued at once. Celesto: this repository. Others: runs-on.com public data.</text>`;
+  s += `<text x="16" y="${H - 8}" font-size="13" class="m">Speed relative to GitHub-hosted (1.0×). Higher is faster. Medians, 4 vCPU x64 runners.</text>`;
   return s + `</svg>\n`;
 }
 
-// ── 3. Stacked phase chart per build suite ───────────────────────────────
+// Phase colours: setup steps grey, work steps in distinct hues.
+const PALETTE = ['#8c959f', '#afb8c1', '#0969da', '#8250df', '#1a7f37', '#bf8700', '#cf222e'];
 
-const PALETTE = ['#cbd5e1', '#94a3b8', '#3b82f6', '#8b5cf6', '#14b8a6', '#f59e0b', '#ec4899'];
-
-function phaseSvg(suite) {
-  const [title, phases] = BUILDS[suite];
+function phaseSvg(suite, theme) {
+  const [, phases] = BUILDS[suite];
   const list = providers
-    .map((p) => {
-      const parts = phases.map((n) => med(suite, p, phaseOf(n)) ?? 0);
-      return { p, parts, total: med(suite, p, (r) => r.workloadSeconds) };
-    })
+    .map((p) => ({ p, parts: phases.map((n) => med(suite, p, phaseOf(n)) ?? 0), total: med(suite, p, (r) => r.workloadSeconds) }))
     .filter((x) => x.total)
     .sort((a, b) => a.total - b.total);
   if (!list.some((x) => x.p === 'Celesto')) return null;
-  const W = 720, left = 110, right = 70, top = 78, rh = 30;
-  const H = top + list.length * rh + 16;
+  const W = 960, left = 150, right = 90, top = 52, rh = 40;
+  const H = top + list.length * rh + 30;
   const max = Math.max(...list.map((x) => Math.max(x.total, x.parts.reduce((a, b) => a + b, 0))));
   const scale = (W - left - right) / max;
-  let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" font-family="system-ui,-apple-system,Segoe UI,sans-serif">`;
-  s += `<rect width="100%" height="100%" fill="#fff"/>`;
-  s += `<text x="16" y="26" font-size="16" font-weight="600" fill="#0f172a">${esc(title)}</text>`;
-  s += `<text x="${W - 16}" y="26" text-anchor="end" font-size="12" fill="#64748b">seconds · lower is better</text>`;
-  // Legend
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" ${FONT}>${style(theme)}`;
+  // Legend on one line.
   let lx = 16;
   phases.forEach((n, i) => {
-    s += `<rect x="${lx}" y="42" width="11" height="11" rx="2" fill="${PALETTE[i]}"/><text x="${lx + 16}" y="52" font-size="12" fill="#334155">${esc(n)}</text>`;
-    lx += 26 + n.length * 6.6;
+    s += `<rect x="${lx}" y="14" width="14" height="14" rx="3" fill="${PALETTE[i]}"/><text x="${lx + 20}" y="26" font-size="14" class="m">${esc(n)}</text>`;
+    lx += 34 + n.length * 7.4;
   });
   list.forEach(({ p, parts, total }, j) => {
     const y = top + j * rh;
-    const bold = p === 'Celesto' ? ' font-weight="700"' : '';
-    s += `<text x="${left - 10}" y="${y + 19}" text-anchor="end" font-size="13" fill="#0f172a"${bold}>${p}</text>`;
+    const me = p === 'Celesto';
+    if (me) s += `<rect x="0" y="${y}" width="${W}" height="${rh}" rx="8" class="hl"/>`;
+    s += `<text x="16" y="${y + rh / 2 + 6}" font-size="16" font-weight="${me ? 700 : 500}" ${me ? `fill="${ORANGE}"` : 'class="t"'}>${p}</text>`;
     let x = left;
     parts.forEach((v, i) => {
       if (!v) return;
       const w = v * scale;
-      s += `<rect x="${x.toFixed(1)}" y="${y + 6}" width="${w.toFixed(1)}" height="18" fill="${PALETTE[i]}"><title>${esc(phases[i])}: ${fmt(v)} s</title></rect>`;
+      s += `<rect x="${x.toFixed(1)}" y="${y + 9}" width="${Math.max(w - 1.5, 1).toFixed(1)}" height="${rh - 18}" rx="3" fill="${PALETTE[i]}"><title>${esc(phases[i])}: ${fmt(v)} s</title></rect>`;
       x += w;
     });
-    if (p === 'Celesto') s += `<rect x="${left - 2}" y="${y + 4}" width="${(x - left + 4).toFixed(1)}" height="22" rx="3" fill="none" stroke="#c2410c" stroke-width="2"/>`;
-    s += `<text x="${x + 8}" y="${y + 19}" font-size="13" fill="#0f172a"${bold}>${fmt(total)} s</text>`;
+    s += `<text x="${x + 10}" y="${y + rh / 2 + 6}" font-size="16" font-weight="${me ? 700 : 500}" class="t">${fmt(total)} s</text>`;
   });
+  s += `<text x="16" y="${H - 8}" font-size="13" class="m">Seconds, lower is better. Medians. Hover a segment for its time.</text>`;
   return s + `</svg>\n`;
 }
 
 // ── 4. Write the page ────────────────────────────────────────────────────
 
+// One image per theme; GitHub shows the one that matches the reader's theme.
+const themed = (alt, name) => [`![${alt}](${name}-light.svg#gh-light-mode-only)`, `![${alt}](${name}-dark.svg#gh-dark-mode-only)`];
+
 mkdirSync(outDir, { recursive: true });
-writeFileSync(join(outDir, 'summary.svg'), summarySvg());
+for (const theme of Object.keys(THEMES)) writeFileSync(join(outDir, `summary-${theme}.svg`), summarySvg(theme));
 
 const today = new Date().toISOString().slice(0, 10);
 const md = [
@@ -211,16 +221,15 @@ const md = [
   `- **Celesto:** this repository's [runner suites](../../docs/suites.md), latest run of each suite.`,
   `- **Other providers:** [runs-on.com public benchmark data](${SOURCE}), last ${days} days. Same workloads and settings, measured by runs-on.com on their accounts.`,
   '',
-  '![Speed relative to GitHub](summary.svg)',
+  ...themed('Speed relative to GitHub', 'summary'),
   '',
 ];
 
 for (const suite of Object.keys(BUILDS)) {
-  const chart = phaseSvg(suite);
-  if (!chart) continue;
-  writeFileSync(join(outDir, `${suite}.svg`), chart);
+  if (!phaseSvg(suite, 'light')) continue;
+  for (const theme of Object.keys(THEMES)) writeFileSync(join(outDir, `${suite}-${theme}.svg`), phaseSvg(suite, theme));
   const jobs = Object.entries(data[suite]).map(([p, rs]) => `${p} ${rs.length}`).join(', ');
-  md.push(`## ${BUILDS[suite][0].split(':')[0]}`, '', `![${BUILDS[suite][0]}](${suite}.svg)`, '', `Jobs: ${jobs}. Celesto run: ${dates[suite]}.`, '');
+  md.push(`## ${BUILDS[suite][0].split(':')[0]}`, '', `${BUILDS[suite][0].split(': ')[1][0].toUpperCase()}${BUILDS[suite][0].split(': ')[1].slice(1)}.`, '', ...themed(BUILDS[suite][0], suite), '', `Jobs: ${jobs}. Celesto run: ${dates[suite]}.`, '');
 }
 
 if (data.burst?.Celesto) {

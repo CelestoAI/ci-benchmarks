@@ -1,36 +1,49 @@
 # CI benchmarks
 
-Benchmarks for GitHub Actions runners. Every workflow, script and raw result is in this repository, so you can check the numbers or run them on your own runners.
+Open benchmarks for GitHub Actions runners. Real builds of public projects, pinned to a commit, run on a schedule. Every workflow, script and raw result is in this repository.
 
-## Latest comparison
+## Latest results
 
-[![Speed of each provider relative to GitHub-hosted runners](results/latest/summary.svg)](results/latest/README.md)
+How fast each provider runs each suite, compared with GitHub-hosted runners (1.0×). Higher is faster.
 
-Celesto: this repository's [runner suites](docs/suites.md). Other providers: [runs-on.com public benchmark data](https://github.com/runs-on-demo/benchmark-public). Updated daily. [Phase breakdown, queue times and hardware →](results/latest/README.md)
+![Speed of each provider relative to GitHub-hosted runners](results/latest/summary-light.svg#gh-light-mode-only)
+![Speed of each provider relative to GitHub-hosted runners](results/latest/summary-dark.svg#gh-dark-mode-only)
 
-## Benchmarks
+| Suite | Workload |
+| --- | --- |
+| Rust | Cold `cargo test` and `clippy` of [spotify-player](https://github.com/aome510/spotify-player) |
+| Node | Cold `bun install` and typecheck of [opencode](https://github.com/anomalyco/opencode) |
+| Docker | `docker buildx build` of [PostHog](https://github.com/PostHog/posthog)'s production image, no cache |
+| Cache | Save and restore a 4 GiB file with `actions/cache` |
+| Queue | Median wait when 15 jobs start at the same moment |
 
-| Benchmark | What it measures | Guide | Results |
-| --- | --- | --- | --- |
-| Runner suites | Real builds of public projects (Rust, Node, Docker), a 4 GiB cache, hardware tests and a burst of 15 jobs | [docs/suites.md](docs/suites.md) | [Comparison with other providers](results/latest/README.md), updated daily |
-| Matched CPU and cache | CPU throughput and a 512 MiB cache, GitHub-hosted and Celesto Large side by side | [docs/matched.md](docs/matched.md) | [Nov 2, 2026](results/2026-11-02-matched/README.md) |
-| Docker | Image builds, layer caches and a Python API with PostgreSQL | [docker-bench/README.md](docker-bench/README.md) | [Oct 17, 2026](results/docker-2026-10-17/README.md) |
+All runners have 4 vCPU (x64). Celesto results come from this repository's [runner suites](docs/suites.md). Other providers' results come from the [runs-on.com public benchmark data](https://github.com/runs-on-demo/benchmark-public), which uses the same workloads and settings. Updated daily.
 
-## Run a benchmark
+**[Full results: time per phase, queue times and hardware →](results/latest/README.md)**
+
+## Benchmarks in this repository
+
+| Benchmark | What it measures | Guide |
+| --- | --- | --- |
+| Runner suites | Rust, Node and Docker builds, a 4 GiB cache, hardware tests and a burst of 15 jobs | [docs/suites.md](docs/suites.md) |
+| Matched CPU and cache | CPU throughput and a 512 MiB cache on GitHub-hosted and Celesto side by side ([Nov 2 results](results/2026-11-02-matched/README.md)) | [docs/matched.md](docs/matched.md) |
+| Docker | Image builds, layer caches, and a Python API with PostgreSQL ([Oct 17 results](results/docker-2026-10-17/README.md)) | [docker-bench/README.md](docker-bench/README.md) |
+
+## Run it yourself
 
 1. [Fork this repository](https://github.com/CelestoAI/ci-benchmarks/fork) and enable **Actions** in the fork.
-2. Install the [Celesto CI app](https://github.com/apps/celesto-ci) on the fork and connect it to a workspace with credit for the **Large** runner.
-3. Open **Actions**, pick a workflow, and click **Run workflow** on `main`.
+2. Install the [Celesto CI app](https://github.com/apps/celesto-ci) on the fork, with a workspace that has credit for the **Large** runner.
+3. Open **Actions**, pick a workflow, and click **Run workflow**.
 
-To use a different runner, change `runs-on` in the workflow. Each guide says what else to change.
+To test another runner, change `runs-on` in the workflow. [docs/suites.md](docs/suites.md) explains the rest.
 
 ## Problems
 
 | Symptom | Check |
 | --- | --- |
 | No **Run workflow** button | You need write access. In a fork, enable Actions first. |
-| Celesto job stays queued | Open the commit's **Celesto runner setup** check: app access, workspace connection, Large credit. |
-| Host check fails | The runner must have 4 CPUs and at least 14 GiB RAM. |
+| Celesto job stays queued | The commit's **Celesto runner setup** check: app access, workspace connection, Large credit. |
+| Host check fails | The runner needs 4 CPUs and at least 14 GiB RAM. |
 
 [Open an issue](https://github.com/CelestoAI/ci-benchmarks/issues/new) with the run URL, job name and error.
 
