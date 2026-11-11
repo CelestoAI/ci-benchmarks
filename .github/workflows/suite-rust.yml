@@ -15,7 +15,7 @@ jobs:
       matrix:
         provider: [celesto]
         iteration: [1, 2, 3]
-    runs-on: [self-hosted, celesto-large]
+    runs-on: celesto-large
     timeout-minutes: 45
     env:
       CARGO_TERM_COLOR: always
@@ -63,7 +63,7 @@ jobs:
   collect:
     needs: bench
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: celesto-large
     permissions:
       actions: read
       contents: read

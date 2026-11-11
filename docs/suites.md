@@ -25,7 +25,7 @@ Run one suite at a time. Suites that run together share the same runner capacity
 
 ### Run on a different runner
 
-In the workflow, change `runs-on` to your runner's labels and `provider` to a name for it. The name labels the jobs and the results.
+In the workflow, change `runs-on` in both jobs (`bench` and `collect`) to your runner's labels, and `provider` to a name for the runner. The name labels the jobs and the results.
 
 ```yaml
       matrix:
