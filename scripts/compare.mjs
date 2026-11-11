@@ -7,7 +7,7 @@
 //   <out-dir>             gets README.md and light/dark SVG charts
 //
 // The page has three parts:
-//   1. summary-<theme>.svg: speed of each provider on each suite, relative to GitHub
+//   1. summary-<theme>.svg: p50 workload time of each provider on each suite
 //   2. one stacked bar chart per build suite: where the time goes, by phase
 //   3. a hardware table
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -94,7 +94,7 @@ const med = (suite, provider, get) => median((data[suite]?.[provider] ?? []).map
 const phaseOf = (name) => (r) => r.phases?.find((p) => p.name === name)?.seconds;
 const metricOf = (path) => (r) => path.split('.').reduce((o, k) => o?.[k], r.metrics);
 
-// ── 2. Summary: speed relative to GitHub ─────────────────────────────────
+// ── 2. Summary: p50 workload time ────────────────────────────────────────
 
 // Each column is a time (lower is better). Speed = GitHub time / provider time.
 const COLUMNS = [
@@ -103,11 +103,13 @@ const COLUMNS = [
   ['Docker', 'docker', (r) => r.workloadSeconds],
   ['Cache', 'cache', (r) => r.workloadSeconds],
 ];
+const p50 = {};
 const speed = {};
 for (const p of providers) {
-  speed[p] = COLUMNS.map(([, suite, get]) => {
+  p50[p] = COLUMNS.map(([, suite, get]) => med(suite, p, get));
+  speed[p] = COLUMNS.map(([, suite, get], i) => {
     const base = med(suite, BASE, get);
-    const mine = med(suite, p, get);
+    const mine = p50[p][i];
     return base && mine ? base / mine : null;
   });
 }
@@ -116,7 +118,7 @@ const geo = (xs) => {
   const v = xs.filter((x) => x);
   return v.length ? Math.exp(v.reduce((t, x) => t + Math.log(x), 0) / v.length) : 0;
 };
-const rows = providers.filter((p) => speed[p].some((x) => x)).sort((a, b) => geo(speed[b]) - geo(speed[a]));
+const rows = providers.filter((p) => p50[p].some((x) => x != null)).sort((a, b) => geo(speed[b]) - geo(speed[a]));
 
 // Charts are drawn for GitHub's README view: transparent background, colours
 // that work in light and dark mode, and a wide viewBox so they fill the page.
@@ -140,7 +142,11 @@ function cell(x) {
   const t = Math.min(Math.abs(Math.log2(x)) / 2, 1);
   return { fill: x >= 1 ? '#45a557' : '#e5484d', op: (0.14 + 0.56 * t).toFixed(2) };
 }
-const times = (x) => (x == null ? '–' : x >= 10 ? `${Math.round(x)}×` : x < 0.1 ? `${x.toFixed(2)}×` : `${x.toFixed(1)}×`);
+const duration = (seconds) => {
+  if (seconds == null) return '–';
+  const rounded = Math.round(seconds);
+  return rounded < 60 ? `${rounded}s` : `${Math.floor(rounded / 60)}m ${String(rounded % 60).padStart(2, '0')}s`;
+};
 
 function summarySvg(theme) {
   const W = 960, left = 170, top = 64, rh = 46, gap = 8;
@@ -159,15 +165,15 @@ function summarySvg(theme) {
     const me = p === 'Celesto';
     if (me) s += `<rect x="0" y="${y}" width="${W}" height="${rh}" rx="8" class="hl"/>`;
     s += `<text x="16" y="${y + rh / 2 + 6}" font-size="17" font-weight="${me ? 600 : 500}" ${me ? `fill="${ORANGE}"` : 'class="t"'}>${p}</text>`;
-    speed[p].forEach((x, i) => {
-      const c = cell(x);
+    p50[p].forEach((x, i) => {
+      const c = cell(speed[p][i]);
       const cx = left + i * cw;
       const fill = c ? `fill="${c.fill}" fill-opacity="${c.op}"` : 'class="n"';
       s += `<rect x="${cx + gap / 2}" y="${y + 6}" width="${cw - gap}" height="${rh - 12}" rx="6" ${fill}/>`;
-      s += `<text x="${cx + cw / 2}" y="${y + rh / 2 + 6}" text-anchor="middle" font-size="16" font-weight="${me ? 600 : 400}" ${MONO} class="t">${times(x)}</text>`;
+      s += `<text x="${cx + cw / 2}" y="${y + rh / 2 + 6}" text-anchor="middle" font-size="16" font-weight="${me ? 600 : 400}" ${MONO} class="t">${duration(x)}</text>`;
     });
   });
-  s += `<text x="16" y="${H - 8}" font-size="13" class="m">Speed relative to GitHub-hosted (1.0×). Higher is faster. Medians, 4 vCPU x64 runners.</text>`;
+  s += `<text x="16" y="${H - 8}" font-size="13" class="m">p50 workload time (median). Lower is faster. Green/red: faster/slower than GitHub. 4 vCPU x64.</text>`;
   return s + `</svg>\n`;
 }
 
@@ -206,7 +212,7 @@ function phaseSvg(suite, theme) {
     });
     s += `<text x="${x + 10}" y="${y + rh / 2 + 6}" font-size="15" font-weight="${me ? 600 : 400}" ${MONO} class="t">${fmt(total)} s</text>`;
   });
-  s += `<text x="16" y="${H - 8}" font-size="13" class="m">Seconds, lower is better. Medians. Hover a segment for its time.</text>`;
+  s += `<text x="16" y="${H - 8}" font-size="13" class="m">Seconds, lower is better. p50 (median). Hover a segment for its time.</text>`;
   return s + `</svg>\n`;
 }
 
@@ -222,12 +228,16 @@ const today = new Date().toISOString().slice(0, 10);
 const md = [
   '# Runner comparison',
   '',
-  `Updated ${today}. All runners: 4 vCPU, x64. Values are medians.`,
+  `Updated ${today}. All runners: 4 vCPU, x64. Values are p50 (medians).`,
+  '',
+  'The summary shows p50 workload time across successful jobs, in minutes and seconds. Lower is faster. Cache time includes save and restore. Queue time and runner overhead are excluded. Colours compare each time with GitHub.',
+  '',
+  'RunsOn also publishes [p50 (median) results](https://runs-on.com/benchmarks/methodology/). Its main build chart defaults to whole-job time and ranks by time × cost; this comparison shows workload time only.',
   '',
   `- **Celesto:** this repository's [runner suites](../../docs/suites.md), latest run of each suite.`,
   `- **Other providers:** [runs-on.com public benchmark data](${SOURCE}), last ${days} days. Same workloads and settings, measured by runs-on.com on their accounts.`,
   '',
-  ...themed('Speed relative to GitHub', 'summary'),
+  ...themed('p50 workload time by provider; lower is faster', 'summary'),
   '',
 ];
 
