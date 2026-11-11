@@ -118,22 +118,25 @@ const rows = providers.filter((p) => speed[p].some((x) => x)).sort((a, b) => geo
 
 // Charts are drawn for GitHub's README view: transparent background, colours
 // that work in light and dark mode, and a wide viewBox so they fill the page.
-const FONT = 'font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif"';
+// Celesto theme (ui/DESIGN.md): Geist type, neutral text, orange for Celesto only,
+// Geist green and red for status. Fonts fall back to the system font.
+const FONT = 'font-family="Geist,Inter,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"';
+const MONO = 'font-family="Geist Mono,SFMono-Regular,Menlo,Consolas,monospace"';
 // GitHub picks the file by its own theme (#gh-light-mode-only /
 // #gh-dark-mode-only), so each chart is written once per theme.
 const THEMES = {
-  light: '.t{fill:#1f2328}.m{fill:#59636e}.hl{fill:#fff1e5}',
-  dark: '.t{fill:#f0f6fc}.m{fill:#9198a1}.hl{fill:#3b2414}',
+  light: '.t{fill:#171717}.m{fill:#4d4d4d}.hl{fill:#F04C24;fill-opacity:.07}.n{fill:#8f8f8f;fill-opacity:.12}',
+  dark: '.t{fill:#ededed}.m{fill:#a1a1a1}.hl{fill:#F04C24;fill-opacity:.14}.n{fill:#8f8f8f;fill-opacity:.16}',
 };
 const style = (theme) => `<style>${THEMES[theme]}</style>`;
-const ORANGE = '#e16f24';
+const ORANGE = '#F04C24';
 
 // Faster than GitHub: green; slower: red. Opacity grows with the distance
 // from 1.0x (full at 4x either way), so small differences stay quiet.
 function cell(x) {
-  if (x == null) return { fill: '#8c959f', op: 0.12 };
+  if (x == null || Math.abs(Math.log2(x)) < 0.07) return null; // about 1.0x: neutral
   const t = Math.min(Math.abs(Math.log2(x)) / 2, 1);
-  return { fill: x >= 1 ? '#1a7f37' : '#cf222e', op: (0.12 + 0.6 * t).toFixed(2) };
+  return { fill: x >= 1 ? '#45a557' : '#e5484d', op: (0.14 + 0.56 * t).toFixed(2) };
 }
 const times = (x) => (x == null ? '–' : x >= 10 ? `${Math.round(x)}×` : x < 0.1 ? `${x.toFixed(2)}×` : `${x.toFixed(1)}×`);
 
@@ -153,12 +156,13 @@ function summarySvg(theme) {
     const y = top + j * rh;
     const me = p === 'Celesto';
     if (me) s += `<rect x="0" y="${y}" width="${W}" height="${rh}" rx="8" class="hl"/>`;
-    s += `<text x="16" y="${y + rh / 2 + 6}" font-size="17" font-weight="${me ? 700 : 500}" ${me ? `fill="${ORANGE}"` : 'class="t"'}>${p}</text>`;
+    s += `<text x="16" y="${y + rh / 2 + 6}" font-size="17" font-weight="${me ? 600 : 500}" ${me ? `fill="${ORANGE}"` : 'class="t"'}>${p}</text>`;
     speed[p].forEach((x, i) => {
       const c = cell(x);
       const cx = left + i * cw;
-      s += `<rect x="${cx + gap / 2}" y="${y + 6}" width="${cw - gap}" height="${rh - 12}" rx="6" fill="${c.fill}" fill-opacity="${c.op}"/>`;
-      s += `<text x="${cx + cw / 2}" y="${y + rh / 2 + 6}" text-anchor="middle" font-size="17" font-weight="${me ? 700 : 500}" class="t">${times(x)}</text>`;
+      const fill = c ? `fill="${c.fill}" fill-opacity="${c.op}"` : 'class="n"';
+      s += `<rect x="${cx + gap / 2}" y="${y + 6}" width="${cw - gap}" height="${rh - 12}" rx="6" ${fill}/>`;
+      s += `<text x="${cx + cw / 2}" y="${y + rh / 2 + 6}" text-anchor="middle" font-size="16" font-weight="${me ? 600 : 400}" ${MONO} class="t">${times(x)}</text>`;
     });
   });
   s += `<text x="16" y="${H - 8}" font-size="13" class="m">Speed relative to GitHub-hosted (1.0×). Higher is faster. Medians, 4 vCPU x64 runners.</text>`;
@@ -166,7 +170,7 @@ function summarySvg(theme) {
 }
 
 // Phase colours: setup steps grey, work steps in distinct hues.
-const PALETTE = ['#8c959f', '#afb8c1', '#0969da', '#8250df', '#1a7f37', '#bf8700', '#cf222e'];
+const PALETTE = ['#8f8f8f', '#c7c7c7', '#0070f3', '#8e4ec6', '#12a594', '#ffb224', '#e93d82'];
 
 function phaseSvg(suite, theme) {
   const [, phases] = BUILDS[suite];
@@ -190,7 +194,7 @@ function phaseSvg(suite, theme) {
     const y = top + j * rh;
     const me = p === 'Celesto';
     if (me) s += `<rect x="0" y="${y}" width="${W}" height="${rh}" rx="8" class="hl"/>`;
-    s += `<text x="16" y="${y + rh / 2 + 6}" font-size="16" font-weight="${me ? 700 : 500}" ${me ? `fill="${ORANGE}"` : 'class="t"'}>${p}</text>`;
+    s += `<text x="16" y="${y + rh / 2 + 6}" font-size="16" font-weight="${me ? 600 : 500}" ${me ? `fill="${ORANGE}"` : 'class="t"'}>${p}</text>`;
     let x = left;
     parts.forEach((v, i) => {
       if (!v) return;
@@ -198,7 +202,7 @@ function phaseSvg(suite, theme) {
       s += `<rect x="${x.toFixed(1)}" y="${y + 9}" width="${Math.max(w - 1.5, 1).toFixed(1)}" height="${rh - 18}" rx="3" fill="${PALETTE[i]}"><title>${esc(phases[i])}: ${fmt(v)} s</title></rect>`;
       x += w;
     });
-    s += `<text x="${x + 10}" y="${y + rh / 2 + 6}" font-size="16" font-weight="${me ? 700 : 500}" class="t">${fmt(total)} s</text>`;
+    s += `<text x="${x + 10}" y="${y + rh / 2 + 6}" font-size="15" font-weight="${me ? 600 : 400}" ${MONO} class="t">${fmt(total)} s</text>`;
   });
   s += `<text x="16" y="${H - 8}" font-size="13" class="m">Seconds, lower is better. Medians. Hover a segment for its time.</text>`;
   return s + `</svg>\n`;
