@@ -38,7 +38,9 @@ jobs:
         run: node .harness/scripts/hardware-bench.mjs cpu "$METRICS"
       - name: passmark
         continue-on-error: true
-        run: node .harness/scripts/hardware-bench.mjs passmark "$METRICS"
+        run: |
+          bash .harness/scripts/install-passmark.sh
+          node .harness/scripts/hardware-bench.mjs passmark "$METRICS"
       - name: memory
         continue-on-error: true
         run: node .harness/scripts/hardware-bench.mjs memory "$METRICS"

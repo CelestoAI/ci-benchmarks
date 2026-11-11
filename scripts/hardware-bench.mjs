@@ -37,7 +37,7 @@ function cpu() {
 
 function passmark() {
   const bin = '/tmp/PerformanceTest/pt_linux';
-  if (!existsSync(bin)) run('bash', [new URL('install-passmark.sh', import.meta.url).pathname]);
+  if (!existsSync(bin)) throw new Error(`${bin} not found: run scripts/install-passmark.sh first`);
   const dir = '/tmp/passmark-run';
   mkdirSync(dir, { recursive: true });
   // pt_linux needs a terminal; `script` gives it one.
