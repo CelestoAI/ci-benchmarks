@@ -4,6 +4,28 @@
 
 [CPU/cache results](results/2026-11-02-matched/README.md) · [Docker results](results/docker-2026-10-17/README.md) · [Run the CPU comparison](https://github.com/CelestoAI/ci-benchmarks/actions/workflows/matched.yml)
 
+## Runner suites
+
+Six suites with the same workloads, commands and settings as the [runs-on.com benchmark](https://github.com/runs-on-demo/benchmark-public), so results can be compared with its public data. Each runs 3 jobs per provider on 4 vCPU / 16 GiB runners.
+
+| Suite | Workload | Workflow |
+| --- | --- | --- |
+| Hardware | sysbench, 7-Zip, PassMark, memory bandwidth, fio, downloads, `docker pull`, pgbench | [suite-hardware.yml](.github/workflows/suite-hardware.yml) |
+| Cache | Save a 4 GiB file with `actions/cache`, delete it, restore it | [suite-cache.yml](.github/workflows/suite-cache.yml) |
+| Rust | Cold `cargo test` and `clippy` of aome510/spotify-player | [suite-rust.yml](.github/workflows/suite-rust.yml) |
+| Node | Cold `bun install` and typecheck of anomalyco/opencode | [suite-node.yml](.github/workflows/suite-node.yml) |
+| Docker | `docker buildx build` of PostHog's Dockerfile, no cache | [suite-docker.yml](.github/workflows/suite-docker.yml) |
+| Burst | 15 jobs per provider queued at once, 60 s each | [suite-burst.yml](.github/workflows/suite-burst.yml) |
+
+Timings come from the GitHub Jobs API: queue time, and one time per `phase: …` step. Each run uploads `results-<suite>.json`.
+
+Compare with runs-on.com data:
+
+```sh
+git clone https://github.com/runs-on-demo/benchmark-public
+node scripts/compare-runs-on.mjs <dir with results-*.json> benchmark-public/results
+```
+
 ## Docker benchmarks
 
 **Python API + PostgreSQL + Azurite, image builds, layer caches, and offline Rust compilation.** Five repetitions per provider/scenario, matched 4-vCPU / 16-GiB runners, fresh runner per job.
