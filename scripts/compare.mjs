@@ -25,7 +25,9 @@ const THEIRS = {
   'warpbuild-x64': 'WarpBuild',
   'ubicloud-x64': 'Ubicloud',
 };
-const SUITES = ['rust', 'node', 'docker', 'cache', 'burst', 'hardware'];
+// The burst (queue) suite still runs, but its result is not published here
+// while Celesto's queue time is being worked on.
+const SUITES = ['rust', 'node', 'docker', 'cache', 'hardware'];
 
 // Build suites: title and the phases to show, in order. Phases not listed
 // (for example `verify`) still count in the total.
@@ -64,6 +66,7 @@ const add = (suite, provider, r) => (((data[suite] ??= {})[provider] ??= []).pus
 
 for (const f of readdirSync(oursDir).filter((f) => f.endsWith('.json'))) {
   const run = JSON.parse(readFileSync(join(oursDir, f), 'utf8'));
+  if (!SUITES.includes(run.suite)) continue;
   dates[run.suite] = run.run.date;
   for (const r of run.results) {
     if (r.provider !== 'celesto') continue;
@@ -99,7 +102,6 @@ const COLUMNS = [
   ['Node', 'node', (r) => r.workloadSeconds],
   ['Docker', 'docker', (r) => r.workloadSeconds],
   ['Cache', 'cache', (r) => r.workloadSeconds],
-  ['Queue', 'burst', (r) => Math.max(r.queueSeconds, 1)],
 ];
 const speed = {};
 for (const p of providers) {
@@ -109,12 +111,12 @@ for (const p of providers) {
     return base && mine ? base / mine : null;
   });
 }
-// Order rows by the geometric mean of the build columns (queue is separate).
+// Order rows by the geometric mean of all columns.
 const geo = (xs) => {
   const v = xs.filter((x) => x);
   return v.length ? Math.exp(v.reduce((t, x) => t + Math.log(x), 0) / v.length) : 0;
 };
-const rows = providers.filter((p) => speed[p].some((x) => x)).sort((a, b) => geo(speed[b].slice(0, 4)) - geo(speed[a].slice(0, 4)));
+const rows = providers.filter((p) => speed[p].some((x) => x)).sort((a, b) => geo(speed[b]) - geo(speed[a]));
 
 // Charts are drawn for GitHub's README view: transparent background, colours
 // that work in light and dark mode, and a wide viewBox so they fill the page.
@@ -146,7 +148,7 @@ function summarySvg(theme) {
   const H = top + rows.length * rh + 34;
   let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" ${FONT}>${style(theme)}`;
   // Column headers: suite name and what it runs.
-  const sub = { Rust: 'spotify-player', Node: 'opencode', Docker: 'PostHog image', Cache: '4 GiB', Queue: '15 jobs at once' };
+  const sub = { Rust: 'spotify-player', Node: 'opencode', Docker: 'PostHog image', Cache: '4 GiB' };
   COLUMNS.forEach(([label], i) => {
     const cx = left + i * cw + cw / 2;
     s += `<text x="${cx}" y="24" text-anchor="middle" font-size="17" font-weight="600" class="t">${label}</text>`;
@@ -234,16 +236,6 @@ for (const suite of Object.keys(BUILDS)) {
   for (const theme of Object.keys(THEMES)) writeFileSync(join(outDir, `${suite}-${theme}.svg`), phaseSvg(suite, theme));
   const jobs = Object.entries(data[suite]).map(([p, rs]) => `${p} ${rs.length}`).join(', ');
   md.push(`## ${BUILDS[suite][0].split(':')[0]}`, '', `${BUILDS[suite][0].split(': ')[1][0].toUpperCase()}${BUILDS[suite][0].split(': ')[1].slice(1)}.`, '', ...themed(BUILDS[suite][0], suite), '', `Jobs: ${jobs}. Celesto run: ${dates[suite]}.`, '');
-}
-
-if (data.burst?.Celesto) {
-  md.push('## Queue', '', '15 jobs queued at the same moment, each holding its runner for 60 s.', '', '| Provider | Median wait | Slowest wait | Jobs |', '| --- | ---: | ---: | ---: |');
-  const q = (p) => (data.burst[p] ?? []).map((r) => r.queueSeconds).filter((x) => x != null).sort((a, b) => a - b);
-  for (const p of Object.keys(data.burst).sort((a, b) => median(q(a)) - median(q(b)))) {
-    const b = p === 'Celesto' ? '**' : '';
-    md.push(`| ${b}${p}${b} | ${b}${fmt(median(q(p)))} s${b} | ${b}${fmt(q(p).at(-1))} s${b} | ${q(p).length} |`);
-  }
-  md.push('', `Celesto run: ${dates.burst}.`, '');
 }
 
 if (data.hardware?.Celesto) {

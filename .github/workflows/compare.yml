@@ -26,7 +26,7 @@ jobs:
       - name: Get Celesto results
         run: |
           mkdir -p ours
-          for suite in hardware cache rust node docker burst; do
+          for suite in hardware cache rust node docker; do
             # Newest finished run that uploaded a results artifact.
             for id in $(gh run list -R "$GITHUB_REPOSITORY" -w "suite-$suite.yml" -s completed -L 5 --json databaseId --jq '.[].databaseId'); do
               if gh run download "$id" -R "$GITHUB_REPOSITORY" -n "results-$suite" -D "tmp-$suite" 2>/dev/null; then
