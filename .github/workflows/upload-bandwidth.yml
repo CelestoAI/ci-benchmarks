@@ -1,7 +1,7 @@
 # Why do large actions/cache uploads run slower on Celesto than on GitHub?
-# Controlled part-size comparison: build one 4 GiB archive per job, then
-# save it at 32 concurrent requests with 64 MiB versus 32 MiB parts.
-# Rotate order across jobs; keep 8 x 64 MiB as a reference and restore it.
+# Controlled concurrency comparison: build one 4 GiB archive per job, then
+# save it with 32 versus 64 concurrent requests, keeping 64 MiB parts.
+# Rotate order across jobs; keep 8 requests as a reference and restore it.
 # During every test a sampler records NIC bytes (100 ms), CPU, steal, softirq,
 # per-process CPU, /proc/net/tcp and `ss -ti` for every :443 connection.
 # Results: one JSON per job in the `ubw-*` artifacts and in the step summary.
@@ -30,9 +30,9 @@ jobs:
       matrix:
         include:
           # Three sequential Celesto-large samples.
-          - { provider: celesto, sample: 10, order: '32x64 32x32 8x64', runs_on: '["self-hosted","celesto-large"]' }
-          - { provider: celesto, sample: 11, order: '32x32 32x64 8x64', runs_on: '["self-hosted","celesto-large"]' }
-          - { provider: celesto, sample: 12, order: '8x64 32x32 32x64', runs_on: '["self-hosted","celesto-large"]' }
+          - { provider: celesto, sample: 10, order: '32x64 64x64 8x64', runs_on: '["self-hosted","celesto-large"]' }
+          - { provider: celesto, sample: 11, order: '64x64 32x64 8x64', runs_on: '["self-hosted","celesto-large"]' }
+          - { provider: celesto, sample: 12, order: '8x64 64x64 32x64', runs_on: '["self-hosted","celesto-large"]' }
     env:
       UBW_ID: ubw-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.provider }}-s${{ matrix.sample }}
       UBW_PROVIDER: ${{ matrix.provider }}
@@ -376,14 +376,14 @@ jobs:
           PY
           echo "{\"toolkit_start\": \"$(date -u +%FT%TZ)\"}" >> "$O/timeline.json"
 
-      - name: Save prebuilt archive at 32 x 64 MiB and 32 x 32 MiB
+      - name: Save prebuilt archive at 32 and 64 concurrent requests
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
             const { spawnSync } = require('child_process');
             const T = process.env.T;
             const env = { ...process.env, NODE_BIN: process.execPath };
-            // UBW_TOOLKIT: "<streams>x<block MiB> ..."; compare part size at 32 requests.
+            // UBW_TOOLKIT: "<streams>x<block MiB> ..."; compare concurrency with 64 MiB parts.
             for (const [c, mb] of process.env.UBW_TOOLKIT.split(/\s+/).filter(Boolean).map(s => s.split('x').map(Number))) {
               const label = mb === 64 ? `toolkit_up_c${c}` : `toolkit_up_c${c}_b${mb}`;
               const key = `${process.env.UBW_ID}-${label}`;
