@@ -31,6 +31,12 @@ jobs:
           cat /proc/sys/kernel/random/boot_id > "$RUNNER_TEMP/cold-start-proof/boot-id.txt"
           printf '%s\n' "$TRIAL" "$VARIANT" "$MODE" "$RUNNER_NAME" > "$RUNNER_TEMP/cold-start-proof/identity.txt"
           test "$(id -un)" = ohm
+          if [ "$MODE" = fallback ]; then
+            test -z "${CELESTO_ACTIONS_RESULTS_URL:-}"
+            test -z "${CELESTO_TURBO_CACHE:-}"
+            case "${ACTIONS_RESULTS_URL:-}" in http://127.0.0.1:*|http://169.254.77.1:*) exit 1 ;; esac
+            ! grep -Eq '^[^#]*celesto-cache\.blob\.core\.windows\.net' /etc/hosts
+          fi
           sudo -n cp /tmp/celesto-cold-start.tsv "$RUNNER_TEMP/cold-start-proof/phases.tsv"
           env | sort | grep -E '^(CELESTO_ACTIONS_RESULTS_URL|CELESTO_TURBO_CACHE|ACTIONS_RESULTS_URL|RUNNER_TOOL_CACHE)=' > "$RUNNER_TEMP/cold-start-proof/cache-environment.txt" || true
       - uses: actions/cache/restore@v4
@@ -73,7 +79,7 @@ jobs:
           sudo -n cat /tmp/celesto-ci-cache-proxy.log > "$RUNNER_TEMP/cold-start-proof/proxy.log" 2>/dev/null || true
           sudo -n cat /tmp/celesto-cold-start.tsv > "$RUNNER_TEMP/cold-start-proof/phases.tsv"
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && matrix.mode != 'diagnostic'
         with:
           name: cold-start-${{ matrix.trial }}
           path: ${{ runner.temp }}/cold-start-proof/
