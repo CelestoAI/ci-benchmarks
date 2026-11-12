@@ -1,11 +1,8 @@
 # Why do large actions/cache uploads run slower on Celesto than on GitHub?
-# Each job measures upload and download MB/s on the same VM over three paths:
-#   (a) actions/cache save of 1023 MiB of random data: the stock action (8 x 64 MiB
-#       blocks), then the same toolkit bundle patched to other stream counts and
-#       block sizes (UBW_TOOLKIT); one restore of the stock entry as the download control;
-#   (b) plain HTTPS to Cloudflare's edge (speed.cloudflare.com) and to a
-#       non-Cloudflare sink (Netflix fast.com servers) at UBW_HTTP_LEVELS streams;
-#   (c) Ookla speedtest (Ashburn server, its own stream count).
+# Live comparison: save a 4 GiB random file through the stock v6.1.0 action
+# at 8 x 64 MiB, then patch only the concurrency constant to 16 and 32.
+# One stock restore verifies the payload bytes. The other saves must report
+# success; compare full-save wall time and successful NIC throughput.
 # During every test a sampler records NIC bytes (100 ms), CPU, steal, softirq,
 # per-process CPU, /proc/net/tcp and `ss -ti` for every :443 connection.
 # Results: one JSON per job in the `ubw-*` artifacts and in the step summary.
@@ -13,7 +10,7 @@ name: Upload bandwidth investigation
 
 on:
   push:
-    branches: [investigate-upload-bandwidth]
+    branches: [experiment/cache-upload-concurrency-20261112]
     paths: ['.github/workflows/upload-bandwidth.yml']
 
 permissions:
@@ -21,12 +18,8 @@ permissions:
   actions: write # delete this run's entries from GitHub's cache at the end
 
 env:
-  ACTIONS_CACHE_SHA: 0057852bfaa89a56745cba8c7296529d2fc39830 # actions/cache v4.3.0
-  # Round 1 (run 42875716811): '1 4 8 16', '1', '1x64 4x64 16x64 32x16', 9 + 9 jobs.
-  # Round 2 (this setting): Celesto only, more hosts, and how far more R2 streams go.
-  UBW_HTTP_LEVELS: '1 8' # plain-HTTPS stream counts
-  UBW_CF: '0' # 1: also test speed.cloudflare.com
-  UBW_TOOLKIT: '1x64 16x64 32x16 64x16 32x32' # patched toolkit saves: <streams>x<block MiB>, after the stock 8x64
+  ACTIONS_CACHE_SHA: 55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # actions/cache v6.1.0
+  UBW_TOOLKIT: '16x64 32x64' # same 64 MiB parts; vary only concurrent requests
 
 jobs:
   bench:
@@ -35,16 +28,13 @@ jobs:
     timeout-minutes: 40
     strategy:
       fail-fast: false
-      max-parallel: 3 # round 1 used 6 with GitHub and Celesto interleaved (at most 6 Celesto at once; limit 9)
+      max-parallel: 1 # avoid cross-job contention in this comparison
       matrix:
         include:
-          # Round 1: github and celesto samples 1-9, interleaved.
+          # Three sequential Celesto-large samples.
           - { provider: celesto, sample: 10, runs_on: '["self-hosted","celesto-large"]' }
           - { provider: celesto, sample: 11, runs_on: '["self-hosted","celesto-large"]' }
           - { provider: celesto, sample: 12, runs_on: '["self-hosted","celesto-large"]' }
-          - { provider: celesto, sample: 13, runs_on: '["self-hosted","celesto-large"]' }
-          - { provider: celesto, sample: 14, runs_on: '["self-hosted","celesto-large"]' }
-          - { provider: celesto, sample: 15, runs_on: '["self-hosted","celesto-large"]' }
     env:
       UBW_ID: ubw-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.provider }}-s${{ matrix.sample }}
       UBW_PROVIDER: ${{ matrix.provider }}
@@ -357,49 +347,17 @@ jobs:
           } > "$O/env.txt" 2>&1
           cat "$O/env.txt"
 
-      - name: Make 1023 MiB of incompressible data
+      - name: Make 4 GiB of incompressible data
         run: |
-          mkdir -p bench-data "$T/p64" "$T/p25"
-          head -c 1023M /dev/urandom > bench-data/blob.bin
-          split -b 64M -d -a 2 bench-data/blob.bin "$T/p64/"
-          split -b 26214400 -d -a 2 bench-data/blob.bin "$T/p25/"
-          rm -f "$T/p25/40"
-          ls "$T/p64" | wc -l; ls "$T/p25" | wc -l
+          mkdir -p bench-data
+          head -c 4096M /dev/urandom > bench-data/blob.bin
           sha256sum bench-data/blob.bin | tee "$O/blob.sha256"
-
-      - name: (b)+(c) Plain HTTPS, Cloudflare edge and Netflix, 1/4/8/16 streams
-        run: |
-          set +e
-          curl -sS -m 15 'https://api.fast.com/netflix/speedtest/v2?https=true&token=YXNkZmFzZGxmbnNkYWZoYXNkZmhrYWxm&urlCount=5' > "$T/fast.json"
-          jq -r '.targets[].url' "$T/fast.json" > "$T/oca_urls"
-          jq -c '{client: .client.location, targets: [.targets[] | {name: (.name|split(".")[0]), location}]}' "$T/fast.json" | tee "$O/oca_targets.json"
-          echo "{\"http_start\": \"$(date -u +%FT%TZ)\"}" >> "$O/timeline.json"
-          # speed.cloudflare.com rate-limits bulk use (429/502/504), so it gets 8 requests a level
-          # (16 at 16 streams) and downloads only at 1 and 4 streams; read its per-request MB/s.
-          for c in $UBW_HTTP_LEVELS; do
-            n=$(( c > 8 ? c : 8 ))
-            if [ "$UBW_CF" = 1 ]; then "$T/sampled.sh" cf_up_c$c up $((n << 26)) "$T/http_test.sh" cf_up $c $n; fi
-            "$T/sampled.sh" oca_up_c$c up $((40 * 26214400)) "$T/http_test.sh" oca_up $c 40
-            if [ "$UBW_CF" = 1 ] && [ $c -le 4 ]; then "$T/sampled.sh" cf_down_c$c down $((8 << 26)) "$T/http_test.sh" cf_down $c 8; fi
-            "$T/sampled.sh" oca_down_c$c down $((40 * 26214400)) "$T/http_test.sh" oca_down $c 40
-          done
-          true
-
-      - name: Ookla speedtest (multi-stream, its own server)
-        run: |
-          set +e
-          curl -sSfL -m 60 https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-x86_64.tgz | tar xz -C "$T" speedtest
-          # Pin Shentel Ashburn (id 5132), next to both clouds' Virginia regions; auto-pick if it is down.
-          "$T/sampled.sh" ookla up 0 bash -c '"$T/speedtest" --accept-license --accept-gdpr -f json -p no -s 5132 > "$O/ookla.json" 2> "$O/ookla.err" || "$T/speedtest" --accept-license --accept-gdpr -f json -p no > "$O/ookla.json" 2>> "$O/ookla.err"'
-          jq -c '{down_MBps: (.download.bandwidth/1e6), up_MBps: (.upload.bandwidth/1e6), up_elapsed_ms: .upload.elapsed,
-                  server: (.server.name + " / " + .server.location), isp: .isp, ping_ms: .ping.latency}' "$O/ookla.json" | tee "$O/ookla_summary.json"
-          true
 
       - name: Prepare the toolkit bundle (stock save code, streams from UBW_CONCURRENCY)
         run: |
           curl -sSfL -o "$T/save.js" "https://raw.githubusercontent.com/actions/cache/$ACTIONS_CACHE_SHA/dist/save-only/index.js"
           sha256sum "$T/save.js"
-          echo "7f64677407a4befe523854fb28794faa4e2d344dfed5d6cd4887fa9ae5428b3f  $T/save.js" | sha256sum -c
+          echo "0d3cf341a79cdc0a8ce5a71103f46174e12cf4f98db46f15b8e604932eefd487  $T/save.js" | sha256sum -c
           sed -i 's/uploadChunkSize: 64 \* 1024 \* 1024, uploadConcurrency: 8, useAzureSdk: true/uploadChunkSize: Number(process.env.UBW_CHUNK_MB || 64) * 1024 * 1024, uploadConcurrency: Number(process.env.UBW_CONCURRENCY || 8), useAzureSdk: true/' "$T/save.js"
           test "$(grep -c 'process.env.UBW_CONCURRENCY' "$T/save.js")" = 1
           echo "{\"toolkit_start\": \"$(date -u +%FT%TZ)\"}" >> "$O/timeline.json"
@@ -412,7 +370,7 @@ jobs:
           sleep 0.5
 
       - name: (a) Stock actions/cache save, 8 x 64 MiB
-        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: bench-data
           key: ${{ env.UBW_ID }}-c8
@@ -421,7 +379,7 @@ jobs:
         run: |
           e=$(date +%s.%N); sleep 0.3; kill "$(cat "$T/sampler.pid")"; sleep 0.3
           wall=$(awk "BEGIN {print $e - $(cat "$T/stock_start")}")
-          python3 "$T/analyze.py" "$O/toolkit_up_c8.samples.jsonl" toolkit_up_c8 up $((1023 << 20)) \
+          python3 "$T/analyze.py" "$O/toolkit_up_c8.samples.jsonl" toolkit_up_c8 up $((4096 << 20)) \
             "{\"start_utc\": \"$(cat "$T/stock_start_utc")\", \"wall_s\": $wall, \"rc\": 0}" | tee -a "$O/results.jsonl"
 
       - name: (a) Toolkit saves from UBW_TOOLKIT (same bundle, patched streams and block size)
@@ -431,11 +389,11 @@ jobs:
             const { spawnSync } = require('child_process');
             const T = process.env.T;
             const env = { ...process.env, NODE_BIN: process.execPath };
-            // UBW_TOOLKIT: "<streams>x<block MiB> ..."; 32x16 asks whether more, smaller R2 parts help.
+            // UBW_TOOLKIT: "<streams>x<block MiB> ..."; only concurrency changes here.
             for (const [c, mb] of process.env.UBW_TOOLKIT.split(/\s+/).filter(Boolean).map(s => s.split('x').map(Number))) {
               const label = mb === 64 ? `toolkit_up_c${c}` : `toolkit_up_c${c}_b${mb}`;
               const key = `${process.env.UBW_ID}-${label}`;
-              const r = spawnSync(`${T}/sampled.sh`, [label, 'up', String(1023 << 20), `${T}/toolkit_save.sh`, String(c), key, String(mb), label],
+              const r = spawnSync(`${T}/sampled.sh`, [label, 'up', String(4096 << 20), `${T}/toolkit_save.sh`, String(c), key, String(mb), label],
                                   { stdio: 'inherit', env });
               if (r.status !== 0) core.warning(`toolkit save ${label} exited ${r.status}`);
             }
@@ -450,7 +408,7 @@ jobs:
 
       - name: (c) Stock actions/cache restore
         id: restore
-        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: bench-data
           key: ${{ env.UBW_ID }}-c8
@@ -461,21 +419,20 @@ jobs:
           set +e
           e=$(date +%s.%N); sleep 0.3; kill "$(cat "$T/sampler.pid")"; sleep 0.3
           wall=$(awk "BEGIN {print $e - $(cat "$T/stock_start")}")
-          python3 "$T/analyze.py" "$O/toolkit_down.samples.jsonl" toolkit_down down $((1023 << 20)) \
+          python3 "$T/analyze.py" "$O/toolkit_down.samples.jsonl" toolkit_down down $((4096 << 20)) \
             "{\"start_utc\": \"$(cat "$T/stock_start_utc")\", \"wall_s\": $wall, \"rc\": 0, \"hit\": \"${{ steps.restore.outputs.cache-hit }}\"}" | tee -a "$O/results.jsonl"
           sha256sum -c "$O/blob.sha256" && echo "restore bytes match"
           [ -r /tmp/celesto-ci-cache-proxy.log ] && sed -E 's/(sig|X-Amz-[A-Za-z]+)=[^& ]*/\1=<x>/g' /tmp/celesto-ci-cache-proxy.log > "$O/proxy.log"
           echo "{\"job_end\": \"$(date -u +%FT%TZ)\"}" >> "$O/timeline.json"
-          jq -s --slurpfile env "$O/env.json" --slurpfile ookla "$O/ookla_summary.json" --slurpfile t "$O/timeline.json" \
+          jq -s --slurpfile env "$O/env.json" --slurpfile t "$O/timeline.json" \
             --arg run "${{ github.run_id }}" --arg provider "$UBW_PROVIDER" --arg sample "$UBW_SAMPLE" \
-            '{run_id: $run, provider: $provider, sample: $sample, env: $env[0], ookla: $ookla[0], timeline: ($t | add),
+            '{run_id: $run, provider: $provider, sample: $sample, env: $env[0], timeline: ($t | add),
               tests: [.[] | del(.tcp_samples)]}' "$O/results.jsonl" > "$O/job.json"
           {
             echo "### $UBW_PROVIDER s$UBW_SAMPLE: $(jq -r '.env.host_provider + " " + .env.cpu + " " + .env.public_ip' "$O/job.json")"
             echo "| test | MB/s (2-98% window) | peak 1 s | streams seen | per-stream MB/s | busy % | steal % | top processes (cores) |"
             echo "|---|--:|--:|--:|--:|--:|--:|---|"
             jq -r '.tests[] | "| \(.test) | \(.bulk_MBps) | \(.peak_1s_MBps) | \(.tcp_streams) | \(.tcp_stream_MBps_median) | \(.cpu.busy_pct) | \(.cpu.steal_pct) | \(.cpu.proc_cores // {} | to_entries | map("\(.key)=\(.value)") | join(" ")) |"' "$O/job.json"
-            echo; echo "Ookla: $(cat "$O/ookla_summary.json")"
           } >> "$GITHUB_STEP_SUMMARY"
           cat "$GITHUB_STEP_SUMMARY"
 
