@@ -1,24 +1,80 @@
-# Runs a Celesto CI job with the size label alone, without self-hosted.
-# The job prints the runner that took it.
-name: runs-on label only
-
+name: Guest cold-start experiment 1259
 on:
-  push:
-    branches: [test/runs-on-label-forms]
   workflow_dispatch:
-
+    inputs:
+      trials:
+        description: JSON array of trial, variant, mode, and cache_key records
+        required: true
+        type: string
 permissions:
   contents: read
-
 jobs:
-  label-only:
-    runs-on: celesto-micro
-    timeout-minutes: 10
+  trial:
+    name: ${{ matrix.trial }}
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include: ${{ fromJSON(inputs.trials) }}
+    runs-on: [self-hosted, '${{ matrix.trial }}']
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - name: Show the runner
+      - name: Capture first step and guest identity
+        env:
+          TRIAL: ${{ matrix.trial }}
+          VARIANT: ${{ matrix.variant }}
+          MODE: ${{ matrix.mode }}
         run: |
-          echo "runner=$RUNNER_NAME os=$RUNNER_OS arch=$RUNNER_ARCH"
-          uname -a
-          nproc
-          free -h
+          set -eu
+          mkdir -p "$RUNNER_TEMP/cold-start-proof"
+          cat /proc/uptime > "$RUNNER_TEMP/cold-start-proof/first-step-uptime.txt"
+          cat /proc/sys/kernel/random/boot_id > "$RUNNER_TEMP/cold-start-proof/boot-id.txt"
+          printf '%s\n' "$TRIAL" "$VARIANT" "$MODE" "$RUNNER_NAME" > "$RUNNER_TEMP/cold-start-proof/identity.txt"
+          test "$(id -un)" = ohm
+          sudo -n cp /tmp/celesto-cold-start.tsv "$RUNNER_TEMP/cold-start-proof/phases.tsv"
+          env | sort | grep -E '^(CELESTO_ACTIONS_RESULTS_URL|CELESTO_TURBO_CACHE|ACTIONS_RESULTS_URL|RUNNER_TOOL_CACHE)=' > "$RUNNER_TEMP/cold-start-proof/cache-environment.txt" || true
+      - uses: actions/cache/restore@v4
+        id: restore
+        if: matrix.mode == 'restore'
+        with:
+          path: ${{ runner.temp }}/cold-start-cache
+          key: ${{ matrix.cache_key }}
+          fail-on-cache-miss: true
+      - name: Verify restored payload
+        if: matrix.mode == 'restore'
+        env:
+          CACHE_HIT: ${{ steps.restore.outputs.cache-hit }}
+        run: |
+          set -eu
+          test "$CACHE_HIT" = true
+          cd "$RUNNER_TEMP/cold-start-cache"
+          sha256sum -c payload.sha256
+          cp payload.sha256 "$RUNNER_TEMP/cold-start-proof/restored.sha256"
+      - name: Create cache payload
+        if: matrix.mode == 'save'
+        run: |
+          set -eu
+          mkdir -p "$RUNNER_TEMP/cold-start-cache"
+          head -c 8388608 /dev/urandom > "$RUNNER_TEMP/cold-start-cache/payload"
+          cd "$RUNNER_TEMP/cold-start-cache"
+          sha256sum payload > payload.sha256
+          cp payload.sha256 "$RUNNER_TEMP/cold-start-proof/saved.sha256"
+      - uses: actions/cache/save@v4
+        if: matrix.mode == 'save'
+        with:
+          path: ${{ runner.temp }}/cold-start-cache
+          key: ${{ matrix.cache_key }}
+      - name: Retain assignment and proxy evidence
+        if: always()
+        run: |
+          set -eu
+          # Assignment lines only; never retain JIT configuration or credentials.
+          sudo -n grep -E 'Listening for Jobs|Running job:|Job .* completed' /tmp/celesto-actions-runner.log > "$RUNNER_TEMP/cold-start-proof/assignment.log" || true
+          sudo -n cat /tmp/celesto-ci-cache-proxy.log > "$RUNNER_TEMP/cold-start-proof/proxy.log" 2>/dev/null || true
+          sudo -n cat /tmp/celesto-cold-start.tsv > "$RUNNER_TEMP/cold-start-proof/phases.tsv"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cold-start-${{ matrix.trial }}
+          path: ${{ runner.temp }}/cold-start-proof/
+          retention-days: 7
