@@ -1,0 +1,123 @@
+name: Native cache disk A/B m6id
+on:
+  push:
+    branches: [experiment/cache-disk-e2e-m6id-20261113]
+    paths: [.github/workflows/cache-disk-e2e.yml, scripts/prepare-cache-native.py, scripts/cache-disk-guest.py]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cache:
+    runs-on: celesto-large
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - name: Identify exact target host
+        id: target
+        run: python3 scripts/cache-disk-guest.py identify
+      - name: Instrument official cache entrypoint without bypassing runner tuning
+        if: steps.target.outputs.selected == 'true'
+        run: |
+          set -euo pipefail
+          bundle="$(dirname "$RUNNER_WORKSPACE")/_actions/actions/cache/55cc8345863c7cc4c66a329aec7e433d2d1c52a9/dist/save-only/index.js"
+          test -f "$bundle"
+          python3 scripts/prepare-cache-native.py "$bundle" "$bundle" "$RUNNER_TEMP/cache-disk-evidence/patch.json"
+          node --check "$bundle"
+      - name: "Gate b1: ${{ steps.target.outputs.mac }}"
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/cache-disk-guest.py gate b1
+      - name: Save b1 through official action
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: native-disk-${{ github.run_id }}-${{ github.run_attempt }}-b1
+      - name: Remove b1 input before restore
+        if: steps.target.outputs.selected == 'true'
+        run: rm cache-file
+      - name: Restore b1
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: native-disk-${{ github.run_id }}-${{ github.run_attempt }}-b1
+          fail-on-cache-miss: true
+      - name: Verify b1 restored bytes
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/cache-disk-guest.py verify b1
+      - name: "Gate d1: ${{ steps.target.outputs.mac }}"
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/cache-disk-guest.py gate d1
+      - name: Save d1 through official action
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: native-disk-${{ github.run_id }}-${{ github.run_attempt }}-d1
+      - name: Remove d1 input before restore
+        if: steps.target.outputs.selected == 'true'
+        run: rm cache-file
+      - name: Restore d1
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: native-disk-${{ github.run_id }}-${{ github.run_attempt }}-d1
+          fail-on-cache-miss: true
+      - name: Verify d1 restored bytes
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/cache-disk-guest.py verify d1
+      - name: "Gate d2: ${{ steps.target.outputs.mac }}"
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/cache-disk-guest.py gate d2
+      - name: Save d2 through official action
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: native-disk-${{ github.run_id }}-${{ github.run_attempt }}-d2
+      - name: Remove d2 input before restore
+        if: steps.target.outputs.selected == 'true'
+        run: rm cache-file
+      - name: Restore d2
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: native-disk-${{ github.run_id }}-${{ github.run_attempt }}-d2
+          fail-on-cache-miss: true
+      - name: Verify d2 restored bytes
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/cache-disk-guest.py verify d2
+      - name: "Gate b2: ${{ steps.target.outputs.mac }}"
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/cache-disk-guest.py gate b2
+      - name: Save b2 through official action
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: native-disk-${{ github.run_id }}-${{ github.run_attempt }}-b2
+      - name: Remove b2 input before restore
+        if: steps.target.outputs.selected == 'true'
+        run: rm cache-file
+      - name: Restore b2
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: native-disk-${{ github.run_id }}-${{ github.run_attempt }}-b2
+          fail-on-cache-miss: true
+      - name: Verify b2 restored bytes
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/cache-disk-guest.py verify b2
+      - name: "Gate finish: ${{ steps.target.outputs.mac }}"
+        if: always() && steps.target.outputs.selected == 'true'
+        run: python3 scripts/cache-disk-guest.py gate finish
+      - name: Upload timing and integrity evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: native-disk-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cache-disk-evidence
+          retention-days: 14
