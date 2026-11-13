@@ -1,0 +1,152 @@
+name: OVH one-VM direct I/O canary
+on:
+  push:
+    branches: [experiment/ovh-direct-io-20261113]
+    paths: [.github/workflows/ovh-direct-io.yml, scripts/ovh-direct-guest.py, scripts/add-ovh-flush-profile.py, scripts/summarize-ovh-direct.py]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  canary:
+    runs-on: celesto-large
+    timeout-minutes: 40
+    env:
+      PROFILE_SAMPLE: 1
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - name: Identify requested OVH host
+        id: target
+        run: python3 scripts/ovh-direct-guest.py identify
+      - name: Prepare official cache profiling
+        if: steps.target.outputs.selected == 'true'
+        run: |
+          mv /dev/shm/cache-native-profile /dev/shm/ovh-identity-evidence
+          python3 scripts/cache-native-profile.py prepare
+          cp /dev/shm/ovh-identity-evidence/identity.json /dev/shm/cache-native-profile/
+          python3 scripts/add-ovh-flush-profile.py
+      - name: "Gate b1: cid ${{ steps.target.outputs.cid }}"
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/ovh-direct-guest.py gate b1
+      - name: Generate b1 payload
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/cache-native-profile.py generate
+      - name: Save b1 through official action
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ovh-direct-${{ github.run_id }}-${{ github.run_attempt }}-b1
+      - name: Hash and remove b1 source
+        if: steps.target.outputs.selected == 'true'
+        run: |
+          python3 scripts/cache-native-profile.py hash
+          rm cache-file
+      - name: Restore b1
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ovh-direct-${{ github.run_id }}-${{ github.run_attempt }}-b1
+          fail-on-cache-miss: true
+      - name: Verify and collect b1
+        if: steps.target.outputs.selected == 'true'
+        run: |
+          python3 scripts/cache-native-profile.py verify
+          python3 scripts/ovh-direct-guest.py collect b1
+      - name: "Gate d1: cid ${{ steps.target.outputs.cid }}"
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/ovh-direct-guest.py gate d1
+      - name: Generate d1 payload
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/cache-native-profile.py generate
+      - name: Save d1 through official action
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ovh-direct-${{ github.run_id }}-${{ github.run_attempt }}-d1
+      - name: Hash and remove d1 source
+        if: steps.target.outputs.selected == 'true'
+        run: |
+          python3 scripts/cache-native-profile.py hash
+          rm cache-file
+      - name: Restore d1
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ovh-direct-${{ github.run_id }}-${{ github.run_attempt }}-d1
+          fail-on-cache-miss: true
+      - name: Verify and collect d1
+        if: steps.target.outputs.selected == 'true'
+        run: |
+          python3 scripts/cache-native-profile.py verify
+          python3 scripts/ovh-direct-guest.py collect d1
+      - name: "Gate d2: cid ${{ steps.target.outputs.cid }}"
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/ovh-direct-guest.py gate d2
+      - name: Generate d2 payload
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/cache-native-profile.py generate
+      - name: Save d2 through official action
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ovh-direct-${{ github.run_id }}-${{ github.run_attempt }}-d2
+      - name: Hash and remove d2 source
+        if: steps.target.outputs.selected == 'true'
+        run: |
+          python3 scripts/cache-native-profile.py hash
+          rm cache-file
+      - name: Restore d2
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ovh-direct-${{ github.run_id }}-${{ github.run_attempt }}-d2
+          fail-on-cache-miss: true
+      - name: Verify and collect d2
+        if: steps.target.outputs.selected == 'true'
+        run: |
+          python3 scripts/cache-native-profile.py verify
+          python3 scripts/ovh-direct-guest.py collect d2
+      - name: "Gate b2: cid ${{ steps.target.outputs.cid }}"
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/ovh-direct-guest.py gate b2
+      - name: Generate b2 payload
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/cache-native-profile.py generate
+      - name: Save b2 through official action
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ovh-direct-${{ github.run_id }}-${{ github.run_attempt }}-b2
+      - name: Hash and remove b2 source
+        if: steps.target.outputs.selected == 'true'
+        run: |
+          python3 scripts/cache-native-profile.py hash
+          rm cache-file
+      - name: Restore b2
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ovh-direct-${{ github.run_id }}-${{ github.run_attempt }}-b2
+          fail-on-cache-miss: true
+      - name: Verify and collect b2
+        if: steps.target.outputs.selected == 'true'
+        run: |
+          python3 scripts/cache-native-profile.py verify
+          python3 scripts/ovh-direct-guest.py collect b2
+      - name: "Gate finish: cid ${{ steps.target.outputs.cid }}"
+        if: always() && steps.target.outputs.selected == 'true'
+        run: python3 scripts/ovh-direct-guest.py gate finish
+      - name: Upload identity, clocks, disk modes and hashes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ovh-direct-${{ github.run_attempt }}
+          path: /dev/shm/cache-native-profile
+          retention-days: 14
