@@ -1,0 +1,73 @@
+name: OVH ext4 journal canary
+on:
+  push:
+    branches: [experiment/ovh-ext4-journal-20261113]
+    paths: [.github/workflows/ovh-ext4-journal.yml, scripts/ovh-ext4-canary.py, scripts/cache-core-waits.py]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  canary:
+    runs-on: celesto-large
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - name: Identify requested OVH host
+        id: target
+        run: python3 scripts/ovh-direct-guest.py identify
+      - name: Start thread and journal wait observation
+        id: observer
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/cache-core-waits.py start
+      - name: Verify four small archive roundtrips and mount restoration
+        if: steps.target.outputs.selected == 'true'
+        run: sudo -n python3 scripts/ovh-ext4-canary.py prepare
+      - name: 'Trial 1: baseline'
+        if: steps.target.outputs.selected == 'true'
+        run: sudo -n python3 scripts/ovh-ext4-canary.py trial 1
+      - name: 'Trial 2: lazytime'
+        if: steps.target.outputs.selected == 'true'
+        run: sudo -n python3 scripts/ovh-ext4-canary.py trial 2
+      - name: 'Trial 3: preallocate'
+        if: steps.target.outputs.selected == 'true'
+        run: sudo -n python3 scripts/ovh-ext4-canary.py trial 3
+      - name: 'Trial 4: combined'
+        if: steps.target.outputs.selected == 'true'
+        run: sudo -n python3 scripts/ovh-ext4-canary.py trial 4
+      - name: 'Trial 5: combined'
+        if: steps.target.outputs.selected == 'true'
+        run: sudo -n python3 scripts/ovh-ext4-canary.py trial 5
+      - name: 'Trial 6: preallocate'
+        if: steps.target.outputs.selected == 'true'
+        run: sudo -n python3 scripts/ovh-ext4-canary.py trial 6
+      - name: 'Trial 7: lazytime'
+        if: steps.target.outputs.selected == 'true'
+        run: sudo -n python3 scripts/ovh-ext4-canary.py trial 7
+      - name: 'Trial 8: baseline'
+        if: steps.target.outputs.selected == 'true'
+        run: sudo -n python3 scripts/ovh-ext4-canary.py trial 8
+      - name: 'Trial 9: lazytime'
+        if: steps.target.outputs.selected == 'true'
+        run: sudo -n python3 scripts/ovh-ext4-canary.py trial 9
+      - name: 'Trial 10: combined'
+        if: steps.target.outputs.selected == 'true'
+        run: sudo -n python3 scripts/ovh-ext4-canary.py trial 10
+      - name: 'Trial 11: preallocate'
+        if: steps.target.outputs.selected == 'true'
+        run: sudo -n python3 scripts/ovh-ext4-canary.py trial 11
+      - name: 'Trial 12: baseline'
+        if: steps.target.outputs.selected == 'true'
+        run: sudo -n python3 scripts/ovh-ext4-canary.py trial 12
+      - name: Restore captured guest mount and remove owned disk files
+        if: always() && steps.target.outputs.selected == 'true'
+        run: sudo -n python3 scripts/ovh-ext4-canary.py cleanup
+      - name: Stop observer
+        if: always() && steps.observer.outcome == 'success'
+        run: python3 scripts/cache-core-waits.py stop
+      - name: Upload raw clocks, mount flags, journal waits and integrity evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ovh-ext4-${{ github.run_attempt }}
+          path: /dev/shm/cache-native-profile
+          retention-days: 14

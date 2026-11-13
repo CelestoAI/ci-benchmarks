@@ -48,14 +48,14 @@ def observe():
     known = set()
     previous_system = 0
     with (OUT / 'thread-waits.jsonl').open('w', buffering=1) as log:
-        while not (OUT / 'stop-observer').exists() and time.monotonic() - started < 1000:
+        while not (OUT / 'stop-observer').exists() and time.monotonic() - started < 2700:
             now = time.time()
             tasks = []
             for p in Path('/proc').iterdir():
                 if not p.name.isdigit():
                     continue
                 comm = read(p / 'comm')
-                if comm not in ['tar', 'zstd', 'zstdmt']:
+                if comm not in ['tar', 'zstd', 'zstdmt'] and not (comm or '').startswith('jbd2/'):
                     continue
                 stat = read(p / 'stat')
                 if not stat:
