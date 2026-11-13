@@ -1,0 +1,111 @@
+# Keep size-sweep results separate from the published 4 GiB comparison.
+name: Cache size matrix
+
+on:
+  push:
+    branches: [bench/cache-size-matrix-20261114]
+    paths: [.github/workflows/cache-size-matrix.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cache-size-matrix
+  cancel-in-progress: false
+
+jobs:
+  bench:
+    name: celesto-${{ matrix.mib }}mib ${{ matrix.iteration }}
+    strategy:
+      fail-fast: false
+      # Avoid competing for disk, network and runner capacity within the sweep.
+      max-parallel: 1
+      matrix:
+        iteration: [1, 2, 3]
+        mib: [20, 24, 32, 64, 96, 400, 1024, 2048, 3072, 4096]
+    runs-on: celesto-large
+    timeout-minutes: 20
+    env:
+      PAYLOAD_MIB: ${{ matrix.mib }}
+      CACHE_KEY: size-matrix-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mib }}mib-${{ matrix.iteration }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: .harness
+      - name: Host check
+        run: node .harness/scripts/record-event.mjs host_fingerprint '{}'
+        env:
+          BENCHMARK_PROVIDER: celesto
+          BENCHMARK_EVENT_FILE: host.jsonl
+      - name: Generate incompressible payload
+        run: head -c "$((PAYLOAD_MIB * 1024 * 1024))" /dev/urandom > cache-file
+      - name: 'phase: cache save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: cache-file
+          key: ${{ env.CACHE_KEY }}
+      # Hash after saving, so the additional read does not warm the save path.
+      - name: Hash input and remove file
+        run: |
+          sha256sum cache-file > expected.sha256
+          rm cache-file
+      - name: 'phase: cache restore'
+        id: restore
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: cache-file
+          key: ${{ env.CACHE_KEY }}
+          fail-on-cache-miss: true
+      - name: 'phase: verify'
+        env:
+          CACHE_HIT: ${{ steps.restore.outputs.cache-hit }}
+        run: |
+          test "$CACHE_HIT" = true
+          test "$(stat -c %s cache-file)" -eq "$((PAYLOAD_MIB * 1024 * 1024))"
+          sha256sum cache-file > restored.sha256
+          sha256sum --check expected.sha256
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          evidence = {
+              "payload_mib": int(os.environ["PAYLOAD_MIB"]),
+              "payload_bytes": Path("cache-file").stat().st_size,
+              "cache_key": os.environ["CACHE_KEY"],
+              "cache_hit": os.environ["CACHE_HIT"] == "true",
+              "expected_sha256": Path("expected.sha256").read_text().split()[0],
+              "restored_sha256": Path("restored.sha256").read_text().split()[0],
+              "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9",
+          }
+          Path("verification.json").write_text(json.dumps(evidence, indent=2) + "\n")
+          PY
+      - name: Preserve host and integrity evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integrity-${{ matrix.mib }}mib-${{ matrix.iteration }}
+          path: |
+            host.jsonl
+            expected.sha256
+            restored.sha256
+            verification.json
+          retention-days: 14
+
+  collect:
+    needs: bench
+    if: always()
+    runs-on: celesto-large
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - name: Collect GitHub step timings
+        run: node scripts/collect-suite.mjs cache-size-matrix metrics results.json
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: results-cache-size-matrix
+          path: results.json
+          retention-days: 14
