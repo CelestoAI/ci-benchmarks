@@ -1,0 +1,119 @@
+name: Cache save phase profile
+
+on:
+  push:
+    branches: [experiment/cache-phase-profile-20261113]
+    paths:
+      - .github/workflows/cache-phase-profile.yml
+      - scripts/cache-profile-runtime.mjs
+      - scripts/prepare-cache-profile.py
+      - scripts/summarize-cache-profile.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  profile:
+    name: celesto sample ${{ matrix.sample }}
+    runs-on: celesto-large
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        sample: [1, 2, 3, 4]
+    env:
+      PROFILE_SAMPLE: ${{ matrix.sample }}
+      PROFILE_PROVIDER: celesto
+      PROFILE_CACHE_KEY: profile-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.sample }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+
+      - name: Prepare the stock action with timing wrappers
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/cache-profile"
+          mkdir -p "$out"
+          echo "PROFILE_OUT=$out" >> "$GITHUB_ENV"
+          echo "CACHE_PROFILE_EVENTS=$out/events.jsonl" >> "$GITHUB_ENV"
+          echo "CACHE_PROFILE_ARCHIVE_RESOURCES=$out/archive-resources.txt" >> "$GITHUB_ENV"
+          curl --fail --silent --show-error --location --retry 3 \
+            https://raw.githubusercontent.com/actions/cache/55cc8345863c7cc4c66a329aec7e433d2d1c52a9/dist/save-only/index.js \
+            -o "$RUNNER_TEMP/cache-stock.js"
+          python3 scripts/prepare-cache-profile.py "$RUNNER_TEMP/cache-stock.js" "$RUNNER_TEMP/cache-profile.js" "$out/patch.json"
+          node --check "$RUNNER_TEMP/cache-profile.js"
+
+      - name: Record host and generate the 4 GiB payload
+        run: |
+          set -euo pipefail
+          {
+            date -u +%FT%TZ
+            printf 'runner=%s\n' "$RUNNER_NAME"
+            uname -a
+            lscpu
+            free -b
+            df -T "$GITHUB_WORKSPACE" "$RUNNER_TEMP"
+            findmnt -T "$GITHUB_WORKSPACE"
+            findmnt -T "$RUNNER_TEMP"
+            tar --version
+            zstd --version
+          } > "$PROFILE_OUT/host.txt"
+          /usr/bin/time -v -o "$PROFILE_OUT/generate-resources.txt" head -c 4G /dev/urandom > cache-file
+          sha256sum cache-file > "$PROFILE_OUT/payload.sha256"
+
+      - name: Measure cache save phases
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const fs = require('node:fs');
+            const { spawnSync } = require('node:child_process');
+            const out = process.env.PROFILE_OUT;
+            const started = performance.now();
+            const r = spawnSync(process.execPath, [`${process.env.RUNNER_TEMP}/cache-profile.js`], {
+              env: { ...process.env, INPUT_PATH: 'cache-file', INPUT_KEY: process.env.PROFILE_CACHE_KEY },
+              encoding: 'utf8', timeout: 15 * 60 * 1000, maxBuffer: 8 * 1024 * 1024,
+            });
+            fs.writeFileSync(`${out}/command.json`, JSON.stringify({
+              seconds: (performance.now() - started) / 1000, status: r.status,
+              node: process.version, provider: process.env.PROFILE_PROVIDER,
+              sample: Number(process.env.PROFILE_SAMPLE),
+              run_url: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`,
+            }, null, 2));
+            const log = (r.stdout || '') + (r.stderr || '');
+            fs.writeFileSync(`${out}/save.log`, log);
+            console.log(log);
+            const match = log.match(/Sent (\d+) of (\d+) \(100\.0%\)/);
+            if (match) fs.writeFileSync(`${out}/archive-bytes`, match[2]);
+            if (r.error || r.status !== 0 || !log.includes('Cache saved with key:') || !match) {
+              core.setFailed('Instrumented cache save failed; see artifact and phase events.');
+            }
+
+      - name: Remove original payload
+        run: rm cache-file
+
+      - name: Restore the saved cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: cache-file
+          key: ${{ env.PROFILE_CACHE_KEY }}
+          fail-on-cache-miss: true
+
+      - name: Verify restored bytes
+        run: |
+          sha256sum -c "$PROFILE_OUT/payload.sha256"
+          touch "$PROFILE_OUT/restore-verified"
+
+      - name: Validate and summarize timings
+        if: always()
+        run: |
+          python3 scripts/summarize-cache-profile.py "$PROFILE_OUT"
+          cat "$PROFILE_OUT/summary.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload raw timings and evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: cache-profile-celesto-${{ matrix.sample }}
+          path: ${{ env.PROFILE_OUT }}
+          retention-days: 14
