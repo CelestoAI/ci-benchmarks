@@ -1,0 +1,61 @@
+name: Official cache action phase profile
+on:
+  push:
+    branches: [experiment/native-cache-profile-20261113]
+    paths:
+      - .github/workflows/cache-native-profile.yml
+      - scripts/cache-native-profile.py
+      - scripts/prepare-cache-native.py
+      - scripts/cache-profile-runtime.mjs
+      - scripts/summarize-cache-native.py
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  profile:
+    name: official sample ${{ matrix.sample }}
+    runs-on: celesto-large
+    timeout-minutes: 20
+    strategy:
+      fail-fast: true
+      max-parallel: 1
+      matrix:
+        sample: [1, 2, 3, 4]
+    env:
+      PROFILE_SAMPLE: ${{ matrix.sample }}
+      PROFILE_CACHE_KEY: native-profile-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.sample }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - name: Instrument the official action and record host
+        run: python3 scripts/cache-native-profile.py prepare
+      - name: Generate the normal 4 GiB payload without hashing or syncing
+        run: python3 scripts/cache-native-profile.py generate
+      - name: Save through the official runner-tuned cache action
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ${{ env.PROFILE_CACHE_KEY }}
+      - name: Hash saved input and remove it
+        run: |
+          python3 scripts/cache-native-profile.py hash
+          rm cache-file
+      - name: Restore the saved cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ${{ env.PROFILE_CACHE_KEY }}
+          fail-on-cache-miss: true
+      - name: Verify every restored byte
+        run: python3 scripts/cache-native-profile.py verify
+      - name: Validate official-action tuning and separate phase clocks
+        if: always()
+        run: |
+          python3 scripts/summarize-cache-native.py "$PROFILE_OUT"
+          cat "$PROFILE_OUT/summary.md" >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload raw timings and validation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cache-native-profile-${{ matrix.sample }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cache-native-profile
+          retention-days: 14
