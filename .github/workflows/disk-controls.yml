@@ -1,0 +1,42 @@
+name: Disk tuning controls
+
+on:
+  push:
+    branches: [experiment/disk-controls-20261113]
+    paths:
+      - .github/workflows/disk-controls.yml
+      - scripts/disk-controls.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  disk:
+    name: disk sample ${{ matrix.sample }}
+    runs-on: celesto-large
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        sample: [1, 2, 3, 4]
+    env:
+      DISK_SAMPLE: ${{ matrix.sample }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - name: Run disk-only controls with complete I/O accounting
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/disk-control-evidence"
+          python3 scripts/disk-controls.py \
+            --work-dir "$RUNNER_TEMP/disk-control-work" \
+            --output-dir "$RUNNER_TEMP/disk-control-evidence" --mib 4096 \
+            | tee "$RUNNER_TEMP/disk-control-evidence/run.log"
+      - name: Upload disk timing and integrity evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: disk-controls-${{ matrix.sample }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/disk-control-evidence
+          retention-days: 14
