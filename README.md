@@ -28,6 +28,7 @@ Times are medians across successful jobs; cache includes save and restore. Workl
 | Benchmark | What it measures | Guide |
 | --- | --- | --- |
 | Runner suites | Rust, Node and Docker builds, a 4 GiB cache, hardware tests and a burst of 15 jobs | [docs/suites.md](docs/suites.md) |
+| Cache size matrix | Native cache save and restore at ten sizes from 20 MiB to 4 GiB, three repetitions each | [docs/cache-size-matrix.md](docs/cache-size-matrix.md) |
 | Matched CPU and cache | CPU throughput and a 512 MiB cache on GitHub-hosted and Celesto side by side ([Nov 2 results](results/2026-11-02-matched/README.md)) | [docs/matched.md](docs/matched.md) |
 | Docker | Image builds, layer caches, and a Python API with PostgreSQL ([Oct 17 results](results/docker-2026-10-17/README.md)) | [docker-bench/README.md](docker-bench/README.md) |
 

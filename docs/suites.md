@@ -15,6 +15,10 @@ Six GitHub Actions workflows that measure a CI runner on real work. Each one bui
 
 Every job starts cold: no cache, no previous build. Each job checks that the runner has 4 CPUs and at least 14 GiB RAM, and fails if not.
 
+For cache measurements across ten sizes from 20 MiB to 4 GiB, use the separate
+[cache size matrix](cache-size-matrix.md). Its three repetitions per size stay
+separate from the published 4 GiB comparison.
+
 ## Schedule
 
 Each suite runs every three days at a fixed time (UTC):
