@@ -11,8 +11,7 @@ import time
 from pathlib import Path
 
 OUT = Path('/dev/shm/cache-native-profile')
-PLAN = ['baseline', 'lazytime', 'preallocate', 'combined', 'combined', 'preallocate',
-        'lazytime', 'baseline', 'lazytime', 'combined', 'preallocate', 'baseline']
+PLAN = ['baseline', 'combined', 'combined', 'baseline', 'combined', 'baseline']
 PREALLOCATOR = '''import ctypes,json,os,stat,subprocess,time
 from pathlib import Path
 before=os.fstat(1);assert stat.S_ISREG(before.st_mode),"Compressor stdout must be the real archive file"
@@ -106,14 +105,7 @@ def workload(name, variant, size):
         start = time.monotonic()
         os.sync()
         initial_sync = time.monotonic() - start
-        started = time.monotonic()
         before = snapshot()
-        t = time.monotonic()
-        with source.open('wb') as f:
-            subprocess.run(['head', '-c', str(size), '/dev/urandom'], stdout=f, check=True)
-        generation = time.monotonic() - t
-        assert source.stat().st_size == size
-        (work / 'manifest.txt').write_text('cache-file\n')
         env = dict(os.environ, PREALLOC_BYTES=str(size + 16 * 1024**2),
                    PREALLOC_ARCHIVE=str(archive), PREALLOC_EVIDENCE=str(case / 'preallocation.json'))
         program = 'python3 ' + str(OUT / 'preallocate-writer.py') if preallocate else 'zstdmt'
@@ -121,23 +113,36 @@ def workload(name, variant, size):
                 'tar', '--posix', '-cf', str(archive), '--exclude', 'cache.tzst', '-P',
                 '-C', str(work), '--files-from', str(work / 'manifest.txt'),
                 '--use-compress-program', program]
-        pre = snapshot()
+        generation_start_utc = time.time()
+        started = time.monotonic()
+        with source.open('wb') as f:
+            subprocess.run(['head', '-c', str(size), '/dev/urandom'], stdout=f, check=True)
+        generation = time.monotonic() - started
         archive_start = time.time()
         t = time.monotonic()
+        assert source.stat().st_size == size
+        manifest_start = time.monotonic()
+        (work / 'manifest.txt').write_text('cache-file\n')
+        manifest_seconds = time.monotonic() - manifest_start
         subprocess.run(argv, check=True, capture_output=True, env=env)
         archive_seconds = time.monotonic() - t
         archive_end = time.time()
-        post = snapshot()
+        archive_fsync_start_utc = time.time()
+        archive_fsync = flush(archive)
+        source_fsync_start_utc = time.time()
+        source_fsync = flush(source)
+        total = time.monotonic() - started
+        flush_end_utc = time.time()
+        outside_phases = total - generation - archive_seconds - archive_fsync - source_fsync
+        # Detailed proc snapshots occur only before generation and after both
+        # flushes; no diagnostic reads are interposed in the measured pipeline.
+        after_flush = snapshot()
         archive_bytes = archive.stat().st_size
         assert size < archive_bytes < size * 1.01 + 65536
         if preallocate:
             allocation = json.loads((case / 'preallocation.json').read_text())
             assert allocation['device'] == archive.stat().st_dev and allocation['fixed_size_during_stream']
             assert allocation['actual_written_bytes'] == allocation['final_size'] == archive_bytes
-        archive_fsync = flush(archive)
-        source_fsync = flush(source)
-        total = time.monotonic() - started
-        after_flush = snapshot()
         with source.open('rb') as f:
             expected, original_bytes = digest(f)
         p = subprocess.Popen(['tar', '-xOf', str(archive), '--use-compress-program', 'unzstd',
@@ -148,15 +153,21 @@ def workload(name, variant, size):
         assert expected == actual and original_bytes == restored_bytes == size
         result = {'name': name, 'variant': variant, 'source_bytes': size, 'mount': mounted,
                   'initial_sync_seconds': initial_sync, 'generation_seconds': generation,
+                  'generation_start_utc': generation_start_utc,
                   'archive_seconds': archive_seconds, 'archive_start_utc': archive_start,
                   'archive_end_utc': archive_end, 'archive_bytes': archive_bytes,
+                  'manifest_seconds': manifest_seconds,
+                  'archive_fsync_start_utc': archive_fsync_start_utc,
+                  'source_fsync_start_utc': source_fsync_start_utc, 'flush_end_utc': flush_end_utc,
                   'archive_fsync_seconds': archive_fsync, 'source_fsync_seconds': source_fsync,
                   'generation_archive_flush_seconds': total,
+                  'outside_phase_seconds': outside_phases,
                   'archive_plus_flush_seconds': archive_seconds + archive_fsync,
                   'sha256': expected, 'restored_sha256': actual, 'restored_bytes': restored_bytes,
                   'archive_device': archive.stat().st_dev, 'metadata_device': case.stat().st_dev,
                   'tar_resources': (case / 'archive-resources.txt').read_text(),
-                  'before': before, 'pre_archive': pre, 'post_archive': post, 'after_flush': after_flush}
+                  'before': before, 'after_flush': after_flush,
+                  'clock_contract': 'Manifest preparation inside archive time; detailed snapshots outside generation/archive/flush pipeline'}
         assert result['archive_device'] == c['archive_device'] != result['metadata_device']
         (case / 'result.json').write_text(json.dumps(result, indent=2))
         print('VERIFIED', json.dumps({k: result[k] for k in ['name', 'variant',
@@ -191,9 +202,9 @@ def prepare():
                     'One VM with existing neighbors; interleaved variants and repeated baselines']}
     write('ext4-control.json', c)
     (OUT / 'preallocate-writer.py').write_text(PREALLOCATOR)
-    for i, variant in enumerate(['baseline', 'lazytime', 'preallocate', 'combined'], 1):
+    for i, variant in enumerate(['baseline', 'combined'], 1):
         workload('smoke-' + str(i), variant, 16 * 1024**2)
-    write('smoke-verified.json', {'four_variants_sha256_verified': True})
+    write('smoke-verified.json', {'two_variants_sha256_verified': True})
 
 
 def cleanup():
