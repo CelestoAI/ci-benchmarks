@@ -37,7 +37,11 @@ async function profileCachePhase(phase, operation) {
   const started = process.hrtime.bigint();
   profileWrite({ phase, event: 'start', snapshot: before });
   let status = 'success';
-  try { return await operation(); }
+  try {
+    const result = await operation();
+    if (phase === 'create_temp_dir') profileWrite({phase: 'archive_directory', event: 'observed', path: result, device: profileFs.statSync(result).dev});
+    return result;
+  }
   catch (error) { status = 'error'; throw error; }
   finally {
     const duration_ms = Number(process.hrtime.bigint() - started) / 1e6;

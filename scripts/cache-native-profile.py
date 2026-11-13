@@ -9,7 +9,7 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 
-out = Path(os.environ["RUNNER_TEMP"]) / "cache-native-profile"
+out = Path("/dev/shm") / "cache-native-profile"
 mode = sys.argv[1]
 
 
@@ -73,6 +73,9 @@ if mode == "prepare":
                 "curl", "-fsS", "--max-time", "10", "https://checkip.amazonaws.com"
             ),
             "kernel": os.uname().release,
+            "metadata_device": out.stat().st_dev,
+            "archive_device": Path(os.environ["RUNNER_TEMP"]).stat().st_dev,
+            "metadata_filesystem": command("findmnt", "-J", "-T", str(out)),
             "cpu": command("lscpu"),
             "memory": command("free", "-b"),
             "payload_filesystem": command(

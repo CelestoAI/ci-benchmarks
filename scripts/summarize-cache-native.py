@@ -47,6 +47,12 @@ other = seconds["save_total"] - sum(seconds[k] for k in main)
 assert other >= 0
 host = json.loads((out / "host.json").read_text())
 generation = json.loads((out / "generation.json").read_text())
+assert host["metadata_device"] != host["archive_device"], (
+    "Profiler metadata shares the cache archive disk"
+)
+assert observations["archive_directory"]["device"] == host["archive_device"], (
+    "Archive was moved off the normal disk"
+)
 assert not generation["pre_save_hash"] and not generation["pre_save_sync"]
 startup = (
     datetime.fromisoformat(starts["process"]["timestamp_utc"])
@@ -60,6 +66,9 @@ result = {
     "egress_ip": host["egress_ip"],
     "seconds": seconds,
     "setup_other_seconds": other,
+    "metadata_device": host["metadata_device"],
+    "archive_device": host["archive_device"],
+    "archive_directory": observations["archive_directory"],
     "generation_seconds": generation["seconds"],
     "generation_end_to_action_process_start_seconds": startup,
     "archive_plus_reserve_seconds": seconds["archive"] + seconds["reserve"],
