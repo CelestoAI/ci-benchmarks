@@ -1,0 +1,174 @@
+name: Cache upload size sweep
+on:
+  push:
+    branches: [experiment/cache-size-sweep-20261113]
+    paths:
+      - .github/workflows/cache-size-sweep.yml
+      - scripts/cache-size-sweep.py
+      - scripts/prepare-cache-size-sweep.py
+      - scripts/cache-profile-runtime.mjs
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sweep:
+    name: celesto sample ${{ matrix.sample }}
+    runs-on: celesto-large
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        sample: [1, 2, 3]
+    env:
+      PROFILE_SAMPLE: ${{ matrix.sample }}
+      PROFILE_PROVIDER: celesto
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - name: Instrument the official action and record host
+        run: python3 scripts/cache-size-sweep.py prepare
+      - name: Initialize size position 1
+        run: python3 scripts/cache-size-sweep.py case 1
+      - name: Generate size position 1
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py generate
+      - name: Save size position 1 through native action
+        continue-on-error: true
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ${{ env.PROFILE_CACHE_KEY }}
+      - name: Hash saved input and remove size position 1
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py hash-remove
+      - name: Restore size position 1
+        continue-on-error: true
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ${{ env.PROFILE_CACHE_KEY }}
+          fail-on-cache-miss: true
+      - name: Verify size position 1
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py verify
+      - name: Preserve timings for size position 1
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py summarize-case
+      - name: Initialize size position 2
+        run: python3 scripts/cache-size-sweep.py case 2
+      - name: Generate size position 2
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py generate
+      - name: Save size position 2 through native action
+        continue-on-error: true
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ${{ env.PROFILE_CACHE_KEY }}
+      - name: Hash saved input and remove size position 2
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py hash-remove
+      - name: Restore size position 2
+        continue-on-error: true
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ${{ env.PROFILE_CACHE_KEY }}
+          fail-on-cache-miss: true
+      - name: Verify size position 2
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py verify
+      - name: Preserve timings for size position 2
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py summarize-case
+      - name: Initialize size position 3
+        run: python3 scripts/cache-size-sweep.py case 3
+      - name: Generate size position 3
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py generate
+      - name: Save size position 3 through native action
+        continue-on-error: true
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ${{ env.PROFILE_CACHE_KEY }}
+      - name: Hash saved input and remove size position 3
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py hash-remove
+      - name: Restore size position 3
+        continue-on-error: true
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ${{ env.PROFILE_CACHE_KEY }}
+          fail-on-cache-miss: true
+      - name: Verify size position 3
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py verify
+      - name: Preserve timings for size position 3
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py summarize-case
+      - name: Initialize size position 4
+        run: python3 scripts/cache-size-sweep.py case 4
+      - name: Generate size position 4
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py generate
+      - name: Save size position 4 through native action
+        continue-on-error: true
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ${{ env.PROFILE_CACHE_KEY }}
+      - name: Hash saved input and remove size position 4
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py hash-remove
+      - name: Restore size position 4
+        continue-on-error: true
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ${{ env.PROFILE_CACHE_KEY }}
+          fail-on-cache-miss: true
+      - name: Verify size position 4
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py verify
+      - name: Preserve timings for size position 4
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py summarize-case
+      - name: Initialize size position 5
+        run: python3 scripts/cache-size-sweep.py case 5
+      - name: Generate size position 5
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py generate
+      - name: Save size position 5 through native action
+        continue-on-error: true
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ${{ env.PROFILE_CACHE_KEY }}
+      - name: Hash saved input and remove size position 5
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py hash-remove
+      - name: Restore size position 5
+        continue-on-error: true
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: ${{ env.PROFILE_CACHE_KEY }}
+          fail-on-cache-miss: true
+      - name: Verify size position 5
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py verify
+      - name: Preserve timings for size position 5
+        continue-on-error: true
+        run: python3 scripts/cache-size-sweep.py summarize-case
+      - name: Validate every size and summarize
+        if: always()
+        run: python3 scripts/cache-size-sweep.py summarize-job
+      - name: Upload raw timings and hash evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cache-size-sweep-celesto-${{ matrix.sample }}-${{ github.run_attempt }}
+          path: ${{ env.PROFILE_ROOT }}
+          retention-days: 14
