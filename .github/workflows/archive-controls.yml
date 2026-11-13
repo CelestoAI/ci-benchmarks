@@ -1,0 +1,57 @@
+name: Archive output controls
+
+on:
+  push:
+    branches: [experiment/archive-controls-20261113]
+    paths:
+      - .github/workflows/archive-controls.yml
+      - scripts/archive-controls.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  archive:
+    name: archive sample ${{ matrix.sample }}
+    runs-on: celesto-large
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        sample: [1, 2, 3, 4]
+    env:
+      ARCHIVE_SAMPLE: ${{ matrix.sample }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+
+      - name: Prepare bounded archive scratch
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /mnt/archive-control-ram
+          sudo mount -t tmpfs -o size=6G,nosuid,nodev tmpfs /mnt/archive-control-ram
+          sudo chown "$(id -u):$(id -g)" /mnt/archive-control-ram
+          mkdir -p "$RUNNER_TEMP/archive-control-evidence" "$RUNNER_TEMP/archive-control-work"
+
+      - name: Run archive controls and validate real outputs
+        run: |
+          set -euo pipefail
+          python3 scripts/archive-controls.py \
+            --work-dir "$RUNNER_TEMP/archive-control-work" \
+            --ram-dir /mnt/archive-control-ram \
+            --output-dir "$RUNNER_TEMP/archive-control-evidence" \
+            --mib 4096 --repetitions 3 \
+            | tee "$RUNNER_TEMP/archive-control-evidence/run.log"
+
+      - name: Upload timing and verification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: archive-controls-${{ matrix.sample }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/archive-control-evidence
+          retention-days: 14
+
+      - name: Unmount archive scratch
+        if: always()
+        run: sudo umount /mnt/archive-control-ram
