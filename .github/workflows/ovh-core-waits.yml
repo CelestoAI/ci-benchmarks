@@ -1,0 +1,114 @@
+name: OVH archive core wait profile
+on:
+  push:
+    branches: [experiment/ovh-core-waits-20261113]
+    paths: [.github/workflows/ovh-core-waits.yml, scripts/cache-core-waits.py]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  profile:
+    runs-on: celesto-large
+    timeout-minutes: 20
+    env:
+      PROFILE_SAMPLE: 1
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - name: Identify requested OVH host
+        id: target
+        run: python3 scripts/ovh-direct-guest.py identify
+      - name: Prepare official action without changing archive location
+        if: steps.target.outputs.selected == 'true'
+        run: |
+          mv /dev/shm/cache-native-profile /dev/shm/ovh-identity-evidence
+          python3 scripts/cache-native-profile.py prepare
+          cp /dev/shm/ovh-identity-evidence/identity.json /dev/shm/cache-native-profile/
+      - name: Check four vCPUs can run simultaneously
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/cache-core-waits.py cpu
+      - name: Start guest thread wait sampling
+        id: observer
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/cache-core-waits.py start
+      - name: Set trial 1 clocks
+        if: steps.target.outputs.selected == 'true'
+        run: |
+          mkdir "$PROFILE_OUT/trial-1"
+          echo "CACHE_PROFILE_EVENTS=$PROFILE_OUT/trial-1/events.jsonl" >> "$GITHUB_ENV"
+          echo "CACHE_PROFILE_ARCHIVE_RESOURCES=$PROFILE_OUT/trial-1/archive-resources.txt" >> "$GITHUB_ENV"
+      - name: Generate normal trial 1 payload
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/cache-native-profile.py generate
+      - name: Save trial 1 through official action
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: core-waits-${{ github.run_id }}-${{ github.run_attempt }}-1
+      - name: Hash and remove trial 1 input
+        if: steps.target.outputs.selected == 'true'
+        run: |
+          python3 scripts/cache-native-profile.py hash
+          rm cache-file
+      - name: Restore trial 1
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: core-waits-${{ github.run_id }}-${{ github.run_attempt }}-1
+          fail-on-cache-miss: true
+      - name: Verify and collect trial 1
+        if: steps.target.outputs.selected == 'true'
+        run: |
+          python3 scripts/cache-native-profile.py verify
+          cp "$PROFILE_OUT/host.json" "$PROFILE_OUT/generation.json" "$PROFILE_OUT/patch.json" "$PROFILE_OUT/payload.sha256" "$PROFILE_OUT/restore-verified" "$PROFILE_OUT/trial-1/"
+          python3 scripts/summarize-cache-native.py "$PROFILE_OUT/trial-1"
+      - name: Remove previous source before next trial
+        if: steps.target.outputs.selected == 'true'
+        run: rm cache-file
+      - name: Set trial 2 clocks
+        if: steps.target.outputs.selected == 'true'
+        run: |
+          mkdir "$PROFILE_OUT/trial-2"
+          echo "CACHE_PROFILE_EVENTS=$PROFILE_OUT/trial-2/events.jsonl" >> "$GITHUB_ENV"
+          echo "CACHE_PROFILE_ARCHIVE_RESOURCES=$PROFILE_OUT/trial-2/archive-resources.txt" >> "$GITHUB_ENV"
+      - name: Generate normal trial 2 payload
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/cache-native-profile.py generate
+      - name: Save trial 2 through official action
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: core-waits-${{ github.run_id }}-${{ github.run_attempt }}-2
+      - name: Hash and remove trial 2 input
+        if: steps.target.outputs.selected == 'true'
+        run: |
+          python3 scripts/cache-native-profile.py hash
+          rm cache-file
+      - name: Restore trial 2
+        if: steps.target.outputs.selected == 'true'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: core-waits-${{ github.run_id }}-${{ github.run_attempt }}-2
+          fail-on-cache-miss: true
+      - name: Verify and collect trial 2
+        if: steps.target.outputs.selected == 'true'
+        run: |
+          python3 scripts/cache-native-profile.py verify
+          cp "$PROFILE_OUT/host.json" "$PROFILE_OUT/generation.json" "$PROFILE_OUT/patch.json" "$PROFILE_OUT/payload.sha256" "$PROFILE_OUT/restore-verified" "$PROFILE_OUT/trial-2/"
+          python3 scripts/summarize-cache-native.py "$PROFILE_OUT/trial-2"
+      - name: Isolate compression using counted output
+        if: steps.target.outputs.selected == 'true'
+        run: python3 scripts/cache-core-waits.py controls
+      - name: Stop observer and collect readable evidence
+        if: always() && steps.observer.outcome == 'success'
+        run: python3 scripts/cache-core-waits.py stop
+      - name: Upload raw core, thread, wait, timing and integrity evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ovh-core-waits-${{ github.run_attempt }}
+          path: /dev/shm/cache-native-profile
+          retention-days: 14
