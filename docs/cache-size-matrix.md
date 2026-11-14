@@ -7,6 +7,9 @@ existing native cache benchmark to the payload sizes discussed in
 times on a fresh Celesto Large runner. Jobs run sequentially within the sweep;
 other workflows can still compete for the same capacity.
 
+[November 14 results](../results/cache-size-matrix-2026-11-14/README.md):
+all 30 roundtrips passed, with per-size medians, ranges and preserved hash evidence.
+
 The workflow generates one random, incompressible file, saves it with the same
 pinned `actions/cache` v6.1.0 as the original 4 GiB benchmark, hashes and deletes
 the input, restores the exact cache key, and requires matching size and SHA-256.
@@ -35,6 +38,8 @@ Times have one-second resolution. Save and restore cover their complete action
 steps, including compression/extraction and action startup. Verification is
 reported separately; exclude it when comparing save-plus-restore totals. Small
 payload timings should be read with the one-second resolution in mind.
+Queue times include the intentional matrix serialization and should not be used
+to compare provider provisioning latency.
 
 The size matrix uses a separate workflow and artifact name so it does not mix
 small payloads into the existing published 4 GiB, 30-day provider comparison.
