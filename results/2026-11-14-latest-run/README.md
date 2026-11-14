@@ -2,7 +2,7 @@
 
 Snapshot date: **November 14, 2026**. This archive records the completed benchmark runs shown below for each provider and suite, rather than a rolling p50.
 
-Build and cache times are workload seconds. Cache includes save and restore. Burst is the median queue wait from the latest 15-job burst per provider. Hardware values are from each provider’s latest available hardware run. The comparisons use 4-vCPU x64 runners; RunsOn is its 4-vCPU `m8a.xlarge` EBS gp3 default.
+Build and cache times are workload seconds. Cache includes save and restore. Burst is the median queue wait from the linked 15-job burst per provider. Hardware values are from each provider’s latest available hardware run. The comparisons use 4-vCPU x64 runners; RunsOn is its 4-vCPU `m8a.xlarge` EBS gp3 default.
 
 Per-minute rates were checked on Nov 14, 2026. Celesto uses its published Large CI 4-vCPU/16-GB rate. Other providers use the RunsOn dashboard’s published x64 4-vCPU rates. RunsOn uses the on-demand (non-spot) rate for the same 4-vCPU hardware; timing columns use the archived benchmark runs. These are published running rates, not the actual cost of the benchmark jobs.
 
@@ -23,7 +23,7 @@ RunsOn’s current cache bug window and obsolete Node typecheck samples are excl
 | Ubicloud | 3m 04s | 1m 29s | 13m 11s | 1m 48s | 50s | $0.0025 |
 | WarpBuild | 2m 35s | 1m 27s | 7m 26s | 32s | 10s | $0.0080 |
 
-The burst p50 is computed over 15 jobs in that provider’s latest burst. Other suite values are one successful benchmark job per provider.
+The burst p50 is computed over 15 jobs in that provider’s linked burst run. Other suite values are one successful benchmark job per provider.
 
 ## Verified per-minute rate basis
 
@@ -60,7 +60,7 @@ Disk metrics are measured inside the runner VM. A dash means the metric is unava
 | Provider | Rust | Node | Docker | Cache | Hardware | Burst |
 |---|---:|---:|---:|---:|---:|---:|
 | GitHub | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832) | [2026-11-11](https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372) | [2026-11-14](https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607) | [2026-11-12](https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191) |
-| Celesto | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643464187) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43629094599) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43640067587) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643797586) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643932828) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43644609867) |
+| Celesto | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643464187) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43629094599) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43640067587) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643797586) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643932828) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43622242256) |
 | Blacksmith | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832) | [2026-11-11](https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372) | [2026-11-14](https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607) | [2026-11-12](https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191) |
 | Namespace | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832) | [2026-11-11](https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372) | [2026-11-14](https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607) | [2026-11-12](https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191) |
 | RunsOn | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832) | [2026-11-11](https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372) | [2026-11-14](https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607) | [2026-11-12](https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021) |

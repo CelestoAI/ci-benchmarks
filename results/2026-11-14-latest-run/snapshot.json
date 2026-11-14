@@ -191,7 +191,7 @@
       },
       "burst": {
         "run": {
-          "id": 43644609867,
+          "id": 43622242256,
           "attempt": 1,
           "repository": "CelestoAI/ci-benchmarks",
           "date": "2026-11-14"
@@ -202,8 +202,8 @@
             "iteration": 1,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-7cb374449a55a80cad761371a1e707c2",
-            "queueSeconds": 15,
+            "runner": "celesto-rs-aad794e0aae2eb2e7afdd479404fe120",
+            "queueSeconds": 16,
             "jobSeconds": 64,
             "workloadSeconds": 60,
             "phases": [
@@ -220,8 +220,8 @@
             "iteration": 2,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-4a54da86beaf91f768d7612b4e17f994",
-            "queueSeconds": 18,
+            "runner": "celesto-rs-2e471f960ce88c23232ef0ce5fd62a40",
+            "queueSeconds": 17,
             "jobSeconds": 63,
             "workloadSeconds": 60,
             "phases": [
@@ -238,8 +238,8 @@
             "iteration": 3,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-0b5ea134f0d54c1c0e438b979665a5f4",
-            "queueSeconds": 18,
+            "runner": "celesto-rs-6c636f9638f6c498b64ab3520c746a56",
+            "queueSeconds": 13,
             "jobSeconds": 64,
             "workloadSeconds": 60,
             "phases": [
@@ -256,8 +256,8 @@
             "iteration": 4,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-ae4c423899579f85a42b7432b4f827c1",
-            "queueSeconds": 17,
+            "runner": "celesto-rs-1de372f28ddaea91b0291e66b8e87452",
+            "queueSeconds": 15,
             "jobSeconds": 63,
             "workloadSeconds": 60,
             "phases": [
@@ -274,9 +274,9 @@
             "iteration": 5,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-6d19fd15247c17303092cf9f790c5eb5",
-            "queueSeconds": 15,
-            "jobSeconds": 63,
+            "runner": "celesto-rs-4a92531abe6b238f7e6b6b60beaef215",
+            "queueSeconds": 18,
+            "jobSeconds": 64,
             "workloadSeconds": 60,
             "phases": [
               {
@@ -292,8 +292,8 @@
             "iteration": 6,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-9042c2ed77d6a09c607dbf8d3d98cfb1",
-            "queueSeconds": 16,
+            "runner": "celesto-rs-eec396d4f443b748134a00839dffc4db",
+            "queueSeconds": 18,
             "jobSeconds": 63,
             "workloadSeconds": 60,
             "phases": [
@@ -310,8 +310,8 @@
             "iteration": 7,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-cc3cce07958aa616e5eaeff78428b9d9",
-            "queueSeconds": 19,
+            "runner": "celesto-rs-23b6a8742a93d0e58e75ddb0add95c38",
+            "queueSeconds": 13,
             "jobSeconds": 63,
             "workloadSeconds": 60,
             "phases": [
@@ -328,8 +328,8 @@
             "iteration": 8,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-31919fba4f6b56326fc032f721230e85",
-            "queueSeconds": 16,
+            "runner": "celesto-rs-5291b51d8dfbb52e9dc25066dc71874f",
+            "queueSeconds": 12,
             "jobSeconds": 63,
             "workloadSeconds": 60,
             "phases": [
@@ -346,8 +346,8 @@
             "iteration": 9,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-aa4084c256030caa762956af6f90e290",
-            "queueSeconds": 19,
+            "runner": "celesto-rs-3a29a532384dc1f56d6f6976dab3bbba",
+            "queueSeconds": 17,
             "jobSeconds": 64,
             "workloadSeconds": 60,
             "phases": [
@@ -364,9 +364,9 @@
             "iteration": 10,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-a4e796b1bb7de4c5d469e76e13fcb8a3",
-            "queueSeconds": 17,
-            "jobSeconds": 63,
+            "runner": "celesto-rs-57517594cefe49fc4cba9862f08eea96",
+            "queueSeconds": 15,
+            "jobSeconds": 64,
             "workloadSeconds": 60,
             "phases": [
               {
@@ -382,8 +382,8 @@
             "iteration": 11,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-e7b883f7edaf3314be0ecabb6e2c4f43",
-            "queueSeconds": 16,
+            "runner": "celesto-rs-cf31b5246f46f06d7c177a4eaee04f71",
+            "queueSeconds": 15,
             "jobSeconds": 64,
             "workloadSeconds": 60,
             "phases": [
@@ -400,9 +400,9 @@
             "iteration": 12,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-0c8a5d69fd428e4631c3063059d2f4c8",
-            "queueSeconds": 19,
-            "jobSeconds": 63,
+            "runner": "celesto-rs-1e729acb7c618f6848abe52e19dee8fe",
+            "queueSeconds": 16,
+            "jobSeconds": 64,
             "workloadSeconds": 60,
             "phases": [
               {
@@ -418,9 +418,9 @@
             "iteration": 13,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-ab4224092303ad3f93c9f30ab1f957a2",
-            "queueSeconds": 17,
-            "jobSeconds": 63,
+            "runner": "celesto-rs-8040680cabab1ba4800242c2585ce714",
+            "queueSeconds": 15,
+            "jobSeconds": 64,
             "workloadSeconds": 60,
             "phases": [
               {
@@ -436,9 +436,9 @@
             "iteration": 14,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-6bbbba75e7b4bbbba4a8bccf0190e357",
-            "queueSeconds": 19,
-            "jobSeconds": 63,
+            "runner": "celesto-rs-b545142e852d5a15c9d2d3a1e7ecbea9",
+            "queueSeconds": 15,
+            "jobSeconds": 64,
             "workloadSeconds": 60,
             "phases": [
               {
@@ -454,8 +454,8 @@
             "iteration": 15,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-02b6c331dc19958eeb3f41ce1c301106",
-            "queueSeconds": 17,
+            "runner": "celesto-rs-be5b78ab9e1eb1eb4c3f5afe0fa0e830",
+            "queueSeconds": 16,
             "jobSeconds": 63,
             "workloadSeconds": 60,
             "phases": [
@@ -468,7 +468,7 @@
             "metrics": null
           }
         ],
-        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43644609867"
+        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43622242256"
       },
       "hardware": {
         "run": {
