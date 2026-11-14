@@ -4648,5 +4648,54 @@
         ]
       }
     }
+  },
+  "pricing": {
+    "asOf": "2026-11-14",
+    "unit": "USD per runner-minute",
+    "rates": {
+      "Celesto": {
+        "usdPerMinute": 0.00133333,
+        "display": "$0.00133333",
+        "basis": "Large CI runner, 4 vCPU / 16 GB",
+        "source": "https://celesto.ai/ci"
+      },
+      "GitHub": {
+        "usdPerMinute": 0.012,
+        "display": "$0.0120",
+        "basis": "4 vCPU / 16 GB x64",
+        "source": "https://runs-on.com/benchmarks/?by=cost"
+      },
+      "Blacksmith": {
+        "usdPerMinute": 0.008,
+        "display": "$0.0080",
+        "basis": "4 vCPU / 16 GB x64",
+        "source": "https://runs-on.com/benchmarks/?by=cost"
+      },
+      "Namespace": {
+        "usdPerMinute": 0.012,
+        "display": "$0.0120*",
+        "basis": "4 vCPU x64 overage rate",
+        "source": "https://runs-on.com/benchmarks/?by=cost"
+      },
+      "RunsOn": {
+        "usdPerMinuteSpot": 0.0012,
+        "usdPerMinuteOnDemand": 0.0044,
+        "display": "$0.0012 spot",
+        "basis": "m8a.xlarge, 4 vCPU / 16 GB x64; specific runner price row, spot default",
+        "source": "https://runs-on.com/benchmarks/?by=cost"
+      },
+      "Ubicloud": {
+        "usdPerMinute": 0.0025,
+        "display": "$0.0025",
+        "basis": "4 vCPU / 16 GB x64",
+        "source": "https://runs-on.com/benchmarks/?by=cost"
+      },
+      "WarpBuild": {
+        "usdPerMinute": 0.008,
+        "display": "$0.0080",
+        "basis": "4 vCPU / 16 GB x64",
+        "source": "https://runs-on.com/benchmarks/?by=cost"
+      }
+    }
   }
 }

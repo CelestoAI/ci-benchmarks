@@ -4,6 +4,8 @@ Snapshot date: **November 14, 2026**. This archive uses the latest completed val
 
 Build and cache times are workload seconds. Cache includes save and restore. Burst is the median queue wait from the latest 15-job burst per provider. Hardware values are from each provider’s latest available hardware run. The comparisons use 4-vCPU x64 runners; RunsOn is its 4-vCPU `m8a.xlarge` EBS gp3 default.
 
+Per-minute rates were checked on Nov 14, 2026. Celesto uses its published Large CI 4-vCPU/16-GB rate. Other providers use the RunsOn dashboard’s published x64 4-vCPU rates. These are published running rates, not the actual cost of the benchmark jobs.
+
 RunsOn’s current cache bug window and obsolete Node typecheck samples are excluded, following its [published methodology](https://runs-on.com/benchmarks/methodology/). The public data is attributed to [runs-on-demo/benchmark-public](https://github.com/runs-on-demo/benchmark-public), source commit `5cbfb2c`.
 
 ![Latest-run build, cache, and queue times by provider](summary-light.svg#gh-light-mode-only)
@@ -11,17 +13,31 @@ RunsOn’s current cache bug window and obsolete Node typecheck samples are excl
 
 ## Latest workload runs
 
-| Provider | Rust | Node | Docker | Cache save + restore | Burst queue p50 |
-|---|---:|---:|---:|---:|---:|
-| GitHub | 3m 35s | 1m 38s | 12m 59s | 1m 20s | 3s |
-| Celesto | 3m 28s | 1m 40s | 11m 10s | 47s | 16s |
-| Blacksmith | 2m 02s | 50s | 5m 52s | 17s | 11s |
-| Namespace | 1m 31s | 44s | 4m 38s | 47s | 9s |
-| RunsOn | 1m 48s | 1m 03s | 9m 00s | 33s | 17s |
-| Ubicloud | 3m 04s | 1m 29s | 13m 11s | 1m 48s | 50s |
-| WarpBuild | 2m 35s | 1m 27s | 7m 26s | 32s | 10s |
+| Provider | Rust | Node | Docker | Cache save + restore | Burst queue p50 | Rate per minute |
+|---|---:|---:|---:|---:|---:|---:|
+| GitHub | 3m 35s | 1m 38s | 12m 59s | 1m 20s | 3s | $0.0120 |
+| Celesto | 3m 28s | 1m 40s | 11m 10s | 47s | 16s | $0.00133333 |
+| Blacksmith | 2m 02s | 50s | 5m 52s | 17s | 11s | $0.0080 |
+| Namespace | 1m 31s | 44s | 4m 38s | 47s | 9s | $0.0120* |
+| RunsOn | 1m 48s | 1m 03s | 9m 00s | 33s | 17s | $0.0012 spot |
+| Ubicloud | 3m 04s | 1m 29s | 13m 11s | 1m 48s | 50s | $0.0025 |
+| WarpBuild | 2m 35s | 1m 27s | 7m 26s | 32s | 10s | $0.0080 |
 
 The burst p50 is computed over 15 jobs in that provider’s latest burst. Other suite values are one latest successful benchmark job per provider.
+
+## Verified per-minute rate basis
+
+| Provider | Published rate used | Source/method |
+|---|---:|---|
+| Celesto Large | $0.00133333/min | Large CI runner, 4 vCPU / 16 GB, on [Celesto CI pricing](https://celesto.ai/ci). |
+| GitHub | $0.0120/min | 4 vCPU / 16 GB x64 on the [RunsOn provider price list](https://runs-on.com/benchmarks/?by=cost). |
+| Blacksmith | $0.0080/min | 4 vCPU / 16 GB x64 on the RunsOn provider price list. |
+| Namespace | $0.0120/min* | 4 vCPU x64 overage rate on the RunsOn provider price list. |
+| RunsOn m8a.xlarge | $0.0012/min spot; $0.0044/min on-demand | The specific m8a.xlarge · EBS gp3 row in the RunsOn 4-vCPU x64 price table. Spot is the dashboard default; the chart shows spot. |
+| Ubicloud | $0.0025/min | 4 vCPU / 16 GB x64 on the RunsOn provider price list. |
+| WarpBuild | $0.0080/min | 4 vCPU / 16 GB x64 on the RunsOn provider price list. |
+
+The m8a.xlarge-specific on-demand rate is `$0.0044/min`; `$0.0037/min` is RunsOn’s generic 4-vCPU x64 provider rate, not the price for this runner. Celesto Large is `$0.00133333/min` (equivalent to `$0.08/hour`). `*` Namespace is priced at its overage rate.
 
 ## Hardware: latest measurements
 
