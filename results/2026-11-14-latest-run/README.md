@@ -19,7 +19,7 @@ RunsOn’s current cache bug window and obsolete Node typecheck samples are excl
 | Celesto | 3m 28s | 1m 40s | 11m 10s | 47s | 16s | $0.00133333 |
 | Blacksmith | 2m 02s | 50s | 5m 52s | 17s | 11s | $0.0080 |
 | Namespace | 1m 31s | 44s | 4m 38s | 47s | 9s | $0.0120* |
-| RunsOn | 1m 48s | 1m 03s | 9m 00s | 33s | 17s | $0.0013 spot |
+| RunsOn | 1m 48s | 1m 03s | 9m 00s | 33s | 17s | $0.0012 spot |
 | Ubicloud | 3m 04s | 1m 29s | 13m 11s | 1m 48s | 50s | $0.0025 |
 | WarpBuild | 2m 35s | 1m 27s | 7m 26s | 32s | 10s | $0.0080 |
 
@@ -33,11 +33,11 @@ The burst p50 is computed over 15 jobs in that provider’s latest burst. Other 
 | GitHub | $0.0120/min | 4 vCPU / 16 GB x64 on the [RunsOn provider price list](https://runs-on.com/benchmarks/?by=cost). |
 | Blacksmith | $0.0080/min | 4 vCPU / 16 GB x64 on the RunsOn provider price list. |
 | Namespace | $0.0120/min* | 4 vCPU x64 overage rate on the RunsOn provider price list. |
-| RunsOn m8a.xlarge | $0.0013/min spot; $0.0037/min on-demand | 4 vCPU / 16 GB x64 on the RunsOn provider price list. RunsOn’s default is spot; the chart shows spot. |
+| RunsOn m8a.xlarge | $0.0012/min spot; $0.0044/min on-demand | The specific m8a.xlarge · EBS gp3 row in the RunsOn 4-vCPU x64 price table. Spot is the dashboard default; the chart shows spot. |
 | Ubicloud | $0.0025/min | 4 vCPU / 16 GB x64 on the RunsOn provider price list. |
 | WarpBuild | $0.0080/min | 4 vCPU / 16 GB x64 on the RunsOn provider price list. |
 
-The often quoted `$0.0037` RunsOn figure is **per minute on-demand**, not per hour. Celesto Large is `$0.00133333/min` (equivalent to `$0.08/hour`). `*` Namespace is priced at its overage rate.
+The m8a.xlarge-specific on-demand rate is `$0.0044/min`; `$0.0037/min` is RunsOn’s generic 4-vCPU x64 provider rate, not the price for this runner. Celesto Large is `$0.00133333/min` (equivalent to `$0.08/hour`). `*` Namespace is priced at its overage rate.
 
 ## Hardware: latest measurements
 

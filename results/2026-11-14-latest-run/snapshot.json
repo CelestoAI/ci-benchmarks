@@ -4678,10 +4678,10 @@
         "source": "https://runs-on.com/benchmarks/?by=cost"
       },
       "RunsOn": {
-        "usdPerMinuteSpot": 0.0013,
-        "usdPerMinuteOnDemand": 0.0037,
-        "display": "$0.0013 spot",
-        "basis": "m8a.xlarge, 4 vCPU / 16 GB x64; spot default",
+        "usdPerMinuteSpot": 0.0012,
+        "usdPerMinuteOnDemand": 0.0044,
+        "display": "$0.0012 spot",
+        "basis": "m8a.xlarge, 4 vCPU / 16 GB x64; specific runner price row, spot default",
         "source": "https://runs-on.com/benchmarks/?by=cost"
       },
       "Ubicloud": {
