@@ -4697,6 +4697,5 @@
         "source": "https://runs-on.com/benchmarks/?by=cost"
       }
     }
-  },
-  "runConditions": "Celesto Rust, Docker, cache, and hardware were measured on AWS EBS at 1,000 MiB/s and 12,000 IOPS after volume optimization completed. Node was measured on AWS EBS at 1,000 MiB/s and 6,000 IOPS during volume optimization. Burst queue timing measures the standard 15-job fleet-wide workload. Background load varies on shared hosts; these single-run measurements do not isolate storage performance."
+  }
 }

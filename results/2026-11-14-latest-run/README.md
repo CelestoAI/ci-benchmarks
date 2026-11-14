@@ -25,7 +25,6 @@ RunsOn’s current cache bug window and obsolete Node typecheck samples are excl
 
 The burst p50 is computed over 15 jobs in that provider’s latest burst. Other suite values are one successful benchmark job per provider.
 
-
 ## Verified per-minute rate basis
 
 | Provider | Published rate used | Source/method |
@@ -54,7 +53,7 @@ The m8a.xlarge-specific on-demand rate is `$0.0044/min`; `$0.0037/min` is RunsOn
 | Docker image pull | 18 s | 8 s | 8 s | 4 s | 5 s | 22 s | 9 s |
 | PostgreSQL read/write | 4,992 TPS | — | 9,463 TPS | 11,134 TPS | 3,244 TPS | 1,880 TPS | 4,701 TPS |
 
-Disk figures are fio measurements inside the runner VM, rather than provisioned volume limits. A dash means that the hardware run did not produce that metric. Celesto’s latest hardware run recorded a PostgreSQL client error, so its PostgreSQL cell is unavailable.
+Disk metrics are measured inside the runner VM. A dash means the metric is unavailable.
 
 ## Source runs
 
