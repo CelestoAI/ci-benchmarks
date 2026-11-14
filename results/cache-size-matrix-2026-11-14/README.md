@@ -4,6 +4,14 @@
 
 **30/30 save/restore roundtrips passed.** Each of ten payload sizes ran three times sequentially on Celesto Large (4 vCPU, at least 14 GiB usable RAM). Every restore was an exact-key hit and matched the original file size and SHA-256.
 
+## First run vs rerun
+
+![First run and rerun: save time, restore time and upload speed](../cache-size-matrix-2026-11-14-attempt-2/comparison.svg)
+
+Bars show three-run medians; whiskers show the minimum-to-maximum range. Both batches are preserved separately. Save and restore are complete action timings; upload speed is the SDK progress reading.
+
+[Rerun report and speed comparison](../cache-size-matrix-2026-11-14-attempt-2/README.md).
+
 ## Results
 
 All times are seconds. Medians use three successful repetitions. Ranges show the fastest and slowest repetition. Roundtrip is the median of each repetition’s save plus restore; generation, hashing, verification, queueing and artifact upload are excluded.

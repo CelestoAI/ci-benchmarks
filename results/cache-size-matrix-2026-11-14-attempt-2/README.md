@@ -4,6 +4,14 @@
 
 **30/30 save/restore roundtrips passed.** Each of ten payload sizes ran three times sequentially on Celesto Large (4 vCPU, at least 14 GiB usable RAM). Every restore was an exact-key hit and matched the original file size and SHA-256.
 
+## First run vs rerun
+
+![First run and rerun: save time, restore time and upload speed](comparison.svg)
+
+Bars show three-run medians; whiskers show the minimum-to-maximum range. Both batches are preserved separately. Save and restore are complete action timings; upload speed is the SDK progress reading.
+
+[PNG](comparison.png) · [SVG](comparison.svg) · [First-run report](../cache-size-matrix-2026-11-14/README.md).
+
 ## Results
 
 All times are seconds. Medians use three successful repetitions. Ranges show the fastest and slowest repetition. Roundtrip is the median of each repetition’s save plus restore; generation, hashing, verification, queueing and artifact upload are excluded.
@@ -81,3 +89,11 @@ CPU models reported by the host fingerprints:
 
 - The unchanged workflow definition was validated before the first batch: `actionlint` v1.7.12 passed (custom `celesto-large` label allowed), and `npm test` passed all 4 existing tests with no skips.
 - Evidence audit: all 30 expected size/repetition pairs, exact cache hits, payload byte counts, original/restored SHA-256 matches, successful timed phases, and four-CPU host fingerprints passed.
+
+## Regenerate the comparison chart
+
+The chart reads both batches’ saved `summary.json` and `transfer-metrics.json` files. No new benchmark is needed. From the repository root:
+
+```sh
+uv run --python 3.12 --with matplotlib==3.10.0 python results/cache-size-matrix-2026-11-14-attempt-2/render-comparison.py
+```

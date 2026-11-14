@@ -11,6 +11,11 @@ other workflows can still compete for the same capacity.
 all 30 roundtrips passed, with per-size medians, upload speeds and a comparison
 with the [first batch](../results/cache-size-matrix-2026-11-14/README.md).
 
+![First run versus rerun: save, restore and upload speed](../results/cache-size-matrix-2026-11-14-attempt-2/comparison.svg)
+
+The paired bars show each batch's three-run medians, with minimum-to-maximum
+whiskers. [View the comparison and exact values](../results/cache-size-matrix-2026-11-14-attempt-2/README.md#first-run-vs-rerun).
+
 The workflow generates one random, incompressible file, saves it with the same
 pinned `actions/cache` v6.1.0 as the original 4 GiB benchmark, hashes and deletes
 the input, restores the exact cache key, and requires matching size and SHA-256.
