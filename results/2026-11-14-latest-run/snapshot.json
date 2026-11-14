@@ -5,7 +5,7 @@
     "commit": "5cbfb2c",
     "commitDate": "2026-11-14T02:24:09Z"
   },
-  "timingBasis": "Latest completed provider run per suite. Build and cache values are GitHub job workload seconds. Cache includes save and restore. Burst is the p50 queue wait across jobs in the latest burst (15 jobs per provider). Hardware is the latest available single run; partial metric failures are retained.",
+  "timingBasis": "Selected completed provider run per suite. Celesto Docker retains the 11m29s sample while further disk-tuning tests continue. Build and cache values are GitHub job workload seconds. Cache includes save and restore. Burst is the p50 queue wait across jobs in the latest burst (15 jobs per provider). Hardware is the latest available single run; partial metric failures are retained.",
   "providers": {
     "Celesto": {
       "rust": {
