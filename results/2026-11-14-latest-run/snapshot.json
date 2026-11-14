@@ -10,7 +10,7 @@
     "Celesto": {
       "rust": {
         "run": {
-          "id": 43617839414,
+          "id": 43643464187,
           "attempt": 1,
           "repository": "CelestoAI/ci-benchmarks",
           "date": "2026-11-14"
@@ -21,10 +21,10 @@
             "iteration": 1,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-71eeb47f49ffc0630efa3a1ae1e9861f",
-            "queueSeconds": 14,
-            "jobSeconds": 198,
-            "workloadSeconds": 195,
+            "runner": "celesto-rs-69aed747f90b16fd0f8de3750ac4b7bb",
+            "queueSeconds": 11,
+            "jobSeconds": 178,
+            "workloadSeconds": 174,
             "phases": [
               {
                 "name": "checkout",
@@ -33,22 +33,22 @@
               },
               {
                 "name": "system packages",
-                "seconds": 6,
+                "seconds": 5,
                 "status": "success"
               },
               {
                 "name": "toolchain",
-                "seconds": 10,
+                "seconds": 9,
                 "status": "success"
               },
               {
                 "name": "cargo fmt",
-                "seconds": 0,
+                "seconds": 1,
                 "status": "success"
               },
               {
                 "name": "cargo test",
-                "seconds": 120,
+                "seconds": 100,
                 "status": "success"
               },
               {
@@ -65,7 +65,7 @@
             "metrics": null
           }
         ],
-        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43617839414"
+        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643464187"
       },
       "node": {
         "run": {
@@ -113,7 +113,7 @@
       },
       "docker": {
         "run": {
-          "id": 43629298312,
+          "id": 43640067587,
           "attempt": 1,
           "repository": "CelestoAI/ci-benchmarks",
           "date": "2026-11-14"
@@ -124,10 +124,10 @@
             "iteration": 1,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-cb0a11e80bbef92e78695d989d10f30e",
-            "queueSeconds": 11,
-            "jobSeconds": 723,
-            "workloadSeconds": 689,
+            "runner": "celesto-rs-2e0dfc9118f825b702364ae238de8abe",
+            "queueSeconds": 16,
+            "jobSeconds": 667,
+            "workloadSeconds": 636,
             "phases": [
               {
                 "name": "fetch source",
@@ -136,23 +136,23 @@
               },
               {
                 "name": "buildx setup",
-                "seconds": 5,
+                "seconds": 6,
                 "status": "success"
               },
               {
                 "name": "docker build",
-                "seconds": 661,
+                "seconds": 607,
                 "status": "success"
               }
             ],
             "metrics": null
           }
         ],
-        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43629298312"
+        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43640067587"
       },
       "cache": {
         "run": {
-          "id": 43621056456,
+          "id": 43643797586,
           "attempt": 1,
           "repository": "CelestoAI/ci-benchmarks",
           "date": "2026-11-14"
@@ -163,14 +163,14 @@
             "iteration": 1,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-fa44b3f18c012679d21c371d587806cd",
-            "queueSeconds": 11,
-            "jobSeconds": 59,
-            "workloadSeconds": 42,
+            "runner": "celesto-rs-7c9f8cb5e274e606d28d59a04dece09e",
+            "queueSeconds": 12,
+            "jobSeconds": 58,
+            "workloadSeconds": 41,
             "phases": [
               {
                 "name": "cache save",
-                "seconds": 18,
+                "seconds": 17,
                 "status": "success"
               },
               {
@@ -187,11 +187,11 @@
             "metrics": null
           }
         ],
-        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43621056456"
+        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643797586"
       },
       "burst": {
         "run": {
-          "id": 43622242256,
+          "id": 43644609867,
           "attempt": 1,
           "repository": "CelestoAI/ci-benchmarks",
           "date": "2026-11-14"
@@ -202,8 +202,8 @@
             "iteration": 1,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-aad794e0aae2eb2e7afdd479404fe120",
-            "queueSeconds": 16,
+            "runner": "celesto-rs-7cb374449a55a80cad761371a1e707c2",
+            "queueSeconds": 15,
             "jobSeconds": 64,
             "workloadSeconds": 60,
             "phases": [
@@ -220,8 +220,8 @@
             "iteration": 2,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-2e471f960ce88c23232ef0ce5fd62a40",
-            "queueSeconds": 17,
+            "runner": "celesto-rs-4a54da86beaf91f768d7612b4e17f994",
+            "queueSeconds": 18,
             "jobSeconds": 63,
             "workloadSeconds": 60,
             "phases": [
@@ -238,8 +238,8 @@
             "iteration": 3,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-6c636f9638f6c498b64ab3520c746a56",
-            "queueSeconds": 13,
+            "runner": "celesto-rs-0b5ea134f0d54c1c0e438b979665a5f4",
+            "queueSeconds": 18,
             "jobSeconds": 64,
             "workloadSeconds": 60,
             "phases": [
@@ -256,8 +256,8 @@
             "iteration": 4,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-1de372f28ddaea91b0291e66b8e87452",
-            "queueSeconds": 15,
+            "runner": "celesto-rs-ae4c423899579f85a42b7432b4f827c1",
+            "queueSeconds": 17,
             "jobSeconds": 63,
             "workloadSeconds": 60,
             "phases": [
@@ -274,9 +274,9 @@
             "iteration": 5,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-4a92531abe6b238f7e6b6b60beaef215",
-            "queueSeconds": 18,
-            "jobSeconds": 64,
+            "runner": "celesto-rs-6d19fd15247c17303092cf9f790c5eb5",
+            "queueSeconds": 15,
+            "jobSeconds": 63,
             "workloadSeconds": 60,
             "phases": [
               {
@@ -292,8 +292,8 @@
             "iteration": 6,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-eec396d4f443b748134a00839dffc4db",
-            "queueSeconds": 18,
+            "runner": "celesto-rs-9042c2ed77d6a09c607dbf8d3d98cfb1",
+            "queueSeconds": 16,
             "jobSeconds": 63,
             "workloadSeconds": 60,
             "phases": [
@@ -310,8 +310,8 @@
             "iteration": 7,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-23b6a8742a93d0e58e75ddb0add95c38",
-            "queueSeconds": 13,
+            "runner": "celesto-rs-cc3cce07958aa616e5eaeff78428b9d9",
+            "queueSeconds": 19,
             "jobSeconds": 63,
             "workloadSeconds": 60,
             "phases": [
@@ -328,8 +328,8 @@
             "iteration": 8,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-5291b51d8dfbb52e9dc25066dc71874f",
-            "queueSeconds": 12,
+            "runner": "celesto-rs-31919fba4f6b56326fc032f721230e85",
+            "queueSeconds": 16,
             "jobSeconds": 63,
             "workloadSeconds": 60,
             "phases": [
@@ -346,8 +346,8 @@
             "iteration": 9,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-3a29a532384dc1f56d6f6976dab3bbba",
-            "queueSeconds": 17,
+            "runner": "celesto-rs-aa4084c256030caa762956af6f90e290",
+            "queueSeconds": 19,
             "jobSeconds": 64,
             "workloadSeconds": 60,
             "phases": [
@@ -364,9 +364,9 @@
             "iteration": 10,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-57517594cefe49fc4cba9862f08eea96",
-            "queueSeconds": 15,
-            "jobSeconds": 64,
+            "runner": "celesto-rs-a4e796b1bb7de4c5d469e76e13fcb8a3",
+            "queueSeconds": 17,
+            "jobSeconds": 63,
             "workloadSeconds": 60,
             "phases": [
               {
@@ -382,8 +382,8 @@
             "iteration": 11,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-cf31b5246f46f06d7c177a4eaee04f71",
-            "queueSeconds": 15,
+            "runner": "celesto-rs-e7b883f7edaf3314be0ecabb6e2c4f43",
+            "queueSeconds": 16,
             "jobSeconds": 64,
             "workloadSeconds": 60,
             "phases": [
@@ -400,9 +400,9 @@
             "iteration": 12,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-1e729acb7c618f6848abe52e19dee8fe",
-            "queueSeconds": 16,
-            "jobSeconds": 64,
+            "runner": "celesto-rs-0c8a5d69fd428e4631c3063059d2f4c8",
+            "queueSeconds": 19,
+            "jobSeconds": 63,
             "workloadSeconds": 60,
             "phases": [
               {
@@ -418,9 +418,9 @@
             "iteration": 13,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-8040680cabab1ba4800242c2585ce714",
-            "queueSeconds": 15,
-            "jobSeconds": 64,
+            "runner": "celesto-rs-ab4224092303ad3f93c9f30ab1f957a2",
+            "queueSeconds": 17,
+            "jobSeconds": 63,
             "workloadSeconds": 60,
             "phases": [
               {
@@ -436,9 +436,9 @@
             "iteration": 14,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-b545142e852d5a15c9d2d3a1e7ecbea9",
-            "queueSeconds": 15,
-            "jobSeconds": 64,
+            "runner": "celesto-rs-6bbbba75e7b4bbbba4a8bccf0190e357",
+            "queueSeconds": 19,
+            "jobSeconds": 63,
             "workloadSeconds": 60,
             "phases": [
               {
@@ -454,8 +454,8 @@
             "iteration": 15,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-be5b78ab9e1eb1eb4c3f5afe0fa0e830",
-            "queueSeconds": 16,
+            "runner": "celesto-rs-02b6c331dc19958eeb3f41ce1c301106",
+            "queueSeconds": 17,
             "jobSeconds": 63,
             "workloadSeconds": 60,
             "phases": [
@@ -468,11 +468,11 @@
             "metrics": null
           }
         ],
-        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43622242256"
+        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43644609867"
       },
       "hardware": {
         "run": {
-          "id": 43621196578,
+          "id": 43643932828,
           "attempt": 1,
           "repository": "CelestoAI/ci-benchmarks",
           "date": "2026-11-14"
@@ -483,81 +483,81 @@
             "iteration": 1,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-c976c0bb47f8a61f6b537cb037185c1b",
-            "queueSeconds": 13,
-            "jobSeconds": 638,
+            "runner": "celesto-rs-f286a415b1d5cb30ee0dd90a6ea56942",
+            "queueSeconds": 10,
+            "jobSeconds": 428,
             "workloadSeconds": null,
             "phases": [],
             "metrics": {
               "cpu": {
-                "sysbenchSingleEps": 2960.74,
-                "sysbenchMultiEps": 11837.88,
-                "sevenZipMips": 17675,
-                "passmarkSingle": 2401.83868394989,
-                "passmarkCpuMark": 8657.517757546319
+                "sysbenchSingleEps": 2960.75,
+                "sysbenchMultiEps": 11804.35,
+                "sevenZipMips": 19278,
+                "passmarkSingle": 2391.4085199665706,
+                "passmarkCpuMark": 8718.163151330347
               },
               "groupSeconds": {
-                "cpu": 68.3,
-                "passmark": 130.9,
-                "memory": 19.4,
-                "disk": 318.5,
-                "network": 1.4,
-                "docker": 60.4,
-                "postgres": 19.4
+                "cpu": 66.2,
+                "passmark": 130.8,
+                "memory": 19.5,
+                "disk": 175.7,
+                "network": 1.6,
+                "docker": 8.9,
+                "postgres": 7.9
               },
               "memory": {
-                "readMiBps": 23199.3,
-                "writeMiBps": 5521.55
+                "readMiBps": 22641.93,
+                "writeMiBps": 5534.28
               },
               "disk": {
                 "directory": "/tmp/celesto-actions-runner/_work/ci-benchmarks/ci-benchmarks/.fio",
                 "seqRead": {
-                  "MiBps": 4511.2,
-                  "iops": 4510,
-                  "p99us": 2474
+                  "MiBps": 1917.6,
+                  "iops": 1916,
+                  "p99us": 1712.1
                 },
                 "seqWrite": {
-                  "MiBps": 62.1,
-                  "iops": 61,
-                  "p99us": 14831058.9
+                  "MiBps": 4889,
+                  "iops": 4887,
+                  "p99us": 12386.3
                 },
                 "randRead": {
-                  "MiBps": 45.9,
-                  "iops": 11748,
-                  "p99us": 2572.3
+                  "MiBps": 605.7,
+                  "iops": 155040,
+                  "p99us": 4423.7
                 },
                 "randWrite": {
-                  "MiBps": 2.9,
-                  "iops": 746,
-                  "p99us": 3338666
+                  "MiBps": 1.8,
+                  "iops": 446,
+                  "p99us": 13220446.2
                 },
                 "randReadQd1": {
-                  "MiBps": 92.9,
-                  "iops": 23794,
-                  "p99us": 51.5
+                  "MiBps": 78.1,
+                  "iops": 19985,
+                  "p99us": 61.2
                 },
                 "syncWrite": {
-                  "MiBps": 13,
-                  "iops": 3320,
-                  "p99us": 156.7
+                  "MiBps": 22.7,
+                  "iops": 5822,
+                  "p99us": 152.6
                 }
               },
               "network": {
                 "cdnDownload": {
-                  "MiBps": 107.2,
+                  "MiBps": 93.2,
                   "MiB": 133.6,
-                  "seconds": 1.24563
+                  "seconds": 1.432527
                 },
                 "githubDownload": {
-                  "MiBps": 233.1,
+                  "MiBps": 274.5,
                   "MiB": 34.3,
-                  "seconds": 0.147133
+                  "seconds": 0.124975
                 }
               },
               "docker": {
                 "image": "node:24-bookworm",
-                "pullSeconds": 9.83,
-                "firstRunSeconds": 50.46
+                "pullSeconds": 8,
+                "firstRunSeconds": 0.81
               },
               "errors": {
                 "postgres": "Command failed: pgbench -i -s 50 -h localhost -U postgres bench\nError: You must install at least one postgresql-client-<version> package\n"
@@ -565,7 +565,7 @@
             }
           }
         ],
-        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43621196578"
+        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643932828"
       }
     },
     "GitHub": {
@@ -4698,5 +4698,5 @@
       }
     }
   },
-  "runConditions": "Celesto Node and Docker were measured on an AWS EBS-backed host with 1,000 MiB/s throughput and 6,000 IOPS during volume optimization. Rust, cache, burst, and hardware were measured before the throughput increase. Background load varies on shared hosts; these single-run measurements do not isolate storage performance."
+  "runConditions": "Celesto Rust, Docker, cache, and hardware were measured on AWS EBS at 1,000 MiB/s and 12,000 IOPS after volume optimization completed. Node was measured on AWS EBS at 1,000 MiB/s and 6,000 IOPS during volume optimization. Burst queue timing measures the standard 15-job fleet-wide workload. Background load varies on shared hosts; these single-run measurements do not isolate storage performance."
 }

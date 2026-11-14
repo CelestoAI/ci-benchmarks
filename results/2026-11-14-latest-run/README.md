@@ -16,7 +16,7 @@ RunsOn’s current cache bug window and obsolete Node typecheck samples are excl
 | Provider | Rust | Node | Docker | Cache save + restore | Burst queue p50 | Rate per minute |
 |---|---:|---:|---:|---:|---:|---:|
 | GitHub | 3m 35s | 1m 38s | 12m 59s | 1m 20s | 3s | $0.0120 |
-| Celesto | 3m 15s | 1m 19s | 11m 29s | 42s | 15s | $0.00133333 |
+| Celesto | 2m 54s | 1m 19s | 10m 36s | 41s | 17s | $0.00133333 |
 | Blacksmith | 2m 02s | 50s | 5m 52s | 17s | 11s | $0.0080 |
 | Namespace | 1m 31s | 44s | 4m 38s | 47s | 9s | $0.0120* |
 | RunsOn | 1m 48s | 1m 03s | 9m 00s | 33s | 17s | $0.0044 on-demand |
@@ -25,7 +25,7 @@ RunsOn’s current cache bug window and obsolete Node typecheck samples are excl
 
 The burst p50 is computed over 15 jobs in that provider’s latest burst. Other suite values are one successful benchmark job per provider.
 
-Celesto Node and Docker were measured on an AWS EBS-backed host with 1,000 MiB/s throughput and 6,000 IOPS during volume optimization. Rust, cache, burst, and hardware were measured before the throughput increase. Background load varies on shared hosts; these single-run measurements do not isolate storage performance.
+Celesto Rust, Docker, cache, and hardware were measured on AWS EBS at 1,000 MiB/s and 12,000 IOPS after volume optimization completed. Node was measured on AWS EBS at 1,000 MiB/s and 6,000 IOPS during volume optimization. Burst queue timing measures the standard 15-job fleet-wide workload. Background load varies on shared hosts; these single-run measurements do not isolate storage performance.
 
 ## Verified per-minute rate basis
 
@@ -45,24 +45,24 @@ The m8a.xlarge-specific on-demand rate is `$0.0044/min`; `$0.0037/min` is RunsOn
 
 | Measurement | GitHub | Celesto | Blacksmith | Namespace | RunsOn | Ubicloud | WarpBuild |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| CPU single-thread (PassMark) | 2,904 | 2,402 | 3,846 | 4,477 | 3,814 | 2,906 | 4,292 |
-| CPU all-core (PassMark CPU Mark) | 7,318 | 8,658 | 13,601 | 15,090 | 13,515 | 7,611 | 11,113 |
-| CPU all-core (sysbench) | 6,389 events/s | 11,838 events/s | 22,415 events/s | 26,027 events/s | 20,338 events/s | 9,574 events/s | 13,090 events/s |
-| Memory read | 20,997 MiB/s | 23,199 MiB/s | 21,957 MiB/s | 42,433 MiB/s | 38,055 MiB/s | 20,712 MiB/s | 28,215 MiB/s |
-| Disk sequential read | 394 MiB/s | 4,511 MiB/s | 7,653 MiB/s | 3,992 MiB/s | 401 MiB/s | 1,876 MiB/s | 4,180 MiB/s |
-| Disk random write 4 KiB | 11,695 IOPS | 746 IOPS | 146,622 IOPS | 455,429 IOPS | 2,991 IOPS | 29,164 IOPS | 31,392 IOPS |
-| Disk write + fsync 4 KiB | 3,423 IOPS | 3,320 IOPS | 14,080 IOPS | 19,603 IOPS | 536 IOPS | 1,314 IOPS | 3,436 IOPS |
-| Docker image pull | 18 s | 10 s | 8 s | 4 s | 5 s | 22 s | 9 s |
+| CPU single-thread (PassMark) | 2,904 | 2,391 | 3,846 | 4,477 | 3,814 | 2,906 | 4,292 |
+| CPU all-core (PassMark CPU Mark) | 7,318 | 8,718 | 13,601 | 15,090 | 13,515 | 7,611 | 11,113 |
+| CPU all-core (sysbench) | 6,389 events/s | 11,804 events/s | 22,415 events/s | 26,027 events/s | 20,338 events/s | 9,574 events/s | 13,090 events/s |
+| Memory read | 20,997 MiB/s | 22,642 MiB/s | 21,957 MiB/s | 42,433 MiB/s | 38,055 MiB/s | 20,712 MiB/s | 28,215 MiB/s |
+| Disk sequential read | 394 MiB/s | 1,918 MiB/s | 7,653 MiB/s | 3,992 MiB/s | 401 MiB/s | 1,876 MiB/s | 4,180 MiB/s |
+| Disk random write 4 KiB | 11,695 IOPS | 446 IOPS | 146,622 IOPS | 455,429 IOPS | 2,991 IOPS | 29,164 IOPS | 31,392 IOPS |
+| Disk write + fsync 4 KiB | 3,423 IOPS | 5,822 IOPS | 14,080 IOPS | 19,603 IOPS | 536 IOPS | 1,314 IOPS | 3,436 IOPS |
+| Docker image pull | 18 s | 8 s | 8 s | 4 s | 5 s | 22 s | 9 s |
 | PostgreSQL read/write | 4,992 TPS | — | 9,463 TPS | 11,134 TPS | 3,244 TPS | 1,880 TPS | 4,701 TPS |
 
-A dash means that the latest run did not produce that metric. Celesto’s latest hardware run recorded a PostgreSQL client error, so its PostgreSQL cell is unavailable.
+Disk figures are fio measurements inside the runner VM, rather than provisioned volume limits. A dash means that the hardware run did not produce that metric. Celesto’s latest hardware run recorded a PostgreSQL client error, so its PostgreSQL cell is unavailable.
 
 ## Source runs
 
 | Provider | Rust | Node | Docker | Cache | Hardware | Burst |
 |---|---:|---:|---:|---:|---:|---:|
 | GitHub | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832) | [2026-11-11](https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372) | [2026-11-14](https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607) | [2026-11-12](https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191) |
-| Celesto | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43617839414) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43629094599) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43629298312) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43621056456) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43621196578) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43622242256) |
+| Celesto | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643464187) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43629094599) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43640067587) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643797586) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643932828) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43644609867) |
 | Blacksmith | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832) | [2026-11-11](https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372) | [2026-11-14](https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607) | [2026-11-12](https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191) |
 | Namespace | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832) | [2026-11-11](https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372) | [2026-11-14](https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607) | [2026-11-12](https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191) |
 | RunsOn | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832) | [2026-11-11](https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372) | [2026-11-14](https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607) | [2026-11-12](https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021) |
