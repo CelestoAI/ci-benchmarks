@@ -8,6 +8,7 @@
   },
   "scripts": {
     "benchmark:cpu": "node scripts/cpu-benchmark.mjs",
+    "benchmark:all": "node scripts/run-all-benchmarks.mjs",
     "cache:seed": "node scripts/seed-cache.mjs",
     "summary": "node scripts/render-summary.mjs",
     "test": "node --test test/*.test.mjs"

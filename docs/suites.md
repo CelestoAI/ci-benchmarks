@@ -35,6 +35,8 @@ Rust, Node, Docker, Cache and Hardware run one benchmark job per execution, matc
 
 Run one suite at a time. Suites that run together share the same runner capacity and slow each other down.
 
+To dispatch all six suites concurrently, run `npm run benchmark:all` from a clone with GitHub CLI authentication and workflow permissions. This is useful for exercising concurrent load, but overlapping suites can affect their timing results. Set `BENCHMARK_REF` to dispatch a different branch; the default is `main`.
+
 ### Run on a different runner
 
 In the workflow, change `runs-on` in both jobs (`bench` and `collect`) to your runner's labels, and `provider` to a name for the runner. The name labels the jobs and the results.

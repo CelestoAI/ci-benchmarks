@@ -4,10 +4,10 @@ Open benchmarks for GitHub Actions runners. Real builds of public projects, pinn
 
 ## Latest results
 
-p50 (median) workload and queue times for each provider. Lower is faster.
+Latest available run per provider and suite. Provider run dates vary; the queue column is the p50 of the latest 15-job burst. Lower is faster.
 
-![p50 workload and queue times by provider; lower is faster](results/latest/summary-light.svg#gh-light-mode-only)
-![p50 workload and queue times by provider; lower is faster](results/latest/summary-dark.svg#gh-dark-mode-only)
+![Latest-run workload and queue times by provider; lower is faster](results/2026-11-14-latest-run/summary-light.svg#gh-light-mode-only)
+![Latest-run workload and queue times by provider; lower is faster](results/2026-11-14-latest-run/summary-dark.svg#gh-dark-mode-only)
 
 | Suite | Workload |
 | --- | --- |
@@ -17,11 +17,11 @@ p50 (median) workload and queue times for each provider. Lower is faster.
 | Cache | Save and restore a 4 GiB file with `actions/cache` |
 | Queue | Wait from job creation to runner start when 15 jobs are queued at once |
 
-All runners have 4 vCPU (x64). Celesto results come from this repository's [runner suites](docs/suites.md). Other providers' results come from the [runs-on.com public benchmark data](https://github.com/runs-on-demo/benchmark-public), which uses the same workloads and settings. Both include the last 30 days of runs. Updated daily.
+All rows are 4 vCPU (x64). RunsOn is represented by its suggested 4-vCPU default, m8a.xlarge on EBS gp3. Celesto results come from this repository's [runner suites](docs/suites.md); other results come from the [runs-on.com public benchmark data](https://github.com/runs-on-demo/benchmark-public).
 
-Times are medians across successful jobs; cache includes save and restore. Workload times exclude queue time and runner overhead; Queue measures the wait separately. RunsOn also publishes [p50 results](https://runs-on.com/benchmarks/methodology/), but its main chart defaults to whole-job time and ranks by time × cost.
+Build and cache values use workload phase times; cache includes save and restore. Queue is measured from job creation to runner start. The separate [rolling 30-day p50 archive](results/latest/README.md) is available for historical context.
 
-**[Full results: time per phase and hardware →](results/latest/README.md)**
+**[Latest-run comparison (Nov 14, all providers; timings, hardware, and source run links) →](results/2026-11-14-latest-run/README.md)**
 
 ## Benchmarks in this repository
 
