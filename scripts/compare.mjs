@@ -142,7 +142,7 @@ const THEMES = {
   dark: '.t{fill:#ededed}.m{fill:#a1a1a1}.n{fill:#8f8f8f;fill-opacity:.16}',
 };
 const style = (theme) => `<style>${THEMES[theme]}</style>`;
-const ORANGE = '#F04C24';
+const CELESTO_OUTLINE = { light: '#2563EB', dark: '#60A5FA' };
 
 const duration = (seconds) => {
   if (seconds == null) return '–';
@@ -199,7 +199,7 @@ function phaseSvg(suite, theme) {
   list.forEach(({ p, parts, total }, j) => {
     const y = top + j * rh;
     const me = p === 'Celesto';
-    if (me) s += `<rect x="1" y="${y + 2}" width="${W - 2}" height="${rh - 4}" rx="8" fill="none" stroke="${ORANGE}" stroke-width="1.5"/>`;
+    if (me) s += `<rect x="1" y="${y + 2}" width="${W - 2}" height="${rh - 4}" rx="8" fill="none" stroke="${CELESTO_OUTLINE[theme]}" stroke-width="1.5"/>`;
     s += `<text x="16" y="${y + rh / 2 + 6}" font-size="16" font-weight="${me ? 600 : 500}" class="t">${p}</text>`;
     let x = left;
     parts.forEach((v, i) => {
