@@ -138,8 +138,8 @@ const MONO = 'font-family="Geist Mono,SFMono-Regular,Menlo,Consolas,monospace"';
 // GitHub picks the file by its own theme (#gh-light-mode-only /
 // #gh-dark-mode-only), so each chart is written once per theme.
 const THEMES = {
-  light: '.t{fill:#171717}.m{fill:#4d4d4d}.hl{fill:#F04C24;fill-opacity:.07}.n{fill:#8f8f8f;fill-opacity:.12}',
-  dark: '.t{fill:#ededed}.m{fill:#a1a1a1}.hl{fill:#F04C24;fill-opacity:.14}.n{fill:#8f8f8f;fill-opacity:.16}',
+  light: '.t{fill:#171717}.m{fill:#4d4d4d}.n{fill:#8f8f8f;fill-opacity:.12}',
+  dark: '.t{fill:#ededed}.m{fill:#a1a1a1}.n{fill:#8f8f8f;fill-opacity:.16}',
 };
 const style = (theme) => `<style>${THEMES[theme]}</style>`;
 const ORANGE = '#F04C24';
@@ -199,8 +199,8 @@ function phaseSvg(suite, theme) {
   list.forEach(({ p, parts, total }, j) => {
     const y = top + j * rh;
     const me = p === 'Celesto';
-    if (me) s += `<rect x="0" y="${y}" width="${W}" height="${rh}" rx="8" class="hl"/>`;
-    s += `<text x="16" y="${y + rh / 2 + 6}" font-size="16" font-weight="${me ? 600 : 500}" ${me ? `fill="${ORANGE}"` : 'class="t"'}>${p}</text>`;
+    if (me) s += `<rect x="1" y="${y + 2}" width="${W - 2}" height="${rh - 4}" rx="8" fill="none" stroke="${ORANGE}" stroke-width="1.5"/>`;
+    s += `<text x="16" y="${y + rh / 2 + 6}" font-size="16" font-weight="${me ? 600 : 500}" class="t">${p}</text>`;
     let x = left;
     parts.forEach((v, i) => {
       if (!v) return;
