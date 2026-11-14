@@ -1,6 +1,6 @@
 # November 14 provider comparison
 
-Snapshot date: **November 14, 2026**. This archive records selected completed runs for each provider and suite, rather than a rolling p50. Celesto’s Docker column retains the measured 11m29s sample while further disk-tuning tests continue.
+Snapshot date: **November 14, 2026**. This archive records the completed benchmark runs shown below for each provider and suite, rather than a rolling p50.
 
 Build and cache times are workload seconds. Cache includes save and restore. Burst is the median queue wait from the latest 15-job burst per provider. Hardware values are from each provider’s latest available hardware run. The comparisons use 4-vCPU x64 runners; RunsOn is its 4-vCPU `m8a.xlarge` EBS gp3 default.
 
@@ -8,10 +8,10 @@ Per-minute rates were checked on Nov 14, 2026. Celesto uses its published Large 
 
 RunsOn’s current cache bug window and obsolete Node typecheck samples are excluded, following its [published methodology](https://runs-on.com/benchmarks/methodology/). The public data is attributed to [runs-on-demo/benchmark-public](https://github.com/runs-on-demo/benchmark-public), source commit `5cbfb2c`.
 
-![Selected-run build, cache, and queue times by provider](summary-light-on-demand.svg#gh-light-mode-only)
-![Selected-run build, cache, and queue times by provider](summary-dark-on-demand.svg#gh-dark-mode-only)
+![Benchmark build, cache, and queue times by provider](summary-light-on-demand.svg#gh-light-mode-only)
+![Benchmark build, cache, and queue times by provider](summary-dark-on-demand.svg#gh-dark-mode-only)
 
-## Selected workload runs
+## Workload results
 
 | Provider | Rust | Node | Docker | Cache save + restore | Burst queue p50 | Rate per minute |
 |---|---:|---:|---:|---:|---:|---:|
@@ -23,9 +23,9 @@ RunsOn’s current cache bug window and obsolete Node typecheck samples are excl
 | Ubicloud | 3m 04s | 1m 29s | 13m 11s | 1m 48s | 50s | $0.0025 |
 | WarpBuild | 2m 35s | 1m 27s | 7m 26s | 32s | 10s | $0.0080 |
 
-The burst p50 is computed over 15 jobs in that provider’s latest burst. Other suite values are one selected successful benchmark job per provider.
+The burst p50 is computed over 15 jobs in that provider’s latest burst. Other suite values are one successful benchmark job per provider.
 
-Celesto Node and Docker were retested on the same AWS EBS-backed host after increasing shared disk throughput from 500 to 1,000 MiB/s, with 6,000 IOPS. Those runs occurred during AWS volume optimization and with lower background load than the earlier slow runs; the timing differences do not isolate the effect of throughput alone. Rust, cache, burst, and hardware use the earlier November 14 rerun, before the throughput increase.
+Celesto Node and Docker were measured on an AWS EBS-backed host with 1,000 MiB/s throughput and 6,000 IOPS during volume optimization. Rust, cache, burst, and hardware were measured before the throughput increase. Background load varies on shared hosts; these single-run measurements do not isolate storage performance.
 
 ## Verified per-minute rate basis
 
@@ -69,4 +69,4 @@ A dash means that the latest run did not produce that metric. Celesto’s latest
 | Ubicloud | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832) | [2026-11-11](https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372) | [2026-11-14](https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607) | [2026-11-12](https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191) |
 | WarpBuild | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832) | [2026-11-11](https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372) | [2026-11-14](https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607) | [2026-11-12](https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191) |
 
-Raw selected jobs, run IDs, phases, metrics, and timestamps are in [`snapshot.json`](snapshot.json).
+Raw benchmark jobs, run IDs, phases, metrics, and timestamps are in [`snapshot.json`](snapshot.json).

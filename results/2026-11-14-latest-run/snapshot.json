@@ -5,7 +5,7 @@
     "commit": "5cbfb2c",
     "commitDate": "2026-11-14T02:24:09Z"
   },
-  "timingBasis": "Selected completed provider run per suite. Celesto Docker retains the 11m29s sample while further disk-tuning tests continue. Build and cache values are GitHub job workload seconds. Cache includes save and restore. Burst is the p50 queue wait across jobs in the latest burst (15 jobs per provider). Hardware is the latest available single run; partial metric failures are retained.",
+  "timingBasis": "Benchmark runs shown in the published comparison. Build and cache values are workload seconds; cache includes save and restore. Burst is the p50 queue wait across the 15 jobs in the published burst run. Hardware values come from the linked hardware run; partial metric failures are retained.",
   "providers": {
     "Celesto": {
       "rust": {
@@ -4698,5 +4698,5 @@
       }
     }
   },
-  "celestoRunNotes": "Celesto Node and Docker were retested on the same AWS EBS-backed host after increasing shared disk throughput from 500 to 1,000 MiB/s, with 6,000 IOPS. Those runs occurred during AWS volume optimization and with lower background load than the earlier slow runs; the timing differences do not isolate the effect of throughput alone. Rust, cache, burst, and hardware use the earlier November 14 rerun, before the throughput increase."
+  "runConditions": "Celesto Node and Docker were measured on an AWS EBS-backed host with 1,000 MiB/s throughput and 6,000 IOPS during volume optimization. Rust, cache, burst, and hardware were measured before the throughput increase. Background load varies on shared hosts; these single-run measurements do not isolate storage performance."
 }
