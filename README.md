@@ -4,7 +4,7 @@ Open benchmarks for GitHub Actions runners. Real builds of public projects, pinn
 
 ## Latest results
 
-Latest available run per provider and suite. Provider run dates vary; the queue column is the p50 of the latest 15-job burst. Lower is faster.
+Latest available run per provider and suite. Provider run dates vary; the queue column is the p50 of the latest 15-job burst. Lower is faster. Celesto includes the November 14 reruns, with Node and Docker retested after the EBS throughput increase; [run conditions](results/2026-11-14-latest-run/README.md#latest-workload-runs) are recorded with the results.
 
 ![Latest-run workload and queue times by provider; lower is faster](results/2026-11-14-latest-run/summary-light-on-demand.svg#gh-light-mode-only)
 ![Latest-run workload and queue times by provider; lower is faster](results/2026-11-14-latest-run/summary-dark-on-demand.svg#gh-dark-mode-only)
