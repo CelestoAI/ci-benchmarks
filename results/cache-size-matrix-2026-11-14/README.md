@@ -21,6 +21,31 @@ All times are seconds. Medians use three successful repetitions. Ranges show the
 | 3 GiB | 15 (12–21) | 21 (15–28) | 42 |
 | 4 GiB | 22 (22–26) | 41 (29–42) | 64 |
 
+## Upload speed and batch duration
+
+The complete workflow ran from 2026-11-13 23:55:49 UTC to 2026-11-14 00:11:48 UTC: **15 minutes 59 seconds**, including the results collector. The 30 benchmark jobs occupied a 15 minute 21 second window, including setup, file generation, hashing and artifact uploads.
+
+The table below uses the final 100% `Sent` progress reading for each sample, then takes the median of three readings. Full save is the complete action step from the GitHub Jobs API.
+
+| Payload | Full save median (s) | SDK upload median (MiB/s) | SDK upload range (MiB/s) |
+| --- | ---: | ---: | ---: |
+| 20 MiB | 3 | 20.0 | 11.7–20.0 |
+| 24 MiB | 3 | 24.0 | 12.0–24.0 |
+| 32 MiB | 3 | 16.0 | 16.0–32.0 |
+| 64 MiB | 5 | 24.8 | 16.0–32.0 |
+| 96 MiB | 6 | 19.2 | 16.3–31.9 |
+| 400 MiB | 6 | 80.5 | 66.6–81.0 |
+| 1 GiB | 8 | 204.6 | 170.5–206.3 |
+| 2 GiB | 13 | 255.6 | 255.5–341.1 |
+| 3 GiB | 15 | 390.9 | 256.7–510.0 |
+| 4 GiB | 22 | 408.3 | 408.1–409.1 |
+
+The SDK reports averages in **MiB/s**, although its log label says `MBs/sec`. Its counter starts inside the upload operation, after archive creation; full save also includes compression, setup and cache finalization. Readings include upload-operation waiting and progress sampling, so they should not be interpreted as raw network bandwidth. The counter updates about once per second and rounds rates to one decimal, which particularly limits small-file readings.
+
+At 4 GiB, the median reported upload rate was **408.3 MiB/s**, compared with a **22-second complete save**. Dividing archive bytes by the rounded rate implies approximately **10 seconds on the SDK progress clock**; that is an inferred estimate, not a separately instrumented upload-completion duration. The completion progress line can appear before multipart completion and cache finalization.
+
+[transfer-metrics.json](transfer-metrics.json) preserves all 30 final upload/download readings, compressed archive byte counts, original log lines and paths, medians and ranges. The rate formula was checked against the [pinned official action bundle](https://github.com/actions/cache/blob/55cc8345863c7cc4c66a329aec7e433d2d1c52a9/dist/save-only/index.js).
+
 ## Scope and evidence
 
 - Measurements use the deployed runner image and the same pinned `actions/cache` v6.1.0 as the original 4 GiB suite. This run does not install or qualify the adaptive upload patch in [backend PR #1284](https://github.com/CelestoAI/backend/pull/1284).

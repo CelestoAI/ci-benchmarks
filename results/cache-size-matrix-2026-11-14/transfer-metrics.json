@@ -1,0 +1,926 @@
+{
+  "run_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43530675306",
+  "workflow_started_at": "2026-11-13T23:55:49Z",
+  "workflow_completed_at": "2026-11-14T00:11:48Z",
+  "workflow_elapsed_seconds": 959,
+  "benchmark_jobs_elapsed_seconds": 921,
+  "source": "Final 100% Sent/Received progress line from each official cache action log",
+  "units": "MiB/s: the pinned SDK divides bytes by 1024**2, despite logging MBs/sec",
+  "interpretation": "SDK progress averages include upload-operation waiting and exclude preceding archive creation. Display is sampled about once per second and rounded to one decimal. Completion can be logged before multipart completion/cache finalization. These are not raw network bandwidth or independently timed transfer completion durations.",
+  "elapsed_note": "Inferred elapsed values are archive bytes / rounded SDK rate; they are estimates, not independently measured phase durations.",
+  "sdk_source": "https://github.com/actions/cache/blob/55cc8345863c7cc4c66a329aec7e433d2d1c52a9/dist/save-only/index.js",
+  "sizes": [
+    {
+      "payload_mib": 20,
+      "save_seconds_median": 3,
+      "restore_seconds_median": 1,
+      "upload_mib_per_second": {
+        "median": 20.0,
+        "min": 11.7,
+        "max": 20.0,
+        "samples": [
+          11.7,
+          20.0,
+          20.0
+        ]
+      },
+      "download_mib_per_second": {
+        "median": 24.4,
+        "min": 21.7,
+        "max": 27.5,
+        "samples": [
+          27.5,
+          21.7,
+          24.4
+        ]
+      }
+    },
+    {
+      "payload_mib": 24,
+      "save_seconds_median": 3,
+      "restore_seconds_median": 1,
+      "upload_mib_per_second": {
+        "median": 24.0,
+        "min": 12.0,
+        "max": 24.0,
+        "samples": [
+          24.0,
+          12.0,
+          24.0
+        ]
+      },
+      "download_mib_per_second": {
+        "median": 26.9,
+        "min": 14.5,
+        "max": 56.7,
+        "samples": [
+          56.7,
+          26.9,
+          14.5
+        ]
+      }
+    },
+    {
+      "payload_mib": 32,
+      "save_seconds_median": 3,
+      "restore_seconds_median": 1,
+      "upload_mib_per_second": {
+        "median": 16.0,
+        "min": 16.0,
+        "max": 32.0,
+        "samples": [
+          16.0,
+          16.0,
+          32.0
+        ]
+      },
+      "download_mib_per_second": {
+        "median": 49.9,
+        "min": 30.2,
+        "max": 67.0,
+        "samples": [
+          67.0,
+          49.9,
+          30.2
+        ]
+      }
+    },
+    {
+      "payload_mib": 64,
+      "save_seconds_median": 5,
+      "restore_seconds_median": 1,
+      "upload_mib_per_second": {
+        "median": 24.8,
+        "min": 16.0,
+        "max": 32.0,
+        "samples": [
+          24.8,
+          16.0,
+          32.0
+        ]
+      },
+      "download_mib_per_second": {
+        "median": 113.1,
+        "min": 105.6,
+        "max": 119.4,
+        "samples": [
+          105.6,
+          119.4,
+          113.1
+        ]
+      }
+    },
+    {
+      "payload_mib": 96,
+      "save_seconds_median": 6,
+      "restore_seconds_median": 2,
+      "upload_mib_per_second": {
+        "median": 19.2,
+        "min": 16.3,
+        "max": 31.9,
+        "samples": [
+          19.2,
+          31.9,
+          16.3
+        ]
+      },
+      "download_mib_per_second": {
+        "median": 105.8,
+        "min": 62.1,
+        "max": 111.4,
+        "samples": [
+          111.4,
+          62.1,
+          105.8
+        ]
+      }
+    },
+    {
+      "payload_mib": 400,
+      "save_seconds_median": 6,
+      "restore_seconds_median": 4,
+      "upload_mib_per_second": {
+        "median": 80.5,
+        "min": 66.6,
+        "max": 81.0,
+        "samples": [
+          80.5,
+          66.6,
+          81.0
+        ]
+      },
+      "download_mib_per_second": {
+        "median": 137.2,
+        "min": 126.6,
+        "max": 262.6,
+        "samples": [
+          126.6,
+          262.6,
+          137.2
+        ]
+      }
+    },
+    {
+      "payload_mib": 1024,
+      "save_seconds_median": 8,
+      "restore_seconds_median": 7,
+      "upload_mib_per_second": {
+        "median": 204.6,
+        "min": 170.5,
+        "max": 206.3,
+        "samples": [
+          204.6,
+          206.3,
+          170.5
+        ]
+      },
+      "download_mib_per_second": {
+        "median": 233.3,
+        "min": 218.3,
+        "max": 243.4,
+        "samples": [
+          233.3,
+          218.3,
+          243.4
+        ]
+      }
+    },
+    {
+      "payload_mib": 2048,
+      "save_seconds_median": 13,
+      "restore_seconds_median": 17,
+      "upload_mib_per_second": {
+        "median": 255.6,
+        "min": 255.5,
+        "max": 341.1,
+        "samples": [
+          255.5,
+          255.6,
+          341.1
+        ]
+      },
+      "download_mib_per_second": {
+        "median": 262.4,
+        "min": 128.4,
+        "max": 270.2,
+        "samples": [
+          270.2,
+          128.4,
+          262.4
+        ]
+      }
+    },
+    {
+      "payload_mib": 3072,
+      "save_seconds_median": 15,
+      "restore_seconds_median": 21,
+      "upload_mib_per_second": {
+        "median": 390.9,
+        "min": 256.7,
+        "max": 510.0,
+        "samples": [
+          390.9,
+          510.0,
+          256.7
+        ]
+      },
+      "download_mib_per_second": {
+        "median": 238.8,
+        "min": 227.4,
+        "max": 294.3,
+        "samples": [
+          238.8,
+          227.4,
+          294.3
+        ]
+      }
+    },
+    {
+      "payload_mib": 4096,
+      "save_seconds_median": 22,
+      "restore_seconds_median": 41,
+      "upload_mib_per_second": {
+        "median": 408.3,
+        "min": 408.1,
+        "max": 409.1,
+        "samples": [
+          409.1,
+          408.1,
+          408.3
+        ]
+      },
+      "download_mib_per_second": {
+        "median": 154.6,
+        "min": 131.6,
+        "max": 249.6,
+        "samples": [
+          131.6,
+          154.6,
+          249.6
+        ]
+      }
+    }
+  ],
+  "samples": [
+    {
+      "payload_mib": 20,
+      "iteration": 1,
+      "save_seconds": 3,
+      "restore_seconds": 1,
+      "upload": {
+        "archive_bytes": 20973566,
+        "reported_mib_per_second": 11.7,
+        "completion_log_timestamp": "2026-11-13T23:56:08.5189116Z",
+        "completion_log_line": "2026-11-13T23:56:08.5189116Z Sent 20973566 of 20973566 (100.0%), 11.7 MBs/sec",
+        "log_archive_path": "celesto-20mib 1/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 1.7095684801411426
+      },
+      "download": {
+        "archive_bytes": 20973566,
+        "reported_mib_per_second": 27.5,
+        "completion_log_timestamp": "2026-11-13T23:56:10.2370149Z",
+        "completion_log_line": "2026-11-13T23:56:10.2370149Z Received 20973566 of 20973566 (100.0%), 27.5 MBs/sec",
+        "log_archive_path": "celesto-20mib 1/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 0.7273436806418679
+      }
+    },
+    {
+      "payload_mib": 20,
+      "iteration": 2,
+      "save_seconds": 3,
+      "restore_seconds": 2,
+      "upload": {
+        "archive_bytes": 20973566,
+        "reported_mib_per_second": 20.0,
+        "completion_log_timestamp": "2026-11-14T00:01:13.5303534Z",
+        "completion_log_line": "2026-11-14T00:01:13.5303534Z Sent 20973566 of 20973566 (100.0%), 20.0 MBs/sec",
+        "log_archive_path": "celesto-20mib 2/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 1.0000975608825684
+      },
+      "download": {
+        "archive_bytes": 20973566,
+        "reported_mib_per_second": 21.7,
+        "completion_log_timestamp": "2026-11-14T00:01:16.3433063Z",
+        "completion_log_line": "2026-11-14T00:01:16.3433063Z Received 20973566 of 20973566 (100.0%), 21.7 MBs/sec",
+        "log_archive_path": "celesto-20mib 2/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 0.9217489040392336
+      }
+    },
+    {
+      "payload_mib": 20,
+      "iteration": 3,
+      "save_seconds": 3,
+      "restore_seconds": 1,
+      "upload": {
+        "archive_bytes": 20973566,
+        "reported_mib_per_second": 20.0,
+        "completion_log_timestamp": "2026-11-14T00:06:37.7090177Z",
+        "completion_log_line": "2026-11-14T00:06:37.7090177Z Sent 20973566 of 20973566 (100.0%), 20.0 MBs/sec",
+        "log_archive_path": "celesto-20mib 3/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 1.0000975608825684
+      },
+      "download": {
+        "archive_bytes": 20973566,
+        "reported_mib_per_second": 24.4,
+        "completion_log_timestamp": "2026-11-14T00:06:39.6001651Z",
+        "completion_log_line": "2026-11-14T00:06:39.6001651Z Received 20973566 of 20973566 (100.0%), 24.4 MBs/sec",
+        "log_archive_path": "celesto-20mib 3/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 0.8197520990840724
+      }
+    },
+    {
+      "payload_mib": 24,
+      "iteration": 1,
+      "save_seconds": 3,
+      "restore_seconds": 1,
+      "upload": {
+        "archive_bytes": 25167966,
+        "reported_mib_per_second": 24.0,
+        "completion_log_timestamp": "2026-11-13T23:56:17.4116064Z",
+        "completion_log_line": "2026-11-13T23:56:17.4116064Z Sent 25167966 of 25167966 (100.0%), 24.0 MBs/sec",
+        "log_archive_path": "celesto-24mib 1/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 1.0000851154327393
+      },
+      "download": {
+        "archive_bytes": 25167966,
+        "reported_mib_per_second": 56.7,
+        "completion_log_timestamp": "2026-11-13T23:56:18.9737371Z",
+        "completion_log_line": "2026-11-13T23:56:18.9737371Z Received 25167966 of 25167966 (100.0%), 56.7 MBs/sec",
+        "log_archive_path": "celesto-24mib 1/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 0.4233164509768208
+      }
+    },
+    {
+      "payload_mib": 24,
+      "iteration": 2,
+      "save_seconds": 4,
+      "restore_seconds": 1,
+      "upload": {
+        "archive_bytes": 25167966,
+        "reported_mib_per_second": 12.0,
+        "completion_log_timestamp": "2026-11-14T00:01:24.8607082Z",
+        "completion_log_line": "2026-11-14T00:01:24.8607082Z Sent 25167966 of 25167966 (100.0%), 12.0 MBs/sec",
+        "log_archive_path": "celesto-24mib 2/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 2.0001702308654785
+      },
+      "download": {
+        "archive_bytes": 25167966,
+        "reported_mib_per_second": 26.9,
+        "completion_log_timestamp": "2026-11-14T00:01:27.8819525Z",
+        "completion_log_line": "2026-11-14T00:01:27.8819525Z Received 25167966 of 25167966 (100.0%), 26.9 MBs/sec",
+        "log_archive_path": "celesto-24mib 2/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 0.8922692479697303
+      }
+    },
+    {
+      "payload_mib": 24,
+      "iteration": 3,
+      "save_seconds": 2,
+      "restore_seconds": 2,
+      "upload": {
+        "archive_bytes": 25167966,
+        "reported_mib_per_second": 24.0,
+        "completion_log_timestamp": "2026-11-14T00:06:47.1519702Z",
+        "completion_log_line": "2026-11-14T00:06:47.1519702Z Sent 25167966 of 25167966 (100.0%), 24.0 MBs/sec",
+        "log_archive_path": "celesto-24mib 3/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 1.0000851154327393
+      },
+      "download": {
+        "archive_bytes": 25167966,
+        "reported_mib_per_second": 14.5,
+        "completion_log_timestamp": "2026-11-14T00:06:49.8391617Z",
+        "completion_log_line": "2026-11-14T00:06:49.8391617Z Received 25167966 of 25167966 (100.0%), 14.5 MBs/sec",
+        "log_archive_path": "celesto-24mib 3/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 1.6553132945093616
+      }
+    },
+    {
+      "payload_mib": 32,
+      "iteration": 1,
+      "save_seconds": 4,
+      "restore_seconds": 1,
+      "upload": {
+        "archive_bytes": 33556766,
+        "reported_mib_per_second": 16.0,
+        "completion_log_timestamp": "2026-11-13T23:56:27.4543321Z",
+        "completion_log_line": "2026-11-13T23:56:27.4543321Z Sent 33556766 of 33556766 (100.0%), 16.0 MBs/sec",
+        "log_archive_path": "celesto-32mib 1/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 2.0001391172409058
+      },
+      "download": {
+        "archive_bytes": 33556766,
+        "reported_mib_per_second": 67.0,
+        "completion_log_timestamp": "2026-11-13T23:56:28.9496978Z",
+        "completion_log_line": "2026-11-13T23:56:28.9496978Z Received 33556766 of 33556766 (100.0%), 67.0 MBs/sec",
+        "log_archive_path": "celesto-32mib 1/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 0.4776451623261864
+      }
+    },
+    {
+      "payload_mib": 32,
+      "iteration": 2,
+      "save_seconds": 3,
+      "restore_seconds": 1,
+      "upload": {
+        "archive_bytes": 33556766,
+        "reported_mib_per_second": 16.0,
+        "completion_log_timestamp": "2026-11-14T00:01:36.8062746Z",
+        "completion_log_line": "2026-11-14T00:01:36.8062746Z Sent 33556766 of 33556766 (100.0%), 16.0 MBs/sec",
+        "log_archive_path": "celesto-32mib 2/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 2.0001391172409058
+      },
+      "download": {
+        "archive_bytes": 33556766,
+        "reported_mib_per_second": 49.9,
+        "completion_log_timestamp": "2026-11-14T00:01:38.3790913Z",
+        "completion_log_line": "2026-11-14T00:01:38.3790913Z Received 33556766 of 33556766 (100.0%), 49.9 MBs/sec",
+        "log_archive_path": "celesto-32mib 2/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 0.6413271718608115
+      }
+    },
+    {
+      "payload_mib": 32,
+      "iteration": 3,
+      "save_seconds": 3,
+      "restore_seconds": 1,
+      "upload": {
+        "archive_bytes": 33556766,
+        "reported_mib_per_second": 32.0,
+        "completion_log_timestamp": "2026-11-14T00:06:57.6039845Z",
+        "completion_log_line": "2026-11-14T00:06:57.6039845Z Sent 33556766 of 33556766 (100.0%), 32.0 MBs/sec",
+        "log_archive_path": "celesto-32mib 3/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 1.0000695586204529
+      },
+      "download": {
+        "archive_bytes": 33556766,
+        "reported_mib_per_second": 30.2,
+        "completion_log_timestamp": "2026-11-14T00:07:00.5713619Z",
+        "completion_log_line": "2026-11-14T00:07:00.5713619Z Received 33556766 of 33556766 (100.0%), 30.2 MBs/sec",
+        "log_archive_path": "celesto-32mib 3/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 1.0596763535051157
+      }
+    },
+    {
+      "payload_mib": 64,
+      "iteration": 1,
+      "save_seconds": 5,
+      "restore_seconds": 1,
+      "upload": {
+        "archive_bytes": 67111966,
+        "reported_mib_per_second": 24.8,
+        "completion_log_timestamp": "2026-11-13T23:56:43.4336587Z",
+        "completion_log_line": "2026-11-13T23:56:43.4336587Z Sent 67111966 of 67111966 (100.0%), 24.8 MBs/sec",
+        "log_archive_path": "celesto-64mib 1/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 2.5807644474890923
+      },
+      "download": {
+        "archive_bytes": 67111966,
+        "reported_mib_per_second": 105.6,
+        "completion_log_timestamp": "2026-11-13T23:56:45.1493618Z",
+        "completion_log_line": "2026-11-13T23:56:45.1493618Z Received 67111966 of 67111966 (100.0%), 105.6 MBs/sec",
+        "log_archive_path": "celesto-64mib 1/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 0.6060886202436505
+      }
+    },
+    {
+      "payload_mib": 64,
+      "iteration": 2,
+      "save_seconds": 6,
+      "restore_seconds": 1,
+      "upload": {
+        "archive_bytes": 67111966,
+        "reported_mib_per_second": 16.0,
+        "completion_log_timestamp": "2026-11-14T00:01:49.0861309Z",
+        "completion_log_line": "2026-11-14T00:01:49.0861309Z Sent 67111966 of 67111966 (100.0%), 16.0 MBs/sec",
+        "log_archive_path": "celesto-64mib 2/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 4.000184893608093
+      },
+      "download": {
+        "archive_bytes": 67111966,
+        "reported_mib_per_second": 119.4,
+        "completion_log_timestamp": "2026-11-14T00:01:51.1333705Z",
+        "completion_log_line": "2026-11-14T00:01:51.1333705Z Received 67111966 of 67111966 (100.0%), 119.4 MBs/sec",
+        "log_archive_path": "celesto-64mib 2/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 0.5360381766979019
+      }
+    },
+    {
+      "payload_mib": 64,
+      "iteration": 3,
+      "save_seconds": 4,
+      "restore_seconds": 2,
+      "upload": {
+        "archive_bytes": 67111966,
+        "reported_mib_per_second": 32.0,
+        "completion_log_timestamp": "2026-11-14T00:07:09.4318918Z",
+        "completion_log_line": "2026-11-14T00:07:09.4318918Z Sent 67111966 of 67111966 (100.0%), 32.0 MBs/sec",
+        "log_archive_path": "celesto-64mib 3/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 2.0000924468040466
+      },
+      "download": {
+        "archive_bytes": 67111966,
+        "reported_mib_per_second": 113.1,
+        "completion_log_timestamp": "2026-11-14T00:07:11.8925779Z",
+        "completion_log_line": "2026-11-14T00:07:11.8925779Z Received 67111966 of 67111966 (100.0%), 113.1 MBs/sec",
+        "log_archive_path": "celesto-64mib 3/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 0.5658970671770954
+      }
+    },
+    {
+      "payload_mib": 96,
+      "iteration": 1,
+      "save_seconds": 6,
+      "restore_seconds": 2,
+      "upload": {
+        "archive_bytes": 100667166,
+        "reported_mib_per_second": 19.2,
+        "completion_log_timestamp": "2026-11-13T23:56:56.9627665Z",
+        "completion_log_line": "2026-11-13T23:56:56.9627665Z Sent 100667166 of 100667166 (100.0%), 19.2 MBs/sec",
+        "log_archive_path": "celesto-96mib 1/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 5.000192224979401
+      },
+      "download": {
+        "archive_bytes": 100667166,
+        "reported_mib_per_second": 111.4,
+        "completion_log_timestamp": "2026-11-13T23:56:58.9168828Z",
+        "completion_log_line": "2026-11-13T23:56:58.9168828Z Received 100667166 of 100667166 (100.0%), 111.4 MBs/sec",
+        "log_archive_path": "celesto-96mib 1/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 0.861792555831279
+      }
+    },
+    {
+      "payload_mib": 96,
+      "iteration": 2,
+      "save_seconds": 5,
+      "restore_seconds": 2,
+      "upload": {
+        "archive_bytes": 100667166,
+        "reported_mib_per_second": 31.9,
+        "completion_log_timestamp": "2026-11-14T00:02:01.7641270Z",
+        "completion_log_line": "2026-11-14T00:02:01.7641270Z Sent 100667166 of 100667166 (100.0%), 31.9 MBs/sec",
+        "log_archive_path": "celesto-96mib 2/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 3.0095200852540596
+      },
+      "download": {
+        "archive_bytes": 100667166,
+        "reported_mib_per_second": 62.1,
+        "completion_log_timestamp": "2026-11-14T00:02:05.0679910Z",
+        "completion_log_line": "2026-11-14T00:02:05.0679910Z Received 100667166 of 100667166 (100.0%), 62.1 MBs/sec",
+        "log_archive_path": "celesto-96mib 2/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 1.5459531516844522
+      }
+    },
+    {
+      "payload_mib": 96,
+      "iteration": 3,
+      "save_seconds": 7,
+      "restore_seconds": 1,
+      "upload": {
+        "archive_bytes": 100667166,
+        "reported_mib_per_second": 16.3,
+        "completion_log_timestamp": "2026-11-14T00:07:24.7071503Z",
+        "completion_log_line": "2026-11-14T00:07:24.7071503Z Sent 100667166 of 100667166 (100.0%), 16.3 MBs/sec",
+        "log_archive_path": "celesto-96mib 3/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 5.889796976662852
+      },
+      "download": {
+        "archive_bytes": 100667166,
+        "reported_mib_per_second": 105.8,
+        "completion_log_timestamp": "2026-11-14T00:07:26.7344481Z",
+        "completion_log_line": "2026-11-14T00:07:26.7344481Z Received 100667166 of 100667166 (100.0%), 105.8 MBs/sec",
+        "log_archive_path": "celesto-96mib 3/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 0.9074072846843525
+      }
+    },
+    {
+      "payload_mib": 400,
+      "iteration": 1,
+      "save_seconds": 6,
+      "restore_seconds": 4,
+      "upload": {
+        "archive_bytes": 419441566,
+        "reported_mib_per_second": 80.5,
+        "completion_log_timestamp": "2026-11-13T23:57:12.3166769Z",
+        "completion_log_line": "2026-11-13T23:57:12.3166769Z Sent 419441566 of 419441566 (100.0%), 80.5 MBs/sec",
+        "log_archive_path": "celesto-400mib 1/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 4.969076381707043
+      },
+      "download": {
+        "archive_bytes": 419441566,
+        "reported_mib_per_second": 126.6,
+        "completion_log_timestamp": "2026-11-13T23:57:16.9899213Z",
+        "completion_log_line": "2026-11-13T23:57:16.9899213Z Received 419441566 of 419441566 (100.0%), 126.6 MBs/sec",
+        "log_archive_path": "celesto-400mib 1/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 3.1596417750980805
+      }
+    },
+    {
+      "payload_mib": 400,
+      "iteration": 2,
+      "save_seconds": 9,
+      "restore_seconds": 3,
+      "upload": {
+        "archive_bytes": 419441566,
+        "reported_mib_per_second": 66.6,
+        "completion_log_timestamp": "2026-11-14T00:02:20.0210670Z",
+        "completion_log_line": "2026-11-14T00:02:20.0210670Z Sent 419441566 of 419441566 (100.0%), 66.6 MBs/sec",
+        "log_archive_path": "celesto-400mib 2/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 6.006165896808064
+      },
+      "download": {
+        "archive_bytes": 419441566,
+        "reported_mib_per_second": 262.6,
+        "completion_log_timestamp": "2026-11-14T00:02:23.2515138Z",
+        "completion_log_line": "2026-11-14T00:02:23.2515138Z Received 419441566 of 419441566 (100.0%), 262.6 MBs/sec",
+        "log_archive_path": "celesto-400mib 2/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 1.5232697971341087
+      }
+    },
+    {
+      "payload_mib": 400,
+      "iteration": 3,
+      "save_seconds": 6,
+      "restore_seconds": 4,
+      "upload": {
+        "archive_bytes": 419441566,
+        "reported_mib_per_second": 81.0,
+        "completion_log_timestamp": "2026-11-14T00:07:39.4808790Z",
+        "completion_log_line": "2026-11-14T00:07:39.4808790Z Sent 419441566 of 419441566 (100.0%), 81.0 MBs/sec",
+        "log_archive_path": "celesto-400mib 3/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 4.938403070708851
+      },
+      "download": {
+        "archive_bytes": 419441566,
+        "reported_mib_per_second": 137.2,
+        "completion_log_timestamp": "2026-11-14T00:07:43.6808885Z",
+        "completion_log_line": "2026-11-14T00:07:43.6808885Z Received 419441566 of 419441566 (100.0%), 137.2 MBs/sec",
+        "log_archive_path": "celesto-400mib 3/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 2.9155295096750513
+      }
+    },
+    {
+      "payload_mib": 1024,
+      "iteration": 1,
+      "save_seconds": 8,
+      "restore_seconds": 6,
+      "upload": {
+        "archive_bytes": 1073767966,
+        "reported_mib_per_second": 204.6,
+        "completion_log_timestamp": "2026-11-13T23:57:34.4731209Z",
+        "completion_log_line": "2026-11-13T23:57:34.4731209Z Sent 1073767966 of 1073767966 (100.0%), 204.6 MBs/sec",
+        "log_archive_path": "celesto-1024mib 1/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 5.005009437702735
+      },
+      "download": {
+        "archive_bytes": 1073767966,
+        "reported_mib_per_second": 233.3,
+        "completion_log_timestamp": "2026-11-13T23:57:40.8578885Z",
+        "completion_log_line": "2026-11-13T23:57:40.8578885Z Received 1073767966 of 1073767966 (100.0%), 233.3 MBs/sec",
+        "log_archive_path": "celesto-1024mib 1/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 4.389305319134074
+      }
+    },
+    {
+      "payload_mib": 1024,
+      "iteration": 2,
+      "save_seconds": 8,
+      "restore_seconds": 8,
+      "upload": {
+        "archive_bytes": 1073767966,
+        "reported_mib_per_second": 206.3,
+        "completion_log_timestamp": "2026-11-14T00:02:43.6547539Z",
+        "completion_log_line": "2026-11-14T00:02:43.6547539Z Sent 1073767966 of 1073767966 (100.0%), 206.3 MBs/sec",
+        "log_archive_path": "celesto-1024mib 2/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 4.9637660249829345
+      },
+      "download": {
+        "archive_bytes": 1073767966,
+        "reported_mib_per_second": 218.3,
+        "completion_log_timestamp": "2026-11-14T00:02:50.4200501Z",
+        "completion_log_line": "2026-11-14T00:02:50.4200501Z Received 1073767966 of 1073767966 (100.0%), 218.3 MBs/sec",
+        "log_archive_path": "celesto-1024mib 2/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 4.690906692414015
+      }
+    },
+    {
+      "payload_mib": 1024,
+      "iteration": 3,
+      "save_seconds": 8,
+      "restore_seconds": 7,
+      "upload": {
+        "archive_bytes": 1073767966,
+        "reported_mib_per_second": 170.5,
+        "completion_log_timestamp": "2026-11-14T00:08:01.7509337Z",
+        "completion_log_line": "2026-11-14T00:08:01.7509337Z Sent 1073767966 of 1073767966 (100.0%), 170.5 MBs/sec",
+        "log_archive_path": "celesto-1024mib 3/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 6.006011325243281
+      },
+      "download": {
+        "archive_bytes": 1073767966,
+        "reported_mib_per_second": 243.4,
+        "completion_log_timestamp": "2026-11-14T00:08:07.9851908Z",
+        "completion_log_line": "2026-11-14T00:08:07.9851908Z Received 1073767966 of 1073767966 (100.0%), 243.4 MBs/sec",
+        "log_archive_path": "celesto-1024mib 3/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 4.207168985020458
+      }
+    },
+    {
+      "payload_mib": 2048,
+      "iteration": 1,
+      "save_seconds": 17,
+      "restore_seconds": 17,
+      "upload": {
+        "archive_bytes": 2147534366,
+        "reported_mib_per_second": 255.5,
+        "completion_log_timestamp": "2026-11-13T23:58:13.2468978Z",
+        "completion_log_line": "2026-11-13T23:58:13.2468978Z Sent 2147534366 of 2147534366 (100.0%), 255.5 MBs/sec",
+        "log_archive_path": "celesto-2048mib 1/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 8.015844886316945
+      },
+      "download": {
+        "archive_bytes": 2147534366,
+        "reported_mib_per_second": 270.2,
+        "completion_log_timestamp": "2026-11-13T23:58:24.0918316Z",
+        "completion_log_line": "2026-11-13T23:58:24.0918316Z Received 2147534366 of 2147534366 (100.0%), 270.2 MBs/sec",
+        "log_archive_path": "celesto-2048mib 1/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 7.579749698201256
+      }
+    },
+    {
+      "payload_mib": 2048,
+      "iteration": 2,
+      "save_seconds": 13,
+      "restore_seconds": 25,
+      "upload": {
+        "archive_bytes": 2147534366,
+        "reported_mib_per_second": 255.6,
+        "completion_log_timestamp": "2026-11-14T00:03:18.1594067Z",
+        "completion_log_line": "2026-11-14T00:03:18.1594067Z Sent 2147534366 of 2147534366 (100.0%), 255.6 MBs/sec",
+        "log_archive_path": "celesto-2048mib 2/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 8.012708796768308
+      },
+      "download": {
+        "archive_bytes": 2147534366,
+        "reported_mib_per_second": 128.4,
+        "completion_log_timestamp": "2026-11-14T00:03:37.6868050Z",
+        "completion_log_line": "2026-11-14T00:03:37.6868050Z Received 2147534366 of 2147534366 (100.0%), 128.4 MBs/sec",
+        "log_archive_path": "celesto-2048mib 2/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 15.950532464594856
+      }
+    },
+    {
+      "payload_mib": 2048,
+      "iteration": 3,
+      "save_seconds": 12,
+      "restore_seconds": 14,
+      "upload": {
+        "archive_bytes": 2147534366,
+        "reported_mib_per_second": 341.1,
+        "completion_log_timestamp": "2026-11-14T00:08:34.5038143Z",
+        "completion_log_line": "2026-11-14T00:08:34.5038143Z Sent 2147534366 of 2147534366 (100.0%), 341.1 MBs/sec",
+        "log_archive_path": "celesto-2048mib 3/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 6.004246169610025
+      },
+      "download": {
+        "archive_bytes": 2147534366,
+        "reported_mib_per_second": 262.4,
+        "completion_log_timestamp": "2026-11-14T00:08:46.0014920Z",
+        "completion_log_line": "2026-11-14T00:08:46.0014920Z Received 2147534366 of 2147534366 (100.0%), 262.4 MBs/sec",
+        "log_archive_path": "celesto-2048mib 3/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 7.805062379778886
+      }
+    },
+    {
+      "payload_mib": 3072,
+      "iteration": 1,
+      "save_seconds": 12,
+      "restore_seconds": 15,
+      "upload": {
+        "archive_bytes": 3221300766,
+        "reported_mib_per_second": 390.9,
+        "completion_log_timestamp": "2026-11-13T23:59:02.5516782Z",
+        "completion_log_line": "2026-11-13T23:59:02.5516782Z Sent 3221300766 of 3221300766 (100.0%), 390.9 MBs/sec",
+        "log_archive_path": "celesto-3072mib 1/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 7.85897110758245
+      },
+      "download": {
+        "archive_bytes": 3221300766,
+        "reported_mib_per_second": 238.8,
+        "completion_log_timestamp": "2026-11-13T23:59:19.5006484Z",
+        "completion_log_line": "2026-11-13T23:59:19.5006484Z Received 3221300766 of 3221300766 (100.0%), 238.8 MBs/sec",
+        "log_archive_path": "celesto-3072mib 1/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 12.864622302989863
+      }
+    },
+    {
+      "payload_mib": 3072,
+      "iteration": 2,
+      "save_seconds": 15,
+      "restore_seconds": 28,
+      "upload": {
+        "archive_bytes": 3221300766,
+        "reported_mib_per_second": 510.0,
+        "completion_log_timestamp": "2026-11-14T00:04:19.3991872Z",
+        "completion_log_line": "2026-11-14T00:04:19.3991872Z Sent 3221300766 of 3221300766 (100.0%), 510.0 MBs/sec",
+        "log_archive_path": "celesto-3072mib 2/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 6.023670207752901
+      },
+      "download": {
+        "archive_bytes": 3221300766,
+        "reported_mib_per_second": 227.4,
+        "completion_log_timestamp": "2026-11-14T00:04:37.8507289Z",
+        "completion_log_line": "2026-11-14T00:04:37.8507289Z Received 3221300766 of 3221300766 (100.0%), 227.4 MBs/sec",
+        "log_archive_path": "celesto-3072mib 2/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 13.509550597862706
+      }
+    },
+    {
+      "payload_mib": 3072,
+      "iteration": 3,
+      "save_seconds": 21,
+      "restore_seconds": 21,
+      "upload": {
+        "archive_bytes": 3221300766,
+        "reported_mib_per_second": 256.7,
+        "completion_log_timestamp": "2026-11-14T00:09:33.9966726Z",
+        "completion_log_line": "2026-11-14T00:09:33.9966726Z Sent 3221300766 of 3221300766 (100.0%), 256.7 MBs/sec",
+        "log_archive_path": "celesto-3072mib 3/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 11.967556704144837
+      },
+      "download": {
+        "archive_bytes": 3221300766,
+        "reported_mib_per_second": 294.3,
+        "completion_log_timestamp": "2026-11-14T00:09:48.4075777Z",
+        "completion_log_line": "2026-11-14T00:09:48.4075777Z Received 3221300766 of 3221300766 (100.0%), 294.3 MBs/sec",
+        "log_archive_path": "celesto-3072mib 3/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 10.438572225463743
+      }
+    },
+    {
+      "payload_mib": 4096,
+      "iteration": 1,
+      "save_seconds": 26,
+      "restore_seconds": 41,
+      "upload": {
+        "archive_bytes": 4295067166,
+        "reported_mib_per_second": 409.1,
+        "completion_log_timestamp": "2026-11-14T00:00:11.4220527Z",
+        "completion_log_line": "2026-11-14T00:00:11.4220527Z Sent 4295067166 of 4295067166 (100.0%), 409.1 MBs/sec",
+        "log_archive_path": "celesto-4096mib 1/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 10.012454762781665
+      },
+      "download": {
+        "archive_bytes": 4295067166,
+        "reported_mib_per_second": 131.6,
+        "completion_log_timestamp": "2026-11-14T00:00:48.1682948Z",
+        "completion_log_line": "2026-11-14T00:00:48.1682948Z Received 4295067166 of 4295067166 (100.0%), 131.6 MBs/sec",
+        "log_archive_path": "celesto-4096mib 1/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 31.12534379524301
+      }
+    },
+    {
+      "payload_mib": 4096,
+      "iteration": 2,
+      "save_seconds": 22,
+      "restore_seconds": 42,
+      "upload": {
+        "archive_bytes": 4295067166,
+        "reported_mib_per_second": 408.1,
+        "completion_log_timestamp": "2026-11-14T00:05:37.0578655Z",
+        "completion_log_line": "2026-11-14T00:05:37.0578655Z Sent 4295067166 of 4295067166 (100.0%), 408.1 MBs/sec",
+        "log_archive_path": "celesto-4096mib 2/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 10.036989079769613
+      },
+      "download": {
+        "archive_bytes": 4295067166,
+        "reported_mib_per_second": 154.6,
+        "completion_log_timestamp": "2026-11-14T00:06:08.8595714Z",
+        "completion_log_line": "2026-11-14T00:06:08.8595714Z Received 4295067166 of 4295067166 (100.0%), 154.6 MBs/sec",
+        "log_archive_path": "celesto-4096mib 2/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 26.49479458896494
+      }
+    },
+    {
+      "payload_mib": 4096,
+      "iteration": 3,
+      "save_seconds": 22,
+      "restore_seconds": 29,
+      "upload": {
+        "archive_bytes": 4295067166,
+        "reported_mib_per_second": 408.3,
+        "completion_log_timestamp": "2026-11-14T00:10:42.5682504Z",
+        "completion_log_line": "2026-11-14T00:10:42.5682504Z Sent 4295067166 of 4295067166 (100.0%), 408.3 MBs/sec",
+        "log_archive_path": "celesto-4096mib 3/5_phase cache save.txt",
+        "inferred_progress_elapsed_seconds": 10.032072602140532
+      },
+      "download": {
+        "archive_bytes": 4295067166,
+        "reported_mib_per_second": 249.6,
+        "completion_log_timestamp": "2026-11-14T00:11:04.5497418Z",
+        "completion_log_line": "2026-11-14T00:11:04.5497418Z Received 4295067166 of 4295067166 (100.0%), 249.6 MBs/sec",
+        "log_archive_path": "celesto-4096mib 3/7_phase cache restore.txt",
+        "inferred_progress_elapsed_seconds": 16.41063799460729
+      }
+    }
+  ]
+}
