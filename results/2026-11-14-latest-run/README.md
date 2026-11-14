@@ -16,7 +16,7 @@ RunsOn’s current cache bug window and obsolete Node typecheck samples are excl
 | Provider | Rust | Node | Docker | Cache save + restore | Burst queue p50 | Rate per minute |
 |---|---:|---:|---:|---:|---:|---:|
 | GitHub | 3m 35s | 1m 38s | 12m 59s | 1m 20s | 3s | $0.0120 |
-| Celesto | 2m 54s | 1m 19s | 10m 36s | 41s | 17s | $0.00133333 |
+| Celesto | 2m 54s | 1m 19s | 10m 36s | 41s | 15s | $0.00133333 |
 | Blacksmith | 2m 02s | 50s | 5m 52s | 17s | 11s | $0.0080 |
 | Namespace | 1m 31s | 44s | 4m 38s | 47s | 9s | $0.0120* |
 | RunsOn | 1m 48s | 1m 03s | 9m 00s | 33s | 17s | $0.0044 on-demand |
