@@ -25,7 +25,6 @@ RunsOn’s current cache bug window and obsolete Node typecheck samples are excl
 
 The burst p50 is computed over 15 jobs in that provider’s latest burst. Other suite values are one successful benchmark job per provider.
 
-Celesto Rust, Docker, cache, and hardware were measured on AWS EBS at 1,000 MiB/s and 12,000 IOPS after volume optimization completed. Node was measured on AWS EBS at 1,000 MiB/s and 6,000 IOPS during volume optimization. Burst queue timing measures the standard 15-job fleet-wide workload. Background load varies on shared hosts; these single-run measurements do not isolate storage performance.
 
 ## Verified per-minute rate basis
 
