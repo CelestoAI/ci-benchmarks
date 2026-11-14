@@ -6,8 +6,8 @@ Open benchmarks for GitHub Actions runners. Real builds of public projects, pinn
 
 Latest available run per provider and suite. Provider run dates vary; the queue column is the p50 of the latest 15-job burst. Lower is faster.
 
-![Latest-run workload and queue times by provider; lower is faster](results/2026-11-14-latest-run/summary-light.svg#gh-light-mode-only)
-![Latest-run workload and queue times by provider; lower is faster](results/2026-11-14-latest-run/summary-dark.svg#gh-dark-mode-only)
+![Latest-run workload and queue times by provider; lower is faster](results/2026-11-14-latest-run/summary-light-2026-11-14.svg#gh-light-mode-only)
+![Latest-run workload and queue times by provider; lower is faster](results/2026-11-14-latest-run/summary-dark-2026-11-14.svg#gh-dark-mode-only)
 
 | Suite | Workload |
 | --- | --- |
