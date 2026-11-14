@@ -18,10 +18,13 @@ import { readMetrics } from './read-metrics.mjs';
 const [oursDir, theirsDir, outDir, days = '30'] = process.argv.slice(2);
 const SOURCE = 'https://github.com/runs-on-demo/benchmark-public';
 const BASE = 'GitHub';
+const NODE_METHOD_START = Date.parse('2026-11-02T16:03:00Z');
 
-// Other providers' 4 vCPU x64 runners in the source data.
+// Other providers' 4 vCPU x64 runners. RunsOn is represented by its current
+// suggested 4 vCPU x64 default, m8a.xlarge on EBS gp3.
 const THEIRS = {
   'github-x64': 'GitHub',
+  'runson-m8a-x64': 'RunsOn m8a.xlarge',
   'blacksmith-x64': 'Blacksmith',
   'namespace-x64': 'Namespace',
   'warpbuild-x64': 'WarpBuild',
@@ -89,8 +92,12 @@ for (const suite of SUITES) {
   try { files = readdirSync(join(theirsDir, suite)); } catch { continue; }
   for (const f of files.filter((f) => f.endsWith('.json') && Date.parse(f.slice(0, 10)) >= since)) {
     for (const r of JSON.parse(readFileSync(join(theirsDir, suite, f), 'utf8')).results) {
+      // Keep Node samples on the current turbo-cache-off typecheck definition.
+      if (suite === 'node' && Date.parse(r.createdAt) < NODE_METHOD_START) continue;
       // The cache suite tests several cache actions; compare actions/cache only.
       if (suite === 'cache' && !r.runnerId.endsWith('.actions-cache')) continue;
+      // RunsOn excluded cache restores affected by its v3.6.0 RC bug.
+      if (suite === 'cache' && r.provider === 'RunsOn' && Date.parse(r.createdAt) < Date.parse('2026-11-02T20:10:00Z')) continue;
       const name = THEIRS[r.runnerId.replace(/\.actions-cache$/, '')];
       if (name && r.status === 'success') add(suite, name, r);
     }
@@ -117,7 +124,7 @@ for (const p of providers) {
   p50[p] = COLUMNS.map(([, suite, get]) => med(suite, p, get));
 }
 // Keep GitHub's baseline next to Celesto; other providers follow alphabetically.
-const referenceOrder = ['GitHub', 'Celesto'];
+const referenceOrder = ['GitHub', 'Celesto', 'RunsOn m8a.xlarge'];
 const rows = providers.filter((p) => p50[p].some((x) => x != null)).sort((a, b) =>
   (referenceOrder.indexOf(a) < 0 ? 2 : referenceOrder.indexOf(a)) -
   (referenceOrder.indexOf(b) < 0 ? 2 : referenceOrder.indexOf(b)) || a.localeCompare(b));
@@ -164,7 +171,7 @@ function summarySvg(theme) {
       s += `<text x="${cx + cw / 2}" y="${y + rh / 2 + 6}" text-anchor="middle" font-size="16" font-weight="400" ${MONO} class="t">${duration(x)}</text>`;
     });
   });
-  s += `<text x="16" y="${H - 8}" font-size="13" class="m">p50 times (median). Lower is faster. 4 vCPU x64. GitHub baseline, then Celesto; others alphabetical.</text>`;
+  s += `<text x="16" y="${H - 8}" font-size="13" class="m">p50 times (median). Lower is faster. 4 vCPU x64. GitHub baseline, then Celesto and RunsOn m8a.xlarge; others alphabetical.</text>`;
   return s + `</svg>\n`;
 }
 
@@ -223,9 +230,10 @@ const md = [
   '',
   'The summary shows p50 times across successful jobs, in minutes and seconds. Lower is faster. Cache time includes save and restore. Workload times exclude queue time and runner overhead. Queue shows the wait from job creation to runner start for a burst of 15 jobs.',
   '',
-  'RunsOn also publishes [p50 (median) results](https://runs-on.com/benchmarks/methodology/). Its main build chart defaults to whole-job time and ranks by time × cost; the build columns here show workload time only.',
+  'RunsOn’s [public dashboard](https://runs-on.com/benchmarks/runners/) lets readers choose build-step, whole-job, or wait-plus-job timing. These build columns use workload phases only; they exclude queue time and runner overhead.',
   '',
   `- **Celesto:** this repository's [runner suites](../../docs/suites.md), last ${days} days of runs.`,
+  `- **RunsOn:** its suggested 4 vCPU x64 default, m8a.xlarge on EBS gp3, from [public benchmark data](${SOURCE}), last ${days} days.`,
   `- **Other providers:** [runs-on.com public benchmark data](${SOURCE}), last ${days} days. Same workloads and settings, measured by runs-on.com on their accounts.`,
   '',
   ...themed('p50 workload and queue times by provider; lower is faster', 'summary'),

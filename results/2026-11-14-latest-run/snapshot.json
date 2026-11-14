@@ -1,0 +1,4652 @@
+{
+  "snapshotDate": "2026-11-14",
+  "source": {
+    "repository": "https://github.com/runs-on-demo/benchmark-public",
+    "commit": "5cbfb2c",
+    "commitDate": "2026-11-14T02:24:09Z"
+  },
+  "timingBasis": "Latest completed provider run per suite. Build and cache values are GitHub job workload seconds. Cache includes save and restore. Burst is the p50 queue wait across jobs in the latest burst (15 jobs per provider). Hardware is the latest available single run; partial metric failures are retained.",
+  "providers": {
+    "Celesto": {
+      "rust": {
+        "run": {
+          "id": 43541459727,
+          "attempt": 1,
+          "date": "2026-11-14",
+          "repository": "CelestoAI/ci-benchmarks"
+        },
+        "results": [
+          {
+            "provider": "celesto",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-aac872c39d04e122e670097bf71e1d64",
+            "queueSeconds": 17,
+            "jobSeconds": 212,
+            "workloadSeconds": 208,
+            "phases": [
+              {
+                "name": "checkout",
+                "seconds": 0,
+                "status": "success"
+              },
+              {
+                "name": "system packages",
+                "seconds": 18,
+                "status": "success"
+              },
+              {
+                "name": "toolchain",
+                "seconds": 10,
+                "status": "success"
+              },
+              {
+                "name": "cargo fmt",
+                "seconds": 0,
+                "status": "success"
+              },
+              {
+                "name": "cargo test",
+                "seconds": 124,
+                "status": "success"
+              },
+              {
+                "name": "cargo clippy",
+                "seconds": 45,
+                "status": "success"
+              },
+              {
+                "name": "cargo clippy (no features)",
+                "seconds": 11,
+                "status": "success"
+              }
+            ],
+            "metrics": null
+          }
+        ],
+        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43541459727"
+      },
+      "node": {
+        "run": {
+          "id": 43541883724,
+          "attempt": 1,
+          "date": "2026-11-14",
+          "repository": "CelestoAI/ci-benchmarks"
+        },
+        "results": [
+          {
+            "provider": "celesto",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-a87c92e7570abbcaa101a16ba5be466e",
+            "queueSeconds": 16,
+            "jobSeconds": 105,
+            "workloadSeconds": 100,
+            "phases": [
+              {
+                "name": "toolchain",
+                "seconds": 2,
+                "status": "success"
+              },
+              {
+                "name": "clone",
+                "seconds": 2,
+                "status": "success"
+              },
+              {
+                "name": "bun install",
+                "seconds": 26,
+                "status": "success"
+              },
+              {
+                "name": "typecheck",
+                "seconds": 70,
+                "status": "success"
+              }
+            ],
+            "metrics": null
+          }
+        ],
+        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43541883724"
+      },
+      "docker": {
+        "run": {
+          "id": 43542132511,
+          "attempt": 1,
+          "date": "2026-11-14",
+          "repository": "CelestoAI/ci-benchmarks"
+        },
+        "results": [
+          {
+            "provider": "celesto",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-3f8c4fd1e36331a7fda985ebd42a56ff",
+            "queueSeconds": 13,
+            "jobSeconds": 704,
+            "workloadSeconds": 670,
+            "phases": [
+              {
+                "name": "fetch source",
+                "seconds": 23,
+                "status": "success"
+              },
+              {
+                "name": "buildx setup",
+                "seconds": 14,
+                "status": "success"
+              },
+              {
+                "name": "docker build",
+                "seconds": 633,
+                "status": "success"
+              }
+            ],
+            "metrics": null
+          }
+        ],
+        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43542132511"
+      },
+      "cache": {
+        "run": {
+          "id": 43543299650,
+          "attempt": 1,
+          "date": "2026-11-14",
+          "repository": "CelestoAI/ci-benchmarks"
+        },
+        "results": [
+          {
+            "provider": "celesto",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-a06f626b6e25189672d4b4bd3517b6be",
+            "queueSeconds": 11,
+            "jobSeconds": 65,
+            "workloadSeconds": 47,
+            "phases": [
+              {
+                "name": "cache save",
+                "seconds": 20,
+                "status": "success"
+              },
+              {
+                "name": "cache restore",
+                "seconds": 27,
+                "status": "success"
+              },
+              {
+                "name": "verify",
+                "seconds": 0,
+                "status": "success"
+              }
+            ],
+            "metrics": null
+          }
+        ],
+        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43543299650"
+      },
+      "burst": {
+        "run": {
+          "id": 43544242821,
+          "attempt": 1,
+          "date": "2026-11-14",
+          "repository": "CelestoAI/ci-benchmarks"
+        },
+        "results": [
+          {
+            "provider": "celesto",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-7fac14c5f724d9d7b107dbea86145c8f",
+            "queueSeconds": 14,
+            "jobSeconds": 63,
+            "workloadSeconds": 60,
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "metrics": null
+          },
+          {
+            "provider": "celesto",
+            "iteration": 2,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-30d6b93dac4230db0716605fcb18948f",
+            "queueSeconds": 15,
+            "jobSeconds": 63,
+            "workloadSeconds": 60,
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "metrics": null
+          },
+          {
+            "provider": "celesto",
+            "iteration": 3,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-93611dcd7c726a516ff331eda718a1ff",
+            "queueSeconds": 16,
+            "jobSeconds": 63,
+            "workloadSeconds": 60,
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "metrics": null
+          },
+          {
+            "provider": "celesto",
+            "iteration": 4,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-0b6c8ff8acece4e3452840bb110b9ab7",
+            "queueSeconds": 17,
+            "jobSeconds": 63,
+            "workloadSeconds": 60,
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "metrics": null
+          },
+          {
+            "provider": "celesto",
+            "iteration": 5,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-7d45de38c16d3080b5de895c17dd466a",
+            "queueSeconds": 16,
+            "jobSeconds": 63,
+            "workloadSeconds": 60,
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "metrics": null
+          },
+          {
+            "provider": "celesto",
+            "iteration": 6,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-6ad17a216583fc392cc53b5067ec6c79",
+            "queueSeconds": 12,
+            "jobSeconds": 63,
+            "workloadSeconds": 60,
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "metrics": null
+          },
+          {
+            "provider": "celesto",
+            "iteration": 7,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-fa28bb5943b153d8e36e1268d064aaf4",
+            "queueSeconds": 17,
+            "jobSeconds": 64,
+            "workloadSeconds": 60,
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "metrics": null
+          },
+          {
+            "provider": "celesto",
+            "iteration": 8,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-1c6697c5e20ca6b615a62aac6b845a83",
+            "queueSeconds": 17,
+            "jobSeconds": 63,
+            "workloadSeconds": 60,
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "metrics": null
+          },
+          {
+            "provider": "celesto",
+            "iteration": 9,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-002df922a4c3b8244fff56362af4e01c",
+            "queueSeconds": 14,
+            "jobSeconds": 63,
+            "workloadSeconds": 60,
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "metrics": null
+          },
+          {
+            "provider": "celesto",
+            "iteration": 10,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-ca2fd37426b2d8ee44652917c6a1c33f",
+            "queueSeconds": 18,
+            "jobSeconds": 63,
+            "workloadSeconds": 60,
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "metrics": null
+          },
+          {
+            "provider": "celesto",
+            "iteration": 11,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-829d844ff72dd149936708cb839e4ece",
+            "queueSeconds": 27,
+            "jobSeconds": 65,
+            "workloadSeconds": 60,
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "metrics": null
+          },
+          {
+            "provider": "celesto",
+            "iteration": 12,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-ebf093a917f991bbd80b84884898c4bb",
+            "queueSeconds": 16,
+            "jobSeconds": 63,
+            "workloadSeconds": 60,
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "metrics": null
+          },
+          {
+            "provider": "celesto",
+            "iteration": 13,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-9d19743a58699fb89693906a009e0033",
+            "queueSeconds": 17,
+            "jobSeconds": 66,
+            "workloadSeconds": 60,
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "metrics": null
+          },
+          {
+            "provider": "celesto",
+            "iteration": 14,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-acc3db38c159f5edaf14a6788381c184",
+            "queueSeconds": 13,
+            "jobSeconds": 63,
+            "workloadSeconds": 60,
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "metrics": null
+          },
+          {
+            "provider": "celesto",
+            "iteration": 15,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-502d27b6459d7009150c590b03e08b1c",
+            "queueSeconds": 13,
+            "jobSeconds": 63,
+            "workloadSeconds": 60,
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "metrics": null
+          }
+        ],
+        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43544242821"
+      },
+      "hardware": {
+        "run": {
+          "id": 43543451248,
+          "attempt": 1,
+          "date": "2026-11-14",
+          "repository": "CelestoAI/ci-benchmarks"
+        },
+        "results": [
+          {
+            "provider": "celesto",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runner": "celesto-rs-340ce222963fde900a5fde22f7dfe860",
+            "queueSeconds": 12,
+            "jobSeconds": 474,
+            "workloadSeconds": null,
+            "phases": [],
+            "metrics": {
+              "cpu": {
+                "sysbenchSingleEps": 4058.78,
+                "sysbenchMultiEps": 16958.44,
+                "sevenZipMips": 22183,
+                "passmarkSingle": 2524.201629487929,
+                "passmarkCpuMark": 9520.61465742865
+              },
+              "groupSeconds": {
+                "cpu": 62.7,
+                "passmark": 130.2,
+                "memory": 30,
+                "disk": 203,
+                "network": 2.5,
+                "docker": 15.1,
+                "postgres": 12.1
+              },
+              "memory": {
+                "readMiBps": 1979.47,
+                "writeMiBps": 1875.4
+              },
+              "disk": {
+                "directory": "/tmp/celesto-actions-runner/_work/ci-benchmarks/ci-benchmarks/.fio",
+                "seqRead": {
+                  "MiBps": 2184.2,
+                  "iops": 2183,
+                  "p99us": 4685.8
+                },
+                "seqWrite": {
+                  "MiBps": 3610.6,
+                  "iops": 3609,
+                  "p99us": 13566
+                },
+                "randRead": {
+                  "MiBps": 297.1,
+                  "iops": 76039,
+                  "p99us": 8585.2
+                },
+                "randWrite": {
+                  "MiBps": 3.2,
+                  "iops": 822,
+                  "p99us": 2634022.9
+                },
+                "randReadQd1": {
+                  "MiBps": 26.1,
+                  "iops": 6686,
+                  "p99us": 232.4
+                },
+                "syncWrite": {
+                  "MiBps": 6.7,
+                  "iops": 1708,
+                  "p99us": 411.6
+                }
+              },
+              "network": {
+                "cdnDownload": {
+                  "MiBps": 61,
+                  "MiB": 133.6,
+                  "seconds": 2.1894
+                },
+                "githubDownload": {
+                  "MiBps": 115.9,
+                  "MiB": 34.3,
+                  "seconds": 0.295979
+                }
+              },
+              "docker": {
+                "image": "node:24-bookworm",
+                "pullSeconds": 12.56,
+                "firstRunSeconds": 2.4
+              },
+              "errors": {
+                "postgres": "Command failed: pgbench -i -s 50 -h localhost -U postgres bench\nError: You must install at least one postgresql-client-<version> package\n"
+              }
+            }
+          }
+        ],
+        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43543451248"
+      }
+    },
+    "GitHub": {
+      "rust": {
+        "provider": "GitHub",
+        "run": {
+          "id": 43350020470,
+          "attempt": 1,
+          "date": "2026-11-13",
+          "startedAt": "2026-11-13T02:08:37Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470",
+          "sha": "10d3e0a04403a051357a834d7dc62f60f2aa39d2",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470",
+        "results": [
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019192",
+            "queueSeconds": 5,
+            "jobSeconds": 228,
+            "workloadSeconds": 215,
+            "createdAt": "2026-11-13T02:08:49Z",
+            "startedAt": "2026-11-13T02:08:54Z",
+            "phases": [
+              {
+                "name": "checkout",
+                "seconds": 0,
+                "status": "success"
+              },
+              {
+                "name": "system packages",
+                "seconds": 10,
+                "status": "success"
+              },
+              {
+                "name": "toolchain",
+                "seconds": 9,
+                "status": "success"
+              },
+              {
+                "name": "cargo fmt",
+                "seconds": 1,
+                "status": "success"
+              },
+              {
+                "name": "cargo test",
+                "seconds": 125,
+                "status": "success"
+              },
+              {
+                "name": "cargo clippy",
+                "seconds": 58,
+                "status": "success"
+              },
+              {
+                "name": "cargo clippy (no features)",
+                "seconds": 12,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470/job/131638621280"
+          }
+        ]
+      },
+      "node": {
+        "provider": "GitHub",
+        "run": {
+          "id": 43363107291,
+          "attempt": 1,
+          "date": "2026-11-13",
+          "startedAt": "2026-11-13T04:04:37Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291",
+          "sha": "0087c3bb59fd7d6436fbd6bf7d661cdae7cee52b",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291",
+        "results": [
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019200",
+            "queueSeconds": 5,
+            "jobSeconds": 111,
+            "workloadSeconds": 98,
+            "createdAt": "2026-11-13T04:04:48Z",
+            "startedAt": "2026-11-13T04:04:53Z",
+            "phases": [
+              {
+                "name": "toolchain",
+                "seconds": 2,
+                "status": "success"
+              },
+              {
+                "name": "clone",
+                "seconds": 2,
+                "status": "success"
+              },
+              {
+                "name": "bun install",
+                "seconds": 23,
+                "status": "success"
+              },
+              {
+                "name": "typecheck",
+                "seconds": 71,
+                "status": "success"
+              }
+            ],
+            "metrics": {
+              "node": {
+                "installAttempts": 1,
+                "typecheckConcurrency": 4,
+                "typecheckPeakUsedMiB": 7154
+              }
+            },
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291/job/131681078480"
+          }
+        ]
+      },
+      "docker": {
+        "provider": "GitHub",
+        "run": {
+          "id": 43378009832,
+          "attempt": 1,
+          "date": "2026-11-13",
+          "startedAt": "2026-11-13T06:20:26Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832",
+          "sha": "58d5653bbb290c013c62e9b12c60d94bf107958b",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832",
+        "results": [
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019208",
+            "queueSeconds": 4,
+            "jobSeconds": 877,
+            "workloadSeconds": 779,
+            "createdAt": "2026-11-13T06:20:42Z",
+            "startedAt": "2026-11-13T06:20:46Z",
+            "phases": [
+              {
+                "name": "fetch source",
+                "seconds": 23,
+                "status": "success"
+              },
+              {
+                "name": "buildx setup",
+                "seconds": 7,
+                "status": "success"
+              },
+              {
+                "name": "docker build",
+                "seconds": 749,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832/job/131729046821"
+          }
+        ]
+      },
+      "cache": {
+        "provider": "GitHub",
+        "run": {
+          "id": 42957189372,
+          "attempt": 1,
+          "date": "2026-11-11",
+          "startedAt": "2026-11-11T04:07:44Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372",
+          "sha": "5f75a77b1d292a2d9b881cef41ce838f2945c81b",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372",
+        "results": [
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64.actions-cache",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019079",
+            "queueSeconds": 2,
+            "jobSeconds": 110,
+            "workloadSeconds": 80,
+            "createdAt": "2026-11-11T04:07:54Z",
+            "startedAt": "2026-11-11T04:07:56Z",
+            "phases": [
+              {
+                "name": "cache save",
+                "seconds": 36,
+                "status": "success"
+              },
+              {
+                "name": "cache restore",
+                "seconds": 44,
+                "status": "success"
+              },
+              {
+                "name": "verify",
+                "seconds": 0,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372/job/130315014542"
+          }
+        ]
+      },
+      "burst": {
+        "provider": "GitHub",
+        "run": {
+          "id": 43244114191,
+          "attempt": 1,
+          "date": "2026-11-12",
+          "startedAt": "2026-11-12T15:05:59Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191",
+          "sha": "e9cb01a0204e8d21aab5334891fd7ff9982f28cc",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191",
+        "results": [
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019138",
+            "queueSeconds": 3,
+            "jobSeconds": 72,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:15Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272179682"
+          },
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64",
+            "arch": "x64",
+            "iteration": 2,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019144",
+            "queueSeconds": 3,
+            "jobSeconds": 68,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:15Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272179728"
+          },
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64",
+            "arch": "x64",
+            "iteration": 3,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019139",
+            "queueSeconds": 3,
+            "jobSeconds": 72,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:15Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272179721"
+          },
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64",
+            "arch": "x64",
+            "iteration": 4,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019140",
+            "queueSeconds": 3,
+            "jobSeconds": 69,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:15Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272179633"
+          },
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64",
+            "arch": "x64",
+            "iteration": 5,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019147",
+            "queueSeconds": 3,
+            "jobSeconds": 67,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:15Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272179852"
+          },
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64",
+            "arch": "x64",
+            "iteration": 6,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019142",
+            "queueSeconds": 3,
+            "jobSeconds": 70,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:15Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272179753"
+          },
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64",
+            "arch": "x64",
+            "iteration": 7,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019149",
+            "queueSeconds": 4,
+            "jobSeconds": 68,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:16Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272179850"
+          },
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64",
+            "arch": "x64",
+            "iteration": 8,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019143",
+            "queueSeconds": 3,
+            "jobSeconds": 68,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:15Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272179957"
+          },
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64",
+            "arch": "x64",
+            "iteration": 9,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019145",
+            "queueSeconds": 3,
+            "jobSeconds": 69,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:15Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180044"
+          },
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64",
+            "arch": "x64",
+            "iteration": 10,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019141",
+            "queueSeconds": 3,
+            "jobSeconds": 69,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:15Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272179799"
+          },
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64",
+            "arch": "x64",
+            "iteration": 11,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019137",
+            "queueSeconds": 3,
+            "jobSeconds": 67,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:15Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272179755"
+          },
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64",
+            "arch": "x64",
+            "iteration": 12,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019136",
+            "queueSeconds": 3,
+            "jobSeconds": 69,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:15Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272179661"
+          },
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64",
+            "arch": "x64",
+            "iteration": 13,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019148",
+            "queueSeconds": 4,
+            "jobSeconds": 72,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:16Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180685"
+          },
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64",
+            "arch": "x64",
+            "iteration": 14,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019146",
+            "queueSeconds": 3,
+            "jobSeconds": 83,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:15Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272179912"
+          },
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64",
+            "arch": "x64",
+            "iteration": 15,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019135",
+            "queueSeconds": 3,
+            "jobSeconds": 68,
+            "workloadSeconds": 61,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:15Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 61,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272179658"
+          }
+        ]
+      },
+      "hardware": {
+        "provider": "GitHub",
+        "run": {
+          "id": 43544990607,
+          "attempt": 1,
+          "date": "2026-11-14",
+          "startedAt": "2026-11-14T02:12:31Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607",
+          "sha": "d4993b520364d20c81541ca7fa549d6363e93ee1",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607",
+        "results": [
+          {
+            "provider": "GitHub",
+            "runnerId": "github-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "GitHub Actions 1000019265",
+            "queueSeconds": 3,
+            "jobSeconds": 574,
+            "workloadSeconds": 0,
+            "createdAt": "2026-11-14T02:12:45Z",
+            "startedAt": "2026-11-14T02:12:48Z",
+            "phases": [],
+            "metrics": {
+              "cpu": {
+                "sysbenchSingleEps": 3092.56,
+                "sysbenchMultiEps": 6388.65,
+                "sevenZipMips": 17520,
+                "passmarkSingle": 2904.3210362467566,
+                "passmarkCpuMark": 7318.429658491605
+              },
+              "groupSeconds": {
+                "cpu": 69.6,
+                "passmark": 155.4,
+                "memory": 14.1,
+                "disk": 212.8,
+                "network": 3.9,
+                "docker": 18.2,
+                "postgres": 79.3
+              },
+              "memory": {
+                "readMiBps": 20997.38,
+                "writeMiBps": 11108.71
+              },
+              "disk": {
+                "directory": "/home/runner/work/benchmark-public/benchmark-public/.fio",
+                "seqRead": {
+                  "MiBps": 394,
+                  "iops": 392,
+                  "p99us": 107479
+                },
+                "seqWrite": {
+                  "MiBps": 237.7,
+                  "iops": 236,
+                  "p99us": 250609.7
+                },
+                "randRead": {
+                  "MiBps": 76.5,
+                  "iops": 19576,
+                  "p99us": 52166.7
+                },
+                "randWrite": {
+                  "MiBps": 45.7,
+                  "iops": 11695,
+                  "p99us": 43778
+                },
+                "randReadQd1": {
+                  "MiBps": 25.5,
+                  "iops": 6528,
+                  "p99us": 214
+                },
+                "syncWrite": {
+                  "MiBps": 13.4,
+                  "iops": 3423,
+                  "p99us": 268.3
+                }
+              },
+              "network": {
+                "cdnDownload": {
+                  "MiBps": 47,
+                  "MiB": 133.6,
+                  "seconds": 2.84
+                },
+                "githubDownload": {
+                  "MiBps": 33.1,
+                  "MiB": 34.3,
+                  "seconds": 1.03
+                }
+              },
+              "docker": {
+                "image": "node:24-bookworm",
+                "pullSeconds": 17.73,
+                "firstRunSeconds": 0.24
+              },
+              "postgres": {
+                "readOnlyTps": 49468.271021,
+                "readWriteTps": 4992.311399
+              }
+            },
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607/job/132294172091"
+          }
+        ]
+      }
+    },
+    "Blacksmith": {
+      "rust": {
+        "provider": "Blacksmith",
+        "run": {
+          "id": 43350020470,
+          "attempt": 1,
+          "date": "2026-11-13",
+          "startedAt": "2026-11-13T02:08:37Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470",
+          "sha": "10d3e0a04403a051357a834d7dc62f60f2aa39d2",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470",
+        "results": [
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-ja6vmfctiitwyajf",
+            "queueSeconds": 8,
+            "jobSeconds": 132,
+            "workloadSeconds": 122,
+            "createdAt": "2026-11-13T02:08:49Z",
+            "startedAt": "2026-11-13T02:08:57Z",
+            "phases": [
+              {
+                "name": "checkout",
+                "seconds": 1,
+                "status": "success"
+              },
+              {
+                "name": "system packages",
+                "seconds": 7,
+                "status": "success"
+              },
+              {
+                "name": "toolchain",
+                "seconds": 6,
+                "status": "success"
+              },
+              {
+                "name": "cargo fmt",
+                "seconds": 0,
+                "status": "success"
+              },
+              {
+                "name": "cargo test",
+                "seconds": 70,
+                "status": "success"
+              },
+              {
+                "name": "cargo clippy",
+                "seconds": 31,
+                "status": "success"
+              },
+              {
+                "name": "cargo clippy (no features)",
+                "seconds": 7,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470/job/131638621321"
+          }
+        ]
+      },
+      "node": {
+        "provider": "Blacksmith",
+        "run": {
+          "id": 43363107291,
+          "attempt": 1,
+          "date": "2026-11-13",
+          "startedAt": "2026-11-13T04:04:37Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291",
+          "sha": "0087c3bb59fd7d6436fbd6bf7d661cdae7cee52b",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291",
+        "results": [
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-lo5est5gvhxnx2fy",
+            "queueSeconds": 8,
+            "jobSeconds": 60,
+            "workloadSeconds": 50,
+            "createdAt": "2026-11-13T04:04:49Z",
+            "startedAt": "2026-11-13T04:04:57Z",
+            "phases": [
+              {
+                "name": "toolchain",
+                "seconds": 1,
+                "status": "success"
+              },
+              {
+                "name": "clone",
+                "seconds": 2,
+                "status": "success"
+              },
+              {
+                "name": "bun install",
+                "seconds": 9,
+                "status": "success"
+              },
+              {
+                "name": "typecheck",
+                "seconds": 38,
+                "status": "success"
+              }
+            ],
+            "metrics": {
+              "node": {
+                "installAttempts": 1,
+                "typecheckConcurrency": 4,
+                "typecheckPeakUsedMiB": 8338
+              }
+            },
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291/job/131681078786"
+          }
+        ]
+      },
+      "docker": {
+        "provider": "Blacksmith",
+        "run": {
+          "id": 43378009832,
+          "attempt": 1,
+          "date": "2026-11-13",
+          "startedAt": "2026-11-13T06:20:26Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832",
+          "sha": "58d5653bbb290c013c62e9b12c60d94bf107958b",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832",
+        "results": [
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-uv5aecjmaztwuqm7",
+            "queueSeconds": 8,
+            "jobSeconds": 379,
+            "workloadSeconds": 352,
+            "createdAt": "2026-11-13T06:20:42Z",
+            "startedAt": "2026-11-13T06:20:50Z",
+            "phases": [
+              {
+                "name": "fetch source",
+                "seconds": 20,
+                "status": "success"
+              },
+              {
+                "name": "buildx setup",
+                "seconds": 3,
+                "status": "success"
+              },
+              {
+                "name": "docker build",
+                "seconds": 329,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832/job/131729046837"
+          }
+        ]
+      },
+      "cache": {
+        "provider": "Blacksmith",
+        "run": {
+          "id": 42957189372,
+          "attempt": 1,
+          "date": "2026-11-11",
+          "startedAt": "2026-11-11T04:07:44Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372",
+          "sha": "5f75a77b1d292a2d9b881cef41ce838f2945c81b",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372",
+        "results": [
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64.actions-cache",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-beg3msbpmsmc4bqp",
+            "queueSeconds": 8,
+            "jobSeconds": 35,
+            "workloadSeconds": 17,
+            "createdAt": "2026-11-11T04:07:54Z",
+            "startedAt": "2026-11-11T04:08:02Z",
+            "phases": [
+              {
+                "name": "cache save",
+                "seconds": 7,
+                "status": "success"
+              },
+              {
+                "name": "cache restore",
+                "seconds": 10,
+                "status": "success"
+              },
+              {
+                "name": "verify",
+                "seconds": 0,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372/job/130315015984"
+          }
+        ]
+      },
+      "burst": {
+        "provider": "Blacksmith",
+        "run": {
+          "id": 43244114191,
+          "attempt": 1,
+          "date": "2026-11-12",
+          "startedAt": "2026-11-12T15:05:59Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191",
+          "sha": "e9cb01a0204e8d21aab5334891fd7ff9982f28cc",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191",
+        "results": [
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-s2ilmaqolyetyg4f",
+            "queueSeconds": 11,
+            "jobSeconds": 75,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:23Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180433"
+          },
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64",
+            "arch": "x64",
+            "iteration": 2,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-zz5xz7qw7yspnhwa",
+            "queueSeconds": 11,
+            "jobSeconds": 72,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:23Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180581"
+          },
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64",
+            "arch": "x64",
+            "iteration": 3,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-n4etuwkvsaqzaq3q",
+            "queueSeconds": 11,
+            "jobSeconds": 73,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:23Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180694"
+          },
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64",
+            "arch": "x64",
+            "iteration": 4,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-aethtvahermcnyhz",
+            "queueSeconds": 14,
+            "jobSeconds": 77,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:26Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180343"
+          },
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64",
+            "arch": "x64",
+            "iteration": 5,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-vvugqgk5yiol4mvr",
+            "queueSeconds": 14,
+            "jobSeconds": 74,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:26Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180647"
+          },
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64",
+            "arch": "x64",
+            "iteration": 6,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-2tmg3bh65bidvdht",
+            "queueSeconds": 12,
+            "jobSeconds": 74,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:24Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180496"
+          },
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64",
+            "arch": "x64",
+            "iteration": 7,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-knm47qysqorusavb",
+            "queueSeconds": 11,
+            "jobSeconds": 71,
+            "workloadSeconds": 61,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:23Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 61,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180429"
+          },
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64",
+            "arch": "x64",
+            "iteration": 8,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-gl2tupmpkp2lrf27",
+            "queueSeconds": 12,
+            "jobSeconds": 72,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:24Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180442"
+          },
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64",
+            "arch": "x64",
+            "iteration": 9,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-57mipukysyqtg4af",
+            "queueSeconds": 11,
+            "jobSeconds": 73,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:23Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180297"
+          },
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64",
+            "arch": "x64",
+            "iteration": 10,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-afd72wjujocywnlk",
+            "queueSeconds": 12,
+            "jobSeconds": 76,
+            "workloadSeconds": 61,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:24Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 61,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180456"
+          },
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64",
+            "arch": "x64",
+            "iteration": 11,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-cbvgnyj7sl3kqff2",
+            "queueSeconds": 16,
+            "jobSeconds": 74,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:28Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180513"
+          },
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64",
+            "arch": "x64",
+            "iteration": 12,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-3mpxfjmyp4jxuke7",
+            "queueSeconds": 11,
+            "jobSeconds": 73,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:23Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180425"
+          },
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64",
+            "arch": "x64",
+            "iteration": 13,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-srfltfz444vj4vpa",
+            "queueSeconds": 10,
+            "jobSeconds": 72,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:22Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180218"
+          },
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64",
+            "arch": "x64",
+            "iteration": 14,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-zwcsw5t6cf2qjvvi",
+            "queueSeconds": 10,
+            "jobSeconds": 72,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:22Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180458"
+          },
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64",
+            "arch": "x64",
+            "iteration": 15,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-5vciblketjtkfi2p",
+            "queueSeconds": 11,
+            "jobSeconds": 71,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:23Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180403"
+          }
+        ]
+      },
+      "hardware": {
+        "provider": "Blacksmith",
+        "run": {
+          "id": 43544990607,
+          "attempt": 1,
+          "date": "2026-11-14",
+          "startedAt": "2026-11-14T02:12:31Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607",
+          "sha": "d4993b520364d20c81541ca7fa549d6363e93ee1",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607",
+        "results": [
+          {
+            "provider": "Blacksmith",
+            "runnerId": "blacksmith-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "blacksmith-4vcpu-ubuntu-2404-5fi3jmmekwoxf6ke",
+            "queueSeconds": 9,
+            "jobSeconds": 451,
+            "workloadSeconds": 0,
+            "createdAt": "2026-11-14T02:12:45Z",
+            "startedAt": "2026-11-14T02:12:54Z",
+            "phases": [],
+            "metrics": {
+              "cpu": {
+                "sysbenchSingleEps": 5688.97,
+                "sysbenchMultiEps": 22415.43,
+                "sevenZipMips": 28108,
+                "passmarkSingle": 3845.779624084465,
+                "passmarkCpuMark": 13600.986776293472
+              },
+              "groupSeconds": {
+                "cpu": 58.8,
+                "passmark": 138.5,
+                "memory": 19.7,
+                "disk": 139.6,
+                "network": 1.4,
+                "docker": 8.3,
+                "postgres": 66.2
+              },
+              "memory": {
+                "readMiBps": 21957.12,
+                "writeMiBps": 3374.04
+              },
+              "disk": {
+                "directory": "/home/runner/_work/benchmark-public/benchmark-public/.fio",
+                "seqRead": {
+                  "MiBps": 7652.7,
+                  "iops": 7651,
+                  "p99us": 5144.6
+                },
+                "seqWrite": {
+                  "MiBps": 2107.4,
+                  "iops": 2106,
+                  "p99us": 32374.8
+                },
+                "randRead": {
+                  "MiBps": 1875.3,
+                  "iops": 480059,
+                  "p99us": 741.4
+                },
+                "randWrite": {
+                  "MiBps": 572.8,
+                  "iops": 146622,
+                  "p99us": 7634.9
+                },
+                "randReadQd1": {
+                  "MiBps": 217.2,
+                  "iops": 55609,
+                  "p99us": 19.1
+                },
+                "syncWrite": {
+                  "MiBps": 55,
+                  "iops": 14080,
+                  "p99us": 29.1
+                }
+              },
+              "network": {
+                "cdnDownload": {
+                  "MiBps": 134,
+                  "MiB": 133.6,
+                  "seconds": 1
+                },
+                "githubDownload": {
+                  "MiBps": 81.9,
+                  "MiB": 34.3,
+                  "seconds": 0.42
+                }
+              },
+              "docker": {
+                "image": "node:24-bookworm",
+                "pullSeconds": 7.78,
+                "firstRunSeconds": 0.45
+              },
+              "postgres": {
+                "readOnlyTps": 74895.694487,
+                "readWriteTps": 9463.022765
+              }
+            },
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607/job/132294172210"
+          }
+        ]
+      }
+    },
+    "Namespace": {
+      "rust": {
+        "provider": "Namespace",
+        "run": {
+          "id": 43350020470,
+          "attempt": 1,
+          "date": "2026-11-13",
+          "startedAt": "2026-11-13T02:08:37Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470",
+          "sha": "10d3e0a04403a051357a834d7dc62f60f2aa39d2",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470",
+        "results": [
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-a69g9gvv8nt9e",
+            "queueSeconds": 7,
+            "jobSeconds": 98,
+            "workloadSeconds": 91,
+            "createdAt": "2026-11-13T02:08:49Z",
+            "startedAt": "2026-11-13T02:08:56Z",
+            "phases": [
+              {
+                "name": "checkout",
+                "seconds": 0,
+                "status": "success"
+              },
+              {
+                "name": "system packages",
+                "seconds": 5,
+                "status": "success"
+              },
+              {
+                "name": "toolchain",
+                "seconds": 5,
+                "status": "success"
+              },
+              {
+                "name": "cargo fmt",
+                "seconds": 0,
+                "status": "success"
+              },
+              {
+                "name": "cargo test",
+                "seconds": 53,
+                "status": "success"
+              },
+              {
+                "name": "cargo clippy",
+                "seconds": 23,
+                "status": "success"
+              },
+              {
+                "name": "cargo clippy (no features)",
+                "seconds": 5,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470/job/131638621344"
+          }
+        ]
+      },
+      "node": {
+        "provider": "Namespace",
+        "run": {
+          "id": 43363107291,
+          "attempt": 1,
+          "date": "2026-11-13",
+          "startedAt": "2026-11-13T04:04:37Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291",
+          "sha": "0087c3bb59fd7d6436fbd6bf7d661cdae7cee52b",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291",
+        "results": [
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-4j8uab005ng9m",
+            "queueSeconds": 7,
+            "jobSeconds": 53,
+            "workloadSeconds": 44,
+            "createdAt": "2026-11-13T04:04:48Z",
+            "startedAt": "2026-11-13T04:04:55Z",
+            "phases": [
+              {
+                "name": "toolchain",
+                "seconds": 1,
+                "status": "success"
+              },
+              {
+                "name": "clone",
+                "seconds": 1,
+                "status": "success"
+              },
+              {
+                "name": "bun install",
+                "seconds": 9,
+                "status": "success"
+              },
+              {
+                "name": "typecheck",
+                "seconds": 33,
+                "status": "success"
+              }
+            ],
+            "metrics": {
+              "node": {
+                "installAttempts": 1,
+                "typecheckConcurrency": 4,
+                "typecheckPeakUsedMiB": 10023
+              }
+            },
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291/job/131681078517"
+          }
+        ]
+      },
+      "docker": {
+        "provider": "Namespace",
+        "run": {
+          "id": 43378009832,
+          "attempt": 1,
+          "date": "2026-11-13",
+          "startedAt": "2026-11-13T06:20:26Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832",
+          "sha": "58d5653bbb290c013c62e9b12c60d94bf107958b",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832",
+        "results": [
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-tdsginr4ei3pc",
+            "queueSeconds": 8,
+            "jobSeconds": 292,
+            "workloadSeconds": 278,
+            "createdAt": "2026-11-13T06:20:42Z",
+            "startedAt": "2026-11-13T06:20:50Z",
+            "phases": [
+              {
+                "name": "fetch source",
+                "seconds": 21,
+                "status": "success"
+              },
+              {
+                "name": "buildx setup",
+                "seconds": 2,
+                "status": "success"
+              },
+              {
+                "name": "docker build",
+                "seconds": 255,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832/job/131729046885"
+          }
+        ]
+      },
+      "cache": {
+        "provider": "Namespace",
+        "run": {
+          "id": 42957189372,
+          "attempt": 1,
+          "date": "2026-11-11",
+          "startedAt": "2026-11-11T04:07:44Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372",
+          "sha": "5f75a77b1d292a2d9b881cef41ce838f2945c81b",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372",
+        "results": [
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64.actions-cache",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-5707h1fpcofli",
+            "queueSeconds": 6,
+            "jobSeconds": 58,
+            "workloadSeconds": 47,
+            "createdAt": "2026-11-11T04:12:38Z",
+            "startedAt": "2026-11-11T04:12:44Z",
+            "phases": [
+              {
+                "name": "cache save",
+                "seconds": 16,
+                "status": "success"
+              },
+              {
+                "name": "cache restore",
+                "seconds": 31,
+                "status": "success"
+              },
+              {
+                "name": "verify",
+                "seconds": 0,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372/job/130316696115"
+          }
+        ]
+      },
+      "burst": {
+        "provider": "Namespace",
+        "run": {
+          "id": 43244114191,
+          "attempt": 1,
+          "date": "2026-11-12",
+          "startedAt": "2026-11-12T15:05:59Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191",
+          "sha": "e9cb01a0204e8d21aab5334891fd7ff9982f28cc",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191",
+        "results": [
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-h0pr9s0hm9ug4",
+            "queueSeconds": 10,
+            "jobSeconds": 65,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:22Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180307"
+          },
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64",
+            "arch": "x64",
+            "iteration": 2,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-9r4o42783ee3o",
+            "queueSeconds": 10,
+            "jobSeconds": 65,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:22Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180257"
+          },
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64",
+            "arch": "x64",
+            "iteration": 3,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-hrav3qpq5dvnm",
+            "queueSeconds": 9,
+            "jobSeconds": 65,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:21Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180601"
+          },
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64",
+            "arch": "x64",
+            "iteration": 4,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-92dpmns9a4i3m",
+            "queueSeconds": 10,
+            "jobSeconds": 65,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:22Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180901"
+          },
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64",
+            "arch": "x64",
+            "iteration": 5,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-f188p4l8dg3r4",
+            "queueSeconds": 10,
+            "jobSeconds": 76,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:22Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272181509"
+          },
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64",
+            "arch": "x64",
+            "iteration": 6,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-idfjgj54ohc4e",
+            "queueSeconds": 11,
+            "jobSeconds": 76,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:23Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180799"
+          },
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64",
+            "arch": "x64",
+            "iteration": 7,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-7anmanojmfv4m",
+            "queueSeconds": 8,
+            "jobSeconds": 65,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:20Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180760"
+          },
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64",
+            "arch": "x64",
+            "iteration": 8,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-ig6khjnk69nee",
+            "queueSeconds": 9,
+            "jobSeconds": 65,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:21Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180695"
+          },
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64",
+            "arch": "x64",
+            "iteration": 9,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-7sk7bvb9m82c6",
+            "queueSeconds": 8,
+            "jobSeconds": 65,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:20Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180883"
+          },
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64",
+            "arch": "x64",
+            "iteration": 10,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-v6hkk443bfhru",
+            "queueSeconds": 8,
+            "jobSeconds": 65,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:20Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180792"
+          },
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64",
+            "arch": "x64",
+            "iteration": 11,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-q8s080tp7015a",
+            "queueSeconds": 10,
+            "jobSeconds": 65,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:22Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180775"
+          },
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64",
+            "arch": "x64",
+            "iteration": 12,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-7akdjihnmetpc",
+            "queueSeconds": 10,
+            "jobSeconds": 65,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:22Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272181415"
+          },
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64",
+            "arch": "x64",
+            "iteration": 13,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-8g0ufo9eg3l32",
+            "queueSeconds": 9,
+            "jobSeconds": 66,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:21Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180896"
+          },
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64",
+            "arch": "x64",
+            "iteration": 14,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-phn2ekqcd5tqc",
+            "queueSeconds": 9,
+            "jobSeconds": 65,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:21Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180868"
+          },
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64",
+            "arch": "x64",
+            "iteration": 15,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-bnchvqqok0fn0",
+            "queueSeconds": 8,
+            "jobSeconds": 65,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:20Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180613"
+          }
+        ]
+      },
+      "hardware": {
+        "provider": "Namespace",
+        "run": {
+          "id": 43544990607,
+          "attempt": 1,
+          "date": "2026-11-14",
+          "startedAt": "2026-11-14T02:12:31Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607",
+          "sha": "d4993b520364d20c81541ca7fa549d6363e93ee1",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607",
+        "results": [
+          {
+            "provider": "Namespace",
+            "runnerId": "namespace-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "nsc-runner-9n6qqpnp1jln6",
+            "queueSeconds": 7,
+            "jobSeconds": 440,
+            "workloadSeconds": 0,
+            "createdAt": "2026-11-14T02:12:45Z",
+            "startedAt": "2026-11-14T02:12:52Z",
+            "phases": [],
+            "metrics": {
+              "cpu": {
+                "sysbenchSingleEps": 6652.13,
+                "sysbenchMultiEps": 26027.16,
+                "sevenZipMips": 25294,
+                "passmarkSingle": 4476.546978389046,
+                "passmarkCpuMark": 15090.096071597882
+              },
+              "groupSeconds": {
+                "cpu": 58.7,
+                "passmark": 148.1,
+                "memory": 6.6,
+                "disk": 139.4,
+                "network": 1.1,
+                "docker": 4.6,
+                "postgres": 67.8
+              },
+              "memory": {
+                "readMiBps": 42432.9,
+                "writeMiBps": 24405.67
+              },
+              "disk": {
+                "directory": "/home/runner/work/benchmark-public/benchmark-public/.fio",
+                "seqRead": {
+                  "MiBps": 3991.9,
+                  "iops": 3990,
+                  "p99us": 12386.3
+                },
+                "seqWrite": {
+                  "MiBps": 2536,
+                  "iops": 2534,
+                  "p99us": 17956.9
+                },
+                "randRead": {
+                  "MiBps": 3488.8,
+                  "iops": 893134,
+                  "p99us": 667.6
+                },
+                "randWrite": {
+                  "MiBps": 1779,
+                  "iops": 455429,
+                  "p99us": 659.5
+                },
+                "randReadQd1": {
+                  "MiBps": 317.4,
+                  "iops": 81255,
+                  "p99us": 15.3
+                },
+                "syncWrite": {
+                  "MiBps": 76.6,
+                  "iops": 19603,
+                  "p99us": 22.1
+                }
+              },
+              "network": {
+                "cdnDownload": {
+                  "MiBps": 146.8,
+                  "MiB": 133.6,
+                  "seconds": 0.91
+                },
+                "githubDownload": {
+                  "MiBps": 156,
+                  "MiB": 34.3,
+                  "seconds": 0.22
+                }
+              },
+              "docker": {
+                "image": "node:24-bookworm",
+                "pullSeconds": 3.91,
+                "firstRunSeconds": 0.63
+              },
+              "postgres": {
+                "readOnlyTps": 88336.475838,
+                "readWriteTps": 11133.676271
+              }
+            },
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607/job/132294172216"
+          }
+        ]
+      }
+    },
+    "WarpBuild": {
+      "rust": {
+        "provider": "WarpBuild",
+        "run": {
+          "id": 43350020470,
+          "attempt": 1,
+          "date": "2026-11-13",
+          "startedAt": "2026-11-13T02:08:37Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470",
+          "sha": "10d3e0a04403a051357a834d7dc62f60f2aa39d2",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470",
+        "results": [
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-wjuda92hxvixc6ip",
+            "queueSeconds": 10,
+            "jobSeconds": 162,
+            "workloadSeconds": 155,
+            "createdAt": "2026-11-13T02:08:49Z",
+            "startedAt": "2026-11-13T02:08:59Z",
+            "phases": [
+              {
+                "name": "checkout",
+                "seconds": 0,
+                "status": "success"
+              },
+              {
+                "name": "system packages",
+                "seconds": 5,
+                "status": "success"
+              },
+              {
+                "name": "toolchain",
+                "seconds": 6,
+                "status": "success"
+              },
+              {
+                "name": "cargo fmt",
+                "seconds": 0,
+                "status": "success"
+              },
+              {
+                "name": "cargo test",
+                "seconds": 92,
+                "status": "success"
+              },
+              {
+                "name": "cargo clippy",
+                "seconds": 43,
+                "status": "success"
+              },
+              {
+                "name": "cargo clippy (no features)",
+                "seconds": 9,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470/job/131638621849"
+          }
+        ]
+      },
+      "node": {
+        "provider": "WarpBuild",
+        "run": {
+          "id": 43363107291,
+          "attempt": 1,
+          "date": "2026-11-13",
+          "startedAt": "2026-11-13T04:04:37Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291",
+          "sha": "0087c3bb59fd7d6436fbd6bf7d661cdae7cee52b",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291",
+        "results": [
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-wjfyscm8vstrgrzj",
+            "queueSeconds": 10,
+            "jobSeconds": 97,
+            "workloadSeconds": 87,
+            "createdAt": "2026-11-13T04:04:48Z",
+            "startedAt": "2026-11-13T04:04:58Z",
+            "phases": [
+              {
+                "name": "toolchain",
+                "seconds": 1,
+                "status": "success"
+              },
+              {
+                "name": "clone",
+                "seconds": 1,
+                "status": "success"
+              },
+              {
+                "name": "bun install",
+                "seconds": 16,
+                "status": "success"
+              },
+              {
+                "name": "typecheck",
+                "seconds": 69,
+                "status": "success"
+              }
+            ],
+            "metrics": {
+              "node": {
+                "installAttempts": 1,
+                "typecheckConcurrency": 4,
+                "typecheckPeakUsedMiB": 10210
+              }
+            },
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291/job/131681078519"
+          }
+        ]
+      },
+      "docker": {
+        "provider": "WarpBuild",
+        "run": {
+          "id": 43378009832,
+          "attempt": 1,
+          "date": "2026-11-13",
+          "startedAt": "2026-11-13T06:20:26Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832",
+          "sha": "58d5653bbb290c013c62e9b12c60d94bf107958b",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832",
+        "results": [
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-wraewmhr9nspdbqf",
+            "queueSeconds": 10,
+            "jobSeconds": 467,
+            "workloadSeconds": 446,
+            "createdAt": "2026-11-13T06:20:42Z",
+            "startedAt": "2026-11-13T06:20:52Z",
+            "phases": [
+              {
+                "name": "fetch source",
+                "seconds": 19,
+                "status": "success"
+              },
+              {
+                "name": "buildx setup",
+                "seconds": 4,
+                "status": "success"
+              },
+              {
+                "name": "docker build",
+                "seconds": 423,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832/job/131729046920"
+          }
+        ]
+      },
+      "cache": {
+        "provider": "WarpBuild",
+        "run": {
+          "id": 42957189372,
+          "attempt": 1,
+          "date": "2026-11-11",
+          "startedAt": "2026-11-11T04:07:44Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372",
+          "sha": "5f75a77b1d292a2d9b881cef41ce838f2945c81b",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372",
+        "results": [
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64.actions-cache",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-wygd20ubzwyc5xz1",
+            "queueSeconds": 8,
+            "jobSeconds": 47,
+            "workloadSeconds": 32,
+            "createdAt": "2026-11-11T04:23:36Z",
+            "startedAt": "2026-11-11T04:23:44Z",
+            "phases": [
+              {
+                "name": "cache save",
+                "seconds": 12,
+                "status": "success"
+              },
+              {
+                "name": "cache restore",
+                "seconds": 20,
+                "status": "success"
+              },
+              {
+                "name": "verify",
+                "seconds": 0,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372/job/130320559128"
+          }
+        ]
+      },
+      "burst": {
+        "provider": "WarpBuild",
+        "run": {
+          "id": 43244114191,
+          "attempt": 1,
+          "date": "2026-11-12",
+          "startedAt": "2026-11-12T15:05:59Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191",
+          "sha": "e9cb01a0204e8d21aab5334891fd7ff9982f28cc",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191",
+        "results": [
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-wzkawpsa9kqqr9dg",
+            "queueSeconds": 9,
+            "jobSeconds": 66,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:21Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272181065"
+          },
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64",
+            "arch": "x64",
+            "iteration": 2,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-wvz40eafnbn6n4sq",
+            "queueSeconds": 10,
+            "jobSeconds": 66,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:22Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180802"
+          },
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64",
+            "arch": "x64",
+            "iteration": 3,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-wm38n70w510d2led",
+            "queueSeconds": 9,
+            "jobSeconds": 67,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:21Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180621"
+          },
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64",
+            "arch": "x64",
+            "iteration": 4,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-w1wdjhg3lvs9omhh",
+            "queueSeconds": 9,
+            "jobSeconds": 76,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:12Z",
+            "startedAt": "2026-11-12T15:06:21Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272180939"
+          },
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64",
+            "arch": "x64",
+            "iteration": 5,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-wouo02aki8mvfdfs",
+            "queueSeconds": 10,
+            "jobSeconds": 66,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:06:23Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188180"
+          },
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64",
+            "arch": "x64",
+            "iteration": 6,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-wntpenrhsngrqgip",
+            "queueSeconds": 11,
+            "jobSeconds": 66,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:06:24Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188429"
+          },
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64",
+            "arch": "x64",
+            "iteration": 7,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-w6y0zlt8oa0dh3jc",
+            "queueSeconds": 12,
+            "jobSeconds": 66,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:06:25Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188954"
+          },
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64",
+            "arch": "x64",
+            "iteration": 8,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-w3nc2r07nzxr60p7",
+            "queueSeconds": 10,
+            "jobSeconds": 66,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:06:23Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272189051"
+          },
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64",
+            "arch": "x64",
+            "iteration": 9,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-wv7v8bqgq7q8hima",
+            "queueSeconds": 9,
+            "jobSeconds": 67,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:06:22Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188249"
+          },
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64",
+            "arch": "x64",
+            "iteration": 10,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-wj7u2uo4furkvtnx",
+            "queueSeconds": 10,
+            "jobSeconds": 66,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:06:23Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188370"
+          },
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64",
+            "arch": "x64",
+            "iteration": 11,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-w6vtcw38knyw5t9a",
+            "queueSeconds": 9,
+            "jobSeconds": 66,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:06:22Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188327"
+          },
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64",
+            "arch": "x64",
+            "iteration": 12,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-waik4rxve0jfk2g5",
+            "queueSeconds": 10,
+            "jobSeconds": 66,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:06:23Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188391"
+          },
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64",
+            "arch": "x64",
+            "iteration": 13,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-wn9jjpdcs00x6p0a",
+            "queueSeconds": 9,
+            "jobSeconds": 67,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:06:22Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188629"
+          },
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64",
+            "arch": "x64",
+            "iteration": 14,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-we4jg2q4zo9w54rw",
+            "queueSeconds": 9,
+            "jobSeconds": 66,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:06:22Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188388"
+          },
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64",
+            "arch": "x64",
+            "iteration": 15,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-wcbnsyn8f6j0r92p",
+            "queueSeconds": 10,
+            "jobSeconds": 67,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:06:23Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188361"
+          }
+        ]
+      },
+      "hardware": {
+        "provider": "WarpBuild",
+        "run": {
+          "id": 43544990607,
+          "attempt": 1,
+          "date": "2026-11-14",
+          "startedAt": "2026-11-14T02:12:31Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607",
+          "sha": "d4993b520364d20c81541ca7fa549d6363e93ee1",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607",
+        "results": [
+          {
+            "provider": "Warpbuild",
+            "runnerId": "warpbuild-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "warp-4x-x64-w7nwpgfv426auffx",
+            "queueSeconds": 9,
+            "jobSeconds": 454,
+            "workloadSeconds": 0,
+            "createdAt": "2026-11-14T02:12:45Z",
+            "startedAt": "2026-11-14T02:12:54Z",
+            "phases": [],
+            "metrics": {
+              "cpu": {
+                "sysbenchSingleEps": 6180.57,
+                "sysbenchMultiEps": 13089.92,
+                "sevenZipMips": 22961,
+                "passmarkSingle": 4292.228905163785,
+                "passmarkCpuMark": 11113.197569125845
+              },
+              "groupSeconds": {
+                "cpu": 61,
+                "passmark": 135.3,
+                "memory": 17.3,
+                "disk": 144,
+                "network": 3.4,
+                "docker": 9.3,
+                "postgres": 70.5
+              },
+              "memory": {
+                "readMiBps": 28215.09,
+                "writeMiBps": 7491.33
+              },
+              "disk": {
+                "directory": "/home/runner/work/benchmark-public/benchmark-public/.fio",
+                "seqRead": {
+                  "MiBps": 4180,
+                  "iops": 4178,
+                  "p99us": 13434.9
+                },
+                "seqWrite": {
+                  "MiBps": 2728.6,
+                  "iops": 2727,
+                  "p99us": 24510.5
+                },
+                "randRead": {
+                  "MiBps": 342.6,
+                  "iops": 87693,
+                  "p99us": 4079.6
+                },
+                "randWrite": {
+                  "MiBps": 122.7,
+                  "iops": 31392,
+                  "p99us": 11337.7
+                },
+                "randReadQd1": {
+                  "MiBps": 248.3,
+                  "iops": 63558,
+                  "p99us": 21.6
+                },
+                "syncWrite": {
+                  "MiBps": 13.4,
+                  "iops": 3436,
+                  "p99us": 138.2
+                }
+              },
+              "network": {
+                "cdnDownload": {
+                  "MiBps": 46.3,
+                  "MiB": 133.6,
+                  "seconds": 2.88
+                },
+                "githubDownload": {
+                  "MiBps": 64.8,
+                  "MiB": 34.3,
+                  "seconds": 0.53
+                }
+              },
+              "docker": {
+                "image": "node:24-bookworm",
+                "pullSeconds": 8.98,
+                "firstRunSeconds": 0.21
+              },
+              "postgres": {
+                "readOnlyTps": 66079.564715,
+                "readWriteTps": 4701.428501
+              }
+            },
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607/job/132294172142"
+          }
+        ]
+      }
+    },
+    "Ubicloud": {
+      "rust": {
+        "provider": "Ubicloud",
+        "run": {
+          "id": 43350020470,
+          "attempt": 1,
+          "date": "2026-11-13",
+          "startedAt": "2026-11-13T02:08:37Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470",
+          "sha": "10d3e0a04403a051357a834d7dc62f60f2aa39d2",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470",
+        "results": [
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "gr4crpg0taa21qwwy5ntg422hr",
+            "queueSeconds": 21,
+            "jobSeconds": 197,
+            "workloadSeconds": 184,
+            "createdAt": "2026-11-13T02:08:49Z",
+            "startedAt": "2026-11-13T02:09:10Z",
+            "phases": [
+              {
+                "name": "checkout",
+                "seconds": 1,
+                "status": "success"
+              },
+              {
+                "name": "system packages",
+                "seconds": 14,
+                "status": "success"
+              },
+              {
+                "name": "toolchain",
+                "seconds": 8,
+                "status": "success"
+              },
+              {
+                "name": "cargo fmt",
+                "seconds": 0,
+                "status": "success"
+              },
+              {
+                "name": "cargo test",
+                "seconds": 104,
+                "status": "success"
+              },
+              {
+                "name": "cargo clippy",
+                "seconds": 47,
+                "status": "success"
+              },
+              {
+                "name": "cargo clippy (no features)",
+                "seconds": 10,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470/job/131638621631"
+          }
+        ]
+      },
+      "node": {
+        "provider": "Ubicloud",
+        "run": {
+          "id": 43363107291,
+          "attempt": 1,
+          "date": "2026-11-13",
+          "startedAt": "2026-11-13T04:04:37Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291",
+          "sha": "0087c3bb59fd7d6436fbd6bf7d661cdae7cee52b",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291",
+        "results": [
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "grym4q2gt8se4m1v5849edfmf7",
+            "queueSeconds": 19,
+            "jobSeconds": 103,
+            "workloadSeconds": 89,
+            "createdAt": "2026-11-13T04:04:48Z",
+            "startedAt": "2026-11-13T04:05:07Z",
+            "phases": [
+              {
+                "name": "toolchain",
+                "seconds": 2,
+                "status": "success"
+              },
+              {
+                "name": "clone",
+                "seconds": 3,
+                "status": "success"
+              },
+              {
+                "name": "bun install",
+                "seconds": 22,
+                "status": "success"
+              },
+              {
+                "name": "typecheck",
+                "seconds": 62,
+                "status": "success"
+              }
+            ],
+            "metrics": {
+              "node": {
+                "installAttempts": 1,
+                "typecheckConcurrency": 4,
+                "typecheckPeakUsedMiB": 8786
+              }
+            },
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291/job/131681078636"
+          }
+        ]
+      },
+      "docker": {
+        "provider": "Ubicloud",
+        "run": {
+          "id": 43378009832,
+          "attempt": 1,
+          "date": "2026-11-13",
+          "startedAt": "2026-11-13T06:20:26Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832",
+          "sha": "58d5653bbb290c013c62e9b12c60d94bf107958b",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832",
+        "results": [
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "grr7fwvw5hy20hqsex6s2sedgv",
+            "queueSeconds": 10,
+            "jobSeconds": 846,
+            "workloadSeconds": 791,
+            "createdAt": "2026-11-13T06:20:42Z",
+            "startedAt": "2026-11-13T06:20:52Z",
+            "phases": [
+              {
+                "name": "fetch source",
+                "seconds": 25,
+                "status": "success"
+              },
+              {
+                "name": "buildx setup",
+                "seconds": 14,
+                "status": "success"
+              },
+              {
+                "name": "docker build",
+                "seconds": 752,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832/job/131729046924"
+          }
+        ]
+      },
+      "cache": {
+        "provider": "Ubicloud",
+        "run": {
+          "id": 42957189372,
+          "attempt": 1,
+          "date": "2026-11-11",
+          "startedAt": "2026-11-11T04:07:44Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372",
+          "sha": "5f75a77b1d292a2d9b881cef41ce838f2945c81b",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372",
+        "results": [
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64.actions-cache",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "gr17antp55ce6q2zan9p4zefck",
+            "queueSeconds": 22,
+            "jobSeconds": 137,
+            "workloadSeconds": 108,
+            "createdAt": "2026-11-11T04:07:54Z",
+            "startedAt": "2026-11-11T04:08:16Z",
+            "phases": [
+              {
+                "name": "cache save",
+                "seconds": 49,
+                "status": "success"
+              },
+              {
+                "name": "cache restore",
+                "seconds": 59,
+                "status": "success"
+              },
+              {
+                "name": "verify",
+                "seconds": 0,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372/job/130315016047"
+          }
+        ]
+      },
+      "burst": {
+        "provider": "Ubicloud",
+        "run": {
+          "id": 43244114191,
+          "attempt": 1,
+          "date": "2026-11-12",
+          "startedAt": "2026-11-12T15:05:59Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191",
+          "sha": "e9cb01a0204e8d21aab5334891fd7ff9982f28cc",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191",
+        "results": [
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "grx4pbdagn065qq4wvdnqs85hj",
+            "queueSeconds": 30,
+            "jobSeconds": 73,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:06:43Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188364"
+          },
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64",
+            "arch": "x64",
+            "iteration": 2,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "grpqnnywgd3t4nbax1jepq8sxk",
+            "queueSeconds": 50,
+            "jobSeconds": 71,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:07:03Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188341"
+          },
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64",
+            "arch": "x64",
+            "iteration": 3,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "gresz33y31yt2mtnm7e5smz3g1",
+            "queueSeconds": 31,
+            "jobSeconds": 73,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:06:44Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188338"
+          },
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64",
+            "arch": "x64",
+            "iteration": 4,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "grgmjhwtttvy1kyhy2a4sbdc0v",
+            "queueSeconds": 32,
+            "jobSeconds": 72,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:06:45Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272189189"
+          },
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64",
+            "arch": "x64",
+            "iteration": 5,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "gr67bnschpwe1gyrgtmzt1x7sh",
+            "queueSeconds": 170,
+            "jobSeconds": 74,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:09:03Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272190297"
+          },
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64",
+            "arch": "x64",
+            "iteration": 6,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "grzn5bfr9d6t7nv614gzbj1bkw",
+            "queueSeconds": 36,
+            "jobSeconds": 71,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:06:49Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188441"
+          },
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64",
+            "arch": "x64",
+            "iteration": 7,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "grgpgdwa743t3m2ks14ewsebcy",
+            "queueSeconds": 90,
+            "jobSeconds": 74,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:07:43Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188423"
+          },
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64",
+            "arch": "x64",
+            "iteration": 8,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "grhjq9pfbf2e0gwjjwxd8hkgq7",
+            "queueSeconds": 165,
+            "jobSeconds": 75,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:08:58Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188964"
+          },
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64",
+            "arch": "x64",
+            "iteration": 9,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "grn384kzntp66kgtkba855kafb",
+            "queueSeconds": 31,
+            "jobSeconds": 72,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:06:44Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188437"
+          },
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64",
+            "arch": "x64",
+            "iteration": 10,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "grcmrpd6d1h22hmncxxzjm9sfd",
+            "queueSeconds": 32,
+            "jobSeconds": 72,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:06:45Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188382"
+          },
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64",
+            "arch": "x64",
+            "iteration": 11,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "gr3n3w8hdene4hhdszx73z1tb9",
+            "queueSeconds": 34,
+            "jobSeconds": 71,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:06:47Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272189427"
+          },
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64",
+            "arch": "x64",
+            "iteration": 12,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "gr8yn059mwsp1g6p08pajpabac",
+            "queueSeconds": 63,
+            "jobSeconds": 72,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:07:16Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272189354"
+          },
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64",
+            "arch": "x64",
+            "iteration": 13,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "gr0f41ht4zfy1jg2me3af5crky",
+            "queueSeconds": 65,
+            "jobSeconds": 70,
+            "workloadSeconds": 61,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:07:18Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 61,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188452"
+          },
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64",
+            "arch": "x64",
+            "iteration": 14,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "gr0jee7e0awe3p1dm8vj23pgvt",
+            "queueSeconds": 176,
+            "jobSeconds": 73,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:09:09Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272190074"
+          },
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64",
+            "arch": "x64",
+            "iteration": 15,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "grtn95cayx0y6hs1bx663e9ad1",
+            "queueSeconds": 63,
+            "jobSeconds": 71,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:06:13Z",
+            "startedAt": "2026-11-12T15:07:16Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191/job/131272188547"
+          }
+        ]
+      },
+      "hardware": {
+        "provider": "Ubicloud",
+        "run": {
+          "id": 43544990607,
+          "attempt": 1,
+          "date": "2026-11-14",
+          "startedAt": "2026-11-14T02:12:31Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607",
+          "sha": "d4993b520364d20c81541ca7fa549d6363e93ee1",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607",
+        "results": [
+          {
+            "provider": "Ubicloud",
+            "runnerId": "ubicloud-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "grq05qyg3zxt2j78dpsa8pn4f8",
+            "queueSeconds": 25,
+            "jobSeconds": 559,
+            "workloadSeconds": 0,
+            "createdAt": "2026-11-14T02:12:45Z",
+            "startedAt": "2026-11-14T02:13:10Z",
+            "phases": [],
+            "metrics": {
+              "cpu": {
+                "sysbenchSingleEps": 4541.79,
+                "sysbenchMultiEps": 9573.53,
+                "sevenZipMips": 19130,
+                "passmarkSingle": 2906.4400936958373,
+                "passmarkCpuMark": 7610.582060030079
+              },
+              "groupSeconds": {
+                "cpu": 65.5,
+                "passmark": 155,
+                "memory": 16.7,
+                "disk": 182.8,
+                "network": 3.9,
+                "docker": 23.1,
+                "postgres": 78.2
+              },
+              "memory": {
+                "readMiBps": 20711.94,
+                "writeMiBps": 8688.76
+              },
+              "disk": {
+                "directory": "/home/runner/work/benchmark-public/benchmark-public/.fio",
+                "seqRead": {
+                  "MiBps": 1875.5,
+                  "iops": 1874,
+                  "p99us": 30801.9
+                },
+                "seqWrite": {
+                  "MiBps": 332.3,
+                  "iops": 331,
+                  "p99us": 196083.7
+                },
+                "randRead": {
+                  "MiBps": 543.8,
+                  "iops": 139207,
+                  "p99us": 3883
+                },
+                "randWrite": {
+                  "MiBps": 113.9,
+                  "iops": 29164,
+                  "p99us": 17432.6
+                },
+                "randReadQd1": {
+                  "MiBps": 29.6,
+                  "iops": 7568,
+                  "p99us": 897
+                },
+                "syncWrite": {
+                  "MiBps": 5.1,
+                  "iops": 1314,
+                  "p99us": 3129.3
+                }
+              },
+              "network": {
+                "cdnDownload": {
+                  "MiBps": 94.8,
+                  "MiB": 133.6,
+                  "seconds": 1.41
+                },
+                "githubDownload": {
+                  "MiBps": 13.6,
+                  "MiB": 34.3,
+                  "seconds": 2.52
+                }
+              },
+              "docker": {
+                "image": "node:24-bookworm",
+                "pullSeconds": 22.43,
+                "firstRunSeconds": 0.53
+              },
+              "postgres": {
+                "readOnlyTps": 24173.881739,
+                "readWriteTps": 1880.342776
+              }
+            },
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607/job/132294172356"
+          }
+        ]
+      }
+    },
+    "RunsOn": {
+      "rust": {
+        "provider": "RunsOn",
+        "run": {
+          "id": 43350020470,
+          "attempt": 1,
+          "date": "2026-11-13",
+          "startedAt": "2026-11-13T02:08:37Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470",
+          "sha": "10d3e0a04403a051357a834d7dc62f60f2aa39d2",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470",
+        "results": [
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-0ce570716684b9558--6a1af2b7-e",
+            "queueSeconds": 22,
+            "jobSeconds": 120,
+            "workloadSeconds": 108,
+            "createdAt": "2026-11-13T02:08:49Z",
+            "startedAt": "2026-11-13T02:09:11Z",
+            "phases": [
+              {
+                "name": "checkout",
+                "seconds": 1,
+                "status": "success"
+              },
+              {
+                "name": "system packages",
+                "seconds": 7,
+                "status": "success"
+              },
+              {
+                "name": "toolchain",
+                "seconds": 7,
+                "status": "success"
+              },
+              {
+                "name": "cargo fmt",
+                "seconds": 0,
+                "status": "success"
+              },
+              {
+                "name": "cargo test",
+                "seconds": 60,
+                "status": "success"
+              },
+              {
+                "name": "cargo clippy",
+                "seconds": 27,
+                "status": "success"
+              },
+              {
+                "name": "cargo clippy (no features)",
+                "seconds": 6,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470/job/131638621285"
+          }
+        ]
+      },
+      "node": {
+        "provider": "RunsOn",
+        "run": {
+          "id": 43363107291,
+          "attempt": 1,
+          "date": "2026-11-13",
+          "startedAt": "2026-11-13T04:04:37Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291",
+          "sha": "0087c3bb59fd7d6436fbd6bf7d661cdae7cee52b",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291",
+        "results": [
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-03fdd07f478004e29--2e1caa6c-3",
+            "queueSeconds": 17,
+            "jobSeconds": 83,
+            "workloadSeconds": 63,
+            "createdAt": "2026-11-13T04:04:48Z",
+            "startedAt": "2026-11-13T04:05:05Z",
+            "phases": [
+              {
+                "name": "toolchain",
+                "seconds": 1,
+                "status": "success"
+              },
+              {
+                "name": "clone",
+                "seconds": 4,
+                "status": "success"
+              },
+              {
+                "name": "bun install",
+                "seconds": 20,
+                "status": "success"
+              },
+              {
+                "name": "typecheck",
+                "seconds": 38,
+                "status": "success"
+              }
+            ],
+            "metrics": {
+              "node": {
+                "installAttempts": 1,
+                "typecheckConcurrency": 4,
+                "typecheckPeakUsedMiB": 8683
+              }
+            },
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291/job/131681078532"
+          }
+        ]
+      },
+      "docker": {
+        "provider": "RunsOn",
+        "run": {
+          "id": 43378009832,
+          "attempt": 1,
+          "date": "2026-11-13",
+          "startedAt": "2026-11-13T06:20:26Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832",
+          "sha": "58d5653bbb290c013c62e9b12c60d94bf107958b",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832",
+        "results": [
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-0e89e3bbde74d0340--ce542e35-b",
+            "queueSeconds": 19,
+            "jobSeconds": 599,
+            "workloadSeconds": 540,
+            "createdAt": "2026-11-13T06:20:42Z",
+            "startedAt": "2026-11-13T06:21:01Z",
+            "phases": [
+              {
+                "name": "fetch source",
+                "seconds": 14,
+                "status": "success"
+              },
+              {
+                "name": "buildx setup",
+                "seconds": 6,
+                "status": "success"
+              },
+              {
+                "name": "docker build",
+                "seconds": 520,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832/job/131729046897"
+          }
+        ]
+      },
+      "cache": {
+        "provider": "RunsOn",
+        "run": {
+          "id": 42957189372,
+          "attempt": 1,
+          "date": "2026-11-11",
+          "startedAt": "2026-11-11T04:07:44Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372",
+          "sha": "5f75a77b1d292a2d9b881cef41ce838f2945c81b",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372",
+        "results": [
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64.actions-cache",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-088e8299807e6000f--81f3a392-6",
+            "queueSeconds": 17,
+            "jobSeconds": 51,
+            "workloadSeconds": 33,
+            "createdAt": "2026-11-11T04:07:54Z",
+            "startedAt": "2026-11-11T04:08:11Z",
+            "phases": [
+              {
+                "name": "cache save",
+                "seconds": 16,
+                "status": "success"
+              },
+              {
+                "name": "cache restore",
+                "seconds": 17,
+                "status": "success"
+              },
+              {
+                "name": "verify",
+                "seconds": 0,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372/job/130315015862"
+          }
+        ]
+      },
+      "burst": {
+        "provider": "RunsOn",
+        "run": {
+          "id": 43245321021,
+          "attempt": 1,
+          "date": "2026-11-12",
+          "startedAt": "2026-11-12T15:12:43Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021",
+          "sha": "10d3e0a04403a051357a834d7dc62f60f2aa39d2",
+          "event": "workflow_dispatch",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021",
+        "results": [
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-090fcf2a1bb4b425c--febcf941-9",
+            "queueSeconds": 19,
+            "jobSeconds": 70,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:12:59Z",
+            "startedAt": "2026-11-12T15:13:18Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021/job/131276452482"
+          },
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64",
+            "arch": "x64",
+            "iteration": 2,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-07f23946ac9d749ef--36a4d558-2",
+            "queueSeconds": 17,
+            "jobSeconds": 70,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:12:59Z",
+            "startedAt": "2026-11-12T15:13:16Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021/job/131276451766"
+          },
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64",
+            "arch": "x64",
+            "iteration": 3,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-0bc82c628485a0a60--b97048d4-9",
+            "queueSeconds": 22,
+            "jobSeconds": 71,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:12:59Z",
+            "startedAt": "2026-11-12T15:13:21Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021/job/131276452025"
+          },
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64",
+            "arch": "x64",
+            "iteration": 4,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-0c80ab9e162d7d253--827a7f35-4",
+            "queueSeconds": 19,
+            "jobSeconds": 68,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:12:59Z",
+            "startedAt": "2026-11-12T15:13:18Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021/job/131276451813"
+          },
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64",
+            "arch": "x64",
+            "iteration": 5,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-0274d0986e6a60d92--817bab95-2",
+            "queueSeconds": 16,
+            "jobSeconds": 74,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:12:59Z",
+            "startedAt": "2026-11-12T15:13:15Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021/job/131276452121"
+          },
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64",
+            "arch": "x64",
+            "iteration": 6,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-0c6b0640c43f7d688--1641dbaa-2",
+            "queueSeconds": 16,
+            "jobSeconds": 74,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:12:59Z",
+            "startedAt": "2026-11-12T15:13:15Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021/job/131276451931"
+          },
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64",
+            "arch": "x64",
+            "iteration": 7,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-05d023b4bd382dfb7--95a90e79-5",
+            "queueSeconds": 17,
+            "jobSeconds": 72,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:12:59Z",
+            "startedAt": "2026-11-12T15:13:16Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021/job/131276451838"
+          },
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64",
+            "arch": "x64",
+            "iteration": 8,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-088f058d59595c517--7573224c-e",
+            "queueSeconds": 18,
+            "jobSeconds": 72,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:12:59Z",
+            "startedAt": "2026-11-12T15:13:17Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021/job/131276452132"
+          },
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64",
+            "arch": "x64",
+            "iteration": 9,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-0757133f89424b68c--4a41ea4c-f",
+            "queueSeconds": 19,
+            "jobSeconds": 70,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:12:59Z",
+            "startedAt": "2026-11-12T15:13:18Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021/job/131276452186"
+          },
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64",
+            "arch": "x64",
+            "iteration": 10,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-02cb01e38d819186b--51658133-3",
+            "queueSeconds": 17,
+            "jobSeconds": 69,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:12:59Z",
+            "startedAt": "2026-11-12T15:13:16Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021/job/131276452077"
+          },
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64",
+            "arch": "x64",
+            "iteration": 11,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-0d7a0d26ebb80080d--203dd37b-0",
+            "queueSeconds": 16,
+            "jobSeconds": 69,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:12:59Z",
+            "startedAt": "2026-11-12T15:13:15Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021/job/131276452205"
+          },
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64",
+            "arch": "x64",
+            "iteration": 12,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-0024c30f3ba106dfb--3a8826ab-3",
+            "queueSeconds": 19,
+            "jobSeconds": 71,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:12:59Z",
+            "startedAt": "2026-11-12T15:13:18Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021/job/131276452083"
+          },
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64",
+            "arch": "x64",
+            "iteration": 13,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-0f7599c7c4204f17b--d49133f8-7",
+            "queueSeconds": 16,
+            "jobSeconds": 70,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:12:59Z",
+            "startedAt": "2026-11-12T15:13:15Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021/job/131276451863"
+          },
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64",
+            "arch": "x64",
+            "iteration": 14,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-01e3fe657477bce62--7878e51b-2",
+            "queueSeconds": 17,
+            "jobSeconds": 69,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:12:59Z",
+            "startedAt": "2026-11-12T15:13:16Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021/job/131276451912"
+          },
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64",
+            "arch": "x64",
+            "iteration": 15,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-0a906dff09d64c628--3a735c38-8",
+            "queueSeconds": 19,
+            "jobSeconds": 68,
+            "workloadSeconds": 60,
+            "createdAt": "2026-11-12T15:12:59Z",
+            "startedAt": "2026-11-12T15:13:18Z",
+            "phases": [
+              {
+                "name": "hold",
+                "seconds": 60,
+                "status": "success"
+              }
+            ],
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021/job/131276452312"
+          }
+        ]
+      },
+      "hardware": {
+        "provider": "RunsOn",
+        "run": {
+          "id": 43544990607,
+          "attempt": 1,
+          "date": "2026-11-14",
+          "startedAt": "2026-11-14T02:12:31Z",
+          "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607",
+          "sha": "d4993b520364d20c81541ca7fa549d6363e93ee1",
+          "event": "schedule",
+          "repository": "runs-on-demo/benchmark-public"
+        },
+        "url": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607",
+        "results": [
+          {
+            "provider": "RunsOn",
+            "runnerId": "runson-m8a-x64",
+            "arch": "x64",
+            "iteration": 1,
+            "status": "success",
+            "failedAt": null,
+            "runnerName": "runs-on--i-090de674ead136192--b1d6d806-3",
+            "queueSeconds": 17,
+            "jobSeconds": 449,
+            "workloadSeconds": 0,
+            "createdAt": "2026-11-14T02:12:45Z",
+            "startedAt": "2026-11-14T02:13:02Z",
+            "phases": [],
+            "metrics": {
+              "cpu": {
+                "sysbenchSingleEps": 5040.44,
+                "sysbenchMultiEps": 20337.67,
+                "sevenZipMips": 38377,
+                "passmarkSingle": 3813.7938925565904,
+                "passmarkCpuMark": 13515.105573374965
+              },
+              "groupSeconds": {
+                "cpu": 53.3,
+                "passmark": 134.3,
+                "memory": 6.2,
+                "disk": 159.8,
+                "network": 1.8,
+                "docker": 7.2,
+                "postgres": 68.9
+              },
+              "memory": {
+                "readMiBps": 38054.59,
+                "writeMiBps": 29066.37
+              },
+              "disk": {
+                "directory": "/home/runner/work/benchmark-public/benchmark-public/.fio",
+                "seqRead": {
+                  "MiBps": 401.1,
+                  "iops": 399,
+                  "p99us": 89653.2
+                },
+                "seqWrite": {
+                  "MiBps": 401,
+                  "iops": 399,
+                  "p99us": 79167.5
+                },
+                "randRead": {
+                  "MiBps": 11.7,
+                  "iops": 2994,
+                  "p99us": 108527.6
+                },
+                "randWrite": {
+                  "MiBps": 11.7,
+                  "iops": 2991,
+                  "p99us": 57933.8
+                },
+                "randReadQd1": {
+                  "MiBps": 7.1,
+                  "iops": 1829,
+                  "p99us": 847.9
+                },
+                "syncWrite": {
+                  "MiBps": 2.1,
+                  "iops": 536,
+                  "p99us": 970.8
+                }
+              },
+              "network": {
+                "cdnDownload": {
+                  "MiBps": 94.2,
+                  "MiB": 133.6,
+                  "seconds": 1.42
+                },
+                "githubDownload": {
+                  "MiBps": 102.1,
+                  "MiB": 34.3,
+                  "seconds": 0.34
+                }
+              },
+              "docker": {
+                "image": "node:24-bookworm",
+                "pullSeconds": 4.84,
+                "firstRunSeconds": 2.3
+              },
+              "postgres": {
+                "readOnlyTps": 137184.514444,
+                "readWriteTps": 3243.984014
+              }
+            },
+            "jobUrl": "https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607/job/132294172005"
+          }
+        ]
+      }
+    }
+  }
+}
