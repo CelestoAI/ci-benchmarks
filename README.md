@@ -2,12 +2,12 @@
 
 Open benchmarks for GitHub Actions runners. Real builds of public projects, pinned to a commit, run on a schedule. Every workflow, script and raw result is in this repository.
 
-## Latest results
+## Benchmark results
 
-Latest available run per provider and suite. Provider run dates vary; the queue column is the p50 of the latest 15-job burst. Lower is faster.
+Benchmark runs by provider and suite. Provider run dates vary; the queue column is the p50 of the latest 15-job burst. Lower is faster. Celesto includes the November 14 reruns, with Node and Docker retested after the EBS throughput increase; [run conditions](results/2026-11-14-latest-run/README.md#workload-results) are recorded with the results.
 
-![Latest-run workload and queue times by provider; lower is faster](results/2026-11-14-latest-run/summary-light-on-demand.svg#gh-light-mode-only)
-![Latest-run workload and queue times by provider; lower is faster](results/2026-11-14-latest-run/summary-dark-on-demand.svg#gh-dark-mode-only)
+![Benchmark workload and queue times by provider; lower is faster](results/2026-11-14-latest-run/summary-light-on-demand.svg#gh-light-mode-only)
+![Benchmark workload and queue times by provider; lower is faster](results/2026-11-14-latest-run/summary-dark-on-demand.svg#gh-dark-mode-only)
 
 | Suite | Workload |
 | --- | --- |
@@ -21,7 +21,7 @@ All rows are 4 vCPU (x64). RunsOn is represented by its suggested 4-vCPU default
 
 Build and cache values use workload phase times; cache includes save and restore. Queue is measured from job creation to runner start. The price column shows published USD per running minute, not each job’s actual cost; RunsOn uses the on-demand (non-spot) rate of $0.0044/min for its 4-vCPU m8a.xlarge runner. The separate [rolling 30-day p50 archive](results/latest/README.md) is available for historical context.
 
-**[Latest-run comparison (Nov 14, all providers; timings, hardware, and source run links) →](results/2026-11-14-latest-run/README.md)**
+**[November 14 comparison (all providers; timings, hardware, and source run links) →](results/2026-11-14-latest-run/README.md)**
 
 ## Benchmarks in this repository
 
