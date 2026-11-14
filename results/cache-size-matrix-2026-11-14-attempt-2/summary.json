@@ -1,0 +1,1251 @@
+{
+  "run_url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43530675306/attempts/2",
+  "workflow_commit": "16141e1",
+  "completed_evidence_audit_utc": "2026-11-14T01:19:00.194111+00:00",
+  "timing_source": "GitHub Jobs API, one-second resolution; complete action steps",
+  "configuration": "Deployed Celesto Large runners, official actions/cache v6.1.0, no chunk/concurrency overrides",
+  "sizes": [
+    {
+      "payload_mib": 20,
+      "valid_samples": 3,
+      "save_seconds": {
+        "median": 2,
+        "min": 2,
+        "max": 2,
+        "samples": [
+          2,
+          2,
+          2
+        ]
+      },
+      "restore_seconds": {
+        "median": 1,
+        "min": 1,
+        "max": 2,
+        "samples": [
+          1,
+          1,
+          2
+        ]
+      },
+      "roundtrip_seconds": {
+        "median": 3,
+        "min": 3,
+        "max": 4,
+        "samples": [
+          3,
+          3,
+          4
+        ]
+      }
+    },
+    {
+      "payload_mib": 24,
+      "valid_samples": 3,
+      "save_seconds": {
+        "median": 3,
+        "min": 3,
+        "max": 4,
+        "samples": [
+          3,
+          3,
+          4
+        ]
+      },
+      "restore_seconds": {
+        "median": 1,
+        "min": 0,
+        "max": 1,
+        "samples": [
+          0,
+          1,
+          1
+        ]
+      },
+      "roundtrip_seconds": {
+        "median": 4,
+        "min": 3,
+        "max": 5,
+        "samples": [
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "payload_mib": 32,
+      "valid_samples": 3,
+      "save_seconds": {
+        "median": 3,
+        "min": 3,
+        "max": 3,
+        "samples": [
+          3,
+          3,
+          3
+        ]
+      },
+      "restore_seconds": {
+        "median": 1,
+        "min": 1,
+        "max": 1,
+        "samples": [
+          1,
+          1,
+          1
+        ]
+      },
+      "roundtrip_seconds": {
+        "median": 4,
+        "min": 4,
+        "max": 4,
+        "samples": [
+          4,
+          4,
+          4
+        ]
+      }
+    },
+    {
+      "payload_mib": 64,
+      "valid_samples": 3,
+      "save_seconds": {
+        "median": 3,
+        "min": 3,
+        "max": 3,
+        "samples": [
+          3,
+          3,
+          3
+        ]
+      },
+      "restore_seconds": {
+        "median": 1,
+        "min": 1,
+        "max": 2,
+        "samples": [
+          2,
+          1,
+          1
+        ]
+      },
+      "roundtrip_seconds": {
+        "median": 4,
+        "min": 4,
+        "max": 5,
+        "samples": [
+          5,
+          4,
+          4
+        ]
+      }
+    },
+    {
+      "payload_mib": 96,
+      "valid_samples": 3,
+      "save_seconds": {
+        "median": 3,
+        "min": 3,
+        "max": 3,
+        "samples": [
+          3,
+          3,
+          3
+        ]
+      },
+      "restore_seconds": {
+        "median": 2,
+        "min": 2,
+        "max": 2,
+        "samples": [
+          2,
+          2,
+          2
+        ]
+      },
+      "roundtrip_seconds": {
+        "median": 5,
+        "min": 5,
+        "max": 5,
+        "samples": [
+          5,
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "payload_mib": 400,
+      "valid_samples": 3,
+      "save_seconds": {
+        "median": 4,
+        "min": 4,
+        "max": 4,
+        "samples": [
+          4,
+          4,
+          4
+        ]
+      },
+      "restore_seconds": {
+        "median": 3,
+        "min": 2,
+        "max": 4,
+        "samples": [
+          2,
+          3,
+          4
+        ]
+      },
+      "roundtrip_seconds": {
+        "median": 7,
+        "min": 6,
+        "max": 8,
+        "samples": [
+          6,
+          7,
+          8
+        ]
+      }
+    },
+    {
+      "payload_mib": 1024,
+      "valid_samples": 3,
+      "save_seconds": {
+        "median": 7,
+        "min": 6,
+        "max": 8,
+        "samples": [
+          7,
+          6,
+          8
+        ]
+      },
+      "restore_seconds": {
+        "median": 6,
+        "min": 5,
+        "max": 6,
+        "samples": [
+          6,
+          5,
+          6
+        ]
+      },
+      "roundtrip_seconds": {
+        "median": 13,
+        "min": 11,
+        "max": 14,
+        "samples": [
+          13,
+          11,
+          14
+        ]
+      }
+    },
+    {
+      "payload_mib": 2048,
+      "valid_samples": 3,
+      "save_seconds": {
+        "median": 10,
+        "min": 9,
+        "max": 13,
+        "samples": [
+          10,
+          9,
+          13
+        ]
+      },
+      "restore_seconds": {
+        "median": 15,
+        "min": 12,
+        "max": 18,
+        "samples": [
+          12,
+          18,
+          15
+        ]
+      },
+      "roundtrip_seconds": {
+        "median": 27,
+        "min": 22,
+        "max": 28,
+        "samples": [
+          22,
+          27,
+          28
+        ]
+      }
+    },
+    {
+      "payload_mib": 3072,
+      "valid_samples": 3,
+      "save_seconds": {
+        "median": 15,
+        "min": 15,
+        "max": 18,
+        "samples": [
+          18,
+          15,
+          15
+        ]
+      },
+      "restore_seconds": {
+        "median": 21,
+        "min": 21,
+        "max": 31,
+        "samples": [
+          31,
+          21,
+          21
+        ]
+      },
+      "roundtrip_seconds": {
+        "median": 36,
+        "min": 36,
+        "max": 49,
+        "samples": [
+          49,
+          36,
+          36
+        ]
+      }
+    },
+    {
+      "payload_mib": 4096,
+      "valid_samples": 3,
+      "save_seconds": {
+        "median": 18,
+        "min": 18,
+        "max": 21,
+        "samples": [
+          18,
+          18,
+          21
+        ]
+      },
+      "restore_seconds": {
+        "median": 29,
+        "min": 27,
+        "max": 34,
+        "samples": [
+          29,
+          34,
+          27
+        ]
+      },
+      "roundtrip_seconds": {
+        "median": 48,
+        "min": 47,
+        "max": 52,
+        "samples": [
+          47,
+          52,
+          48
+        ]
+      }
+    }
+  ],
+  "samples": [
+    {
+      "payload_mib": 20,
+      "iteration": 1,
+      "save_seconds": 2,
+      "restore_seconds": 1,
+      "roundtrip_seconds": 3,
+      "verification": {
+        "payload_mib": 20,
+        "payload_bytes": 20971520,
+        "cache_key": "size-matrix-43530675306-2-20mib-1",
+        "cache_hit": true,
+        "expected_sha256": "5c06f3635a778c69abaf557203f445a68ea72f4d58c5275737f499211f520973",
+        "restored_sha256": "5c06f3635a778c69abaf557203f445a68ea72f4d58c5275737f499211f520973",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-38ff5709bcb786f8a0f41777a33d4ff9",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16772366336,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 20,
+      "iteration": 2,
+      "save_seconds": 2,
+      "restore_seconds": 1,
+      "roundtrip_seconds": 3,
+      "verification": {
+        "payload_mib": 20,
+        "payload_bytes": 20971520,
+        "cache_key": "size-matrix-43530675306-2-20mib-2",
+        "cache_hit": true,
+        "expected_sha256": "edba3861a705a55972140b1a2b2e13bb3465593afb5806de441c3a0fe01a1fcf",
+        "restored_sha256": "edba3861a705a55972140b1a2b2e13bb3465593afb5806de441c3a0fe01a1fcf",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-426796995fd9aec371ee9dfdd9f82dd5",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16772366336,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 20,
+      "iteration": 3,
+      "save_seconds": 2,
+      "restore_seconds": 2,
+      "roundtrip_seconds": 4,
+      "verification": {
+        "payload_mib": 20,
+        "payload_bytes": 20971520,
+        "cache_key": "size-matrix-43530675306-2-20mib-3",
+        "cache_hit": true,
+        "expected_sha256": "f599adc4fe61e831e917272ac3234850ce551aebd01e3632a6081e419da197ed",
+        "restored_sha256": "f599adc4fe61e831e917272ac3234850ce551aebd01e3632a6081e419da197ed",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-22f50c91e426b034bf078537e02d1793",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773398528,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 24,
+      "iteration": 1,
+      "save_seconds": 3,
+      "restore_seconds": 0,
+      "roundtrip_seconds": 3,
+      "verification": {
+        "payload_mib": 24,
+        "payload_bytes": 25165824,
+        "cache_key": "size-matrix-43530675306-2-24mib-1",
+        "cache_hit": true,
+        "expected_sha256": "1836f688fd6c29aefeac92ffff41aad1ffccabaab3d6a363851fee3e7dec20a1",
+        "restored_sha256": "1836f688fd6c29aefeac92ffff41aad1ffccabaab3d6a363851fee3e7dec20a1",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-399455306c84c63d375cd73c21ea5e98",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773398528,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 24,
+      "iteration": 2,
+      "save_seconds": 3,
+      "restore_seconds": 1,
+      "roundtrip_seconds": 4,
+      "verification": {
+        "payload_mib": 24,
+        "payload_bytes": 25165824,
+        "cache_key": "size-matrix-43530675306-2-24mib-2",
+        "cache_hit": true,
+        "expected_sha256": "2243dda3653c4963c68b6832e592337d93b724a6e52d614eb9cdab2f4015584e",
+        "restored_sha256": "2243dda3653c4963c68b6832e592337d93b724a6e52d614eb9cdab2f4015584e",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-a8d5d35534499c9dc454c3cb0aec4dab",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773406720,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 24,
+      "iteration": 3,
+      "save_seconds": 4,
+      "restore_seconds": 1,
+      "roundtrip_seconds": 5,
+      "verification": {
+        "payload_mib": 24,
+        "payload_bytes": 25165824,
+        "cache_key": "size-matrix-43530675306-2-24mib-3",
+        "cache_hit": true,
+        "expected_sha256": "50b2b89f3d5291acd76d88815d6e11641432c89978fc1c93bbb15fb926fb5edd",
+        "restored_sha256": "50b2b89f3d5291acd76d88815d6e11641432c89978fc1c93bbb15fb926fb5edd",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-8dbbaf9cf5675464418db48cc67cb900",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773406720,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 32,
+      "iteration": 1,
+      "save_seconds": 3,
+      "restore_seconds": 1,
+      "roundtrip_seconds": 4,
+      "verification": {
+        "payload_mib": 32,
+        "payload_bytes": 33554432,
+        "cache_key": "size-matrix-43530675306-2-32mib-1",
+        "cache_hit": true,
+        "expected_sha256": "ae35f79e10cf4c2b056402ab6aa335048bbffe8e6d0926503465bd17ab2b5660",
+        "restored_sha256": "ae35f79e10cf4c2b056402ab6aa335048bbffe8e6d0926503465bd17ab2b5660",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-f660bd0ada0b6cddcaa8e4107d671965",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773406720,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 32,
+      "iteration": 2,
+      "save_seconds": 3,
+      "restore_seconds": 1,
+      "roundtrip_seconds": 4,
+      "verification": {
+        "payload_mib": 32,
+        "payload_bytes": 33554432,
+        "cache_key": "size-matrix-43530675306-2-32mib-2",
+        "cache_hit": true,
+        "expected_sha256": "0e6d3705546ac0c6ac963e555a23966dbe8e48e2b0afa965f835dfa7624a3dd0",
+        "restored_sha256": "0e6d3705546ac0c6ac963e555a23966dbe8e48e2b0afa965f835dfa7624a3dd0",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-77737f1e7512d3832c9e6c65bcc2942b",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773406720,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 32,
+      "iteration": 3,
+      "save_seconds": 3,
+      "restore_seconds": 1,
+      "roundtrip_seconds": 4,
+      "verification": {
+        "payload_mib": 32,
+        "payload_bytes": 33554432,
+        "cache_key": "size-matrix-43530675306-2-32mib-3",
+        "cache_hit": true,
+        "expected_sha256": "c2c4af2713a42dc2bd32189695215ecaeefed1f1f067711ec5ce9781f0bdfa71",
+        "restored_sha256": "c2c4af2713a42dc2bd32189695215ecaeefed1f1f067711ec5ce9781f0bdfa71",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-22611a8055a3215d7d04718c787d30cc",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16772358144,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 64,
+      "iteration": 1,
+      "save_seconds": 3,
+      "restore_seconds": 2,
+      "roundtrip_seconds": 5,
+      "verification": {
+        "payload_mib": 64,
+        "payload_bytes": 67108864,
+        "cache_key": "size-matrix-43530675306-2-64mib-1",
+        "cache_hit": true,
+        "expected_sha256": "d5c25a2d4d1c78f6e79ec721322c545b69eea19edd8730517eadf01dd81416a5",
+        "restored_sha256": "d5c25a2d4d1c78f6e79ec721322c545b69eea19edd8730517eadf01dd81416a5",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-423a595f20311b9a76c5170be9b51895",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773406720,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380245504 50674028544  16% /"
+      }
+    },
+    {
+      "payload_mib": 64,
+      "iteration": 2,
+      "save_seconds": 3,
+      "restore_seconds": 1,
+      "roundtrip_seconds": 4,
+      "verification": {
+        "payload_mib": 64,
+        "payload_bytes": 67108864,
+        "cache_key": "size-matrix-43530675306-2-64mib-2",
+        "cache_hit": true,
+        "expected_sha256": "50090796194d93f1acc2e8ac6bd326a2ddfd96f08b108cb9a673586f22c9c2a0",
+        "restored_sha256": "50090796194d93f1acc2e8ac6bd326a2ddfd96f08b108cb9a673586f22c9c2a0",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-06df96681f45c6f75377003479d4bc09",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773406720,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 64,
+      "iteration": 3,
+      "save_seconds": 3,
+      "restore_seconds": 1,
+      "roundtrip_seconds": 4,
+      "verification": {
+        "payload_mib": 64,
+        "payload_bytes": 67108864,
+        "cache_key": "size-matrix-43530675306-2-64mib-3",
+        "cache_hit": true,
+        "expected_sha256": "f8d114b46fbdf8d38b0e8d7b6f9721be9928bbf4f41c3c39b76fcfb18b921739",
+        "restored_sha256": "f8d114b46fbdf8d38b0e8d7b6f9721be9928bbf4f41c3c39b76fcfb18b921739",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-fb0f0656e5ff854f4624f2b2157063e5",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773406720,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 96,
+      "iteration": 1,
+      "save_seconds": 3,
+      "restore_seconds": 2,
+      "roundtrip_seconds": 5,
+      "verification": {
+        "payload_mib": 96,
+        "payload_bytes": 100663296,
+        "cache_key": "size-matrix-43530675306-2-96mib-1",
+        "cache_hit": true,
+        "expected_sha256": "bf3eb1592c006f6894e41175d2835076bcbcf1b4450b5e196842769848bc030e",
+        "restored_sha256": "bf3eb1592c006f6894e41175d2835076bcbcf1b4450b5e196842769848bc030e",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-cc2269d76b5e9cf35edd97653a6c630e",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16772370432,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 96,
+      "iteration": 2,
+      "save_seconds": 3,
+      "restore_seconds": 2,
+      "roundtrip_seconds": 5,
+      "verification": {
+        "payload_mib": 96,
+        "payload_bytes": 100663296,
+        "cache_key": "size-matrix-43530675306-2-96mib-2",
+        "cache_hit": true,
+        "expected_sha256": "fe41cc5afc3694c64ca765981e71d473019e7fd7031152fee0614625d1ff31e9",
+        "restored_sha256": "fe41cc5afc3694c64ca765981e71d473019e7fd7031152fee0614625d1ff31e9",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-f4c1460d980ceb94764622c0d5d55998",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773402624,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 96,
+      "iteration": 3,
+      "save_seconds": 3,
+      "restore_seconds": 2,
+      "roundtrip_seconds": 5,
+      "verification": {
+        "payload_mib": 96,
+        "payload_bytes": 100663296,
+        "cache_key": "size-matrix-43530675306-2-96mib-3",
+        "cache_hit": true,
+        "expected_sha256": "60d3a36c0b4814ea077190b0edae3db66df8f413728dac3269e1325f478a4e3b",
+        "restored_sha256": "60d3a36c0b4814ea077190b0edae3db66df8f413728dac3269e1325f478a4e3b",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-0fc257e06d04c302a9472196f9ce8777",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773406720,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 400,
+      "iteration": 1,
+      "save_seconds": 4,
+      "restore_seconds": 2,
+      "roundtrip_seconds": 6,
+      "verification": {
+        "payload_mib": 400,
+        "payload_bytes": 419430400,
+        "cache_key": "size-matrix-43530675306-2-400mib-1",
+        "cache_hit": true,
+        "expected_sha256": "fdb0cedb0f2b5f2c588dd7dd9a3ab6632539b04a28a148f0732f0646592da148",
+        "restored_sha256": "fdb0cedb0f2b5f2c588dd7dd9a3ab6632539b04a28a148f0732f0646592da148",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-ec9e692fddc778ace8e7442c22ed4cd1",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16772362240,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 400,
+      "iteration": 2,
+      "save_seconds": 4,
+      "restore_seconds": 3,
+      "roundtrip_seconds": 7,
+      "verification": {
+        "payload_mib": 400,
+        "payload_bytes": 419430400,
+        "cache_key": "size-matrix-43530675306-2-400mib-2",
+        "cache_hit": true,
+        "expected_sha256": "39e92d3858c4e3a01e2d101b1d02831ca648c251f4dce1629ee32653e6f66178",
+        "restored_sha256": "39e92d3858c4e3a01e2d101b1d02831ca648c251f4dce1629ee32653e6f66178",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-1413399728163e28f541d8bffeb9af16",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773406720,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 400,
+      "iteration": 3,
+      "save_seconds": 4,
+      "restore_seconds": 4,
+      "roundtrip_seconds": 8,
+      "verification": {
+        "payload_mib": 400,
+        "payload_bytes": 419430400,
+        "cache_key": "size-matrix-43530675306-2-400mib-3",
+        "cache_hit": true,
+        "expected_sha256": "435ae6bf9d2ad2fc91fb597b4475a0235da3f470e5b9fc4e54e53abd0e7ff3f8",
+        "restored_sha256": "435ae6bf9d2ad2fc91fb597b4475a0235da3f470e5b9fc4e54e53abd0e7ff3f8",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-0e13df4ab3cd0ec0be0dbfa7708f8f3f",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16772370432,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 1024,
+      "iteration": 1,
+      "save_seconds": 7,
+      "restore_seconds": 6,
+      "roundtrip_seconds": 13,
+      "verification": {
+        "payload_mib": 1024,
+        "payload_bytes": 1073741824,
+        "cache_key": "size-matrix-43530675306-2-1024mib-1",
+        "cache_hit": true,
+        "expected_sha256": "7d6bd6c2758d8b1b10416519b09c8f35e33dc42aa70494f17e5b06f373565f07",
+        "restored_sha256": "7d6bd6c2758d8b1b10416519b09c8f35e33dc42aa70494f17e5b06f373565f07",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-16af53b13a8098ef06e436ed8ccb565a",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773402624,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 1024,
+      "iteration": 2,
+      "save_seconds": 6,
+      "restore_seconds": 5,
+      "roundtrip_seconds": 11,
+      "verification": {
+        "payload_mib": 1024,
+        "payload_bytes": 1073741824,
+        "cache_key": "size-matrix-43530675306-2-1024mib-2",
+        "cache_hit": true,
+        "expected_sha256": "689acd9721205941ef8616256e224e128b6e1c116a9a4b82f383e261af73908b",
+        "restored_sha256": "689acd9721205941ef8616256e224e128b6e1c116a9a4b82f383e261af73908b",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-8ee1ef76cfbdf8ae389b6e30c280cf2e",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16772370432,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 1024,
+      "iteration": 3,
+      "save_seconds": 8,
+      "restore_seconds": 6,
+      "roundtrip_seconds": 14,
+      "verification": {
+        "payload_mib": 1024,
+        "payload_bytes": 1073741824,
+        "cache_key": "size-matrix-43530675306-2-1024mib-3",
+        "cache_hit": true,
+        "expected_sha256": "cfb190f2eaa13a19cf24a89ce9f37f478027cc189348ed7556b4278d64b48f9e",
+        "restored_sha256": "cfb190f2eaa13a19cf24a89ce9f37f478027cc189348ed7556b4278d64b48f9e",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-531f221e4d4a3704f12075ab7dbf7cc8",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773406720,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 2048,
+      "iteration": 1,
+      "save_seconds": 10,
+      "restore_seconds": 12,
+      "roundtrip_seconds": 22,
+      "verification": {
+        "payload_mib": 2048,
+        "payload_bytes": 2147483648,
+        "cache_key": "size-matrix-43530675306-2-2048mib-1",
+        "cache_hit": true,
+        "expected_sha256": "5f00f711c36357bd7d5697b9a1a9ce65557ee024533ff6b46ae9eda06825929a",
+        "restored_sha256": "5f00f711c36357bd7d5697b9a1a9ce65557ee024533ff6b46ae9eda06825929a",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-e8451e3c3f7acca6de8108443b576a1a",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773406720,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 2048,
+      "iteration": 2,
+      "save_seconds": 9,
+      "restore_seconds": 18,
+      "roundtrip_seconds": 27,
+      "verification": {
+        "payload_mib": 2048,
+        "payload_bytes": 2147483648,
+        "cache_key": "size-matrix-43530675306-2-2048mib-2",
+        "cache_hit": true,
+        "expected_sha256": "b8790bfc9f28ff0d8b5e038b3e71bf73dc768532f0456a9443357c8325e30eb7",
+        "restored_sha256": "b8790bfc9f28ff0d8b5e038b3e71bf73dc768532f0456a9443357c8325e30eb7",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-f778124fb32d74924d733825163793df",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16772370432,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 2048,
+      "iteration": 3,
+      "save_seconds": 13,
+      "restore_seconds": 15,
+      "roundtrip_seconds": 28,
+      "verification": {
+        "payload_mib": 2048,
+        "payload_bytes": 2147483648,
+        "cache_key": "size-matrix-43530675306-2-2048mib-3",
+        "cache_hit": true,
+        "expected_sha256": "807ee5422ec0f2f9d24953c2fa4c850a080c6b9c47789f871c688951637a46e4",
+        "restored_sha256": "807ee5422ec0f2f9d24953c2fa4c850a080c6b9c47789f871c688951637a46e4",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-88300d678b508265fb5b2a8157e13561",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773406720,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 3072,
+      "iteration": 1,
+      "save_seconds": 18,
+      "restore_seconds": 31,
+      "roundtrip_seconds": 49,
+      "verification": {
+        "payload_mib": 3072,
+        "payload_bytes": 3221225472,
+        "cache_key": "size-matrix-43530675306-2-3072mib-1",
+        "cache_hit": true,
+        "expected_sha256": "d0df96b99d374e6e6a76fa2b517cf4f99357a48f31c8326c0d69bef8f4ad11aa",
+        "restored_sha256": "d0df96b99d374e6e6a76fa2b517cf4f99357a48f31c8326c0d69bef8f4ad11aa",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-dad7574c5141124c5327c2cb837886fd",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773406720,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 3072,
+      "iteration": 2,
+      "save_seconds": 15,
+      "restore_seconds": 21,
+      "roundtrip_seconds": 36,
+      "verification": {
+        "payload_mib": 3072,
+        "payload_bytes": 3221225472,
+        "cache_key": "size-matrix-43530675306-2-3072mib-2",
+        "cache_hit": true,
+        "expected_sha256": "084bb3cd521f7db3fde805f16fda5df58374ad91f6903655268e85660034b88b",
+        "restored_sha256": "084bb3cd521f7db3fde805f16fda5df58374ad91f6903655268e85660034b88b",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-7f87e257386413db807ec955ac2ed652",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773406720,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 3072,
+      "iteration": 3,
+      "save_seconds": 15,
+      "restore_seconds": 21,
+      "roundtrip_seconds": 36,
+      "verification": {
+        "payload_mib": 3072,
+        "payload_bytes": 3221225472,
+        "cache_key": "size-matrix-43530675306-2-3072mib-3",
+        "cache_hit": true,
+        "expected_sha256": "c6cc29b31075e944e6e64ac2eb36b77c26ad35b47a3ced02ab127886214c0e09",
+        "restored_sha256": "c6cc29b31075e944e6e64ac2eb36b77c26ad35b47a3ced02ab127886214c0e09",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-a99ae0f937214f001cd20600f32d9cdb",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773406720,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 4096,
+      "iteration": 1,
+      "save_seconds": 18,
+      "restore_seconds": 29,
+      "roundtrip_seconds": 47,
+      "verification": {
+        "payload_mib": 4096,
+        "payload_bytes": 4294967296,
+        "cache_key": "size-matrix-43530675306-2-4096mib-1",
+        "cache_hit": true,
+        "expected_sha256": "27d7ba8552bad048198053be3156f1397fcfbaf86b09b03c0e46efc6b857eb9d",
+        "restored_sha256": "27d7ba8552bad048198053be3156f1397fcfbaf86b09b03c0e46efc6b857eb9d",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-3aba7e13665c8a7ae800f067c7a3231f",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773398528,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380245504 50674028544  16% /"
+      }
+    },
+    {
+      "payload_mib": 4096,
+      "iteration": 2,
+      "save_seconds": 18,
+      "restore_seconds": 34,
+      "roundtrip_seconds": 52,
+      "verification": {
+        "payload_mib": 4096,
+        "payload_bytes": 4294967296,
+        "cache_key": "size-matrix-43530675306-2-4096mib-2",
+        "cache_hit": true,
+        "expected_sha256": "c5e88668595bb6b8fb48863d24d5a6e6f70df1fa19fb571d506d2f34a99ca430",
+        "restored_sha256": "c5e88668595bb6b8fb48863d24d5a6e6f70df1fa19fb571d506d2f34a99ca430",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-19b76ba90e08e1672e98114b5546f5cc",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773398528,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380237312 50674036736  16% /"
+      }
+    },
+    {
+      "payload_mib": 4096,
+      "iteration": 3,
+      "save_seconds": 21,
+      "restore_seconds": 27,
+      "roundtrip_seconds": 48,
+      "verification": {
+        "payload_mib": 4096,
+        "payload_bytes": 4294967296,
+        "cache_key": "size-matrix-43530675306-2-4096mib-3",
+        "cache_hit": true,
+        "expected_sha256": "b571e10115a52009a031178da898e2e5a3304c5bb75689b5e8a58a3b463711ee",
+        "restored_sha256": "b571e10115a52009a031178da898e2e5a3304c5bb75689b5e8a58a3b463711ee",
+        "action_commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+      },
+      "host": {
+        "provider": "celesto",
+        "runner_name": "celesto-rs-6be45f5f06e55037f8425149dec190dd",
+        "os": "linux",
+        "arch": "x64",
+        "node": "v24.16.0",
+        "cpu_model": "AMD EPYC-Milan Processor",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "memory_bytes": 16773406720,
+        "kernel": "7.3.0",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "disk": "Filesystem       1B-blocks       Used   Available Use% Mounted on\n/dev/root      63292256256 9380245504 50674028544  16% /"
+      }
+    }
+  ]
+}

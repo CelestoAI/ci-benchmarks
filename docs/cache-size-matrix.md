@@ -7,8 +7,9 @@ existing native cache benchmark to the payload sizes discussed in
 times on a fresh Celesto Large runner. Jobs run sequentially within the sweep;
 other workflows can still compete for the same capacity.
 
-[November 14 results](../results/cache-size-matrix-2026-11-14/README.md):
-all 30 roundtrips passed, with per-size medians, ranges and preserved hash evidence.
+[November 14 rerun, attempt 2](../results/cache-size-matrix-2026-11-14-attempt-2/README.md):
+all 30 roundtrips passed, with per-size medians, upload speeds and a comparison
+with the [first batch](../results/cache-size-matrix-2026-11-14/README.md).
 
 The workflow generates one random, incompressible file, saves it with the same
 pinned `actions/cache` v6.1.0 as the original 4 GiB benchmark, hashes and deletes

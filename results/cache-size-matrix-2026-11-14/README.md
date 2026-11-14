@@ -1,6 +1,6 @@
 # Cache size matrix: 20 MiB to 4 GiB
 
-[Benchmark run](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43530675306) · [Workflow](../../.github/workflows/cache-size-matrix.yml) · [Methodology](../../docs/cache-size-matrix.md)
+[Benchmark run](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43530675306/attempts/1) · [Workflow](../../.github/workflows/cache-size-matrix.yml) · [Methodology](../../docs/cache-size-matrix.md)
 
 **30/30 save/restore roundtrips passed.** Each of ten payload sizes ran three times sequentially on Celesto Large (4 vCPU, at least 14 GiB usable RAM). Every restore was an exact-key hit and matched the original file size and SHA-256.
 
@@ -54,7 +54,7 @@ At 4 GiB, the median reported upload rate was **408.3 MiB/s**, compared with a *
 - Jobs were serialized within this workflow. Other workflows and host load can still influence timings. Three repetitions describe this batch, not fleet-wide latency.
 - Queue timings in the raw results include intentional matrix serialization; they do not measure provider provisioning latency.
 - [results.json](results.json) preserves the collector’s raw phase timings and job status. [jobs.json](jobs.json) preserves the source GitHub Jobs API response; its step timestamps were checked against the collector. [summary.json](summary.json) contains every repetition, original/restored SHA-256 hashes, cache keys, payload bytes and host fingerprints, plus the statistics above.
-- Original integrity artifacts and the collector artifact are attached to the benchmark run with 14-day retention. The JSON files here preserve their measurements and integrity evidence beyond that retention period.
+- Attempt 1’s original integrity and collector artifacts were replaced when the full workflow was rerun as attempt 2. The JSON files here preserve the first batch’s measurements, hashes and host fingerprints independently of GitHub artifact retention. Original action logs are under the linked attempt-1 run.
 - This sweep is separate from the published 4 GiB comparison.
 
 ## Validation

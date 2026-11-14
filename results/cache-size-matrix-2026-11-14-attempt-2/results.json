@@ -1,0 +1,851 @@
+{
+  "suite": "cache-size-matrix",
+  "run": {
+    "id": 43530675306,
+    "attempt": 2,
+    "repository": "CelestoAI/ci-benchmarks",
+    "date": "2026-11-14"
+  },
+  "results": [
+    {
+      "provider": "celesto-1024mib",
+      "iteration": 1,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-16af53b13a8098ef06e436ed8ccb565a",
+      "queueSeconds": 84,
+      "jobSeconds": 24,
+      "workloadSeconds": 15,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 7,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 6,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 2,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-1024mib",
+      "iteration": 2,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-8ee1ef76cfbdf8ae389b6e30c280cf2e",
+      "queueSeconds": 364,
+      "jobSeconds": 23,
+      "workloadSeconds": 13,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 6,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 5,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 2,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-1024mib",
+      "iteration": 3,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-531f221e4d4a3704f12075ab7dbf7cc8",
+      "queueSeconds": 646,
+      "jobSeconds": 29,
+      "workloadSeconds": 19,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 8,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 6,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 5,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-2048mib",
+      "iteration": 1,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-e8451e3c3f7acca6de8108443b576a1a",
+      "queueSeconds": 109,
+      "jobSeconds": 39,
+      "workloadSeconds": 26,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 10,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 12,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 4,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-2048mib",
+      "iteration": 2,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-f778124fb32d74924d733825163793df",
+      "queueSeconds": 388,
+      "jobSeconds": 44,
+      "workloadSeconds": 31,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 9,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 18,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 4,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-2048mib",
+      "iteration": 3,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-88300d678b508265fb5b2a8157e13561",
+      "queueSeconds": 676,
+      "jobSeconds": 45,
+      "workloadSeconds": 31,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 13,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 15,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 3,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-20mib",
+      "iteration": 1,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-38ff5709bcb786f8a0f41777a33d4ff9",
+      "queueSeconds": 15,
+      "jobSeconds": 9,
+      "workloadSeconds": 4,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 2,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 1,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 1,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-20mib",
+      "iteration": 2,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-426796995fd9aec371ee9dfdd9f82dd5",
+      "queueSeconds": 298,
+      "jobSeconds": 8,
+      "workloadSeconds": 3,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 2,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 1,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 0,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-20mib",
+      "iteration": 3,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-22f50c91e426b034bf078537e02d1793",
+      "queueSeconds": 577,
+      "jobSeconds": 8,
+      "workloadSeconds": 4,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 2,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 2,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 0,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-24mib",
+      "iteration": 1,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-399455306c84c63d375cd73c21ea5e98",
+      "queueSeconds": 25,
+      "jobSeconds": 9,
+      "workloadSeconds": 4,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 3,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 0,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 1,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-24mib",
+      "iteration": 2,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-a8d5d35534499c9dc454c3cb0aec4dab",
+      "queueSeconds": 306,
+      "jobSeconds": 8,
+      "workloadSeconds": 4,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 3,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 1,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 0,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-24mib",
+      "iteration": 3,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-8dbbaf9cf5675464418db48cc67cb900",
+      "queueSeconds": 586,
+      "jobSeconds": 10,
+      "workloadSeconds": 6,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 4,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 1,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 1,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-3072mib",
+      "iteration": 1,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-dad7574c5141124c5327c2cb837886fd",
+      "queueSeconds": 150,
+      "jobSeconds": 71,
+      "workloadSeconds": 53,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 18,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 31,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 4,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-3072mib",
+      "iteration": 2,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-7f87e257386413db807ec955ac2ed652",
+      "queueSeconds": 433,
+      "jobSeconds": 60,
+      "workloadSeconds": 40,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 15,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 21,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 4,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-3072mib",
+      "iteration": 3,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-a99ae0f937214f001cd20600f32d9cdb",
+      "queueSeconds": 722,
+      "jobSeconds": 58,
+      "workloadSeconds": 41,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 15,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 21,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 5,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-32mib",
+      "iteration": 1,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-f660bd0ada0b6cddcaa8e4107d671965",
+      "queueSeconds": 35,
+      "jobSeconds": 9,
+      "workloadSeconds": 4,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 3,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 1,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 0,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-32mib",
+      "iteration": 2,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-77737f1e7512d3832c9e6c65bcc2942b",
+      "queueSeconds": 316,
+      "jobSeconds": 9,
+      "workloadSeconds": 5,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 3,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 1,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 1,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-32mib",
+      "iteration": 3,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-22611a8055a3215d7d04718c787d30cc",
+      "queueSeconds": 598,
+      "jobSeconds": 9,
+      "workloadSeconds": 4,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 3,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 1,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 0,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-400mib",
+      "iteration": 1,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-ec9e692fddc778ace8e7442c22ed4cd1",
+      "queueSeconds": 70,
+      "jobSeconds": 13,
+      "workloadSeconds": 7,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 4,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 2,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 1,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-400mib",
+      "iteration": 2,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-1413399728163e28f541d8bffeb9af16",
+      "queueSeconds": 350,
+      "jobSeconds": 13,
+      "workloadSeconds": 7,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 4,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 3,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 0,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-400mib",
+      "iteration": 3,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-0e13df4ab3cd0ec0be0dbfa7708f8f3f",
+      "queueSeconds": 631,
+      "jobSeconds": 14,
+      "workloadSeconds": 9,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 4,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 4,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 1,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-4096mib",
+      "iteration": 1,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-3aba7e13665c8a7ae800f067c7a3231f",
+      "queueSeconds": 223,
+      "jobSeconds": 74,
+      "workloadSeconds": 53,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 18,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 29,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 6,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-4096mib",
+      "iteration": 2,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-19b76ba90e08e1672e98114b5546f5cc",
+      "queueSeconds": 494,
+      "jobSeconds": 81,
+      "workloadSeconds": 58,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 18,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 34,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 6,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-4096mib",
+      "iteration": 3,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-6be45f5f06e55037f8425149dec190dd",
+      "queueSeconds": 782,
+      "jobSeconds": 89,
+      "workloadSeconds": 67,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 21,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 27,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 19,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-64mib",
+      "iteration": 1,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-423a595f20311b9a76c5170be9b51895",
+      "queueSeconds": 46,
+      "jobSeconds": 10,
+      "workloadSeconds": 5,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 3,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 2,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 0,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-64mib",
+      "iteration": 2,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-06df96681f45c6f75377003479d4bc09",
+      "queueSeconds": 327,
+      "jobSeconds": 9,
+      "workloadSeconds": 5,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 3,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 1,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 1,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-64mib",
+      "iteration": 3,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-fb0f0656e5ff854f4624f2b2157063e5",
+      "queueSeconds": 608,
+      "jobSeconds": 10,
+      "workloadSeconds": 4,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 3,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 1,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 0,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-96mib",
+      "iteration": 1,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-cc2269d76b5e9cf35edd97653a6c630e",
+      "queueSeconds": 57,
+      "jobSeconds": 11,
+      "workloadSeconds": 6,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 3,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 2,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 1,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-96mib",
+      "iteration": 2,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-f4c1460d980ceb94764622c0d5d55998",
+      "queueSeconds": 337,
+      "jobSeconds": 11,
+      "workloadSeconds": 5,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 3,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 2,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 0,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    },
+    {
+      "provider": "celesto-96mib",
+      "iteration": 3,
+      "status": "success",
+      "failedAt": null,
+      "runner": "celesto-rs-0fc257e06d04c302a9472196f9ce8777",
+      "queueSeconds": 619,
+      "jobSeconds": 10,
+      "workloadSeconds": 5,
+      "phases": [
+        {
+          "name": "cache save",
+          "seconds": 3,
+          "status": "success"
+        },
+        {
+          "name": "cache restore",
+          "seconds": 2,
+          "status": "success"
+        },
+        {
+          "name": "verify",
+          "seconds": 0,
+          "status": "success"
+        }
+      ],
+      "metrics": null
+    }
+  ]
+}
