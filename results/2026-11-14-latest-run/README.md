@@ -8,8 +8,8 @@ Per-minute rates were checked on Nov 14, 2026. Celesto uses its published Large 
 
 RunsOn’s current cache bug window and obsolete Node typecheck samples are excluded, following its [published methodology](https://runs-on.com/benchmarks/methodology/). The public data is attributed to [runs-on-demo/benchmark-public](https://github.com/runs-on-demo/benchmark-public), source commit `5cbfb2c`.
 
-![Latest-run build, cache, and queue times by provider](summary-light.svg#gh-light-mode-only)
-![Latest-run build, cache, and queue times by provider](summary-dark.svg#gh-dark-mode-only)
+![Latest-run build, cache, and queue times by provider](summary-light-2026-11-14.svg#gh-light-mode-only)
+![Latest-run build, cache, and queue times by provider](summary-dark-2026-11-14.svg#gh-dark-mode-only)
 
 ## Latest workload runs
 
