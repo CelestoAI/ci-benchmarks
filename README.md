@@ -19,7 +19,7 @@ Latest available run per provider and suite. Provider run dates vary; the queue 
 
 All rows are 4 vCPU (x64). RunsOn is represented by its suggested 4-vCPU default, m8a.xlarge on EBS gp3. Celesto results come from this repository's [runner suites](docs/suites.md); other results come from the [runs-on.com public benchmark data](https://github.com/runs-on-demo/benchmark-public).
 
-Build and cache values use workload phase times; cache includes save and restore. Queue is measured from job creation to runner start. The separate [rolling 30-day p50 archive](results/latest/README.md) is available for historical context.
+Build and cache values use workload phase times; cache includes save and restore. Queue is measured from job creation to runner start. The price column shows published USD per running minute, not each job’s actual cost; RunsOn uses its spot rate in the chart. The separate [rolling 30-day p50 archive](results/latest/README.md) is available for historical context.
 
 **[Latest-run comparison (Nov 14, all providers; timings, hardware, and source run links) →](results/2026-11-14-latest-run/README.md)**
 
