@@ -32,7 +32,7 @@ def write(path, value):
     path.write_text(json.dumps(value, indent=2) + '\n')
 
 def root_call(mode, value):
-    result = subprocess.run(['sudo', '-n', 'python3', str(Path(__file__).resolve()), mode], input=json.dumps(value), text=True, capture_output=True)
+    result = subprocess.run(['sudo', '-n', 'python3', str(Path(__file__).resolve()), mode], input=json.dumps({**value, 'benchmark_root': str(ROOT)}), text=True, capture_output=True)
     if result.returncode:
         raise RuntimeError('Owned guest operation failed: ' + mode)
     return json.loads(result.stdout)
@@ -95,7 +95,10 @@ def privileged(mode):
         role, pair = value['role'], int(value['pair'])
         if role not in ['main', 'candidate'] or pair not in [1, 2, 3]:
             raise RuntimeError('Invalid case')
-        text = (ROOT / 'private' / f'proxy-{pair}-{role}.log').read_text()
+        benchmark_root = Path(value['benchmark_root'])
+        if benchmark_root.parent.resolve() != Path('/tmp').resolve() or not re.fullmatch(r'cache-main-native-ab-\d+-\d+', benchmark_root.name):
+            raise RuntimeError('Invalid benchmark root')
+        text = (benchmark_root / 'private' / f'proxy-{pair}-{role}.log').read_text()
         text = re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]', '', text)
         print(json.dumps({'create_seen': 'CreateCacheEntry' in text, 'finalize_seen': 'FinalizeCacheEntryUpload' in text, 'lookup_seen': 'GetCacheEntryDownloadURL' in text, 'download_seen': 'serving cache hit in ranges' in text, 'entry_ids': sorted(set(re.findall(r'entry_id[= ]+(\d+)', text)))}))
     elif mode == 'root-install-helper':
@@ -241,7 +244,11 @@ def generate(pair):
 def verify(role, pair):
     before = time.monotonic()
     expected = json.loads((ROOT / 'results' / f'payload-{pair}.json').read_text())
-    if Path('cache-file').stat().st_size != expected['bytes'] or digest('cache-file') != expected['sha256']:
+    actual_bytes = Path('cache-file').stat().st_size
+    actual_sha = digest('cache-file')
+    matched = actual_bytes == expected['bytes'] and actual_sha == expected['sha256']
+    write(ROOT / 'results' / f'hash-check-{pair}-{role}.json', {'bytes': actual_bytes, 'sha256': actual_sha, 'expected_sha256': expected['sha256'], 'matched': matched})
+    if not matched:
         raise RuntimeError('Restored file failed size/SHA-256 verification')
     proxy_proof = root_call('root-proxy-proof', {'role': role, 'pair': pair})
     if not all(proxy_proof[k] for k in ['create_seen', 'finalize_seen', 'lookup_seen', 'download_seen']):
