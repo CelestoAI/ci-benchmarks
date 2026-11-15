@@ -136,7 +136,8 @@ def render():
              "- Worst-latency columns are not scored: a config that freezes is rejected. **ok** counts runs that finished;",
              "  a run that hangs past its timeouts is not ok.",
              "- Single VM per runner: no neighbor load. Finalists must still be checked on real hosts.",
-             "- Raw per-run records (config, QEMU drive string, every metric): `runs.jsonl`.", ""]
+             "- Raw per-run records (config, QEMU drive string, every metric): `runs.jsonl`.",
+             "- Conclusions so far, with the reasoning: `FINDINGS.md`.", ""]
     for itn in sorted({r["iteration"] for r in runs}, reverse=True):
         rs = [r for r in runs if r["iteration"] == itn]
         runs_ids = sorted({r["run_id"] for r in rs})

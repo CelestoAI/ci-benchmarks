@@ -17,6 +17,7 @@ virtio-mmio, 2 vCPU / 3 GiB guest) on a fresh GitHub-hosted runner (4 vCPU, 16 G
   a run that hangs past its timeouts is not ok.
 - Single VM per runner: no neighbor load. Finalists must still be checked on real hosts.
 - Raw per-run records (config, QEMU drive string, every metric): `runs.jsonl`.
+- Conclusions so far, with the reasoning: `FINDINGS.md`.
 
 ## Iteration 6
 
@@ -24,7 +25,7 @@ Iteration 5: QEMU 11.1.3 (our source build) cut fresh writes to 0.15-0.2x of dis
 
 Baseline: `pci-iothread`
 
-Runs: [43683396957](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43683396957)
+Runs: [43683396957](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43683396957), [43684525170](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43684525170)
 
 Configs:
 
@@ -37,16 +38,26 @@ Configs:
 - `thin-prod`: `{"aio": "threads", "cache": "writeback", "dev": "pci", "layout": "thin", "queues": 2}` — dm-thin with today's prod cache settings (sandbox-safe)
 - `thin-unsafe`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothread": 1, "layout": "thin", "queues": 2}` — dm-thin snapshot, host page cache
 - `ubuntu-26.04`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothread": 1, "qemu": "ubuntu-26.04", "queues": 2}` — Ubuntu 26.04 LTS prebuilt QEMU 10.2.1
+- `src-10.0.6`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothread": 1, "qemu": "10.0.6", "queues": 2}`
+- `src-10.1.5`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothread": 1, "qemu": "10.1.5", "queues": 2}`
+- `ubuntu-26.10`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothread": 1, "qemu": "ubuntu-26.10", "queues": 2}` — Ubuntu 26.10 prebuilt QEMU 11.0.3
 
 ### local
 
 | config | ok | score | fresh 4K IOPS | fresh worst s | fresh I/Os >1s | rewrite 4K IOPS | rewrite worst s | seq write MiB/s | 50k files s | fsync IOPS | pgbench TPS | base read MiB/s | VM stop s | host GiB written |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | pci-iothread | 3/3 | 1.00 | 197002 | 0.0 | 0 | 200887 | 0.0 | 4433 | 1.71 | 68794 | 7508 | 523 | 0.13 | 38.9 |
+| src-10.0.6 | 3/3 | 0.99 (paired) | 145168 | 0.0 | 0 | 150903 | 0.0 | 2688 | 1.90 | 63317 | 4788 | 450 | 0.13 | 30.6 |
 | src-9.2.4 | 3/3 | 0.99 (paired) | 108370 | 0.0 | 0 | 116467 | 0.0 | 3828 | 3.17 | 32461 | 3982 | 251 | 0.12 | 24.2 |
 | src-8.2.2 | 3/3 | 0.97 (paired) | 152844 | 0.0 | 0 | 150212 | 0.0 | 4633 | 2.03 | 55304 | 5701 | 449 | 0.12 | 31.0 |
+| src-10.1.5 | 3/3 | 0.79 (paired) | 31795 | 4.9 | 72 | 144355 | 0.0 | 3098 | 2.19 | 57476 | 5730 | 509 | 0.12 | 18.9 |
 | ubuntu-26.04 | 3/3 | 0.73 (paired) | 18033 | 2.7 | 21 | 101293 | 0.0 | 3038 | 3.25 | 21529 | 3925 | 258 | 0.12 | 14.2 |
 | src-10.2.4 | 3/3 | 0.71 (paired) | 18992 | 9.9 | 52 | 114259 | 0.0 | 2691 | 3.24 | 25333 | 4046 | 268 | 0.12 | 15.0 |
+| ubuntu-26.10 | 3/3 | 0.70 (paired) | 30147 | 1.4 | 86 | 155185 | 0.0 | 2176 | 1.53 | 41019 | 6113 | 450 | 0.12 | 19.5 |
+| thin-none-native | 2/3 | 0.64 (paired) | 90927 | 0.0 | 0 | 92589 | 0.0 | 2199 | 2.71 | 13530 | 4802 | 150 | 0.12 | 22.3 |
+| thin-none-uring | 2/3 | 0.59 (paired) | 95502 | 0.0 | 0 | 101514 | 0.0 | 1983 | 2.67 | 8334 | 4507 | 141 | 0.12 | 22.8 |
+| thin-unsafe | 2/3 | 0.56 (paired) | 117435 | 0.3 | 0 | 91298 | 0.8 | 1355 | 2.49 | 28612 | 6339 | 198 | 0.49 | 27.0 |
+| thin-prod | 2/3 | 0.40 (paired) | 73828 | 0.0 | 0 | 34896 | 5.0 | 971 | 2.39 | 10273 | 4572 | 155 | 0.69 | 20.7 |
 
 ### network
 
@@ -54,13 +65,23 @@ Configs:
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | src-9.2.4 | 3/3 | 1.08 (paired) | 144495 | 0.3 | 0 | 112430 | 0.6 | 762 | 1.92 | 57424 | 8891 | 517 | 0.12 | 12.3 |
 | src-8.2.2 | 3/3 | 1.06 (paired) | 125194 | 0.5 | 0 | 92043 | 0.1 | 1694 | 2.62 | 37709 | 4395 | 270 | 0.12 | 18.0 |
+| src-10.0.6 | 3/3 | 1.06 (paired) | 133349 | 0.4 | 0 | 108374 | 0.6 | 813 | 1.71 | 67670 | 6890 | 548 | 0.12 | 11.9 |
 | pci-iothread | 3/3 | 1.00 | 150866 | 0.3 | 0 | 86206 | 0.6 | 565 | 1.91 | 65782 | 9050 | 529 | 0.12 | 12.6 |
+| src-10.1.5 | 3/3 | 1.00 (paired) | 169627 | 4.8 | 21 | 126091 | 0.5 | 308 | 2.09 | 67612 | 9048 | 591 | 0.11 | 12.3 |
+| ubuntu-26.10 | 3/3 | 0.81 (paired) | 74308 | 0.4 | 0 | 97161 | 0.2 | 623 | 3.20 | 26681 | 4081 | 273 | 0.12 | 14.0 |
 | src-10.2.4 | 3/3 | 0.79 (paired) | 49914 | 0.1 | 0 | 82842 | 0.3 | 699 | 3.27 | 22975 | 3876 | 264 | 0.12 | 13.2 |
 | ubuntu-26.04 | 3/3 | 0.76 (paired) | 61236 | 4.8 | 21 | 67317 | 0.3 | 294 | 3.04 | 35490 | 5537 | 387 | 0.12 | 11.1 |
 | thin-none-uring | 3/3 | 0.28 (paired) | 14433 | 0.1 | 0 | 19558 | 0.1 | 110 | 5.97 | 5484 | 3824 | 79 | 0.12 | 11.0 |
 | thin-none-native | 3/3 | 0.24 (paired) | 14104 | 0.1 | 0 | 19558 | 0.1 | 119 | 5.60 | 5358 | 4765 | 76 | 0.12 | 11.0 |
 | thin-prod | 3/3 | 0.19 (paired) | 10133 | 1.5 | 213 | 494 | 5.6 | 351 | 3.16 | 8379 | 3766 | 137 | 2.05 | 13.7 |
 | thin-unsafe | 3/3 | 0.13 (paired) | 17290 | 0.4 | 0 | 128 | 2.8 | 140 | 1.91 | 11125 | 7997 | 134 | 1.75 | 14.4 |
+
+Failures:
+
+- `thin-unsafe` local rep 2: runner_lost runner lost communication (no artifact, no log); the dm-thin VM ran before the baseline in even repeats. Likely RAM exhaustion: the local class is a 22 GiB RAM-backed null_blk on a 16 GiB runner, and deleted thin volumes do not discard their chunks back to null_blk the way XFS deletes do. Cancelled at ~40 min.
+- `thin-none-uring` local rep 2: runner_lost runner lost communication (no artifact, no log); the dm-thin VM ran before the baseline in even repeats. Likely RAM exhaustion: the local class is a 22 GiB RAM-backed null_blk on a 16 GiB runner, and deleted thin volumes do not discard their chunks back to null_blk the way XFS deletes do. Cancelled at ~40 min.
+- `thin-prod` local rep 2: runner_lost runner lost communication (no artifact, no log); the dm-thin VM ran before the baseline in even repeats. Likely RAM exhaustion: the local class is a 22 GiB RAM-backed null_blk on a 16 GiB runner, and deleted thin volumes do not discard their chunks back to null_blk the way XFS deletes do. Cancelled at ~40 min.
+- `thin-none-native` local rep 2: runner_lost runner lost communication (no artifact, no log); the dm-thin VM ran before the baseline in even repeats. Likely RAM exhaustion: the local class is a 22 GiB RAM-backed null_blk on a 16 GiB runner, and deleted thin volumes do not discard their chunks back to null_blk the way XFS deletes do. Cancelled at ~40 min.
 
 ## Iteration 5
 
