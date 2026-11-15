@@ -35,7 +35,7 @@ Medians over 9 runs, iterations 4-6:
   sequential 0.26-0.51x. Rejected.
 - **Smaller knobs:** `event_idx=off` changed results by about 5%; guest `noatime` gave no gain.
 
-## QEMU version: stay on 8.2.2 (or 9.2)
+## QEMU version: 8.2.2 through 10.0.x, or later with one commit reverted
 
 Fresh (allocating) writes regress from QEMU 10.1 on; rewrites and pgbench are unchanged.
 
@@ -53,22 +53,30 @@ Fresh (allocating) writes regress from QEMU 10.1 on; rewrites and pgbench are un
 Our 8.2.2 source build matches Ubuntu's 8.2.2, so the build is not the cause. Network sequential writes are
 noisy (8.2.2 against Ubuntu's 8.2.2 reads 1.55), so judge versions by the local columns.
 
-**Likely cause (not yet confirmed by trace):** QEMU commit
+**Cause (confirmed in iteration 7):** QEMU commit
 [a6a0a7fb0e](https://github.com/qemu/qemu/commit/a6a0a7fb0e) "file-posix, gluster: Handle zero block
-status hint better" (with [c33159dec7](https://github.com/qemu/qemu/commit/c33159dec7) and
-[31bf15d97d](https://github.com/qemu/qemu/commit/31bf15d97d), all in 10.1). In 10.0,
+status hint better" (10.1, with [c33159dec7](https://github.com/qemu/qemu/commit/c33159dec7) and
+[31bf15d97d](https://github.com/qemu/qemu/commit/31bf15d97d) in the same series). In 10.0,
 `bdrv_co_is_zero_fast()` asked for block status without zero detection, and file-posix answered "all data"
 without `lseek`. So qcow2's `handle_alloc_space()` never saw the backing file as zero and did normal
 copy-on-write. From 10.1 it asks with `BDRV_WANT_ZERO`, file-posix runs `lseek(SEEK_DATA/SEEK_HOLE)` and
 finds holes in our sparse raw base. qcow2 then zeroes every newly allocated cluster with
-`bdrv_co_pwrite_zeroes(..., BDRV_REQ_NO_FALLBACK)` before writing guest data. On XFS that is an
-`fallocate` per new cluster. `fallocate` takes the inode's exclusive I/O lock, waits for in-flight direct
-I/O, and can flush the range, which would serialize concurrent writes and explain the multi-second stalls.
-Only first writes into new clusters take this path, which matches rewrites and pgbench being unaffected.
+`bdrv_co_pwrite_zeroes(..., BDRV_REQ_NO_FALLBACK)` before writing guest data, which on XFS is an
+`fallocate` per new cluster. `fallocate` takes the inode's exclusive I/O lock and waits for in-flight
+I/O, which serializes concurrent writes. Only first writes into new clusters take this path, so rewrites
+and pgbench are unaffected.
 
-To confirm: count `fallocate` calls (`strace -c -f -e trace=fallocate`) or the `qcow2_skip_cow` trace
-event on 10.0.6 against 10.1.5. No upstream report of this was found (QEMU GitLab issues, web search) as
-of 2026-11-14.
+Iteration 7 evidence (3 runs per class):
+
+| build | `qcow2_skip_cow` events per run | local fresh | worst local stall | network sequential |
+|---|---|---|---|---|
+| 10.0.6 | 0 | 0.96 | 18 ms | 1.45 |
+| 10.1.5 | 31,585-35,923 | 0.19 | 11.6 s | 0.39 |
+| 10.1.5 with a6a0a7fb0e reverted | 0 | 0.99 | 15 ms | 1.42 |
+
+Reverting that one commit (a two-line change to `block/file-posix.c` and `block/gluster.c`) restores 10.0
+speed. A QEMU newer than 10.0 is usable for CI only with that revert carried as a patch, or once upstream
+changes this path. No upstream report of this was found (QEMU GitLab issues, web search) as of 2026-11-14.
 
 ## Test-rig notes
 

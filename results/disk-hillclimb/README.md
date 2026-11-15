@@ -19,6 +19,36 @@ virtio-mmio, 2 vCPU / 3 GiB guest) on a fresh GitHub-hosted runner (4 vCPU, 16 G
 - Raw per-run records (config, QEMU drive string, every metric): `runs.jsonl`.
 - Conclusions so far, with the reasoning: `FINDINGS.md`.
 
+## Iteration 7
+
+Iteration 6 found the fresh-write regression starts in QEMU 10.1 (10.0.6 is fine). Suspect: commit a6a0a7fb0e, which makes bdrv_co_is_zero_fast() lseek the sparse raw base, so qcow2 handle_alloc_space() zeroes every new cluster with write_zeroes (fallocate on XFS) instead of copying. This iteration tests it two ways: the qcow2_skip_cow trace event counts how often qcow2 took that path, and 10.1.5 is rebuilt with only that commit reverted.
+
+Baseline: `pci-iothread`
+
+Runs: [43689421004](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43689421004)
+
+Configs:
+
+- `src-10.0.6-trace`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothread": 1, "qemu": "10.0.6", "queues": 2, "trace": "qcow2_skip_cow"}` — last good release; expect no qcow2_skip_cow events
+- `src-10.1.5-revert`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothread": 1, "qemu": "10.1.5+revert-a6a0a7fb0e", "queues": 2, "trace": "qcow2_skip_cow"}` — 10.1.5 minus the suspect commit; if it is the cause, speed returns and events drop to 0
+- `src-10.1.5-trace`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothread": 1, "qemu": "10.1.5", "queues": 2, "trace": "qcow2_skip_cow"}` — first slow release; expect one qcow2_skip_cow event per new cluster
+
+### local
+
+| config | ok | score | fresh 4K IOPS | fresh worst s | fresh I/Os >1s | rewrite 4K IOPS | rewrite worst s | seq write MiB/s | 50k files s | fsync IOPS | pgbench TPS | base read MiB/s | VM stop s | host GiB written |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| src-10.0.6-trace | 3/3 | 0.98 (paired) | 174719 | 0.0 | 0 | 175029 | 0.0 | 3946 | 1.91 | 65380 | 7092 | 617 | 0.12 | 34.8 |
+| src-10.1.5-revert | 3/3 | 0.97 (paired) | 157890 | 0.0 | 0 | 156159 | 0.0 | 4000 | 2.11 | 57091 | 5710 | 558 | 0.12 | 31.9 |
+| src-10.1.5-trace | 3/3 | 0.79 (paired) | 26761 | 3.8 | 67 | 151692 | 0.0 | 2147 | 1.82 | 63407 | 5251 | 479 | 0.12 | 19.2 |
+
+### network
+
+| config | ok | score | fresh 4K IOPS | fresh worst s | fresh I/Os >1s | rewrite 4K IOPS | rewrite worst s | seq write MiB/s | 50k files s | fsync IOPS | pgbench TPS | base read MiB/s | VM stop s | host GiB written |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| src-10.0.6-trace | 3/3 | 1.09 (paired) | 109954 | 0.3 | 0 | 94162 | 0.1 | 1724 | 3.21 | 38626 | 3946 | 365 | 0.12 | 17.8 |
+| src-10.1.5-revert | 3/3 | 1.07 (paired) | 138279 | 0.4 | 0 | 103404 | 0.5 | 850 | 1.95 | 67899 | 9315 | 598 | 0.12 | 12.7 |
+| src-10.1.5-trace | 3/3 | 0.91 (paired) | 122013 | 1.3 | 8 | 102335 | 0.5 | 234 | 2.83 | 59310 | 5586 | 442 | 0.12 | 12.4 |
+
 ## Iteration 6
 
 Iteration 5: QEMU 11.1.3 (our source build) cut fresh writes to 0.15-0.2x of distro 8.2.2 with multi-second stalls, and still hung on virtio-mmio with event_idx on. This iteration separates build from version (8.2.2 built from source the same way, Ubuntu's prebuilt 10.2.1 and 11.0.3, source 9.2.4 and 10.2.4), and adds dm-thin: each VM disk is an LVM thin snapshot of a base volume, used as a raw block device (64K chunks, zeroing on).
