@@ -76,8 +76,9 @@ jobs:
           # filesystem that run-config.sh chroots into (its glibc is newer than the runner's).
           rel=${VER#ubuntu-}; out="$HOME/qemu-$VER"; mkdir -p "$out"
           docker run --name qrfs "ubuntu:$rel" bash -c 'apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends qemu-system-x86 qemu-utils >/dev/null'
-          docker export qrfs | tar -x -C "$out" --no-same-owner --exclude='dev/*'
+          docker export qrfs | tar -x -C "$out" --no-same-owner --exclude='dev/*' --exclude='proc/*' --exclude='sys/*' --exclude='run/*'
           docker rm qrfs >/dev/null
+          chmod -R u+rwX "$out"   # the cache step reads every file as this user
           sudo chroot "$out" /usr/bin/qemu-system-x86_64 --version | head -1; du -sh "$out"
       - if: steps.c.outputs.cache-hit != 'true' && !startsWith(matrix.ver, 'ubuntu-')
         env:
