@@ -1,0 +1,29 @@
+# One-off diagnostic for slow 4K random writes; runs only on its own branch.
+name: Disk probe
+on:
+  push:
+    branches: [bench/disk-probe-20261114]
+permissions:
+  contents: read
+jobs:
+  probe:
+    name: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [celesto-large, ubuntu-24.04]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install tools
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq fio sysstat jq postgresql-16 postgresql-client >/dev/null
+      - name: Probe
+        run: bash scripts/disk-probe.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: disk-probe-${{ matrix.runner }}
+          path: /tmp/disk-probe/
