@@ -10,8 +10,11 @@ id=$(get id x); layout=$(get layout qcow2); qopts=$(get qcow2_opts ""); cache=$(
 aio=$(get aio threads); iothread=$(get iothread 0); discard=$(get discard ""); wc=$(get guest_wc wt)
 fsopt=$(get guest_fsopt ""); smp=$(get smp 2); mem=$(get mem 3072); devtype=$(get dev mmio)
 queues=$(get queues 1); extra=$(get drive_extra ""); devextra=$(get dev_extra ""); globals=$(get globals "")
+xext=$(get xfs_extsize "")
 mkdir -p "$OUT"; vm=$ROOT/vm; rm -rf "$vm"; mkdir -p "$vm"; base=$ROOT/base.raw
 status=ok; note=""
+# XFS extent size hint on the VM dir: new disk files inherit it (it cannot be set on a file that has data).
+[ -n "$xext" ] && { xfs_io -c "extsize $xext" "$vm" || status=prep_failed; }
 sectors() { awk -v d="$DEV" '$3==d{print $10}' /proc/diskstats; }
 
 # Current init and suite go into the shared base (read-only to the VM's overlay).

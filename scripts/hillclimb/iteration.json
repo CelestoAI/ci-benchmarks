@@ -1,19 +1,20 @@
 {
-  "iteration": 3,
-  "baseline": "unsafe-uring",
+  "iteration": 4,
+  "baseline": "pci",
   "repeats": 3,
   "classes": ["local", "network"],
-  "note": "Iteration 2 winner `unsafe-uring` (event_idx=off + cache=unsafe + aio=io_uring: best local score, no >1 s freezes on network) is the baseline. New: disk front ends (virtio-blk on PCI with 2 queues, virtio-scsi), guest I/O scheduler, raw + cache=none + aio=native, and a PCI run with event_idx left on to test whether the lost-notification hang is specific to virtio-mmio. Paired: every job also runs the baseline on the same runner.",
+  "note": "Iteration 3: moving the disk from virtio-mmio to virtio-blk-pci (2 queues) gave 2-5x fsync and random IOPS on both disk classes, and PCI with event_idx left on never hung (6/6), so the hang is specific to virtio-mmio. Baseline is now PCI + 2 queues + event_idx on + cache=unsafe + aio=io_uring. This iteration splits the PCI gain (queues, iothread, aio, cache), tests 4 vCPUs, and re-asks raw vs qcow2 with pairing, including raw with a 1 MiB XFS extent size hint.",
   "configs": [
-    {"id": "unsafe-uring", "dev_extra": "event_idx=off", "cache": "unsafe", "aio": "io_uring", "why": "iteration 2 winner"},
-    {"id": "uring-iothread", "dev_extra": "event_idx=off", "cache": "unsafe", "aio": "io_uring", "iothread": 1, "why": "best random IOPS in iteration 2; recheck pgbench with pairing"},
-    {"id": "uring-sched-none", "dev_extra": "event_idx=off", "cache": "unsafe", "aio": "io_uring", "guest_sched": "none", "why": "guest scheduler none instead of the default"},
-    {"id": "uring-pci-mq2", "dev": "pci", "queues": 2, "dev_extra": "event_idx=off", "cache": "unsafe", "aio": "io_uring", "why": "virtio-blk-pci, one queue per vCPU"},
-    {"id": "uring-pci-mq2-iothread", "dev": "pci", "queues": 2, "dev_extra": "event_idx=off", "cache": "unsafe", "aio": "io_uring", "iothread": 1},
-    {"id": "uring-pci-eidx-on", "dev": "pci", "queues": 2, "cache": "unsafe", "aio": "io_uring", "why": "does the event_idx hang happen on PCI too?"},
-    {"id": "uring-scsi", "dev": "scsi", "dev_extra": "event_idx=off", "cache": "unsafe", "aio": "io_uring", "why": "virtio-scsi on virtio-mmio"},
-    {"id": "uring-scsi-iothread", "dev": "scsi", "dev_extra": "event_idx=off", "cache": "unsafe", "aio": "io_uring", "iothread": 1},
-    {"id": "raw-none-native", "layout": "reflink", "dev_extra": "event_idx=off", "cache": "none", "aio": "native", "why": "raw reflink copy, O_DIRECT, Linux AIO"},
-    {"id": "uring-extl2-128k", "qcow2_opts": "cluster_size=131072,extended_l2=on", "dev_extra": "event_idx=off", "cache": "unsafe", "aio": "io_uring", "why": "no fresh freezes on network in iteration 2; recheck with pairing"}
+    {"id": "pci", "dev": "pci", "queues": 2, "cache": "unsafe", "aio": "io_uring", "why": "iteration 3 PCI winner with event_idx on"},
+    {"id": "pci-iothread", "dev": "pci", "queues": 2, "cache": "unsafe", "aio": "io_uring", "iothread": 1},
+    {"id": "pci-iothread-eidx-off", "dev": "pci", "queues": 2, "cache": "unsafe", "aio": "io_uring", "iothread": 1, "dev_extra": "event_idx=off", "why": "iteration 3 best score; does event_idx matter on PCI?"},
+    {"id": "pci-mq1", "dev": "pci", "queues": 1, "cache": "unsafe", "aio": "io_uring", "why": "is the PCI gain from MSI-X interrupts or from 2 queues?"},
+    {"id": "pci-threads", "dev": "pci", "queues": 2, "cache": "unsafe", "aio": "threads", "why": "does io_uring still matter on PCI?"},
+    {"id": "pci-prod", "dev": "pci", "queues": 2, "cache": "writeback", "aio": "threads", "why": "today's prod disk settings with only the transport moved to PCI (sandbox-safe)"},
+    {"id": "pci-smp4-mq4", "dev": "pci", "queues": 4, "smp": 4, "cache": "unsafe", "aio": "io_uring", "why": "4 vCPUs, one queue each (runner has 4 CPUs)"},
+    {"id": "pci-smp4-mq1", "dev": "pci", "queues": 1, "smp": 4, "cache": "unsafe", "aio": "io_uring", "why": "4 vCPUs sharing one queue: the multiqueue control"},
+    {"id": "pci-raw", "dev": "pci", "queues": 2, "cache": "unsafe", "aio": "io_uring", "layout": "reflink", "why": "raw reflink copy instead of qcow2"},
+    {"id": "pci-raw-extsize", "dev": "pci", "queues": 2, "cache": "unsafe", "aio": "io_uring", "layout": "reflink", "xfs_extsize": "1m", "why": "raw with a 1 MiB XFS extent size hint against fragmentation"},
+    {"id": "mmio-uring", "dev_extra": "event_idx=off", "cache": "unsafe", "aio": "io_uring", "why": "iteration 3 baseline (virtio-mmio), links the iterations"}
   ]
 }

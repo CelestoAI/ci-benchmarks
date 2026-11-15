@@ -18,6 +18,57 @@ virtio-mmio, 2 vCPU / 3 GiB guest) on a fresh GitHub-hosted runner (4 vCPU, 16 G
 - Single VM per runner: no neighbor load. Finalists must still be checked on real hosts.
 - Raw per-run records (config, QEMU drive string, every metric): `runs.jsonl`.
 
+## Iteration 3
+
+Iteration 2 winner `unsafe-uring` (event_idx=off + cache=unsafe + aio=io_uring: best local score, no >1 s freezes on network) is the baseline. New: disk front ends (virtio-blk on PCI with 2 queues, virtio-scsi), guest I/O scheduler, raw + cache=none + aio=native, and a PCI run with event_idx left on to test whether the lost-notification hang is specific to virtio-mmio. Paired: every job also runs the baseline on the same runner.
+
+Baseline: `unsafe-uring`
+
+Runs: [43680144129](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43680144129)
+
+Configs:
+
+- `raw-none-native`: `{"aio": "native", "cache": "none", "dev_extra": "event_idx=off", "layout": "reflink"}` — raw reflink copy, O_DIRECT, Linux AIO
+- `unsafe-uring`: `{"aio": "io_uring", "cache": "unsafe", "dev_extra": "event_idx=off"}` — iteration 2 winner
+- `uring-extl2-128k`: `{"aio": "io_uring", "cache": "unsafe", "dev_extra": "event_idx=off", "qcow2_opts": "cluster_size=131072,extended_l2=on"}` — no fresh freezes on network in iteration 2; recheck with pairing
+- `uring-iothread`: `{"aio": "io_uring", "cache": "unsafe", "dev_extra": "event_idx=off", "iothread": 1}` — best random IOPS in iteration 2; recheck pgbench with pairing
+- `uring-pci-eidx-on`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "queues": 2}` — does the event_idx hang happen on PCI too?
+- `uring-pci-mq2-iothread`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "dev_extra": "event_idx=off", "iothread": 1, "queues": 2}`
+- `uring-pci-mq2`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "dev_extra": "event_idx=off", "queues": 2}` — virtio-blk-pci, one queue per vCPU
+- `uring-sched-none`: `{"aio": "io_uring", "cache": "unsafe", "dev_extra": "event_idx=off", "guest_sched": "none"}` — guest scheduler none instead of the default
+- `uring-scsi-iothread`: `{"aio": "io_uring", "cache": "unsafe", "dev": "scsi", "dev_extra": "event_idx=off", "iothread": 1}`
+- `uring-scsi`: `{"aio": "io_uring", "cache": "unsafe", "dev": "scsi", "dev_extra": "event_idx=off"}` — virtio-scsi on virtio-mmio
+
+### local
+
+| config | ok | score | fresh 4K IOPS | fresh worst s | fresh I/Os >1s | rewrite 4K IOPS | rewrite worst s | seq write MiB/s | 50k files s | fsync IOPS | pgbench TPS | base read MiB/s | VM stop s | host GiB written |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| uring-pci-mq2-iothread | 3/3 | 1.80 (paired) | 113108 | 0.0 | 0 | 118135 | 0.0 | 4121 | 3.23 | 31578 | 3911 | 273 | 0.13 | 24.4 |
+| uring-pci-eidx-on | 3/3 | 1.60 (paired) | 156645 | 0.0 | 0 | 162686 | 0.0 | 3368 | 1.81 | 31044 | 5768 | 396 | 0.12 | 30.7 |
+| uring-pci-mq2 | 3/3 | 1.44 (paired) | 87724 | 0.0 | 0 | 93516 | 0.0 | 4357 | 2.02 | 29057 | 5746 | 401 | 0.12 | 21.4 |
+| uring-iothread | 3/3 | 1.21 (paired) | 106940 | 0.0 | 0 | 134682 | 0.0 | 3531 | 2.09 | 9189 | 4828 | 187 | 0.12 | 24.8 |
+| uring-sched-none | 3/3 | 1.03 (paired) | 45237 | 0.1 | 0 | 59251 | 0.1 | 3448 | 2.07 | 11067 | 5051 | 223 | 0.12 | 15.2 |
+| unsafe-uring | 3/3 | 1.00 | 42716 | 0.1 | 0 | 56061 | 0.1 | 4163 | 1.99 | 10856 | 5110 | 213 | 0.13 | 14.4 |
+| uring-scsi | 3/3 | 0.99 (paired) | 54410 | 0.1 | 0 | 64617 | 0.1 | 4472 | 1.78 | 10958 | 7237 | 250 | 0.12 | 16.2 |
+| uring-scsi-iothread | 3/3 | 0.97 (paired) | 28751 | 0.1 | 0 | 42060 | 0.0 | 3772 | 3.22 | 6059 | 3469 | 130 | 0.12 | 12.6 |
+| uring-extl2-128k | 3/3 | 0.91 (paired) | 20175 | 0.1 | 0 | 55017 | 0.1 | 4214 | 2.03 | 10976 | 5102 | 214 | 0.12 | 11.1 |
+| raw-none-native | 3/3 | 0.84 (paired) | 11615 | 0.0 | 0 | 65424 | 0.1 | 3961 | 2.21 | 7091 | 4659 | 146 | 0.12 | 11.8 |
+
+### network
+
+| config | ok | score | fresh 4K IOPS | fresh worst s | fresh I/Os >1s | rewrite 4K IOPS | rewrite worst s | seq write MiB/s | 50k files s | fsync IOPS | pgbench TPS | base read MiB/s | VM stop s | host GiB written |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| uring-pci-mq2-iothread | 3/3 | 2.03 (paired) | 169423 | 0.4 | 0 | 108362 | 0.3 | 903 | 1.71 | 60968 | 7738 | 428 | 0.12 | 11.8 |
+| uring-pci-eidx-on | 3/3 | 1.76 (paired) | 160413 | 0.1 | 0 | 92866 | 0.8 | 913 | 1.81 | 34067 | 9246 | 498 | 0.12 | 11.9 |
+| uring-pci-mq2 | 3/3 | 1.53 (paired) | 66446 | 0.2 | 0 | 80343 | 0.8 | 911 | 1.76 | 30641 | 5769 | 423 | 0.12 | 12.3 |
+| uring-iothread | 3/3 | 1.27 (paired) | 67586 | 0.3 | 0 | 77198 | 0.3 | 941 | 2.05 | 9202 | 4997 | 189 | 0.12 | 12.5 |
+| uring-sched-none | 3/3 | 1.11 (paired) | 31816 | 0.3 | 0 | 57403 | 0.3 | 1649 | 1.90 | 10448 | 4782 | 215 | 0.12 | 11.2 |
+| uring-extl2-128k | 3/3 | 1.04 (paired) | 26457 | 0.1 | 0 | 34665 | 0.2 | 1142 | 3.15 | 6958 | 3507 | 157 | 0.12 | 9.0 |
+| uring-scsi | 3/3 | 1.03 (paired) | 35249 | 0.1 | 0 | 50593 | 0.5 | 778 | 2.07 | 9489 | 5064 | 190 | 0.12 | 10.5 |
+| uring-scsi-iothread | 3/3 | 1.03 (paired) | 32478 | 0.2 | 0 | 56011 | 0.1 | 1043 | 1.73 | 9018 | 5021 | 191 | 0.12 | 10.4 |
+| unsafe-uring | 3/3 | 1.00 | 30824 | 0.1 | 0 | 38388 | 0.1 | 1098 | 1.80 | 10422 | 4712 | 213 | 0.12 | 10.6 |
+| raw-none-native | 3/3 | 0.58 (paired) | 9730 | 0.1 | 0 | 19546 | 0.1 | 413 | 3.34 | 3591 | 3286 | 63 | 0.12 | 8.2 |
+
 ## Iteration 2
 
 Iteration 1 winner `unsafe` (event_idx=off + cache=unsafe) is the new baseline; combine it with the other knobs that helped on either disk class. 3 repeats.
