@@ -34,7 +34,7 @@ jobs:
           thin = lambda c: "1" if c.get("layout") == "thin" else ""
           inc = [{"id": c["id"], "cls": cls, "rep": r, "cfg": json.dumps(c), "qver": ver(c), "thin": thin(c) or (thin(base) if c["id"] != base["id"] else ""),
                   "base": "" if c["id"] == base["id"] else json.dumps(base), "bqver": "" if c["id"] == base["id"] else ver(base)}
-                 for c in it["configs"] for cls in it["classes"] for r in range(1, it["repeats"] + 1)]
+                 for c in it["configs"] for cls in c.get("classes", it["classes"]) for r in range(1, it["repeats"] + 1)]
           print("matrix=" + json.dumps({"include": inc}))
           print("qemu_versions=" + json.dumps(sorted({ver(c) for c in it["configs"]} - {""})))
           PY

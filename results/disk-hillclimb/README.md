@@ -18,6 +18,50 @@ virtio-mmio, 2 vCPU / 3 GiB guest) on a fresh GitHub-hosted runner (4 vCPU, 16 G
 - Single VM per runner: no neighbor load. Finalists must still be checked on real hosts.
 - Raw per-run records (config, QEMU drive string, every metric): `runs.jsonl`.
 
+## Iteration 6
+
+Iteration 5: QEMU 11.1.3 (our source build) cut fresh writes to 0.15-0.2x of distro 8.2.2 with multi-second stalls, and still hung on virtio-mmio with event_idx on. This iteration separates build from version (8.2.2 built from source the same way, Ubuntu's prebuilt 10.2.1 and 11.0.3, source 9.2.4 and 10.2.4), and adds dm-thin: each VM disk is an LVM thin snapshot of a base volume, used as a raw block device (64K chunks, zeroing on).
+
+Baseline: `pci-iothread`
+
+Runs: [43683396957](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43683396957)
+
+Configs:
+
+- `pci-iothread`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothread": 1, "queues": 2}` — iteration 4-5 winner, distro QEMU 8.2.2
+- `src-10.2.4`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothread": 1, "qemu": "10.2.4", "queues": 2}`
+- `src-8.2.2`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothread": 1, "qemu": "8.2.2", "queues": 2}` — same version, our source build: is the build the problem?
+- `src-9.2.4`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothread": 1, "qemu": "9.2.4", "queues": 2}`
+- `thin-none-native`: `{"aio": "native", "cache": "none", "dev": "pci", "iothread": 1, "layout": "thin", "queues": 2}` — dm-thin snapshot, O_DIRECT, Linux AIO
+- `thin-none-uring`: `{"aio": "io_uring", "cache": "none", "dev": "pci", "iothread": 1, "layout": "thin", "queues": 2}` — dm-thin snapshot, O_DIRECT
+- `thin-prod`: `{"aio": "threads", "cache": "writeback", "dev": "pci", "layout": "thin", "queues": 2}` — dm-thin with today's prod cache settings (sandbox-safe)
+- `thin-unsafe`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothread": 1, "layout": "thin", "queues": 2}` — dm-thin snapshot, host page cache
+- `ubuntu-26.04`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothread": 1, "qemu": "ubuntu-26.04", "queues": 2}` — Ubuntu 26.04 LTS prebuilt QEMU 10.2.1
+
+### local
+
+| config | ok | score | fresh 4K IOPS | fresh worst s | fresh I/Os >1s | rewrite 4K IOPS | rewrite worst s | seq write MiB/s | 50k files s | fsync IOPS | pgbench TPS | base read MiB/s | VM stop s | host GiB written |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| pci-iothread | 3/3 | 1.00 | 197002 | 0.0 | 0 | 200887 | 0.0 | 4433 | 1.71 | 68794 | 7508 | 523 | 0.13 | 38.9 |
+| src-9.2.4 | 3/3 | 0.99 (paired) | 108370 | 0.0 | 0 | 116467 | 0.0 | 3828 | 3.17 | 32461 | 3982 | 251 | 0.12 | 24.2 |
+| src-8.2.2 | 3/3 | 0.97 (paired) | 152844 | 0.0 | 0 | 150212 | 0.0 | 4633 | 2.03 | 55304 | 5701 | 449 | 0.12 | 31.0 |
+| ubuntu-26.04 | 3/3 | 0.73 (paired) | 18033 | 2.7 | 21 | 101293 | 0.0 | 3038 | 3.25 | 21529 | 3925 | 258 | 0.12 | 14.2 |
+| src-10.2.4 | 3/3 | 0.71 (paired) | 18992 | 9.9 | 52 | 114259 | 0.0 | 2691 | 3.24 | 25333 | 4046 | 268 | 0.12 | 15.0 |
+
+### network
+
+| config | ok | score | fresh 4K IOPS | fresh worst s | fresh I/Os >1s | rewrite 4K IOPS | rewrite worst s | seq write MiB/s | 50k files s | fsync IOPS | pgbench TPS | base read MiB/s | VM stop s | host GiB written |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| src-9.2.4 | 3/3 | 1.08 (paired) | 144495 | 0.3 | 0 | 112430 | 0.6 | 762 | 1.92 | 57424 | 8891 | 517 | 0.12 | 12.3 |
+| src-8.2.2 | 3/3 | 1.06 (paired) | 125194 | 0.5 | 0 | 92043 | 0.1 | 1694 | 2.62 | 37709 | 4395 | 270 | 0.12 | 18.0 |
+| pci-iothread | 3/3 | 1.00 | 150866 | 0.3 | 0 | 86206 | 0.6 | 565 | 1.91 | 65782 | 9050 | 529 | 0.12 | 12.6 |
+| src-10.2.4 | 3/3 | 0.79 (paired) | 49914 | 0.1 | 0 | 82842 | 0.3 | 699 | 3.27 | 22975 | 3876 | 264 | 0.12 | 13.2 |
+| ubuntu-26.04 | 3/3 | 0.76 (paired) | 61236 | 4.8 | 21 | 67317 | 0.3 | 294 | 3.04 | 35490 | 5537 | 387 | 0.12 | 11.1 |
+| thin-none-uring | 3/3 | 0.28 (paired) | 14433 | 0.1 | 0 | 19558 | 0.1 | 110 | 5.97 | 5484 | 3824 | 79 | 0.12 | 11.0 |
+| thin-none-native | 3/3 | 0.24 (paired) | 14104 | 0.1 | 0 | 19558 | 0.1 | 119 | 5.60 | 5358 | 4765 | 76 | 0.12 | 11.0 |
+| thin-prod | 3/3 | 0.19 (paired) | 10133 | 1.5 | 213 | 494 | 5.6 | 351 | 3.16 | 8379 | 3766 | 137 | 2.05 | 13.7 |
+| thin-unsafe | 3/3 | 0.13 (paired) | 17290 | 0.4 | 0 | 128 | 2.8 | 140 | 1.91 | 11125 | 7997 | 134 | 1.75 | 14.4 |
+
 ## Iteration 5
 
 Iteration 4 winner `pci-iothread` (virtio-blk-pci, 2 queues, 1 iothread, event_idx on, cache=unsafe, aio=io_uring, qcow2) is the baseline. This iteration tries QEMU 11.1.3 (latest stable, source build) against the distro 8.2.2 the hosts run: same config, per-queue iothreads (iothread-vq-mapping, 9.0+), whether the virtio-mmio event_idx hang is fixed upstream, and whether today's prod cache settings still freeze on network disks.
