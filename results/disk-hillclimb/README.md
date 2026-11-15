@@ -18,6 +18,60 @@ virtio-mmio, 2 vCPU / 3 GiB guest) on a fresh GitHub-hosted runner (4 vCPU, 16 G
 - Single VM per runner: no neighbor load. Finalists must still be checked on real hosts.
 - Raw per-run records (config, QEMU drive string, every metric): `runs.jsonl`.
 
+## Iteration 4
+
+Iteration 3: moving the disk from virtio-mmio to virtio-blk-pci (2 queues) gave 2-5x fsync and random IOPS on both disk classes, and PCI with event_idx left on never hung (6/6), so the hang is specific to virtio-mmio. Baseline is now PCI + 2 queues + event_idx on + cache=unsafe + aio=io_uring. This iteration splits the PCI gain (queues, iothread, aio, cache), tests 4 vCPUs, and re-asks raw vs qcow2 with pairing, including raw with a 1 MiB XFS extent size hint.
+
+Baseline: `pci`
+
+Runs: [43680808711](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43680808711)
+
+Configs:
+
+- `mmio-uring`: `{"aio": "io_uring", "cache": "unsafe", "dev_extra": "event_idx=off"}` — iteration 3 baseline (virtio-mmio), links the iterations
+- `pci-iothread-eidx-off`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "dev_extra": "event_idx=off", "iothread": 1, "queues": 2}` — iteration 3 best score; does event_idx matter on PCI?
+- `pci-iothread`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothread": 1, "queues": 2}`
+- `pci`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "queues": 2}` — iteration 3 PCI winner with event_idx on
+- `pci-mq1`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "queues": 1}` — is the PCI gain from MSI-X interrupts or from 2 queues?
+- `pci-prod`: `{"aio": "threads", "cache": "writeback", "dev": "pci", "queues": 2}` — today's prod disk settings with only the transport moved to PCI (sandbox-safe)
+- `pci-raw-extsize`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "layout": "reflink", "queues": 2, "xfs_extsize": "1m"}` — raw with a 1 MiB XFS extent size hint against fragmentation
+- `pci-raw`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "layout": "reflink", "queues": 2}` — raw reflink copy instead of qcow2
+- `pci-smp4-mq1`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "queues": 1, "smp": 4}` — 4 vCPUs sharing one queue: the multiqueue control
+- `pci-smp4-mq4`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "queues": 4, "smp": 4}` — 4 vCPUs, one queue each (runner has 4 CPUs)
+- `pci-threads`: `{"aio": "threads", "cache": "unsafe", "dev": "pci", "queues": 2}` — does io_uring still matter on PCI?
+
+### local
+
+| config | ok | score | fresh 4K IOPS | fresh worst s | fresh I/Os >1s | rewrite 4K IOPS | rewrite worst s | seq write MiB/s | 50k files s | fsync IOPS | pgbench TPS | base read MiB/s | VM stop s | host GiB written |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| pci-iothread-eidx-off | 3/3 | 1.12 (paired) | 166505 | 0.0 | 0 | 169270 | 0.0 | 3103 | 1.50 | 64017 | 5681 | 454 | 0.12 | 33.7 |
+| pci-iothread | 3/3 | 1.09 (paired) | 170024 | 0.0 | 0 | 188620 | 0.0 | 5265 | 1.92 | 62519 | 8587 | 554 | 0.12 | 35.0 |
+| pci | 3/3 | 1.00 | 195491 | 0.0 | 0 | 202909 | 0.0 | 5361 | 1.83 | 34228 | 9002 | 507 | 0.12 | 36.9 |
+| pci-smp4-mq4 | 3/3 | 0.96 (paired) | 168925 | 0.0 | 0 | 175731 | 0.0 | 5133 | 1.82 | 33761 | 9699 | 489 | 0.12 | 33.1 |
+| pci-mq1 | 3/3 | 0.93 (paired) | 133803 | 0.0 | 0 | 146694 | 0.0 | 4072 | 1.84 | 20603 | 6039 | 392 | 0.12 | 28.1 |
+| pci-smp4-mq1 | 3/3 | 0.92 (paired) | 119518 | 0.0 | 0 | 130486 | 0.0 | 4214 | 2.17 | 19425 | 6180 | 340 | 0.12 | 25.9 |
+| pci-threads | 3/3 | 0.79 (paired) | 110943 | 0.0 | 0 | 102755 | 0.0 | 4665 | 1.88 | 21096 | 8154 | 348 | 0.12 | 23.3 |
+| pci-prod | 3/3 | 0.77 (paired) | 116144 | 0.0 | 0 | 107099 | 0.0 | 3385 | 1.86 | 21160 | 8455 | 355 | 0.12 | 24.3 |
+| pci-raw | 3/3 | 0.67 (paired) | 17960 | 0.1 | 0 | 86777 | 0.0 | 4654 | 2.01 | 26124 | 5942 | 278 | 0.12 | 14.4 |
+| pci-raw-extsize | 3/3 | 0.64 (paired) | 22031 | 0.1 | 0 | 83819 | 0.0 | 3923 | 2.10 | 17172 | 5443 | 266 | 0.12 | 13.2 |
+| mmio-uring | 3/3 | 0.60 (paired) | 43992 | 0.1 | 0 | 58064 | 0.1 | 3580 | 1.80 | 9679 | 5174 | 204 | 0.12 | 14.5 |
+
+### network
+
+| config | ok | score | fresh 4K IOPS | fresh worst s | fresh I/Os >1s | rewrite 4K IOPS | rewrite worst s | seq write MiB/s | 50k files s | fsync IOPS | pgbench TPS | base read MiB/s | VM stop s | host GiB written |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| pci-iothread-eidx-off | 3/3 | 1.14 (paired) | 125921 | 0.4 | 0 | 87736 | 0.6 | 704 | 2.02 | 55318 | 5899 | 435 | 0.12 | 11.7 |
+| pci-iothread | 3/3 | 1.12 (paired) | 133033 | 0.3 | 0 | 90723 | 0.5 | 783 | 2.03 | 57461 | 5778 | 404 | 0.12 | 12.1 |
+| pci-smp4-mq4 | 3/3 | 1.09 (paired) | 131784 | 0.3 | 0 | 112867 | 0.5 | 879 | 2.04 | 28754 | 6626 | 364 | 0.12 | 11.8 |
+| pci | 3/3 | 1.00 | 118697 | 0.3 | 0 | 95775 | 0.4 | 589 | 2.01 | 29535 | 5869 | 398 | 0.12 | 11.7 |
+| pci-mq1 | 3/3 | 0.97 (paired) | 90362 | 0.3 | 0 | 83533 | 0.1 | 1680 | 3.06 | 12876 | 4059 | 252 | 0.12 | 16.6 |
+| pci-smp4-mq1 | 3/3 | 0.97 (paired) | 88322 | 0.3 | 0 | 83292 | 0.1 | 1762 | 3.17 | 11669 | 4340 | 237 | 0.12 | 16.8 |
+| pci-threads | 3/3 | 0.95 (paired) | 67412 | 0.7 | 0 | 66782 | 1.2 | 2876 | 2.02 | 15642 | 5475 | 291 | 0.12 | 11.6 |
+| pci-raw | 3/3 | 0.90 (paired) | 51904 | 0.0 | 0 | 75636 | 0.3 | 1692 | 3.11 | 16448 | 3939 | 178 | 0.12 | 12.5 |
+| pci-raw-extsize | 3/3 | 0.79 (paired) | 118044 | 0.2 | 0 | 61650 | 0.5 | 853 | 2.05 | 16377 | 5451 | 172 | 0.12 | 11.7 |
+| mmio-uring | 3/3 | 0.62 (paired) | 28229 | 0.1 | 0 | 35625 | 0.3 | 888 | 2.06 | 10356 | 5161 | 194 | 0.12 | 10.2 |
+| pci-prod | 3/3 | 0.44 (paired) | 67322 | 7.5 | 252 | 82911 | 0.4 | 198 | 4.00 | 16786 | 7251 | 305 | 2.04 | 15.3 |
+
 ## Iteration 3
 
 Iteration 2 winner `unsafe-uring` (event_idx=off + cache=unsafe + aio=io_uring: best local score, no >1 s freezes on network) is the baseline. New: disk front ends (virtio-blk on PCI with 2 queues, virtio-scsi), guest I/O scheduler, raw + cache=none + aio=native, and a PCI run with event_idx left on to test whether the lost-notification hang is specific to virtio-mmio. Paired: every job also runs the baseline on the same runner.
