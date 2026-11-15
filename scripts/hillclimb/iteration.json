@@ -1,30 +1,82 @@
 {
-  "iteration": 0,
-  "note": "Harness smoke test 4: lost virtio notification hunt (guest has writes in flight, QEMU idle).",
-  "repeats": 1,
+  "iteration": 1,
+  "baseline": "eidx-off",
+  "repeats": 2,
   "classes": [
     "local",
     "network"
   ],
+  "note": "One knob at a time on top of `eidx-off` (today's prod config plus `event_idx=off`, the iteration 0 fix). `prod-today` is kept for reference.",
   "configs": [
     {
-      "id": "base"
+      "id": "prod-today",
+      "why": "qcow2 overlay (64K clusters), cache=writeback, aio=threads, no iothread, legacy virtio-mmio, guest write-through"
     },
     {
-      "id": "mmio-ioeventfd-off",
-      "globals": "virtio-mmio.ioeventfd=off"
+      "id": "eidx-off",
+      "dev_extra": "event_idx=off",
+      "why": "prod-today + virtio-blk event_idx=off"
     },
     {
-      "id": "mmio-modern",
-      "globals": "virtio-mmio.force-legacy=false"
+      "id": "unsafe",
+      "dev_extra": "event_idx=off",
+      "cache": "unsafe"
     },
     {
-      "id": "event-idx-off",
-      "dev_extra": "event_idx=off"
+      "id": "none-uring",
+      "dev_extra": "event_idx=off",
+      "cache": "none",
+      "aio": "io_uring"
+    },
+    {
+      "id": "uring",
+      "dev_extra": "event_idx=off",
+      "aio": "io_uring"
     },
     {
       "id": "iothread",
+      "dev_extra": "event_idx=off",
       "iothread": 1
+    },
+    {
+      "id": "extl2-128k",
+      "dev_extra": "event_idx=off",
+      "qcow2_opts": "cluster_size=131072,extended_l2=on"
+    },
+    {
+      "id": "cluster-2m",
+      "dev_extra": "event_idx=off",
+      "qcow2_opts": "cluster_size=2097152"
+    },
+    {
+      "id": "prealloc-meta",
+      "dev_extra": "event_idx=off",
+      "qcow2_opts": "preallocation=metadata"
+    },
+    {
+      "id": "lazy-refcounts",
+      "dev_extra": "event_idx=off",
+      "qcow2_opts": "lazy_refcounts=on"
+    },
+    {
+      "id": "reflink-raw",
+      "dev_extra": "event_idx=off",
+      "layout": "reflink"
+    },
+    {
+      "id": "discard-unmap",
+      "dev_extra": "event_idx=off",
+      "discard": "unmap"
+    },
+    {
+      "id": "guest-noatime-commit60",
+      "dev_extra": "event_idx=off",
+      "guest_fsopt": "noatime:commit=60"
+    },
+    {
+      "id": "mmio-modern",
+      "dev_extra": "event_idx=off",
+      "globals": "virtio-mmio.force-legacy=false"
     }
   ]
 }

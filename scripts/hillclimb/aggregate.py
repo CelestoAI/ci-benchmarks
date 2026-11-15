@@ -24,6 +24,7 @@ def add(download_dir, iteration_file):
         r = json.loads(f.read_text())
         r["iteration"] = it["iteration"]
         r["iteration_note"] = it.get("note", "")
+        r["baseline"] = it.get("baseline", "base")
         k = (r["run_id"], r["id"], r["class"], r["rep"])
         if k not in seen:
             runs.append(r); seen.add(k); added += 1
@@ -90,17 +91,21 @@ def render():
     runs = load_runs()
     lines = ["# CI VM disk hill-climb", "",
              "Each run boots the prod CI microvm command line (QEMU 8.2.2, Celesto CI kernel `kernels-2026.10.28.0`,",
-             "virtio-mmio, 2 vCPU / 4 GiB) on a fresh GitHub-hosted runner and runs `scripts/hillclimb/guest-bench.sh`.",
-             "", "- **local**: the runner's local temp SSD, XFS with reflink (stand-in for local NVMe).",
-             "- **network**: an XFS loop file (direct I/O) on the runner's network OS disk (stand-in for EBS / OVH volumes).",
-             "- Values are medians over repeats. **score** = geometric mean of each scored metric's ratio to `base` in the",
-             "  same disk class (above 1 is better). Worst-latency columns are not scored: a config that freezes is rejected.",
+             "virtio-mmio, 2 vCPU / 3 GiB guest) on a fresh GitHub-hosted runner (4 vCPU, 16 GiB, nested KVM) and runs `scripts/hillclimb/guest-bench.sh`.",
+             "", "- **local**: XFS (reflink) on a RAM-backed `null_blk` device with 20 us completions (stand-in for local NVMe;",
+             "  the runners have no local SSD).",
+             "- **network**: an XFS loop file (direct I/O) on the runner's only disk, a remote Azure disk attached over NVMe",
+             "  (stand-in for EBS / OVH volumes).",
+             "- Values are medians over repeats. **score** = geometric mean of each scored metric's ratio to the iteration's",
+             "  baseline config (named in each iteration) in the same disk class (above 1 is better).",
+             "- Worst-latency columns are not scored: a config that freezes is rejected. **ok** counts runs that finished;",
+             "  a run that hangs past its timeouts is not ok.",
              "- Single VM per runner: no neighbor load. Finalists must still be checked on real hosts.",
              "- Raw per-run records (config, QEMU drive string, every metric): `runs.jsonl`.", ""]
     for itn in sorted({r["iteration"] for r in runs}, reverse=True):
         rs = [r for r in runs if r["iteration"] == itn]
         runs_ids = sorted({r["run_id"] for r in rs})
-        lines += [f"## Iteration {itn}", "", rs[0].get("iteration_note", ""), "",
+        lines += [f"## Iteration {itn}", "", rs[0].get("iteration_note", ""), "", f"Baseline: `{rs[0].get('baseline', 'base')}`", "",
                   "Runs: " + ", ".join(f"[{i}](https://github.com/CelestoAI/ci-benchmarks/actions/runs/{i})" for i in runs_ids), ""]
         cfgs = {}
         for r in rs:
@@ -109,10 +114,10 @@ def render():
         for cls in ("local", "network"):
             cr = [r for r in rs if r["class"] == cls]
             if cr:
-                lines += [f"### {cls}", "", table(cr, "base"), ""]
+                lines += [f"### {cls}", "", table(cr, rs[0].get("baseline", "base")), ""]
         bad = [r for r in rs if r["status"] != "ok"]
         if bad:
-            lines += ["Failures:", ""] + [f"- `{r['id']}` {r['class']} rep {r['rep']}: {r['status']} {(r.get('qemu_err') or '')[-200:].strip()}" for r in bad] + [""]
+            lines += ["Failures:", ""] + [f"- `{r['id']}` {r['class']} rep {r['rep']}: {r['status']} {((r.get('guest_diag') or '').splitlines() or [''])[0]}" for r in bad] + [""]
     (ROOT / "README.md").write_text("\n".join(lines))
 
 
