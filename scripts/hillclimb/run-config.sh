@@ -48,11 +48,28 @@ while off < end:
     while off < hole: off += len(os.pread(fd, min(8 << 20, hole - off), off))
 PY
 sync
+if [ "$layout" = thin ]; then  # base volume in the thin pool, refreshed each run (the suite was just injected)
+  lvremove -qqfy hc/base 2>/dev/null; lvcreate -qq -V 40G -T hc/pool -n base && python3 - "$base" /dev/hc/base <<'COPY'
+import os, sys
+src = os.open(sys.argv[1], os.O_RDONLY); dst = os.open(sys.argv[2], os.O_WRONLY)
+end = os.fstat(src).st_size; off = 0
+while off < end:  # copy data extents only, so holes stay unprovisioned in the pool
+    try: off = os.lseek(src, off, os.SEEK_DATA)
+    except OSError: break
+    hole = os.lseek(src, off, os.SEEK_HOLE)
+    while off < hole:
+        b = os.pread(src, min(8 << 20, hole - off), off); os.pwrite(dst, b, off); off += len(b)
+os.fsync(dst)
+COPY
+  [ $? = 0 ] || status=prep_failed
+fi
 
 t0=$(date +%s.%N)
 case "$layout" in
   qcow2)   disk=$vm/disk.qcow2; fmt=qcow2
            "${QIMG[@]}" create -q -f qcow2 -F raw -b "$base" ${qopts:+-o "$qopts"} "$disk" 40G 2>"$vm/prep.err" || status=prep_failed ;;
+  thin)    disk=/dev/hc/vm; fmt=raw  # dm-thin snapshot of the base volume, used as a raw block device
+           lvcreate -qq -s -kn -n vm hc/base 2>"$vm/prep.err" || status=prep_failed ;;
   reflink) disk=$vm/disk.raw; fmt=raw
            cp --reflink=always "$base" "$disk" 2>"$vm/prep.err" || status=prep_failed ;;
   *)       status=bad_layout ;;
@@ -121,7 +138,7 @@ if [ "$status" = ok ]; then
   fi
   boot_s=$(sed -n 's/^GUEST_UP \([0-9.]*\).*/\1/p' "$vm/serial.log" | head -1); boot_s=${boot_s:-null}
 fi
-t2=$(date +%s.%N); rm -f "$disk"; rm_s=$(python3 -c "import time;print(round(time.time()-$t2,3))")
+t2=$(date +%s.%N); if [ "$layout" = thin ]; then lvremove -qqfy hc/vm; else rm -f "$disk"; fi; rm_s=$(python3 -c "import time;print(round(time.time()-$t2,3))")
 sync; s1=$(sectors)
 
 guest_diag=$(grep '^D ' "$vm/serial.log" 2>/dev/null | tr -d '\r' | tail -c 2500)

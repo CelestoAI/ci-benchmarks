@@ -31,7 +31,8 @@ jobs:
           # Paired design: every non-baseline job also runs the baseline on the same
           # runner, because GitHub hands out runners of different speeds.
           base = next(c for c in it["configs"] if c["id"] == it["baseline"])
-          inc = [{"id": c["id"], "cls": cls, "rep": r, "cfg": json.dumps(c), "qver": ver(c),
+          thin = lambda c: "1" if c.get("layout") == "thin" else ""
+          inc = [{"id": c["id"], "cls": cls, "rep": r, "cfg": json.dumps(c), "qver": ver(c), "thin": thin(c) or (thin(base) if c["id"] != base["id"] else ""),
                   "base": "" if c["id"] == base["id"] else json.dumps(base), "bqver": "" if c["id"] == base["id"] else ver(base)}
                  for c in it["configs"] for cls in it["classes"] for r in range(1, it["repeats"] + 1)]
           print("matrix=" + json.dumps({"include": inc}))
@@ -114,12 +115,25 @@ jobs:
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules >/dev/null
           sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
-          sudo apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq qemu-system-x86 qemu-utils xfsprogs zstd jq >/dev/null
+          sudo apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq qemu-system-x86 qemu-utils xfsprogs zstd jq lvm2 thin-provisioning-tools >/dev/null
           qemu-system-x86_64 --version | head -1; uname -r; lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,MODEL; df -h / /mnt || true
           curl -fsSL -o /tmp/kernel "$KERNEL_URL" && echo "$KERNEL_SHA256  /tmp/kernel" | sha256sum -c -
       - name: Disk class
+        env:
+          THIN: ${{ matrix.thin }}
         run: |
-          if [ "${{ matrix.cls }}" = local ]; then
+          if [ "${{ matrix.cls }}" = local ] && [ "$THIN" = 1 ]; then
+            # dm-thin jobs need room for both layouts: one 22 GiB null_blk with discard (deleted
+            # data frees its RAM), split in two with dm-linear: XFS for qcow2, an LVM thin pool.
+            modinfo null_blk >/dev/null 2>&1 || sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "linux-modules-extra-$(uname -r)" >/dev/null
+            sudo modprobe null_blk nr_devices=0 && d=/sys/kernel/config/nullb/nb0 && sudo mkdir "$d"
+            for kv in size=22528 memory_backed=1 discard=1 queue_mode=2 irqmode=2 completion_nsec=20000 hw_queue_depth=256 submit_queues=4 blocksize=4096 power=1; do
+              echo "${kv#*=}" | sudo tee "$d/${kv%%=*}" >/dev/null; done
+            src=/dev/nullb0; half=$(( $(sudo blockdev --getsz $src) / 2 ))
+            sudo dmsetup create hcxfs --table "0 $half linear $src 0" && sudo dmsetup create hcthin --table "0 $half linear $src $half"
+            sudo mkfs.xfs -q -f -m reflink=1 /dev/mapper/hcxfs && sudo mkdir -p /local && sudo mount -o discard /dev/mapper/hcxfs /local && root=/local/hc
+            pv=/dev/mapper/hcthin
+          elif [ "${{ matrix.cls }}" = local ]; then
             # No local SSD on these runners: a RAM-backed null_blk device with 20 us
             # completions stands in for local NVMe.
             modinfo null_blk >/dev/null 2>&1 || sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "linux-modules-extra-$(uname -r)" >/dev/null
@@ -132,6 +146,11 @@ jobs:
             src=$(findmnt -no SOURCE /)
             sudo truncate -s 64G /xfsnet.img && loop=$(sudo losetup --direct-io=on -f --show /xfsnet.img)
             sudo mkfs.xfs -q -f -m reflink=1 "$loop" && sudo mkdir -p /net && sudo mount "$loop" /net && root=/net/hc
+            if [ "$THIN" = 1 ]; then sudo truncate -s 64G /thin.img && pv=$(sudo losetup --direct-io=on -f --show /thin.img); fi
+          fi
+          if [ "$THIN" = 1 ]; then  # thin pool; 64K chunks, zeroing on (a VM must never read another VM's old data)
+            sudo pvcreate -qq "$pv" && sudo vgcreate -qq hc "$pv" && sudo lvcreate -qq --type thin-pool -l 90%FREE --chunksize 64k --zero y -n pool hc
+            sudo lvs -o lv_name,lv_size,chunk_size,zero,discards hc
           fi
           echo "ROOT=$root" >> "$GITHUB_ENV"; echo "DEV=$(lsblk -no KNAME "$src" | tail -1)" >> "$GITHUB_ENV"
           sudo mkdir -p "$root" && zstd -dc rootfs/base.raw.tar.zst | sudo tar -xSf - -C "$root"
