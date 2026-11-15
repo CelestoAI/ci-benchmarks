@@ -43,11 +43,19 @@ drive="file=$disk,if=none,format=$fmt,id=rootdisk0-drive,node-name=rootdisk0,cac
 [ -n "$extra" ] && drive+=",$extra"
 iot=(); devprop=""
 [ "$iothread" = 1 ] && iot=(-object iothread,id=io0) && devprop=",iothread=io0"
-if [ "$devtype" = pci ]; then pcie=on; blk="virtio-blk-pci,drive=rootdisk0-drive,num-queues=$queues$devprop"
-else pcie=off; blk="virtio-blk-device,drive=rootdisk0-drive$devprop"; fi
+rootdev=/dev/vda; ctl=()
+case "$devtype" in
+  pci)      pcie=on;  blk="virtio-blk-pci,drive=rootdisk0-drive,num-queues=$queues$devprop" ;;
+  scsi)     pcie=off; ctl=(-device "virtio-scsi-device,id=scsi0$devprop"); rootdev=/dev/sda
+            blk="scsi-hd,drive=rootdisk0-drive,bus=scsi0.0" ;;
+  scsi-pci) pcie=on;  ctl=(-device "virtio-scsi-pci,id=scsi0,num_queues=$queues$devprop"); rootdev=/dev/sda
+            blk="scsi-hd,drive=rootdisk0-drive,bus=scsi0.0" ;;
+  *)        pcie=off; blk="virtio-blk-device,drive=rootdisk0-drive$devprop" ;;
+esac
 [ -n "$devextra" ] && blk+=",$devextra"
 glob=(); for gl in ${globals//;/ }; do glob+=(-global "$gl"); done
-append="console=ttyS0 reboot=k panic=1 root=/dev/vda rw init=/init bench_wc=$wc${fsopt:+ bench_fsopt=$fsopt}"
+sched=$(get guest_sched "")
+append="console=ttyS0 reboot=k panic=1 root=$rootdev rw init=/init bench_wc=$wc${fsopt:+ bench_fsopt=$fsopt}${sched:+ bench_sched=$sched}"
 
 declare -A R=(); exit_s=null; rm_s=null; killed=false; boot_s=null
 s0=$(sectors)
@@ -56,7 +64,7 @@ if [ "$status" = ok ]; then
   qemu-system-x86_64 -smp "$smp" -m "$mem" -nodefaults -serial stdio -kernel "$KERNEL" -append "$append" \
     "${glob[@]}" "${iot[@]}" -drive "$drive" -nographic -no-reboot -monitor none -rtc base=utc,clock=host \
     -qmp "unix:$vm/qmp.sock,server=on,wait=off" \
-    -machine "microvm,accel=kvm,acpi=on,pcie=$pcie,pic=off,pit=off,rtc=on" -cpu host -device "$blk" \
+    -machine "microvm,accel=kvm,acpi=on,pcie=$pcie,pic=off,pit=off,rtc=on" -cpu host "${ctl[@]}" -device "$blk" \
     </dev/null >"$vm/serial.log" 2>"$vm/qemu.err" &
   qpid=$!
   ( peak=0; while kill -0 "$qpid" 2>/dev/null; do

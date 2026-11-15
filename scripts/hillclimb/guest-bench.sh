@@ -2,8 +2,9 @@
 # Stand-in CI disk workload, run inside the guest. Prints one "R <json>" line per test.
 set -u
 wc=${1:-wt}; v="write through"; [ "$wc" = wb ] && v="write back"
-for f in /sys/block/vd*/queue/write_cache; do echo "$v" > "$f"; done
-echo "R {\"n\":\"guest\",\"write_cache\":\"$(cat /sys/block/vda/queue/write_cache)\",\"uptime_s\":$(cut -d' ' -f1 /proc/uptime),\"cpus\":$(nproc),\"mem_mib\":$(( $(awk '/MemTotal/{print $2}' /proc/meminfo) / 1024 )),\"mount\":\"$(awk '$2=="/"{print $4}' /proc/mounts)\"}"
+rd=vda; [ -d /sys/block/sda ] && rd=sda  # virtio-blk is vda, virtio-scsi is sda
+for f in /sys/block/vd*/queue/write_cache /sys/block/sd*/queue/write_cache; do [ -e "$f" ] && echo "$v" > "$f"; done
+echo "R {\"n\":\"guest\",\"disk\":\"$rd\",\"sched\":\"$(cat /sys/block/$rd/queue/scheduler)\",\"hw_queues\":$(ls -d /sys/block/$rd/mq/* | wc -l),\"write_cache\":\"$(cat /sys/block/$rd/queue/write_cache)\",\"uptime_s\":$(cut -d' ' -f1 /proc/uptime),\"cpus\":$(nproc),\"mem_mib\":$(( $(awk '/MemTotal/{print $2}' /proc/meminfo) / 1024 )),\"mount\":\"$(awk '$2=="/"{print $4}' /proc/mounts)\"}"
 W=/home/bench; rm -rf "$W"; mkdir -p "$W"
 now() { date +%s.%N; }
 el() { python3 -c "print(round($2-$1,3))"; }
@@ -15,7 +16,7 @@ fioj() {  # name, fio args...; json+ gives latency bins for freeze counts
     --output-format=json+ "$@" > /tmp/"$n".json 2>/tmp/"$n".err
   local rc=$?
   if [ "$rc" -ge 124 ]; then  # Timed out: record why, then stop the suite (the disk may be wedged).
-    echo "D $n rc=$rc inflight=$(cat /sys/block/vda/inflight | tr -s ' ')"
+    echo "D $n rc=$rc inflight=$(cat /sys/block/$rd/inflight | tr -s ' ')"
     echo "D irq_before: $irq0"
     echo "D irq_after:  $(grep -i virtio /proc/interrupts | tr -s ' ' | tr '\n' ';')"
     echo "D dstate: $(ps -eo stat,comm,wchan:28 | awk '$1 ~ /^D/' | sort | uniq -c | tr -s ' ' | tr '\n' ';')"

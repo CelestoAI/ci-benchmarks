@@ -10,6 +10,14 @@ echo "GUEST_UP $(cut -d' ' -f1 /proc/uptime)"
 wc=$(sed -n 's/.*bench_wc=\([a-z]*\).*/\1/p' /proc/cmdline)
 fsopt=$(sed -n 's/.*bench_fsopt=\([^ ]*\).*/\1/p' /proc/cmdline)
 [ -n "$fsopt" ] && mount -o "remount,${fsopt//:/,}" / && echo "GUEST_FSOPT $fsopt"
+sched=$(sed -n 's/.*bench_sched=\([a-z-]*\).*/\1/p' /proc/cmdline)
+if [ -n "$sched" ]; then  # guest I/O scheduler; "none" also marks the disk non-rotational
+  for q in /sys/block/vd*/queue /sys/block/sd*/queue; do
+    [ -d "$q" ] || continue; echo "$sched" > "$q/scheduler"; [ "$sched" = none ] && echo 0 > "$q/rotational"
+  done
+  echo "GUEST_SCHED $(cat /sys/block/[vs]da/queue/scheduler)"
+fi
+echo "GUEST_DISK $(ls /sys/block | grep -E '^(vd|sd)' | tr '\n' ' ') nr_hw_queues=$(ls -d /sys/block/[vs]da/mq/* 2>/dev/null | wc -l)"
 bash /guest-bench.sh "${wc:-wt}" 2>&1
 echo "GUEST_DONE"
 while true; do sleep 3600; done
