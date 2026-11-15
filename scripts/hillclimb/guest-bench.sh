@@ -10,8 +10,19 @@ el() { python3 -c "print(round($2-$1,3))"; }
 fioj() {  # name, fio args...; json+ gives latency bins for freeze counts
   local n=$1; shift
   echo "T $n start $(cut -d' ' -f1 /proc/uptime)"
+  local irq0; irq0=$(grep -i virtio /proc/interrupts | tr -s ' ' | tr '\n' ';')
   timeout -k 10 150 fio --name="$n" --ioengine=libaio --direct=1 --group_reporting=1 --percentile_list=50:99:99.9 \
     --output-format=json+ "$@" > /tmp/"$n".json 2>/tmp/"$n".err
+  local rc=$?
+  if [ "$rc" -ge 124 ]; then  # Timed out: record why, then stop the suite (the disk may be wedged).
+    echo "D $n rc=$rc inflight=$(cat /sys/block/vda/inflight | tr -s ' ')"
+    echo "D irq_before: $irq0"
+    echo "D irq_after:  $(grep -i virtio /proc/interrupts | tr -s ' ' | tr '\n' ';')"
+    echo "D dstate: $(ps -eo stat,comm,wchan:28 | awk '$1 ~ /^D/' | sort | uniq -c | tr -s ' ' | tr '\n' ';')"
+    echo "D fio_err: $(tail -c 300 /tmp/"$n".err | tr '\n' ' ')"
+    echo "R {\"n\":\"$n\",\"error\":\"timeout rc=$rc\"}"
+    echo "GUEST_DONE"; sleep infinity
+  fi
   local j
   j=$(jq -c --arg n "$n" '.jobs[0].write as $w | {n:$n, iops:($w.iops|floor), mib_s:(($w.bw_bytes/1048576*10|floor)/10),
       p50_us:(($w.clat_ns.percentile["50.000000"]//0)/1000|floor), p999_us:(($w.clat_ns.percentile["99.900000"]//0)/1000|floor),

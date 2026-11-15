@@ -74,7 +74,7 @@ if [ "$status" = ok ]; then
       echo "== D-state threads host-wide"; ps -eLo stat,comm,wchan:32 | awk '$1 ~ /^D/' | sort | uniq -c | head -20
       echo "== meminfo"; grep -E '^(MemAvailable|Dirty|Writeback|Cached):' /proc/meminfo
       echo "== diskstats"; grep -E " ($DEV|loop[0-9]+|nullb[0-9]+) " /proc/diskstats
-      echo "== dmesg"; dmesg | tail -25
+      echo "== dmesg"; dmesg | grep -v -e fstab-generator -e mlx5 | tail -8
     } > "$vm/diag.txt" 2>&1; kill -KILL "$qpid" 2>/dev/null; wait "$qpid" 2>/dev/null
   fi
   boot_s=$(sed -n 's/^GUEST_UP \([0-9.]*\).*/\1/p' "$vm/serial.log" | head -1); boot_s=${boot_s:-null}
@@ -82,17 +82,18 @@ fi
 t2=$(date +%s.%N); rm -f "$disk"; rm_s=$(python3 -c "import time;print(round(time.time()-$t2,3))")
 sync; s1=$(sectors)
 
+guest_diag=$(grep '^D ' "$vm/serial.log" 2>/dev/null | tr -d '\r' | tail -c 2500)
 suite=$(grep '^R ' "$vm/serial.log" 2>/dev/null | sed 's/^R //' | jq -s 'map({(.n): (del(.n))}) | add // {}' 2>/dev/null || echo '{}')
 jq -n --argjson cfg "$CFG" --arg class "$CLASS" --arg rep "$REP" --arg status "$status" --argjson suite "$suite" \
   --arg prep_s "$prep_s" --arg exit_s "$exit_s" --arg rm_s "$rm_s" --arg boot_s "$boot_s" --argjson killed "$killed" \
   --arg host_gib "$(python3 -c "print(round((${s1:-0}-${s0:-0})*512/2**30,2))")" \
   --arg dirty "$(cat "$vm/dirty.peak" 2>/dev/null || echo 0)" \
   --arg qemu_err "$(tail -c 600 "$vm/qemu.err" "$vm/prep.err" 2>/dev/null; cat "$vm/diag.txt" 2>/dev/null | tail -c 3000)" \
-  --arg serial_tail "$( [ "$status" = ok ] || tail -c 1500 "$vm/serial.log" 2>/dev/null)" \
+  --arg guest_diag "$guest_diag" --arg serial_tail "$( [ "$status" = ok ] || tail -c 1500 "$vm/serial.log" 2>/dev/null)" \
   --arg runner "$(nproc) cpu, $(free -g | awk '/Mem:/{print $2}') GiB, dev $DEV $(cat /sys/class/block/"$DEV"/device/model 2>/dev/null || true)" \
   --arg run_id "${GITHUB_RUN_ID:-local}" --arg drive "$drive" --arg blk "$blk" \
   '{config:$cfg, id:$cfg.id, class:$class, rep:($rep|tonumber), status:$status, run_id:$run_id, runner:$runner,
     drive:$drive, device:$blk, prep_s:($prep_s|tonumber), boot_s:($boot_s|fromjson? // null),
     exit_s:($exit_s|fromjson? // null), killed:$killed, rm_s:($rm_s|tonumber), host_gib_written:($host_gib|tonumber),
-    host_dirty_peak_mib:($dirty|tonumber), suite:$suite, qemu_err:$qemu_err, serial_tail:$serial_tail}' > "$OUT/result.json"
+    host_dirty_peak_mib:($dirty|tonumber), suite:$suite, guest_diag:$guest_diag, qemu_err:$qemu_err, serial_tail:$serial_tail}' > "$OUT/result.json"
 jq -c '{id, class, rep, status, exit_s, host_gib_written, fresh: .suite.fresh_rand, pg: .suite.pgbench.tps}' "$OUT/result.json"

@@ -1,6 +1,6 @@
 {
   "iteration": 0,
-  "note": "Harness smoke test 2.",
+  "note": "Harness smoke test 3: fresh-write hang diagnosis.",
   "repeats": 1,
   "classes": [
     "local",
@@ -8,12 +8,11 @@
   ],
   "configs": [
     {
-      "id": "base",
-      "why": "prod today: qcow2 overlay (64K clusters), cache=writeback, aio=threads, no iothread, virtio-mmio, guest write-through"
+      "id": "base"
     },
     {
-      "id": "reflink-raw",
-      "layout": "reflink"
+      "id": "base-smp1",
+      "smp": 1
     }
   ]
 }
