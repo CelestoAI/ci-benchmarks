@@ -1,78 +1,19 @@
 {
-  "iteration": 2,
-  "baseline": "unsafe",
+  "iteration": 3,
+  "baseline": "unsafe-uring",
   "repeats": 3,
-  "classes": [
-    "local",
-    "network"
-  ],
-  "note": "Iteration 1 winner `unsafe` (event_idx=off + cache=unsafe) is the new baseline; combine it with the other knobs that helped on either disk class. 3 repeats.",
+  "classes": ["local", "network"],
+  "note": "Iteration 2 winner `unsafe-uring` (event_idx=off + cache=unsafe + aio=io_uring: best local score, no >1 s freezes on network) is the baseline. New: disk front ends (virtio-blk on PCI with 2 queues, virtio-scsi), guest I/O scheduler, raw + cache=none + aio=native, and a PCI run with event_idx left on to test whether the lost-notification hang is specific to virtio-mmio. Paired: every job also runs the baseline on the same runner.",
   "configs": [
-    {
-      "id": "eidx-off",
-      "dev_extra": "event_idx=off",
-      "why": "iteration 1 baseline, for reference"
-    },
-    {
-      "id": "unsafe",
-      "dev_extra": "event_idx=off",
-      "cache": "unsafe",
-      "why": "event_idx=off + cache=unsafe"
-    },
-    {
-      "id": "unsafe-iothread",
-      "dev_extra": "event_idx=off",
-      "cache": "unsafe",
-      "iothread": 1
-    },
-    {
-      "id": "unsafe-uring",
-      "dev_extra": "event_idx=off",
-      "cache": "unsafe",
-      "aio": "io_uring"
-    },
-    {
-      "id": "unsafe-iothread-uring",
-      "dev_extra": "event_idx=off",
-      "cache": "unsafe",
-      "iothread": 1,
-      "aio": "io_uring"
-    },
-    {
-      "id": "unsafe-cluster-2m",
-      "dev_extra": "event_idx=off",
-      "cache": "unsafe",
-      "qcow2_opts": "cluster_size=2097152"
-    },
-    {
-      "id": "unsafe-reflink-raw",
-      "dev_extra": "event_idx=off",
-      "cache": "unsafe",
-      "layout": "reflink"
-    },
-    {
-      "id": "unsafe-lazy-refcounts",
-      "dev_extra": "event_idx=off",
-      "cache": "unsafe",
-      "qcow2_opts": "lazy_refcounts=on"
-    },
-    {
-      "id": "unsafe-extl2-128k",
-      "dev_extra": "event_idx=off",
-      "cache": "unsafe",
-      "qcow2_opts": "cluster_size=131072,extended_l2=on"
-    },
-    {
-      "id": "unsafe-extl2-prealloc",
-      "dev_extra": "event_idx=off",
-      "cache": "unsafe",
-      "qcow2_opts": "cluster_size=131072,extended_l2=on,preallocation=metadata"
-    },
-    {
-      "id": "unsafe-mmio-modern",
-      "dev_extra": "event_idx=off",
-      "cache": "unsafe",
-      "globals": "virtio-mmio.force-legacy=false"
-    }
+    {"id": "unsafe-uring", "dev_extra": "event_idx=off", "cache": "unsafe", "aio": "io_uring", "why": "iteration 2 winner"},
+    {"id": "uring-iothread", "dev_extra": "event_idx=off", "cache": "unsafe", "aio": "io_uring", "iothread": 1, "why": "best random IOPS in iteration 2; recheck pgbench with pairing"},
+    {"id": "uring-sched-none", "dev_extra": "event_idx=off", "cache": "unsafe", "aio": "io_uring", "guest_sched": "none", "why": "guest scheduler none instead of the default"},
+    {"id": "uring-pci-mq2", "dev": "pci", "queues": 2, "dev_extra": "event_idx=off", "cache": "unsafe", "aio": "io_uring", "why": "virtio-blk-pci, one queue per vCPU"},
+    {"id": "uring-pci-mq2-iothread", "dev": "pci", "queues": 2, "dev_extra": "event_idx=off", "cache": "unsafe", "aio": "io_uring", "iothread": 1},
+    {"id": "uring-pci-eidx-on", "dev": "pci", "queues": 2, "cache": "unsafe", "aio": "io_uring", "why": "does the event_idx hang happen on PCI too?"},
+    {"id": "uring-scsi", "dev": "scsi", "dev_extra": "event_idx=off", "cache": "unsafe", "aio": "io_uring", "why": "virtio-scsi on virtio-mmio"},
+    {"id": "uring-scsi-iothread", "dev": "scsi", "dev_extra": "event_idx=off", "cache": "unsafe", "aio": "io_uring", "iothread": 1},
+    {"id": "raw-none-native", "layout": "reflink", "dev_extra": "event_idx=off", "cache": "none", "aio": "native", "why": "raw reflink copy, O_DIRECT, Linux AIO"},
+    {"id": "uring-extl2-128k", "qcow2_opts": "cluster_size=131072,extended_l2=on", "dev_extra": "event_idx=off", "cache": "unsafe", "aio": "io_uring", "why": "no fresh freezes on network in iteration 2; recheck with pairing"}
   ]
 }

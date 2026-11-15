@@ -24,7 +24,11 @@ jobs:
           python3 - <<'PY' >> "$GITHUB_OUTPUT"
           import json
           it = json.load(open("scripts/hillclimb/iteration.json"))
-          inc = [{"id": c["id"], "cls": cls, "rep": r, "cfg": json.dumps(c)}
+          # Paired design: every non-baseline job also runs the baseline on the same
+          # runner, because GitHub hands out runners of different speeds.
+          base = next(c for c in it["configs"] if c["id"] == it["baseline"])
+          inc = [{"id": c["id"], "cls": cls, "rep": r, "cfg": json.dumps(c),
+                  "base": "" if c["id"] == base["id"] else json.dumps(base)}
                  for c in it["configs"] for cls in it["classes"] for r in range(1, it["repeats"] + 1)]
           print("matrix=" + json.dumps({"include": inc}))
           PY
@@ -52,7 +56,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@v5
       - uses: actions/cache/restore@v4
@@ -87,10 +91,17 @@ jobs:
         working-directory: scripts/hillclimb
         env:
           CFG: ${{ matrix.cfg }}
-        run: sudo -E env CFG="$CFG" CLASS="${{ matrix.cls }}" REP="${{ matrix.rep }}" ROOT="$ROOT" DEV="$DEV" KERNEL=/tmp/kernel OUT=/tmp/out bash run-config.sh
+          BASE: ${{ matrix.base }}
+          REP: ${{ matrix.rep }}
+        run: |
+          run() { sudo -E env CFG="$1" CLASS="${{ matrix.cls }}" REP="$REP" ROOT="$ROOT" DEV="$DEV" KERNEL=/tmp/kernel OUT="$2" bash run-config.sh; }
+          if [ -z "$BASE" ]; then run "$CFG" /tmp/out
+          elif [ $((REP % 2)) = 1 ]; then run "$BASE" /tmp/base; run "$CFG" /tmp/out   # alternate order across repeats
+          else run "$CFG" /tmp/out; run "$BASE" /tmp/base; fi
+          [ -f /tmp/base/result.json ] && sudo cp /tmp/base/result.json /tmp/out/base.json || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: hc-${{ matrix.id }}-${{ matrix.cls }}-${{ matrix.rep }}
-          path: /tmp/out/result.json
+          path: /tmp/out/*.json
           if-no-files-found: warn

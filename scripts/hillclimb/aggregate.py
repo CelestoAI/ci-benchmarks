@@ -29,6 +29,13 @@ def add(download_dir, iteration_file, run_id=None):
             cfg = next((c for c in it["configs"] if c["id"] == rid), {"id": rid})
             r = {"id": rid, "class": cls, "rep": int(rep), "config": cfg, "status": "harness_error",
                  "run_id": run_id or "unknown", "suite": {}, "guest_diag": "result.json empty"}
+        bf = f.parent / "base.json"  # paired baseline run on the same runner
+        if bf.exists():
+            try:
+                b = json.loads(bf.read_text())
+                r["pair"] = {k: b.get(k) for k in ("id", "status", "suite", "exit_s", "host_gib_written", "runner", "drive", "device")}
+            except ValueError:
+                r["pair"] = {"status": "harness_error"}
         r["iteration"] = it["iteration"]
         r["iteration_note"] = it.get("note", "")
         r["baseline"] = it.get("baseline", "base")
@@ -80,17 +87,34 @@ def table(rows, base_key):
            "|---|---|---|" + "---|" * len(METRICS)]
     scored = []
     for k, v in by.items():
+        okr = [r for r in v if r["status"] == "ok"]
+        paired = [r for r in okr if (r.get("pair") or {}).get("status") == "ok"]
         ratios = []
-        for name, _, hib, _ in METRICS:
-            if name in SCORED and v and meds[k][name] and base.get(name):
-                a, b = meds[k][name], base[name]
-                ratios.append(a / b if hib else b / max(a, 1e-3))
+        if k == base_key:
+            ratios = [1.0]
+        elif paired and len(paired) == len(okr):
+            # Paired score: median over runs of candidate/baseline measured on the same runner.
+            for name, get, hib, _ in METRICS:
+                if name not in SCORED:
+                    continue
+                rr = []
+                for r in paired:
+                    a, b = get(r), get(r["pair"])
+                    if isinstance(a, (int, float)) and isinstance(b, (int, float)) and a > 0 and b > 0:
+                        rr.append(a / b if hib else b / a)
+                if rr:
+                    ratios.append(statistics.median(rr))
+        else:
+            for name, _, hib, _ in METRICS:
+                if name in SCORED and v and meds[k][name] and base.get(name):
+                    a, b = meds[k][name], base[name]
+                    ratios.append(a / b if hib else b / max(a, 1e-3))
         score = math.exp(sum(map(math.log, ratios)) / len(ratios)) if ratios else None
-        scored.append((score or 0, k))
-    for score, k in sorted(scored, reverse=True):
+        scored.append((score or 0, k, len(paired)))
+    for score, k, npaired in sorted(scored, reverse=True):
         v = by[k]; ok = sum(r["status"] == "ok" for r in v)
         cells = [(fmt.format(meds[k][name]) if meds[k][name] is not None else "–") for name, _, _, fmt in METRICS]
-        out.append(f"| {k} | {ok}/{len(v)} | {score:.2f} | " + " | ".join(cells) + " |")
+        out.append(f"| {k} | {ok}/{len(v)} | {score:.2f}{'' if not npaired else ' (paired)'} | " + " | ".join(cells) + " |")
     return "\n".join(out)
 
 
@@ -105,6 +129,10 @@ def render():
              "  (stand-in for EBS / OVH volumes).",
              "- Values are medians over repeats. **score** = geometric mean of each scored metric's ratio to the iteration's",
              "  baseline config (named in each iteration) in the same disk class (above 1 is better).",
+             "- From iteration 3 on, each job also runs the baseline on the same runner (order alternates by repeat), and",
+             "  **score (paired)** uses the median of those same-runner ratios. GitHub runners come in different speeds",
+             "  (iteration 2 pgbench ranged 3,400 to 8,300 TPS on one config), so unpaired scores in iterations 1-2 carry",
+             "  that noise; trust only large differences there.",
              "- Worst-latency columns are not scored: a config that freezes is rejected. **ok** counts runs that finished;",
              "  a run that hangs past its timeouts is not ok.",
              "- Single VM per runner: no neighbor load. Finalists must still be checked on real hosts.",

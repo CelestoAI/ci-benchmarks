@@ -9,10 +9,68 @@ virtio-mmio, 2 vCPU / 3 GiB guest) on a fresh GitHub-hosted runner (4 vCPU, 16 G
   (stand-in for EBS / OVH volumes).
 - Values are medians over repeats. **score** = geometric mean of each scored metric's ratio to the iteration's
   baseline config (named in each iteration) in the same disk class (above 1 is better).
+- From iteration 3 on, each job also runs the baseline on the same runner (order alternates by repeat), and
+  **score (paired)** uses the median of those same-runner ratios. GitHub runners come in different speeds
+  (iteration 2 pgbench ranged 3,400 to 8,300 TPS on one config), so unpaired scores in iterations 1-2 carry
+  that noise; trust only large differences there.
 - Worst-latency columns are not scored: a config that freezes is rejected. **ok** counts runs that finished;
   a run that hangs past its timeouts is not ok.
 - Single VM per runner: no neighbor load. Finalists must still be checked on real hosts.
 - Raw per-run records (config, QEMU drive string, every metric): `runs.jsonl`.
+
+## Iteration 2
+
+Iteration 1 winner `unsafe` (event_idx=off + cache=unsafe) is the new baseline; combine it with the other knobs that helped on either disk class. 3 repeats.
+
+Baseline: `unsafe`
+
+Runs: [43679492159](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43679492159)
+
+Configs:
+
+- `eidx-off`: `{"dev_extra": "event_idx=off"}` — iteration 1 baseline, for reference
+- `unsafe-cluster-2m`: `{"cache": "unsafe", "dev_extra": "event_idx=off", "qcow2_opts": "cluster_size=2097152"}`
+- `unsafe-extl2-128k`: `{"cache": "unsafe", "dev_extra": "event_idx=off", "qcow2_opts": "cluster_size=131072,extended_l2=on"}`
+- `unsafe-extl2-prealloc`: `{"cache": "unsafe", "dev_extra": "event_idx=off", "qcow2_opts": "cluster_size=131072,extended_l2=on,preallocation=metadata"}`
+- `unsafe-iothread`: `{"cache": "unsafe", "dev_extra": "event_idx=off", "iothread": 1}`
+- `unsafe-iothread-uring`: `{"aio": "io_uring", "cache": "unsafe", "dev_extra": "event_idx=off", "iothread": 1}`
+- `unsafe-lazy-refcounts`: `{"cache": "unsafe", "dev_extra": "event_idx=off", "qcow2_opts": "lazy_refcounts=on"}`
+- `unsafe`: `{"cache": "unsafe", "dev_extra": "event_idx=off"}` — event_idx=off + cache=unsafe
+- `unsafe-mmio-modern`: `{"cache": "unsafe", "dev_extra": "event_idx=off", "globals": "virtio-mmio.force-legacy=false"}`
+- `unsafe-reflink-raw`: `{"cache": "unsafe", "dev_extra": "event_idx=off", "layout": "reflink"}`
+- `unsafe-uring`: `{"aio": "io_uring", "cache": "unsafe", "dev_extra": "event_idx=off"}`
+
+### local
+
+| config | ok | score | fresh 4K IOPS | fresh worst s | fresh I/Os >1s | rewrite 4K IOPS | rewrite worst s | seq write MiB/s | 50k files s | fsync IOPS | pgbench TPS | base read MiB/s | VM stop s | host GiB written |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| unsafe-uring | 3/3 | 1.25 | 46735 | 0.1 | 0 | 60536 | 0.0 | 5447 | 1.98 | 12765 | 7463 | 234 | 0.12 | 15.3 |
+| unsafe-iothread | 3/3 | 1.12 | 77471 | 0.0 | 0 | 80362 | 0.0 | 3894 | 1.91 | 7772 | 4899 | 157 | 0.13 | 18.1 |
+| unsafe-mmio-modern | 3/3 | 1.04 | 42110 | 0.1 | 0 | 55086 | 0.0 | 4830 | 2.03 | 9073 | 4880 | 177 | 0.14 | 14.1 |
+| unsafe-cluster-2m | 3/3 | 1.01 | 43027 | 0.0 | 0 | 56352 | 0.0 | 2817 | 1.62 | 8999 | 4929 | 174 | 0.13 | 14.9 |
+| unsafe | 3/3 | 1.00 | 39590 | 0.1 | 0 | 53677 | 0.0 | 4146 | 2.06 | 8845 | 4829 | 171 | 0.13 | 13.8 |
+| unsafe-iothread-uring | 3/3 | 0.98 | 72938 | 0.0 | 0 | 109080 | 0.0 | 4223 | 3.23 | 6077 | 3476 | 127 | 0.13 | 20.0 |
+| unsafe-extl2-128k | 3/3 | 0.94 | 22249 | 0.5 | 0 | 55182 | 0.0 | 4357 | 2.05 | 8780 | 4912 | 175 | 0.14 | 11.0 |
+| unsafe-extl2-prealloc | 3/3 | 0.93 | 21859 | 0.4 | 0 | 53928 | 0.0 | 4047 | 2.07 | 8984 | 4900 | 172 | 0.13 | 10.6 |
+| unsafe-reflink-raw | 3/3 | 0.92 | 20705 | 0.1 | 0 | 50471 | 2.3 | 4521 | 2.03 | 8729 | 4946 | 146 | 0.12 | 10.1 |
+| unsafe-lazy-refcounts | 3/3 | 0.73 | 23331 | 0.0 | 0 | 36476 | 0.0 | 4137 | 3.22 | 5932 | 3418 | 122 | 0.14 | 11.3 |
+| eidx-off | 3/3 | 0.62 | 22432 | 0.1 | 0 | 35779 | 0.0 | 2226 | 3.40 | 5948 | 3406 | 117 | 0.24 | 11.7 |
+
+### network
+
+| config | ok | score | fresh 4K IOPS | fresh worst s | fresh I/Os >1s | rewrite 4K IOPS | rewrite worst s | seq write MiB/s | 50k files s | fsync IOPS | pgbench TPS | base read MiB/s | VM stop s | host GiB written |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| unsafe-iothread | 3/3 | 1.46 | 42325 | 2.4 | 380 | 64327 | 1.1 | 3061 | 2.07 | 7908 | 4872 | 165 | 0.13 | 10.9 |
+| unsafe-iothread-uring | 3/3 | 1.38 | 65716 | 0.2 | 0 | 92500 | 0.5 | 602 | 2.06 | 9213 | 4953 | 188 | 0.12 | 11.7 |
+| unsafe-mmio-modern | 3/3 | 1.34 | 20837 | 2.2 | 252 | 40110 | 1.3 | 2528 | 1.56 | 8984 | 5633 | 180 | 0.12 | 9.7 |
+| unsafe-lazy-refcounts | 3/3 | 1.28 | 22614 | 2.3 | 380 | 39756 | 0.5 | 2646 | 2.02 | 8579 | 4908 | 178 | 0.13 | 9.9 |
+| unsafe-extl2-128k | 3/3 | 1.27 | 38518 | 0.1 | 0 | 28609 | 0.4 | 2738 | 1.88 | 8439 | 4595 | 123 | 0.12 | 9.6 |
+| unsafe-uring | 3/3 | 1.19 | 29688 | 0.2 | 0 | 33962 | 0.1 | 557 | 1.96 | 11985 | 6429 | 234 | 0.13 | 10.7 |
+| unsafe-reflink-raw | 3/3 | 1.19 | 39341 | 0.1 | 0 | 38346 | 1.3 | 2301 | 2.08 | 8542 | 4913 | 72 | 0.13 | 9.4 |
+| unsafe-cluster-2m | 3/3 | 1.05 | 6455 | 4.7 | 450 | 39424 | 0.8 | 1947 | 2.08 | 8539 | 4987 | 177 | 0.13 | 9.8 |
+| unsafe-extl2-prealloc | 3/3 | 1.02 | 20215 | 0.1 | 0 | 26978 | 0.3 | 3066 | 3.18 | 5740 | 3499 | 122 | 0.12 | 8.2 |
+| unsafe | 3/3 | 1.00 | 20000 | 2.2 | 128 | 28560 | 0.4 | 3108 | 3.22 | 5613 | 3415 | 119 | 0.13 | 10.1 |
+| eidx-off | 3/3 | 0.56 | 19471 | 7.3 | 128 | 28318 | 0.3 | 201 | 4.69 | 8458 | 4695 | 150 | 1.54 | 11.2 |
 
 ## Iteration 1
 
@@ -109,12 +167,12 @@ Configs:
 
 | config | ok | score | fresh 4K IOPS | fresh worst s | fresh I/Os >1s | rewrite 4K IOPS | rewrite worst s | seq write MiB/s | 50k files s | fsync IOPS | pgbench TPS | base read MiB/s | VM stop s | host GiB written |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| base | 0/2 | 1.00 | – | – | – | – | – | – | – | – | – | – | – | – |
 | mmio-modern | 0/1 | 0.00 | – | – | – | – | – | – | – | – | – | – | – | – |
 | mmio-ioeventfd-off | 0/1 | 0.00 | – | – | – | – | – | – | – | – | – | – | – | – |
 | iothread | 0/1 | 0.00 | – | – | – | – | – | – | – | – | – | – | – | – |
 | event-idx-off | 1/1 | 0.00 | 48521 | 0.1 | 0 | 62817 | 0.0 | 3430 | 1.85 | 11140 | 7274 | 217 | 0.13 | 15.8 |
 | base-smp1 | 0/1 | 0.00 | – | – | – | – | – | – | – | – | – | – | – | – |
-| base | 0/2 | 0.00 | – | – | – | – | – | – | – | – | – | – | – | – |
 
 ### network
 
