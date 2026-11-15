@@ -1,0 +1,15 @@
+#!/bin/bash
+# PID 1 of the stand-in guest: mount the basics, run the suite, then idle until
+# the host stops QEMU the way the pool agent does.
+export PATH=/usr/sbin:/usr/bin:/sbin:/bin
+mount -t proc proc /proc; mount -t sysfs sys /sys; mount -t devtmpfs dev /dev 2>/dev/null
+mkdir -p /dev/pts /dev/shm /run; mount -t devpts devpts /dev/pts; mount -t tmpfs tmpfs /run; mount -t tmpfs tmpfs /dev/shm
+mount -o remount,rw /
+mount -t tmpfs tmpfs /tmp
+echo "GUEST_UP $(cut -d' ' -f1 /proc/uptime)"
+wc=$(sed -n 's/.*bench_wc=\([a-z]*\).*/\1/p' /proc/cmdline)
+fsopt=$(sed -n 's/.*bench_fsopt=\([^ ]*\).*/\1/p' /proc/cmdline)
+[ -n "$fsopt" ] && mount -o "remount,${fsopt//:/,}" / && echo "GUEST_FSOPT $fsopt"
+bash /guest-bench.sh "${wc:-wt}" 2>&1
+echo "GUEST_DONE"
+while true; do sleep 3600; done

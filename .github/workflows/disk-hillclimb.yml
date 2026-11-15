@@ -1,0 +1,91 @@
+# Hill-climb of QEMU disk settings for ephemeral CI VMs. Boots the prod microvm
+# command line (QEMU 8.2.2, Celesto CI kernel) on a GitHub-hosted runner, on its
+# local temp SSD ("local") and on its network OS disk ("network").
+name: Disk hill-climb
+on:
+  push:
+    branches: [bench/disk-probe-20261114]
+    paths: [scripts/hillclimb/**, .github/workflows/disk-hillclimb.yml]
+permissions:
+  contents: read
+env:
+  KERNEL_URL: https://github.com/CelestoAI/Celesto/releases/download/kernels-2026.10.28.0/vmlinux-github-ci-amd64.image
+  KERNEL_SHA256: 52fc02f5fd3140f46e00dd7d8498eba0a15e3ba212d0ba13dcf379cd0932d829
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.m.outputs.matrix }}
+      key: ${{ steps.m.outputs.key }}
+    steps:
+      - uses: actions/checkout@v5
+      - id: m
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          it = json.load(open("scripts/hillclimb/iteration.json"))
+          inc = [{"id": c["id"], "cls": cls, "rep": r, "cfg": json.dumps(c)}
+                 for c in it["configs"] for cls in it["classes"] for r in range(1, it["repeats"] + 1)]
+          print("matrix=" + json.dumps({"include": inc}))
+          PY
+          echo "key=hc-rootfs-${{ hashFiles('scripts/hillclimb/build-rootfs.sh') }}" >> "$GITHUB_OUTPUT"
+  rootfs:
+    needs: plan
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - id: c
+        uses: actions/cache/restore@v4
+        with: { path: rootfs, key: "${{ needs.plan.outputs.key }}", lookup-only: true }
+      - if: steps.c.outputs.cache-hit != 'true'
+        run: |
+          sudo bash scripts/hillclimb/build-rootfs.sh /tmp/rfs
+          mkdir -p rootfs && sudo tar -cSf - -C /tmp/rfs base.raw | zstd -T0 -3 -q > rootfs/base.raw.tar.zst
+          ls -la rootfs
+      - if: steps.c.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with: { path: rootfs, key: "${{ needs.plan.outputs.key }}" }
+  bench:
+    needs: [plan, rootfs]
+    name: ${{ matrix.id }} ${{ matrix.cls }} ${{ matrix.rep }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/cache/restore@v4
+        with: { path: rootfs, key: "${{ needs.plan.outputs.key }}", fail-on-cache-miss: true }
+      - name: Host setup
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules >/dev/null
+          sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+          sudo apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq qemu-system-x86 qemu-utils xfsprogs zstd jq >/dev/null
+          qemu-system-x86_64 --version | head -1; uname -r; lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,MODEL; df -h / /mnt || true
+          curl -fsSL -o /tmp/kernel "$KERNEL_URL" && echo "$KERNEL_SHA256  /tmp/kernel" | sha256sum -c -
+      - name: Disk class
+        run: |
+          if [ "${{ matrix.cls }}" = local ]; then
+            src=$(findmnt -no SOURCE /mnt); sudo swapoff -a; sudo umount /mnt
+            sudo mkfs.xfs -q -f -m reflink=1 "$src" && sudo mount "$src" /mnt && root=/mnt/hc
+          else
+            sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost
+            src=$(findmnt -no SOURCE /)
+            sudo truncate -s 64G /xfsnet.img && loop=$(sudo losetup --direct-io=on -f --show /xfsnet.img)
+            sudo mkfs.xfs -q -f -m reflink=1 "$loop" && sudo mkdir -p /net && sudo mount "$loop" /net && root=/net/hc
+          fi
+          echo "ROOT=$root" >> "$GITHUB_ENV"; echo "DEV=$(lsblk -no KNAME "$src" | tail -1)" >> "$GITHUB_ENV"
+          sudo mkdir -p "$root" && zstd -dc rootfs/base.raw.tar.zst | sudo tar -xSf - -C "$root"
+          df -h "$root"
+      - name: Run
+        working-directory: scripts/hillclimb
+        env:
+          CFG: ${{ matrix.cfg }}
+        run: sudo -E env CFG="$CFG" CLASS="${{ matrix.cls }}" REP="${{ matrix.rep }}" ROOT="$ROOT" DEV="$DEV" KERNEL=/tmp/kernel OUT=/tmp/out bash run-config.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hc-${{ matrix.id }}-${{ matrix.cls }}-${{ matrix.rep }}
+          path: /tmp/out/result.json
+          if-no-files-found: warn
