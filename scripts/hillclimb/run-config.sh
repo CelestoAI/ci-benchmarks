@@ -85,7 +85,8 @@ t2=$(date +%s.%N); rm -f "$disk"; rm_s=$(python3 -c "import time;print(round(tim
 sync; s1=$(sectors)
 
 guest_diag=$(grep '^D ' "$vm/serial.log" 2>/dev/null | tr -d '\r' | tail -c 2500)
-suite=$(grep '^R ' "$vm/serial.log" 2>/dev/null | sed 's/^R //' | jq -s 'map({(.n): (del(.n))}) | add // {}' 2>/dev/null || echo '{}')
+suite=$( (grep '^R ' "$vm/serial.log" 2>/dev/null || true) | sed 's/^R //' | jq -s 'map({(.n): (del(.n))}) | add // {}' 2>/dev/null)
+jq -e . >/dev/null 2>&1 <<<"$suite" || suite='{}'
 jq -n --argjson cfg "$CFG" --arg class "$CLASS" --arg rep "$REP" --arg status "$status" --argjson suite "$suite" \
   --arg prep_s "$prep_s" --arg exit_s "$exit_s" --arg rm_s "$rm_s" --arg boot_s "$boot_s" --argjson killed "$killed" \
   --arg host_gib "$(python3 -c "print(round((${s1:-0}-${s0:-0})*512/2**30,2))")" \

@@ -1,81 +1,77 @@
 {
-  "iteration": 1,
-  "baseline": "eidx-off",
-  "repeats": 2,
+  "iteration": 2,
+  "baseline": "unsafe",
+  "repeats": 3,
   "classes": [
     "local",
     "network"
   ],
-  "note": "One knob at a time on top of `eidx-off` (today's prod config plus `event_idx=off`, the iteration 0 fix). `prod-today` is kept for reference.",
+  "note": "Iteration 1 winner `unsafe` (event_idx=off + cache=unsafe) is the new baseline; combine it with the other knobs that helped on either disk class. 3 repeats.",
   "configs": [
-    {
-      "id": "prod-today",
-      "why": "qcow2 overlay (64K clusters), cache=writeback, aio=threads, no iothread, legacy virtio-mmio, guest write-through"
-    },
     {
       "id": "eidx-off",
       "dev_extra": "event_idx=off",
-      "why": "prod-today + virtio-blk event_idx=off"
+      "why": "iteration 1 baseline, for reference"
     },
     {
       "id": "unsafe",
       "dev_extra": "event_idx=off",
-      "cache": "unsafe"
+      "cache": "unsafe",
+      "why": "event_idx=off + cache=unsafe"
     },
     {
-      "id": "none-uring",
+      "id": "unsafe-iothread",
       "dev_extra": "event_idx=off",
-      "cache": "none",
-      "aio": "io_uring"
-    },
-    {
-      "id": "uring",
-      "dev_extra": "event_idx=off",
-      "aio": "io_uring"
-    },
-    {
-      "id": "iothread",
-      "dev_extra": "event_idx=off",
+      "cache": "unsafe",
       "iothread": 1
     },
     {
-      "id": "extl2-128k",
+      "id": "unsafe-uring",
       "dev_extra": "event_idx=off",
-      "qcow2_opts": "cluster_size=131072,extended_l2=on"
+      "cache": "unsafe",
+      "aio": "io_uring"
     },
     {
-      "id": "cluster-2m",
+      "id": "unsafe-iothread-uring",
       "dev_extra": "event_idx=off",
+      "cache": "unsafe",
+      "iothread": 1,
+      "aio": "io_uring"
+    },
+    {
+      "id": "unsafe-cluster-2m",
+      "dev_extra": "event_idx=off",
+      "cache": "unsafe",
       "qcow2_opts": "cluster_size=2097152"
     },
     {
-      "id": "prealloc-meta",
+      "id": "unsafe-reflink-raw",
       "dev_extra": "event_idx=off",
-      "qcow2_opts": "preallocation=metadata"
-    },
-    {
-      "id": "lazy-refcounts",
-      "dev_extra": "event_idx=off",
-      "qcow2_opts": "lazy_refcounts=on"
-    },
-    {
-      "id": "reflink-raw",
-      "dev_extra": "event_idx=off",
+      "cache": "unsafe",
       "layout": "reflink"
     },
     {
-      "id": "discard-unmap",
+      "id": "unsafe-lazy-refcounts",
       "dev_extra": "event_idx=off",
-      "discard": "unmap"
+      "cache": "unsafe",
+      "qcow2_opts": "lazy_refcounts=on"
     },
     {
-      "id": "guest-noatime-commit60",
+      "id": "unsafe-extl2-128k",
       "dev_extra": "event_idx=off",
-      "guest_fsopt": "noatime:commit=60"
+      "cache": "unsafe",
+      "qcow2_opts": "cluster_size=131072,extended_l2=on"
     },
     {
-      "id": "mmio-modern",
+      "id": "unsafe-extl2-prealloc",
       "dev_extra": "event_idx=off",
+      "cache": "unsafe",
+      "qcow2_opts": "cluster_size=131072,extended_l2=on,preallocation=metadata"
+    },
+    {
+      "id": "unsafe-mmio-modern",
+      "dev_extra": "event_idx=off",
+      "cache": "unsafe",
       "globals": "virtio-mmio.force-legacy=false"
     }
   ]

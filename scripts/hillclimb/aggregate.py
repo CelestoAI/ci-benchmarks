@@ -15,13 +15,20 @@ def load_runs():
     return [json.loads(l) for l in RUNS.read_text().splitlines() if l.strip()]
 
 
-def add(download_dir, iteration_file):
+def add(download_dir, iteration_file, run_id=None):
     it = json.loads(pathlib.Path(iteration_file).read_text())
     runs = load_runs()
     seen = {(r["run_id"], r["id"], r["class"], r["rep"]) for r in runs}
     added = 0
     for f in sorted(pathlib.Path(download_dir).glob("*/result.json")):
-        r = json.loads(f.read_text())
+        try:
+            r = json.loads(f.read_text())
+        except ValueError:  # harness wrote no result: keep a record of the failed job
+            name = f.parent.name.removeprefix("hc-")
+            rid, cls, rep = name.rsplit("-", 2)
+            cfg = next((c for c in it["configs"] if c["id"] == rid), {"id": rid})
+            r = {"id": rid, "class": cls, "rep": int(rep), "config": cfg, "status": "harness_error",
+                 "run_id": run_id or "unknown", "suite": {}, "guest_diag": "result.json empty"}
         r["iteration"] = it["iteration"]
         r["iteration_note"] = it.get("note", "")
         r["baseline"] = it.get("baseline", "base")
@@ -122,6 +129,6 @@ def render():
 
 
 if __name__ == "__main__":
-    n = add(sys.argv[1], sys.argv[2])
+    n = add(sys.argv[1], sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else None)
     render()
     print(f"added {n} runs; {RUNS} now has {len(load_runs())}")
