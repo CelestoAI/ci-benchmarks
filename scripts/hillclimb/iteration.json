@@ -1,6 +1,6 @@
 {
   "iteration": 0,
-  "note": "Harness smoke test 3: fresh-write hang diagnosis.",
+  "note": "Harness smoke test 4: lost virtio notification hunt (guest has writes in flight, QEMU idle).",
   "repeats": 1,
   "classes": [
     "local",
@@ -11,8 +11,20 @@
       "id": "base"
     },
     {
-      "id": "base-smp1",
-      "smp": 1
+      "id": "mmio-ioeventfd-off",
+      "globals": "virtio-mmio.ioeventfd=off"
+    },
+    {
+      "id": "mmio-modern",
+      "globals": "virtio-mmio.force-legacy=false"
+    },
+    {
+      "id": "event-idx-off",
+      "dev_extra": "event_idx=off"
+    },
+    {
+      "id": "iothread",
+      "iothread": 1
     }
   ]
 }

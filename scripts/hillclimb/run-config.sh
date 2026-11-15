@@ -9,7 +9,7 @@ get() { jq -r --arg k "$1" --arg d "$2" 'if has($k) then .[$k]|tostring else $d 
 id=$(get id x); layout=$(get layout qcow2); qopts=$(get qcow2_opts ""); cache=$(get cache writeback)
 aio=$(get aio threads); iothread=$(get iothread 0); discard=$(get discard ""); wc=$(get guest_wc wt)
 fsopt=$(get guest_fsopt ""); smp=$(get smp 2); mem=$(get mem 3072); devtype=$(get dev mmio)
-queues=$(get queues 1); extra=$(get drive_extra "")
+queues=$(get queues 1); extra=$(get drive_extra ""); devextra=$(get dev_extra ""); globals=$(get globals "")
 mkdir -p "$OUT"; vm=$ROOT/vm; rm -rf "$vm"; mkdir -p "$vm"; base=$ROOT/base.raw
 status=ok; note=""
 sectors() { awk -v d="$DEV" '$3==d{print $10}' /proc/diskstats; }
@@ -45,6 +45,8 @@ iot=(); devprop=""
 [ "$iothread" = 1 ] && iot=(-object iothread,id=io0) && devprop=",iothread=io0"
 if [ "$devtype" = pci ]; then pcie=on; blk="virtio-blk-pci,drive=rootdisk0-drive,num-queues=$queues$devprop"
 else pcie=off; blk="virtio-blk-device,drive=rootdisk0-drive$devprop"; fi
+[ -n "$devextra" ] && blk+=",$devextra"
+glob=(); for gl in ${globals//;/ }; do glob+=(-global "$gl"); done
 append="console=ttyS0 reboot=k panic=1 root=/dev/vda rw init=/init bench_wc=$wc${fsopt:+ bench_fsopt=$fsopt}"
 
 declare -A R=(); exit_s=null; rm_s=null; killed=false; boot_s=null
@@ -52,7 +54,7 @@ s0=$(sectors)
 if [ "$status" = ok ]; then
   # Same shape as the prod pool command line (minus network and vsock).
   qemu-system-x86_64 -smp "$smp" -m "$mem" -nodefaults -serial stdio -kernel "$KERNEL" -append "$append" \
-    "${iot[@]}" -drive "$drive" -nographic -no-reboot -monitor none -rtc base=utc,clock=host \
+    "${glob[@]}" "${iot[@]}" -drive "$drive" -nographic -no-reboot -monitor none -rtc base=utc,clock=host \
     -qmp "unix:$vm/qmp.sock,server=on,wait=off" \
     -machine "microvm,accel=kvm,acpi=on,pcie=$pcie,pic=off,pit=off,rtc=on" -cpu host -device "$blk" \
     </dev/null >"$vm/serial.log" 2>"$vm/qemu.err" &
@@ -91,7 +93,7 @@ jq -n --argjson cfg "$CFG" --arg class "$CLASS" --arg rep "$REP" --arg status "$
   --arg qemu_err "$(tail -c 600 "$vm/qemu.err" "$vm/prep.err" 2>/dev/null; cat "$vm/diag.txt" 2>/dev/null | tail -c 3000)" \
   --arg guest_diag "$guest_diag" --arg serial_tail "$( [ "$status" = ok ] || tail -c 1500 "$vm/serial.log" 2>/dev/null)" \
   --arg runner "$(nproc) cpu, $(free -g | awk '/Mem:/{print $2}') GiB, dev $DEV $(cat /sys/class/block/"$DEV"/device/model 2>/dev/null || true)" \
-  --arg run_id "${GITHUB_RUN_ID:-local}" --arg drive "$drive" --arg blk "$blk" \
+  --arg run_id "${GITHUB_RUN_ID:-local}" --arg drive "$drive" --arg blk "$blk${globals:+ globals=$globals}" \
   '{config:$cfg, id:$cfg.id, class:$class, rep:($rep|tonumber), status:$status, run_id:$run_id, runner:$runner,
     drive:$drive, device:$blk, prep_s:($prep_s|tonumber), boot_s:($boot_s|fromjson? // null),
     exit_s:($exit_s|fromjson? // null), killed:$killed, rm_s:($rm_s|tonumber), host_gib_written:($host_gib|tonumber),
