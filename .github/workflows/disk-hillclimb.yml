@@ -129,10 +129,12 @@ jobs:
             # dm-thin jobs need room for both layouts: one 22 GiB null_blk with discard (deleted
             # data frees its RAM), split in two with dm-linear: XFS for qcow2, an LVM thin pool.
             modinfo null_blk >/dev/null 2>&1 || sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "linux-modules-extra-$(uname -r)" >/dev/null
-            sudo modprobe null_blk nr_devices=0 && d=/sys/kernel/config/nullb/nb0 && sudo mkdir "$d"
+            # Named nullb0 so the disk is /dev/nullb0 whether the kernel names it by index or by configfs name.
+            sudo modprobe null_blk nr_devices=0 && d=/sys/kernel/config/nullb/nullb0 && sudo mkdir "$d"
             for kv in size=22528 memory_backed=1 discard=1 queue_mode=2 irqmode=2 completion_nsec=20000 hw_queue_depth=256 submit_queues=4 blocksize=4096 power=1; do
               echo "${kv#*=}" | sudo tee "$d/${kv%%=*}" >/dev/null; done
-            src=/dev/nullb0; half=$(( $(sudo blockdev --getsz $src) / 2 ))
+            src=/dev/nullb0; sudo udevadm settle; for _ in $(seq 50); do [ -b $src ] && break; sleep 0.2; done
+            ls -l /dev/nullb* /dev/nb* 2>/dev/null || true; [ -b $src ]; half=$(( $(sudo blockdev --getsz $src) / 2 ))
             sudo dmsetup create hcxfs --table "0 $half linear $src 0" && sudo dmsetup create hcthin --table "0 $half linear $src $half"
             sudo mkfs.xfs -q -f -m reflink=1 /dev/mapper/hcxfs && sudo mkdir -p /local && sudo mount -o discard /dev/mapper/hcxfs /local && root=/local/hc
             pv=/dev/mapper/hcthin
