@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Rerun 2026-11-15T02:38Z: after vm.dirty_bytes=512M/128M on host 77cd5eb2 (m6i EBS).
 # Round 4: same disk tests, tagged with the host each job ran on.
 set -u
 OUT=${OUT:-/tmp/disk-probe4}; mkdir -p "$OUT"; W=${GITHUB_WORKSPACE:-$PWD}/.probe
