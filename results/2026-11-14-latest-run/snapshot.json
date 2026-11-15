@@ -113,10 +113,10 @@
       },
       "docker": {
         "run": {
-          "id": 43640067587,
+          "id": 43701195291,
           "attempt": 1,
           "repository": "CelestoAI/ci-benchmarks",
-          "date": "2026-11-14"
+          "date": "2026-11-15"
         },
         "results": [
           {
@@ -124,10 +124,10 @@
             "iteration": 1,
             "status": "success",
             "failedAt": null,
-            "runner": "celesto-rs-2e0dfc9118f825b702364ae238de8abe",
-            "queueSeconds": 16,
-            "jobSeconds": 667,
-            "workloadSeconds": 636,
+            "runner": "celesto-rs-c0567b9657355f1bf5d68e3a4e78d973",
+            "queueSeconds": 11,
+            "jobSeconds": 570,
+            "workloadSeconds": 554,
             "phases": [
               {
                 "name": "fetch source",
@@ -136,19 +136,19 @@
               },
               {
                 "name": "buildx setup",
-                "seconds": 6,
+                "seconds": 5,
                 "status": "success"
               },
               {
                 "name": "docker build",
-                "seconds": 607,
+                "seconds": 526,
                 "status": "success"
               }
             ],
             "metrics": null
           }
         ],
-        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43640067587"
+        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43701195291"
       },
       "cache": {
         "run": {
@@ -503,7 +503,7 @@
                 "disk": 175.7,
                 "network": 1.6,
                 "docker": 8.9,
-                "postgres": 7.9
+                "postgres": 71.7
               },
               "memory": {
                 "readMiBps": 22641.93,
@@ -559,13 +559,21 @@
                 "pullSeconds": 8,
                 "firstRunSeconds": 0.81
               },
-              "errors": {
-                "postgres": "Command failed: pgbench -i -s 50 -h localhost -U postgres bench\nError: You must install at least one postgresql-client-<version> package\n"
+              "postgres": {
+                "readOnlyTps": 51167.586658,
+                "readWriteTps": 7222.66807
               }
             }
           }
         ],
-        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643932828"
+        "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643932828",
+        "postgresRun": {
+          "id": 43700528812,
+          "attempt": 1,
+          "repository": "CelestoAI/ci-benchmarks",
+          "date": "2026-11-15",
+          "url": "https://github.com/CelestoAI/ci-benchmarks/actions/runs/43700528812"
+        }
       }
     },
     "GitHub": {

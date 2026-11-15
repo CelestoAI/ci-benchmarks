@@ -16,7 +16,7 @@ RunsOn’s current cache bug window and obsolete Node typecheck samples are excl
 | Provider | Rust | Node | Docker | Cache save + restore | Burst queue p50 | Rate per minute |
 |---|---:|---:|---:|---:|---:|---:|
 | GitHub | 3m 35s | 1m 38s | 12m 59s | 1m 20s | 3s | $0.0120 |
-| Celesto | 2m 54s | 1m 19s | 10m 36s | 41s | 15s | $0.00133333 |
+| Celesto | 2m 54s | 1m 19s | 9m 14s† | 41s | 15s | $0.00133333 |
 | Blacksmith | 2m 02s | 50s | 5m 52s | 17s | 11s | $0.0080 |
 | Namespace | 1m 31s | 44s | 4m 38s | 47s | 9s | $0.0120* |
 | RunsOn | 1m 48s | 1m 03s | 9m 00s | 33s | 17s | $0.0044 on-demand |
@@ -24,6 +24,8 @@ RunsOn’s current cache bug window and obsolete Node typecheck samples are excl
 | WarpBuild | 2m 35s | 1m 27s | 7m 26s | 32s | 10s | $0.0080 |
 
 The burst p50 is computed over 15 jobs in that provider’s linked burst run. Other suite values are one successful benchmark job per provider.
+
+† Celesto Docker and PostgreSQL were rerun on November 15, 2026, after Celesto moved CI runner disks to virtio-blk-pci with an I/O thread. The other Celesto values are from November 14.
 
 ## Verified per-minute rate basis
 
@@ -51,16 +53,18 @@ The m8a.xlarge-specific on-demand rate is `$0.0044/min`; `$0.0037/min` is RunsOn
 | Disk random write 4 KiB | 11,695 IOPS | 446 IOPS | 146,622 IOPS | 455,429 IOPS | 2,991 IOPS | 29,164 IOPS | 31,392 IOPS |
 | Disk write + fsync 4 KiB | 3,423 IOPS | 5,822 IOPS | 14,080 IOPS | 19,603 IOPS | 536 IOPS | 1,314 IOPS | 3,436 IOPS |
 | Docker image pull | 18 s | 8 s | 8 s | 4 s | 5 s | 22 s | 9 s |
-| PostgreSQL read/write | 4,992 TPS | — | 9,463 TPS | 11,134 TPS | 3,244 TPS | 1,880 TPS | 4,701 TPS |
+| PostgreSQL read/write | 4,992 TPS | 7,223 TPS† | 9,463 TPS | 11,134 TPS | 3,244 TPS | 1,880 TPS | 4,701 TPS |
 
 Disk metrics are measured inside the runner VM. A dash means the metric is unavailable.
+
+† From the November 15 Celesto hardware run; the other Celesto hardware values are from November 14, before the disk change.
 
 ## Source runs
 
 | Provider | Rust | Node | Docker | Cache | Hardware | Burst |
 |---|---:|---:|---:|---:|---:|---:|
 | GitHub | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832) | [2026-11-11](https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372) | [2026-11-14](https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607) | [2026-11-12](https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191) |
-| Celesto | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643464187) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43629094599) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43640067587) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643797586) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643932828) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43622242256) |
+| Celesto | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643464187) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43629094599) | [2026-11-15](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43701195291)† | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643797586) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43643932828) (PostgreSQL: [2026-11-15](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43700528812)†) | [2026-11-14](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43622242256) |
 | Blacksmith | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832) | [2026-11-11](https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372) | [2026-11-14](https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607) | [2026-11-12](https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191) |
 | Namespace | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832) | [2026-11-11](https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372) | [2026-11-14](https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607) | [2026-11-12](https://github.com/runs-on-demo/benchmark-public/actions/runs/43244114191) |
 | RunsOn | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43350020470) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43363107291) | [2026-11-13](https://github.com/runs-on-demo/benchmark-public/actions/runs/43378009832) | [2026-11-11](https://github.com/runs-on-demo/benchmark-public/actions/runs/42957189372) | [2026-11-14](https://github.com/runs-on-demo/benchmark-public/actions/runs/43544990607) | [2026-11-12](https://github.com/runs-on-demo/benchmark-public/actions/runs/43245321021) |
