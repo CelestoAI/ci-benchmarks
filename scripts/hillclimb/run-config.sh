@@ -12,9 +12,11 @@ fsopt=$(get guest_fsopt ""); smp=$(get smp 2); mem=$(get mem 3072); devtype=$(ge
 queues=$(get queues 1); extra=$(get drive_extra ""); devextra=$(get dev_extra ""); globals=$(get globals "")
 xext=$(get xfs_extsize "")
 iothreads=$(get iothreads 0); qver=$(get qemu system)
-# "qemu": "latest" uses the source build from the workflow's qemu job; default is the distro QEMU (8.2.2, as on prod hosts).
+# "qemu": "<version>" (or "latest") uses that release's source build from the workflow's qemu job;
+# default is the distro QEMU (8.2.2, as on prod hosts).
 QEMU=qemu-system-x86_64; QIMG=qemu-img
-[ "$qver" = latest ] && QEMU=$QEMU_DIR/bin/qemu-system-x86_64 && QIMG=$QEMU_DIR/bin/qemu-img
+[ "$qver" = latest ] && qver=${QEMU_LATEST:?}
+if [ "$qver" != system ]; then QEMU=$QEMU_ROOT/qemu-$qver/bin/qemu-system-x86_64; QIMG=$QEMU_ROOT/qemu-$qver/bin/qemu-img; fi
 qemu_version=$("$QEMU" --version | head -1)
 mkdir -p "$OUT"; vm=$ROOT/vm; rm -rf "$vm"; mkdir -p "$vm"; base=$ROOT/base.raw
 status=ok; note=""
