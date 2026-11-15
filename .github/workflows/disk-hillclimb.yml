@@ -67,9 +67,14 @@ jobs:
       - name: Disk class
         run: |
           if [ "${{ matrix.cls }}" = local ]; then
-            src=$(findmnt -no SOURCE /mnt); sudo swapoff -a; sudo umount /mnt
-            sudo mkfs.xfs -q -f -m reflink=1 "$src" && sudo mount "$src" /mnt && root=/mnt/hc
+            # No local SSD on these runners: a RAM-backed null_blk device with 20 us
+            # completions stands in for local NVMe.
+            modinfo null_blk >/dev/null 2>&1 || sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "linux-modules-extra-$(uname -r)" >/dev/null
+            sudo modprobe null_blk nr_devices=1 gb=11 memory_backed=1 queue_mode=2 irqmode=2 completion_nsec=20000 hw_queue_depth=256 submit_queues=4 bs=4096
+            src=/dev/nullb0
+            sudo mkfs.xfs -q -f -m reflink=1 "$src" && sudo mkdir -p /local && sudo mount "$src" /local && root=/local/hc
           else
+            # The runner's only disk is a remote Azure disk over NVMe: the EBS / OVH stand-in.
             sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost
             src=$(findmnt -no SOURCE /)
             sudo truncate -s 64G /xfsnet.img && loop=$(sudo losetup --direct-io=on -f --show /xfsnet.img)

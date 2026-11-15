@@ -9,7 +9,8 @@ now() { date +%s.%N; }
 el() { python3 -c "print(round($2-$1,3))"; }
 fioj() {  # name, fio args...; json+ gives latency bins for freeze counts
   local n=$1; shift
-  fio --name="$n" --ioengine=libaio --direct=1 --group_reporting=1 --percentile_list=50:99:99.9 \
+  echo "T $n start $(cut -d' ' -f1 /proc/uptime)"
+  timeout -k 10 150 fio --name="$n" --ioengine=libaio --direct=1 --group_reporting=1 --percentile_list=50:99:99.9 \
     --output-format=json+ "$@" > /tmp/"$n".json 2>/tmp/"$n".err
   local j
   j=$(jq -c --arg n "$n" '.jobs[0].write as $w | {n:$n, iops:($w.iops|floor), mib_s:(($w.bw_bytes/1048576*10|floor)/10),
@@ -17,9 +18,11 @@ fioj() {  # name, fio args...; json+ gives latency bins for freeze counts
       max_us:(($w.clat_ns.max//0)/1000|floor),
       over100ms:([($w.clat_ns.bins//{}) | to_entries[] | select((.key|tonumber) > 100000000) | .value] | add // 0),
       over1s:([($w.clat_ns.bins//{}) | to_entries[] | select((.key|tonumber) > 1000000000) | .value] | add // 0)}' /tmp/"$n".json 2>/dev/null)
+  echo "T $n end $(cut -d' ' -f1 /proc/uptime)"
   if [ -n "$j" ]; then echo "R $j"
   else echo "R {\"n\":\"$n\",\"error\":\"$(head -c 200 /tmp/"$n".err | tr -d '"\\\n')\"}"; fi
 }
+echo "T base_read start $(cut -d' ' -f1 /proc/uptime)"
 # 1. Cold read of base-image files.
 sync; echo 3 > /proc/sys/vm/drop_caches
 t0=$(now); bytes=$(tar cf - /usr 2>/dev/null | wc -c); t1=$(now)
@@ -36,24 +39,25 @@ for i in range(50000):
 t1 = time.time(); os.sync(); t2 = time.time(); shutil.rmtree(d); os.sync(); t3 = time.time()
 print("R " + json.dumps({"n": "smallfiles", "mib": total >> 20, "write_s": round(t1 - t0, 3), "sync_s": round(t2 - t1, 3), "rm_s": round(t3 - t2, 3)}))
 PY
-# 3. 4 GiB sequential write to a new file (image extract-like).
-fioj seq_fresh --directory="$W" --filename=seq.dat --size=4G --bs=1M --iodepth=16 --rw=write --end_fsync=1
+# 3. 2 GiB sequential write to a new file (image extract-like).
+fioj seq_fresh --directory="$W" --filename=seq.dat --size=2G --bs=1M --iodepth=16 --rw=write --end_fsync=1
 rm -f "$W/seq.dat"
 # 4. 4K random writes into new files (fresh space), 4 jobs x QD32.
 mkdir -p "$W/a"
-fioj fresh_rand --directory="$W/a" --filename_format='f.$jobnum' --size=1G --numjobs=4 --bs=4k --iodepth=32 --rw=randwrite --time_based --runtime=20 --ramp_time=2s
+fioj fresh_rand --directory="$W/a" --filename_format='f.$jobnum' --size=512M --numjobs=4 --bs=4k --iodepth=32 --rw=randwrite --time_based --runtime=20 --ramp_time=2s
 rm -rf "$W/a"
 # 5. 4K random rewrites of written data, then QD1 fdatasync.
 mkdir -p "$W/c"
-fio --name=prefill --directory="$W/c" --ioengine=libaio --direct=1 --size=1G --numjobs=4 --filename_format='f.$jobnum' --bs=1M --iodepth=32 --rw=write --end_fsync=1 >/dev/null 2>&1
-fioj written_rand --directory="$W/c" --filename_format='f.$jobnum' --size=1G --numjobs=4 --bs=4k --iodepth=32 --rw=randwrite --time_based --runtime=15 --ramp_time=2s
-fioj qd1_fdatasync --directory="$W/c" --filename_format='f.$jobnum' --size=1G --numjobs=1 --bs=4k --iodepth=1 --rw=randwrite --fdatasync=1 --time_based --runtime=10
+fio --name=prefill --directory="$W/c" --ioengine=libaio --direct=1 --size=512M --numjobs=4 --filename_format='f.$jobnum' --bs=1M --iodepth=32 --rw=write --end_fsync=1 >/dev/null 2>&1
+fioj written_rand --directory="$W/c" --filename_format='f.$jobnum' --size=512M --numjobs=4 --bs=4k --iodepth=32 --rw=randwrite --time_based --runtime=15 --ramp_time=2s
+fioj qd1_fdatasync --directory="$W/c" --filename_format='f.$jobnum' --size=512M --numjobs=1 --bs=4k --iodepth=1 --rw=randwrite --fdatasync=1 --time_based --runtime=10
 rm -rf "$W/c"
+echo "T pgbench start $(cut -d' ' -f1 /proc/uptime)"
 # 6. PostgreSQL: init scale 20, then 20 s read-write.
 mkdir -p /run/postgresql && chown postgres:postgres /run/postgresql
 su postgres -c "pg_ctlcluster 16 main start" >/dev/null 2>&1; sleep 1
 t0=$(now); su postgres -c "createdb bench && pgbench -i -s 20 -q bench" >/tmp/pginit.txt 2>&1; t1=$(now)
-su postgres -c "pgbench -c 8 -j 2 -T 20 bench" >/tmp/pg.txt 2>&1
+timeout -k 10 90 su postgres -c "pgbench -c 8 -j 2 -T 20 bench" >/tmp/pg.txt 2>&1
 python3 - "$(el "$t0" "$t1")" <<'PGPY'
 import json, re, sys
 t = open("/tmp/pg.txt").read()
