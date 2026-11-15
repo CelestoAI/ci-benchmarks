@@ -3,7 +3,7 @@ name: Disk probe
 on:
   push:
     branches: [bench/disk-probe-20261114]
-    paths: [scripts/disk-probe4.sh]
+    paths: [scripts/disk-probe5.sh]
 permissions:
   contents: read
 jobs:
@@ -18,6 +18,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Install tools
-        run: sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq fio jq >/dev/null
+        run: sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq fio jq bc >/dev/null
       - name: Probe
-        run: bash scripts/disk-probe4.sh
+        env:
+          ITER: ${{ matrix.iteration }}
+        run: bash scripts/disk-probe5.sh
