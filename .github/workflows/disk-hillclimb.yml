@@ -86,8 +86,13 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq build-essential ninja-build pkg-config python3-venv \
             flex bison libglib2.0-dev libpixman-1-dev libaio-dev liburing-dev zlib1g-dev >/dev/null
-          curl -fsSL -o /tmp/q.tar.xz "https://download.qemu.org/qemu-${VER}.tar.xz" && sha256sum /tmp/q.tar.xz
+          # "<release>+revert-<sha>" builds that release with one upstream commit reverted.
+          rel=${VER%%+*}
+          curl -fsSL -o /tmp/q.tar.xz "https://download.qemu.org/qemu-${rel}.tar.xz" && sha256sum /tmp/q.tar.xz
           mkdir /tmp/q && tar -xJf /tmp/q.tar.xz -C /tmp/q --strip-components=1 && cd /tmp/q
+          case "$VER" in *+revert-*)
+            sha=${VER##*+revert-}; curl -fsSL -o /tmp/revert.patch "https://github.com/qemu/qemu/commit/$sha.patch"
+            patch -R -p1 --no-backup-if-mismatch < /tmp/revert.patch ;; esac
           # Same flags for every version, so versions compare like with like.
           ./configure --prefix="$HOME/qemu-$VER" --target-list=x86_64-softmmu --enable-kvm --enable-linux-aio --enable-linux-io-uring \
             --enable-tools --disable-docs --disable-gtk --disable-sdl --disable-vnc --disable-werror >/dev/null

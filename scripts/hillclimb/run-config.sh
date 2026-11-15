@@ -12,6 +12,7 @@ fsopt=$(get guest_fsopt ""); smp=$(get smp 2); mem=$(get mem 3072); devtype=$(ge
 queues=$(get queues 1); extra=$(get drive_extra ""); devextra=$(get dev_extra ""); globals=$(get globals "")
 xext=$(get xfs_extsize "")
 iothreads=$(get iothreads 0); qver=$(get qemu system)
+trace=$(get trace "")  # comma-separated QEMU trace events (log backend, to qemu.err); counts go in result.json
 # "qemu": "<version>" (or "latest") uses that release's source build from the workflow's qemu job;
 # default is the distro QEMU (8.2.2, as on prod hosts).
 # "ubuntu-<release>" uses that Ubuntu release's prebuilt package, run in a chroot.
@@ -103,6 +104,7 @@ esac
 # dev_extra is a virtio property: it goes on the virtio-scsi controller, not on scsi-hd.
 if [ -n "$devextra" ]; then if [ ${#ctl[@]} -gt 0 ]; then ctl[1]+=",$devextra"; else blk+=",$devextra"; fi; fi
 glob=(); for gl in ${globals//;/ }; do glob+=(-global "$gl"); done
+tr=(); for ev in ${trace//,/ }; do tr+=(-trace "$ev"); done
 sched=$(get guest_sched "")
 append="console=ttyS0 reboot=k panic=1 root=$rootdev rw init=/init bench_wc=$wc${fsopt:+ bench_fsopt=$fsopt}${sched:+ bench_sched=$sched}"
 
@@ -111,7 +113,7 @@ s0=$(sectors)
 if [ "$status" = ok ]; then
   # Same shape as the prod pool command line (minus network and vsock).
   "${QEMU[@]}" -smp "$smp" -m "$mem" -nodefaults -serial stdio -kernel "$KERNEL" -append "$append" \
-    "${glob[@]}" "${iot[@]}" -drive "$drive" -nographic -no-reboot -monitor none -rtc base=utc,clock=host \
+    "${glob[@]}" "${tr[@]}" "${iot[@]}" -drive "$drive" -nographic -no-reboot -monitor none -rtc base=utc,clock=host \
     -qmp "unix:$vm/qmp.sock,server=on,wait=off" \
     -machine "microvm,accel=kvm,acpi=on,pcie=$pcie,pic=off,pit=off,rtc=on" -cpu host "${ctl[@]}" -device "$blk" \
     </dev/null >"$vm/serial.log" 2>"$vm/qemu.err" &
@@ -144,16 +146,19 @@ sync; s1=$(sectors)
 guest_diag=$(grep '^D ' "$vm/serial.log" 2>/dev/null | tr -d '\r' | tail -c 2500)
 suite=$( (grep '^R ' "$vm/serial.log" 2>/dev/null || true) | sed 's/^R //' | jq -s 'map({(.n): (del(.n))}) | add // {}' 2>/dev/null)
 jq -e . >/dev/null 2>&1 <<<"$suite" || suite='{}'
+tcounts='{}'; for ev in ${trace//,/ }; do
+  n=$(grep -c "$ev" "$vm/qemu.err" 2>/dev/null; true); tcounts=$(jq -c --arg e "$ev" --argjson n "${n:-0}" '. + {($e): $n}' <<<"$tcounts")
+done
 jq -n --argjson cfg "$CFG" --arg class "$CLASS" --arg rep "$REP" --arg status "$status" --argjson suite "$suite" \
   --arg prep_s "$prep_s" --arg exit_s "$exit_s" --arg rm_s "$rm_s" --arg boot_s "$boot_s" --argjson killed "$killed" \
   --arg host_gib "$(python3 -c "print(round((${s1:-0}-${s0:-0})*512/2**30,2))")" \
   --arg dirty "$(cat "$vm/dirty.peak" 2>/dev/null || echo 0)" \
   --arg qemu_err "$(tail -c 600 "$vm/qemu.err" "$vm/prep.err" 2>/dev/null; cat "$vm/diag.txt" 2>/dev/null | tail -c 3000)" \
-  --arg guest_diag "$guest_diag" --arg serial_tail "$( [ "$status" = ok ] || tail -c 1500 "$vm/serial.log" 2>/dev/null)" \
+  --arg guest_diag "$guest_diag" --argjson trace_counts "$tcounts" --arg serial_tail "$( [ "$status" = ok ] || tail -c 1500 "$vm/serial.log" 2>/dev/null)" \
   --arg runner "$(nproc) cpu $(sed -n 's/^model name[^:]*: //p' /proc/cpuinfo | head -1), $(free -g | awk '/Mem:/{print $2}') GiB, dev $DEV $(cat /sys/class/block/"$DEV"/device/model 2>/dev/null || true)" \
   --arg qemu_version "$qemu_version" --arg run_id "${GITHUB_RUN_ID:-local}" --arg drive "$drive" --arg blk "${ctl[1]:+${ctl[1]} }$blk${globals:+ globals=$globals}" \
   '{config:$cfg, id:$cfg.id, class:$class, qemu_version:$qemu_version, rep:($rep|tonumber), status:$status, run_id:$run_id, runner:$runner,
     drive:$drive, device:$blk, prep_s:($prep_s|tonumber), boot_s:($boot_s|fromjson? // null),
     exit_s:($exit_s|fromjson? // null), killed:$killed, rm_s:($rm_s|tonumber), host_gib_written:($host_gib|tonumber),
-    host_dirty_peak_mib:($dirty|tonumber), suite:$suite, guest_diag:$guest_diag, qemu_err:$qemu_err, serial_tail:$serial_tail}' > "$OUT/result.json"
+    host_dirty_peak_mib:($dirty|tonumber), trace_counts:$trace_counts, suite:$suite, guest_diag:$guest_diag, qemu_err:$qemu_err, serial_tail:$serial_tail}' > "$OUT/result.json"
 jq -c '{id, class, rep, status, exit_s, host_gib_written, fresh: .suite.fresh_rand, pg: .suite.pgbench.tps}' "$OUT/result.json"
