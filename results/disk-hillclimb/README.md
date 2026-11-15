@@ -18,6 +18,63 @@ virtio-mmio, 2 vCPU / 3 GiB guest) on a fresh GitHub-hosted runner (4 vCPU, 16 G
 - Single VM per runner: no neighbor load. Finalists must still be checked on real hosts.
 - Raw per-run records (config, QEMU drive string, every metric): `runs.jsonl`.
 
+## Iteration 5
+
+Iteration 4 winner `pci-iothread` (virtio-blk-pci, 2 queues, 1 iothread, event_idx on, cache=unsafe, aio=io_uring, qcow2) is the baseline. This iteration tries QEMU 11.1.3 (latest stable, source build) against the distro 8.2.2 the hosts run: same config, per-queue iothreads (iothread-vq-mapping, 9.0+), whether the virtio-mmio event_idx hang is fixed upstream, and whether today's prod cache settings still freeze on network disks.
+
+Baseline: `pci-iothread`
+
+Runs: [43681437433](https://github.com/CelestoAI/ci-benchmarks/actions/runs/43681437433)
+
+Configs:
+
+- `pci-iothread`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothread": 1, "queues": 2}` — iteration 4 winner, QEMU 8.2.2
+- `pci-iothread-smp4`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothread": 1, "queues": 4, "smp": 4}` — 4 vCPUs, QEMU 8.2.2 (control for the next one)
+- `q11-mmio-eidx-on`: `{"aio": "io_uring", "cache": "unsafe", "qemu": "latest"}` — is the virtio-mmio + event_idx hang fixed in QEMU 11?
+- `q11-pci-iothread`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothread": 1, "qemu": "latest", "queues": 2}` — same config on QEMU 11.1.3
+- `q11-pci-iothreads2`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothreads": 2, "qemu": "latest", "queues": 2}` — one iothread per queue (iothread-vq-mapping)
+- `q11-pci-iothreads2-smp4`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "iothreads": 2, "qemu": "latest", "queues": 4, "smp": 4}` — 4 vCPUs, 4 queues over 2 iothreads
+- `q11-pci`: `{"aio": "io_uring", "cache": "unsafe", "dev": "pci", "qemu": "latest", "queues": 2}` — QEMU 11 without an iothread
+- `q11-pci-prod`: `{"aio": "threads", "cache": "writeback", "dev": "pci", "qemu": "latest", "queues": 2}` — prod cache settings on PCI froze on network disks with 8.2 (7.5 s); sandbox-relevant
+- `q11-pci-threads`: `{"aio": "threads", "cache": "unsafe", "dev": "pci", "iothread": 1, "qemu": "latest", "queues": 2}` — io_uring was slow on network sequential writes on 8.2; does threads win on 11?
+
+### local
+
+| config | ok | score | fresh 4K IOPS | fresh worst s | fresh I/Os >1s | rewrite 4K IOPS | rewrite worst s | seq write MiB/s | 50k files s | fsync IOPS | pgbench TPS | base read MiB/s | VM stop s | host GiB written |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| pci-iothread-smp4 | 3/3 | 1.00 (paired) | 144081 | 0.0 | 0 | 149090 | 0.0 | 4063 | 2.08 | 52624 | 6487 | 424 | 0.12 | 29.8 |
+| pci-iothread | 3/3 | 1.00 | 160224 | 0.0 | 0 | 171774 | 0.0 | 5120 | 2.02 | 55517 | 5890 | 423 | 0.12 | 33.0 |
+| q11-pci-iothread | 3/3 | 0.74 (paired) | 33102 | 7.4 | 58 | 187346 | 0.0 | 3330 | 1.92 | 46829 | 9455 | 541 | 0.12 | 22.2 |
+| q11-pci-iothreads2-smp4 | 3/3 | 0.74 (paired) | 25170 | 3.1 | 214 | 145289 | 0.0 | 2926 | 2.05 | 33458 | 6863 | 423 | 0.12 | 17.7 |
+| q11-pci-iothreads2 | 3/3 | 0.72 (paired) | 28111 | 3.1 | 174 | 148885 | 0.0 | 2840 | 2.04 | 37202 | 5935 | 413 | 0.12 | 18.4 |
+| q11-pci | 3/3 | 0.68 (paired) | 28406 | 1.3 | 29 | 137810 | 0.0 | 3075 | 2.07 | 26908 | 5890 | 363 | 0.12 | 17.4 |
+| q11-pci-threads | 3/3 | 0.58 (paired) | 26697 | 7.2 | 158 | 104360 | 0.0 | 1943 | 1.86 | 23016 | 5543 | 320 | 0.12 | 15.2 |
+| q11-pci-prod | 3/3 | 0.53 (paired) | 23303 | 4.8 | 130 | 95172 | 0.2 | 2560 | 2.15 | 16473 | 5400 | 269 | 0.22 | 14.3 |
+| q11-mmio-eidx-on | 0/3 | 0.00 | – | – | – | – | – | – | – | – | – | – | – | – |
+
+### network
+
+| config | ok | score | fresh 4K IOPS | fresh worst s | fresh I/Os >1s | rewrite 4K IOPS | rewrite worst s | seq write MiB/s | 50k files s | fsync IOPS | pgbench TPS | base read MiB/s | VM stop s | host GiB written |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| pci-iothread-smp4 | 3/3 | 1.06 (paired) | 126459 | 0.1 | 0 | 93858 | 0.1 | 1041 | 3.19 | 31645 | 4550 | 262 | 0.12 | 18.0 |
+| pci-iothread | 3/3 | 1.00 | 123765 | 0.3 | 0 | 101847 | 0.4 | 602 | 2.02 | 58427 | 5858 | 432 | 0.12 | 12.6 |
+| q11-pci-iothread | 3/3 | 0.84 (paired) | 54131 | 4.8 | 18 | 92112 | 0.3 | 631 | 3.22 | 25753 | 4148 | 274 | 0.12 | 14.1 |
+| q11-pci | 3/3 | 0.78 (paired) | 134616 | 2.0 | 5 | 87005 | 0.8 | 271 | 1.64 | 26864 | 6072 | 391 | 0.12 | 12.2 |
+| q11-pci-iothreads2 | 3/3 | 0.77 (paired) | 97547 | 1.4 | 14 | 59208 | 0.3 | 247 | 1.85 | 43825 | 6087 | 473 | 0.12 | 10.5 |
+| q11-pci-iothreads2-smp4 | 3/3 | 0.77 (paired) | 52733 | 2.5 | 194 | 83014 | 0.5 | 218 | 2.14 | 35733 | 6910 | 412 | 0.12 | 9.7 |
+| q11-pci-threads | 3/3 | 0.64 (paired) | 48439 | 2.0 | 12 | 68486 | 0.1 | 482 | 3.29 | 13709 | 3890 | 202 | 0.12 | 12.9 |
+| q11-pci-prod | 3/3 | 0.33 (paired) | 20266 | 10.1 | 149 | 66208 | 0.2 | 188 | 4.11 | 14407 | 5685 | 281 | 1.44 | 11.7 |
+| q11-mmio-eidx-on | 0/3 | 0.00 | – | – | – | – | – | – | – | – | – | – | – | – |
+
+Failures:
+
+- `q11-mmio-eidx-on` local rep 1: timeout D fresh_rand rc=137 inflight= 0 142
+- `q11-mmio-eidx-on` local rep 2: timeout D fresh_rand rc=137 inflight= 0 131
+- `q11-mmio-eidx-on` local rep 3: timeout 
+- `q11-mmio-eidx-on` network rep 1: timeout D fresh_rand rc=137 inflight= 0 176
+- `q11-mmio-eidx-on` network rep 2: timeout D fresh_rand rc=137 inflight= 0 166
+- `q11-mmio-eidx-on` network rep 3: timeout D fresh_rand rc=137 inflight= 0 144
+
 ## Iteration 4
 
 Iteration 3: moving the disk from virtio-mmio to virtio-blk-pci (2 queues) gave 2-5x fsync and random IOPS on both disk classes, and PCI with event_idx left on never hung (6/6), so the hang is specific to virtio-mmio. Baseline is now PCI + 2 queues + event_idx on + cache=unsafe + aio=io_uring. This iteration splits the PCI gain (queues, iothread, aio, cache), tests 4 vCPUs, and re-asks raw vs qcow2 with pairing, including raw with a 1 MiB XFS extent size hint.

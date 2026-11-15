@@ -58,7 +58,9 @@ jobs:
   qemu:
     needs: plan
     if: needs.plan.outputs.qemu_versions != '[]'
+    continue-on-error: true   # one version failing to build only fails the jobs that use it
     strategy:
+      fail-fast: false
       matrix:
         ver: ${{ fromJSON(needs.plan.outputs.qemu_versions) }}
     runs-on: ubuntu-24.04
