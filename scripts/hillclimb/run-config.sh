@@ -11,6 +11,11 @@ aio=$(get aio threads); iothread=$(get iothread 0); discard=$(get discard ""); w
 fsopt=$(get guest_fsopt ""); smp=$(get smp 2); mem=$(get mem 3072); devtype=$(get dev mmio)
 queues=$(get queues 1); extra=$(get drive_extra ""); devextra=$(get dev_extra ""); globals=$(get globals "")
 xext=$(get xfs_extsize "")
+iothreads=$(get iothreads 0); qver=$(get qemu system)
+# "qemu": "latest" uses the source build from the workflow's qemu job; default is the distro QEMU (8.2.2, as on prod hosts).
+QEMU=qemu-system-x86_64; QIMG=qemu-img
+[ "$qver" = latest ] && QEMU=$QEMU_DIR/bin/qemu-system-x86_64 && QIMG=$QEMU_DIR/bin/qemu-img
+qemu_version=$("$QEMU" --version | head -1)
 mkdir -p "$OUT"; vm=$ROOT/vm; rm -rf "$vm"; mkdir -p "$vm"; base=$ROOT/base.raw
 status=ok; note=""
 # XFS extent size hint on the VM dir: new disk files inherit it (it cannot be set on a file that has data).
@@ -34,7 +39,7 @@ sync
 t0=$(date +%s.%N)
 case "$layout" in
   qcow2)   disk=$vm/disk.qcow2; fmt=qcow2
-           qemu-img create -q -f qcow2 -F raw -b "$base" ${qopts:+-o "$qopts"} "$disk" 40G 2>"$vm/prep.err" || status=prep_failed ;;
+           "$QIMG" create -q -f qcow2 -F raw -b "$base" ${qopts:+-o "$qopts"} "$disk" 40G 2>"$vm/prep.err" || status=prep_failed ;;
   reflink) disk=$vm/disk.raw; fmt=raw
            cp --reflink=always "$base" "$disk" 2>"$vm/prep.err" || status=prep_failed ;;
   *)       status=bad_layout ;;
@@ -46,9 +51,19 @@ drive="file=$disk,if=none,format=$fmt,id=rootdisk0-drive,node-name=rootdisk0,cac
 [ -n "$extra" ] && drive+=",$extra"
 iot=(); devprop=""
 [ "$iothread" = 1 ] && iot=(-object iothread,id=io0) && devprop=",iothread=io0"
+# iothreads=N (QEMU >= 9.0, PCI only): spread the disk's queues over N iothreads with iothread-vq-mapping.
+if [ "$iothreads" -gt 1 ]; then
+  iot=(); maps=""
+  for i in $(seq 0 $((iothreads - 1))); do iot+=(-object "iothread,id=io$i"); maps+="${maps:+,}{\"iothread\":\"io$i\"}"; done
+fi
 rootdev=/dev/vda; ctl=()
 case "$devtype" in
-  pci)      pcie=on;  blk="virtio-blk-pci,drive=rootdisk0-drive,num-queues=$queues$devprop" ;;
+  pci)      pcie=on;  blk="virtio-blk-pci,drive=rootdisk0-drive,num-queues=$queues$devprop"
+            if [ "$iothreads" -gt 1 ]; then  # list properties need the JSON form of -device
+              ex=""; for kv in ${devextra//,/ }; do k=${kv%%=*}; v=${kv#*=}
+                case $v in on) v=true;; off) v=false;; *[!0-9]*) v="\"$v\"";; esac; ex+=",\"$k\":$v"; done
+              blk="{\"driver\":\"virtio-blk-pci\",\"drive\":\"rootdisk0-drive\",\"num-queues\":$queues,\"iothread-vq-mapping\":[$maps]$ex}"; devextra=""
+            fi ;;
   scsi)     pcie=off; ctl=(-device "virtio-scsi-device,id=scsi0$devprop"); rootdev=/dev/sda
             blk="scsi-hd,drive=rootdisk0-drive,bus=scsi0.0" ;;
   scsi-pci) pcie=on;  ctl=(-device "virtio-scsi-pci,id=scsi0,num_queues=$queues$devprop"); rootdev=/dev/sda
@@ -65,7 +80,7 @@ declare -A R=(); exit_s=null; rm_s=null; killed=false; boot_s=null
 s0=$(sectors)
 if [ "$status" = ok ]; then
   # Same shape as the prod pool command line (minus network and vsock).
-  qemu-system-x86_64 -smp "$smp" -m "$mem" -nodefaults -serial stdio -kernel "$KERNEL" -append "$append" \
+  "$QEMU" -smp "$smp" -m "$mem" -nodefaults -serial stdio -kernel "$KERNEL" -append "$append" \
     "${glob[@]}" "${iot[@]}" -drive "$drive" -nographic -no-reboot -monitor none -rtc base=utc,clock=host \
     -qmp "unix:$vm/qmp.sock,server=on,wait=off" \
     -machine "microvm,accel=kvm,acpi=on,pcie=$pcie,pic=off,pit=off,rtc=on" -cpu host "${ctl[@]}" -device "$blk" \
@@ -106,8 +121,8 @@ jq -n --argjson cfg "$CFG" --arg class "$CLASS" --arg rep "$REP" --arg status "$
   --arg qemu_err "$(tail -c 600 "$vm/qemu.err" "$vm/prep.err" 2>/dev/null; cat "$vm/diag.txt" 2>/dev/null | tail -c 3000)" \
   --arg guest_diag "$guest_diag" --arg serial_tail "$( [ "$status" = ok ] || tail -c 1500 "$vm/serial.log" 2>/dev/null)" \
   --arg runner "$(nproc) cpu $(sed -n 's/^model name[^:]*: //p' /proc/cpuinfo | head -1), $(free -g | awk '/Mem:/{print $2}') GiB, dev $DEV $(cat /sys/class/block/"$DEV"/device/model 2>/dev/null || true)" \
-  --arg run_id "${GITHUB_RUN_ID:-local}" --arg drive "$drive" --arg blk "${ctl[1]:+${ctl[1]} }$blk${globals:+ globals=$globals}" \
-  '{config:$cfg, id:$cfg.id, class:$class, rep:($rep|tonumber), status:$status, run_id:$run_id, runner:$runner,
+  --arg qemu_version "$qemu_version" --arg run_id "${GITHUB_RUN_ID:-local}" --arg drive "$drive" --arg blk "${ctl[1]:+${ctl[1]} }$blk${globals:+ globals=$globals}" \
+  '{config:$cfg, id:$cfg.id, class:$class, qemu_version:$qemu_version, rep:($rep|tonumber), status:$status, run_id:$run_id, runner:$runner,
     drive:$drive, device:$blk, prep_s:($prep_s|tonumber), boot_s:($boot_s|fromjson? // null),
     exit_s:($exit_s|fromjson? // null), killed:$killed, rm_s:($rm_s|tonumber), host_gib_written:($host_gib|tonumber),
     host_dirty_peak_mib:($dirty|tonumber), suite:$suite, guest_diag:$guest_diag, qemu_err:$qemu_err, serial_tail:$serial_tail}' > "$OUT/result.json"

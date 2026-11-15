@@ -11,6 +11,7 @@ permissions:
 env:
   KERNEL_URL: https://github.com/CelestoAI/Celesto/releases/download/kernels-2026.10.28.0/vmlinux-github-ci-amd64.image
   KERNEL_SHA256: 52fc02f5fd3140f46e00dd7d8498eba0a15e3ba212d0ba13dcf379cd0932d829
+  QEMU_LATEST: 11.1.3   # latest stable on qemu.org/download as of 2026-11-15; configs opt in with "qemu": "latest"
 jobs:
   plan:
     runs-on: ubuntu-24.04
@@ -49,8 +50,26 @@ jobs:
       - if: steps.c.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with: { path: rootfs, key: "${{ needs.plan.outputs.key }}" }
+  qemu:
+    runs-on: ubuntu-24.04
+    steps:
+      - id: c
+        uses: actions/cache/restore@v4
+        with: { path: ~/qemu, key: "qemu-${{ env.QEMU_LATEST }}-v1", lookup-only: true }
+      - if: steps.c.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq build-essential ninja-build pkg-config python3-venv \
+            flex bison libglib2.0-dev libpixman-1-dev libaio-dev liburing-dev zlib1g-dev >/dev/null
+          curl -fsSL -o /tmp/q.tar.xz "https://download.qemu.org/qemu-${QEMU_LATEST}.tar.xz" && sha256sum /tmp/q.tar.xz
+          mkdir /tmp/q && tar -xJf /tmp/q.tar.xz -C /tmp/q --strip-components=1 && cd /tmp/q
+          ./configure --prefix="$HOME/qemu" --target-list=x86_64-softmmu --enable-kvm --enable-linux-aio --enable-linux-io-uring \
+            --enable-tools --disable-docs --disable-gtk --disable-sdl --disable-vnc --disable-werror >/dev/null
+          make -j"$(nproc)" >/dev/null && make install >/dev/null && "$HOME/qemu/bin/qemu-system-x86_64" --version | head -1
+      - if: steps.c.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with: { path: ~/qemu, key: "qemu-${{ env.QEMU_LATEST }}-v1" }
   bench:
-    needs: [plan, rootfs]
+    needs: [plan, rootfs, qemu]
     name: ${{ matrix.id }} ${{ matrix.cls }} ${{ matrix.rep }}
     strategy:
       fail-fast: false
@@ -61,6 +80,8 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/cache/restore@v4
         with: { path: rootfs, key: "${{ needs.plan.outputs.key }}", fail-on-cache-miss: true }
+      - uses: actions/cache/restore@v4
+        with: { path: ~/qemu, key: "qemu-${{ env.QEMU_LATEST }}-v1", fail-on-cache-miss: true }
       - name: Host setup
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules >/dev/null
@@ -94,7 +115,7 @@ jobs:
           BASE: ${{ matrix.base }}
           REP: ${{ matrix.rep }}
         run: |
-          run() { sudo -E env CFG="$1" CLASS="${{ matrix.cls }}" REP="$REP" ROOT="$ROOT" DEV="$DEV" KERNEL=/tmp/kernel OUT="$2" bash run-config.sh; }
+          run() { sudo -E env QEMU_DIR="$HOME/qemu" CFG="$1" CLASS="${{ matrix.cls }}" REP="$REP" ROOT="$ROOT" DEV="$DEV" KERNEL=/tmp/kernel OUT="$2" bash run-config.sh; }
           if [ -z "$BASE" ]; then run "$CFG" /tmp/out
           elif [ $((REP % 2)) = 1 ]; then run "$BASE" /tmp/base; run "$CFG" /tmp/out   # alternate order across repeats
           else run "$CFG" /tmp/out; run "$BASE" /tmp/base; fi
