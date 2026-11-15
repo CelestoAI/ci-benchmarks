@@ -52,7 +52,8 @@ case "$devtype" in
             blk="scsi-hd,drive=rootdisk0-drive,bus=scsi0.0" ;;
   *)        pcie=off; blk="virtio-blk-device,drive=rootdisk0-drive$devprop" ;;
 esac
-[ -n "$devextra" ] && blk+=",$devextra"
+# dev_extra is a virtio property: it goes on the virtio-scsi controller, not on scsi-hd.
+if [ -n "$devextra" ]; then if [ ${#ctl[@]} -gt 0 ]; then ctl[1]+=",$devextra"; else blk+=",$devextra"; fi; fi
 glob=(); for gl in ${globals//;/ }; do glob+=(-global "$gl"); done
 sched=$(get guest_sched "")
 append="console=ttyS0 reboot=k panic=1 root=$rootdev rw init=/init bench_wc=$wc${fsopt:+ bench_fsopt=$fsopt}${sched:+ bench_sched=$sched}"
@@ -102,7 +103,7 @@ jq -n --argjson cfg "$CFG" --arg class "$CLASS" --arg rep "$REP" --arg status "$
   --arg qemu_err "$(tail -c 600 "$vm/qemu.err" "$vm/prep.err" 2>/dev/null; cat "$vm/diag.txt" 2>/dev/null | tail -c 3000)" \
   --arg guest_diag "$guest_diag" --arg serial_tail "$( [ "$status" = ok ] || tail -c 1500 "$vm/serial.log" 2>/dev/null)" \
   --arg runner "$(nproc) cpu, $(free -g | awk '/Mem:/{print $2}') GiB, dev $DEV $(cat /sys/class/block/"$DEV"/device/model 2>/dev/null || true)" \
-  --arg run_id "${GITHUB_RUN_ID:-local}" --arg drive "$drive" --arg blk "$blk${globals:+ globals=$globals}" \
+  --arg run_id "${GITHUB_RUN_ID:-local}" --arg drive "$drive" --arg blk "${ctl[1]:+${ctl[1]} }$blk${globals:+ globals=$globals}" \
   '{config:$cfg, id:$cfg.id, class:$class, rep:($rep|tonumber), status:$status, run_id:$run_id, runner:$runner,
     drive:$drive, device:$blk, prep_s:($prep_s|tonumber), boot_s:($boot_s|fromjson? // null),
     exit_s:($exit_s|fromjson? // null), killed:$killed, rm_s:($rm_s|tonumber), host_gib_written:($host_gib|tonumber),
