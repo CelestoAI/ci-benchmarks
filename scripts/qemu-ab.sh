@@ -34,9 +34,12 @@ variant() {  # $1 label, rest = qemu-nbd options
   sudo qemu-nbd -d /dev/nbd0 >/dev/null; sleep 1
 }
 
+low_dirty() { sudo sysctl -q vm.dirty_bytes=536870912 vm.dirty_background_bytes=134217728; }
+default_dirty() { sudo sysctl -q vm.dirty_ratio=20 vm.dirty_background_ratio=10; }
+
 # Celesto today: QEMU defaults (cache=writeback, aio=threads).
-variant "A default(writeback,threads)" --cache=writeback --aio=threads
-variant "B cache=none,aio=native"      --cache=none --aio=native
-variant "C cache=none,aio=io_uring"    --cache=none --aio=io_uring
-variant "D writeback,io_uring"         --cache=writeback --aio=io_uring
-variant "E unsafe,threads"             --cache=unsafe --aio=threads
+default_dirty; variant "A default(writeback,threads)" --cache=writeback --aio=threads
+low_dirty;     variant "F default + dirty cap 512M/128M" --cache=writeback --aio=threads
+default_dirty; variant "E unsafe,threads"             --cache=unsafe --aio=threads
+low_dirty;     variant "G unsafe + dirty cap 512M/128M" --cache=unsafe --aio=threads
+default_dirty; variant "B cache=none,aio=native"      --cache=none --aio=native
