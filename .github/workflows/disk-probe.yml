@@ -7,12 +7,11 @@ permissions:
   contents: read
 jobs:
   probe:
-    name: lazyinit-${{ matrix.variant }} ${{ matrix.iteration }}
+    name: probe ${{ matrix.iteration }}
     strategy:
       fail-fast: false
       matrix:
-        variant: ['on', 'off']
-        iteration: [1, 2]
+        iteration: [1, 2, 3, 4, 5, 6, 7, 8]
     runs-on: celesto-large
     timeout-minutes: 30
     steps:
@@ -20,6 +19,4 @@ jobs:
       - name: Install tools
         run: sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq fio jq >/dev/null
       - name: Probe
-        env:
-          VARIANT: ${{ matrix.variant }}
-        run: bash scripts/disk-probe3.sh
+        run: bash scripts/disk-probe4.sh
