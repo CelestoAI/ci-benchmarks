@@ -1,0 +1,145 @@
+name: Cache main/native same-machine benchmark
+'on':
+  push:
+    branches:
+    - bench/cache-main-native-ab-20261115
+permissions:
+  contents: read
+concurrency:
+  group: cache-ab-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  benchmark:
+    name: One Celesto Large, main vs native
+    runs-on: celesto-large
+    timeout-minutes: 75
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        path: .harness
+    - name: Build exact main and candidate cache components
+      env:
+        CACHE_AB_INPUT_URL: ${{ secrets.CACHE_AB_INPUT_URL_0E00272A5304 }}
+        CACHE_AB_INPUT_SHA256: c6a0a2d66ccfa1dcea5272e09594d55fdf8edf6b6a6c17ad1176630be3e1adcf
+      run: python3 .harness/scripts/cache-main-native-ab.py setup
+    - name: Generate pair 1 random 4 GiB payload
+      run: python3 .harness/scripts/cache-main-native-ab.py generate 1
+    - name: Select p1-main exact cache revision
+      run: python3 .harness/scripts/cache-main-native-ab.py select main 1
+    - name: 'p1-main: cache save'
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+      with:
+        path: cache-file
+        key: bench-ab-${{ github.run_id }}-${{ github.run_attempt }}-p1-main
+    - name: 'p1-main: remove local file'
+      run: rm cache-file
+    - name: 'p1-main: cache restore'
+      id: restore_1_main
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+      with:
+        path: cache-file
+        key: bench-ab-${{ github.run_id }}-${{ github.run_attempt }}-p1-main
+        fail-on-cache-miss: true
+    - name: 'p1-main: verify restored bytes'
+      run: python3 .harness/scripts/cache-main-native-ab.py verify main 1
+    - name: Select p1-candidate exact cache revision
+      run: python3 .harness/scripts/cache-main-native-ab.py select candidate 1
+    - name: 'p1-candidate: cache save'
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+      with:
+        path: cache-file
+        key: bench-ab-${{ github.run_id }}-${{ github.run_attempt }}-p1-candidate
+    - name: 'p1-candidate: remove local file'
+      run: rm cache-file
+    - name: 'p1-candidate: cache restore'
+      id: restore_1_candidate
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+      with:
+        path: cache-file
+        key: bench-ab-${{ github.run_id }}-${{ github.run_attempt }}-p1-candidate
+        fail-on-cache-miss: true
+    - name: 'p1-candidate: verify restored bytes'
+      run: python3 .harness/scripts/cache-main-native-ab.py verify candidate 1
+    - name: Generate pair 2 random 4 GiB payload
+      run: python3 .harness/scripts/cache-main-native-ab.py generate 2
+    - name: Select p2-candidate exact cache revision
+      run: python3 .harness/scripts/cache-main-native-ab.py select candidate 2
+    - name: 'p2-candidate: cache save'
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+      with:
+        path: cache-file
+        key: bench-ab-${{ github.run_id }}-${{ github.run_attempt }}-p2-candidate
+    - name: 'p2-candidate: remove local file'
+      run: rm cache-file
+    - name: 'p2-candidate: cache restore'
+      id: restore_2_candidate
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+      with:
+        path: cache-file
+        key: bench-ab-${{ github.run_id }}-${{ github.run_attempt }}-p2-candidate
+        fail-on-cache-miss: true
+    - name: 'p2-candidate: verify restored bytes'
+      run: python3 .harness/scripts/cache-main-native-ab.py verify candidate 2
+    - name: Select p2-main exact cache revision
+      run: python3 .harness/scripts/cache-main-native-ab.py select main 2
+    - name: 'p2-main: cache save'
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+      with:
+        path: cache-file
+        key: bench-ab-${{ github.run_id }}-${{ github.run_attempt }}-p2-main
+    - name: 'p2-main: remove local file'
+      run: rm cache-file
+    - name: 'p2-main: cache restore'
+      id: restore_2_main
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+      with:
+        path: cache-file
+        key: bench-ab-${{ github.run_id }}-${{ github.run_attempt }}-p2-main
+        fail-on-cache-miss: true
+    - name: 'p2-main: verify restored bytes'
+      run: python3 .harness/scripts/cache-main-native-ab.py verify main 2
+    - name: Generate pair 3 random 4 GiB payload
+      run: python3 .harness/scripts/cache-main-native-ab.py generate 3
+    - name: Select p3-main exact cache revision
+      run: python3 .harness/scripts/cache-main-native-ab.py select main 3
+    - name: 'p3-main: cache save'
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+      with:
+        path: cache-file
+        key: bench-ab-${{ github.run_id }}-${{ github.run_attempt }}-p3-main
+    - name: 'p3-main: remove local file'
+      run: rm cache-file
+    - name: 'p3-main: cache restore'
+      id: restore_3_main
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+      with:
+        path: cache-file
+        key: bench-ab-${{ github.run_id }}-${{ github.run_attempt }}-p3-main
+        fail-on-cache-miss: true
+    - name: 'p3-main: verify restored bytes'
+      run: python3 .harness/scripts/cache-main-native-ab.py verify main 3
+    - name: Select p3-candidate exact cache revision
+      run: python3 .harness/scripts/cache-main-native-ab.py select candidate 3
+    - name: 'p3-candidate: cache save'
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+      with:
+        path: cache-file
+        key: bench-ab-${{ github.run_id }}-${{ github.run_attempt }}-p3-candidate
+    - name: 'p3-candidate: remove local file'
+      run: rm cache-file
+    - name: 'p3-candidate: cache restore'
+      id: restore_3_candidate
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+      with:
+        path: cache-file
+        key: bench-ab-${{ github.run_id }}-${{ github.run_attempt }}-p3-candidate
+        fail-on-cache-miss: true
+    - name: 'p3-candidate: verify restored bytes'
+      run: python3 .harness/scripts/cache-main-native-ab.py verify candidate 3
+    - name: Publish non-secret same-machine receipts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: cache-main-native-ab-receipts
+        path: /tmp/cache-main-native-ab-${{ github.run_id }}-${{ github.run_attempt }}/results
+        if-no-files-found: warn
