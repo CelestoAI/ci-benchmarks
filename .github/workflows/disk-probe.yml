@@ -7,23 +7,19 @@ permissions:
   contents: read
 jobs:
   probe:
-    name: ${{ matrix.runner }}
+    name: lazyinit-${{ matrix.variant }} ${{ matrix.iteration }}
     strategy:
       fail-fast: false
       matrix:
-        runner: [celesto-large]
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 40
+        variant: ['on', 'off']
+        iteration: [1, 2]
+    runs-on: celesto-large
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
       - name: Install tools
-        run: |
-          sudo apt-get update -qq
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq fio sysstat jq postgresql-16 postgresql-client >/dev/null
+        run: sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq fio jq >/dev/null
       - name: Probe
-        run: bash scripts/disk-probe2.sh
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: disk-probe-${{ matrix.runner }}
-          path: /tmp/disk-probe2/
+        env:
+          VARIANT: ${{ matrix.variant }}
+        run: bash scripts/disk-probe3.sh
