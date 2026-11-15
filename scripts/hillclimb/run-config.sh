@@ -14,10 +14,21 @@ xext=$(get xfs_extsize "")
 iothreads=$(get iothreads 0); qver=$(get qemu system)
 # "qemu": "<version>" (or "latest") uses that release's source build from the workflow's qemu job;
 # default is the distro QEMU (8.2.2, as on prod hosts).
-QEMU=qemu-system-x86_64; QIMG=qemu-img
+# "ubuntu-<release>" uses that Ubuntu release's prebuilt package, run in a chroot.
+QEMU=(qemu-system-x86_64); QIMG=(qemu-img)
 [ "$qver" = latest ] && qver=${QEMU_LATEST:?}
-if [ "$qver" != system ]; then QEMU=$QEMU_ROOT/qemu-$qver/bin/qemu-system-x86_64; QIMG=$QEMU_ROOT/qemu-$qver/bin/qemu-img; fi
-qemu_version=$("$QEMU" --version | head -1)
+case "$qver" in
+  system) ;;
+  ubuntu-*) rfs=$QEMU_ROOT/qemu-$qver
+    if ! mountpoint -q "$rfs/proc"; then  # same paths inside and out, so disk and kernel paths work unchanged
+      mkdir -p "$rfs/dev" "$rfs/proc" "$rfs/sys" "$rfs$ROOT" "$rfs/tmp"
+      mount --rbind /dev "$rfs/dev" && mount --make-rslave "$rfs/dev"; mount -t proc proc "$rfs/proc"; mount -t sysfs sys "$rfs/sys"
+      mount --bind "$ROOT" "$rfs$ROOT"; mount --bind /tmp "$rfs/tmp"
+    fi
+    QEMU=(chroot "$rfs" /usr/bin/qemu-system-x86_64); QIMG=(chroot "$rfs" /usr/bin/qemu-img) ;;
+  *) QEMU=("$QEMU_ROOT/qemu-$qver/bin/qemu-system-x86_64"); QIMG=("$QEMU_ROOT/qemu-$qver/bin/qemu-img") ;;
+esac
+qemu_version=$("${QEMU[@]}" --version | head -1)
 mkdir -p "$OUT"; vm=$ROOT/vm; rm -rf "$vm"; mkdir -p "$vm"; base=$ROOT/base.raw
 status=ok; note=""
 # XFS extent size hint on the VM dir: new disk files inherit it (it cannot be set on a file that has data).
@@ -41,7 +52,7 @@ sync
 t0=$(date +%s.%N)
 case "$layout" in
   qcow2)   disk=$vm/disk.qcow2; fmt=qcow2
-           "$QIMG" create -q -f qcow2 -F raw -b "$base" ${qopts:+-o "$qopts"} "$disk" 40G 2>"$vm/prep.err" || status=prep_failed ;;
+           "${QIMG[@]}" create -q -f qcow2 -F raw -b "$base" ${qopts:+-o "$qopts"} "$disk" 40G 2>"$vm/prep.err" || status=prep_failed ;;
   reflink) disk=$vm/disk.raw; fmt=raw
            cp --reflink=always "$base" "$disk" 2>"$vm/prep.err" || status=prep_failed ;;
   *)       status=bad_layout ;;
@@ -82,7 +93,7 @@ declare -A R=(); exit_s=null; rm_s=null; killed=false; boot_s=null
 s0=$(sectors)
 if [ "$status" = ok ]; then
   # Same shape as the prod pool command line (minus network and vsock).
-  "$QEMU" -smp "$smp" -m "$mem" -nodefaults -serial stdio -kernel "$KERNEL" -append "$append" \
+  "${QEMU[@]}" -smp "$smp" -m "$mem" -nodefaults -serial stdio -kernel "$KERNEL" -append "$append" \
     "${glob[@]}" "${iot[@]}" -drive "$drive" -nographic -no-reboot -monitor none -rtc base=utc,clock=host \
     -qmp "unix:$vm/qmp.sock,server=on,wait=off" \
     -machine "microvm,accel=kvm,acpi=on,pcie=$pcie,pic=off,pit=off,rtc=on" -cpu host "${ctl[@]}" -device "$blk" \

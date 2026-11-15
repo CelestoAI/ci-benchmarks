@@ -65,7 +65,18 @@ jobs:
       - id: c
         uses: actions/cache/restore@v4
         with: { path: "~/qemu-${{ matrix.ver }}", key: "qemu-${{ matrix.ver }}-v2", lookup-only: true }
-      - if: steps.c.outputs.cache-hit != 'true'
+      - if: steps.c.outputs.cache-hit != 'true' && startsWith(matrix.ver, 'ubuntu-')
+        env:
+          VER: ${{ matrix.ver }}
+        run: |
+          # Prebuilt: Ubuntu's own QEMU package from a newer release, unpacked as a root
+          # filesystem that run-config.sh chroots into (its glibc is newer than the runner's).
+          rel=${VER#ubuntu-}; out="$HOME/qemu-$VER"; mkdir -p "$out"
+          docker run --name qrfs "ubuntu:$rel" bash -c 'apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends qemu-system-x86 qemu-utils >/dev/null'
+          docker export qrfs | tar -x -C "$out" --no-same-owner --exclude='dev/*'
+          docker rm qrfs >/dev/null
+          sudo chroot "$out" /usr/bin/qemu-system-x86_64 --version | head -1; du -sh "$out"
+      - if: steps.c.outputs.cache-hit != 'true' && !startsWith(matrix.ver, 'ubuntu-')
         env:
           VER: ${{ matrix.ver }}
         run: |
