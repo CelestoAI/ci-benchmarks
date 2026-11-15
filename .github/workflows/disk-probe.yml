@@ -3,6 +3,7 @@ name: Disk probe
 on:
   push:
     branches: [bench/disk-probe-20261114]
+    paths: [scripts/disk-probe4.sh]
 permissions:
   contents: read
 jobs:

@@ -1,0 +1,26 @@
+# One-off A/B of QEMU block settings on a GitHub-hosted runner.
+name: QEMU block A/B
+on:
+  push:
+    branches: [bench/disk-probe-20261114]
+    paths: [scripts/qemu-ab.sh, .github/workflows/qemu-ab.yml]
+permissions:
+  contents: read
+jobs:
+  ab:
+    name: qemu-ab ${{ matrix.iteration }}
+    strategy:
+      fail-fast: false
+      matrix:
+        iteration: [1, 2]
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install tools
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq qemu-utils fio jq "linux-modules-extra-$(uname -r)" >/dev/null || \
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq qemu-utils fio jq >/dev/null
+      - name: A/B
+        run: bash scripts/qemu-ab.sh
