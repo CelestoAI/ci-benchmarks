@@ -130,7 +130,7 @@ def trial(mib,profile,stage,block,role=None):
   output.unlink(missing_ok=True);receipt.unlink(missing_ok=True)
   row['completed_unix']=time.time();trials.append(row);write('trials.json',trials)
  checkpoint(stage,last_trial={k:row.get(k) for k in ['index','payload_mib','role','block','success','download_mib_s','upload_effective_mib_s','cache_total_s','reason']})
- if sum(not r['success'] for r in trials)>=5:raise RuntimeError('too_many_failed_trials')
+ if sum(not r['success'] and r['role']=='main' for r in trials)>=3:raise RuntimeError('baseline_trials_unavailable')
  return row
 
 def select_screen(mib):
@@ -190,11 +190,89 @@ def cleanup():
   helper=Path((ROOT/'helper-path').read_text());sudo('install','-m','0755',ROOT/'original-helper',helper);assert digest(helper)==digest(ROOT/'original-helper');write('cleanup.json',{'original_helper_restored':True,'sha256':digest(helper)})
  (Path(os.environ['GITHUB_WORKSPACE'])/'cache-file').unlink(missing_ok=True)
 
+def holdout_pass(candidate,base):
+ import statistics
+ if len(candidate)!=3 or len(base)!=3:return False
+ med=lambda rs:statistics.median(r['download_function_s'] for r in rs)
+ wins=sum(next(r for r in candidate if r['block']==b)['download_function_s']<next(r for r in base if r['block']==b)['download_function_s'] for b in [1,2,3])
+ return med(candidate)<=med(base)*0.95 and wins>=2
+
+def parent_profile(parent,mib):
+ entry=next(p for p in parent['policy'] if p['payload_mib']==mib)
+ if entry['profile']['mode']=='main':return MAIN
+ group=[r for r in parent['trials'] if r['stage']=='holdout' and r['payload_mib']==mib and r['success']]
+ return entry['profile'] if holdout_pass([r for r in group if r['role']=='adaptive'],[r for r in group if r['role']=='main']) else MAIN
+
+def shape_identity(mib,p):
+ size=mib*MIB+1;r,c=main_geometry(size) if p['mode']=='main' else (p['range_mib']*MIB,p['concurrency'])
+ return min(size,r),min(c,math.ceil(size/r))
+
+def refinement_profiles(mib,coarse):
+ size=mib*MIB+1;r,c=main_geometry(size) if coarse['mode']=='main' else (coarse['range_mib']*MIB,coarse['concurrency'])
+ r//=MIB
+ order=[(MAIN,'main'),(coarse,'coarse'),(shape(2,64),'r2-c64'),(shape(2,128),'r2-c128'),(shape(r,128),f'r{r}-c128'),(shape(r,256),f'r{r}-c256'),(shape(max(1,r//2),128),f'r{max(1,r//2)}-c128'),(shape(max(1,r//2),256),f'r{max(1,r//2)}-c256')]
+ seen=set();out=[]
+ for p,role in order:
+  identity=shape_identity(mib,p)
+  if identity in seen:continue
+  seen.add(identity);out.append((p,role))
+ return out
+
+def choose_refinement(mib,profiles):
+ import statistics
+ group=[r for r in trials if r['stage']=='refinement' and r['payload_mib']==mib and r['success']]
+ by={role:[r for r in group if r['role']==role] for _,role in profiles};base=by['main'];assert len(base)==2
+ med=lambda rs:statistics.median(r['download_function_s'] for r in rs)
+ winner=MAIN;best=med(base)
+ for p,role in profiles:
+  if role=='main' or len(by[role])!=2:continue
+  rs=by[role];wins=sum(next(r for r in rs if r['block']==b)['download_function_s']<next(r for r in base if r['block']==b)['download_function_s'] for b in [1,2])
+  if med(rs)<best and med(rs)<=med(base)*0.95 and wins==2:winner=p;best=med(rs)
+ return winner
+
+def refine():
+ global progress_url
+ progress_url=os.environ.pop('MATRIX_PROGRESS_PUT_URL')
+ input_url=os.environ.pop('MATRIX_PARENT_PROGRESS_URL')
+ with urllib.request.urlopen(input_url,timeout=60) as response:raw=response.read()
+ parent=json.loads(raw);assert parent['stage']=='complete' and len(parent['trials'])==362 and all(r['success'] for r in parent['trials']),'parent matrix incomplete'
+ assert os.environ.get('ACTIONS_RUNTIME_TOKEN') and os.environ.get('ACTIONS_RESULTS_URL'),'real Node action runtime missing'
+ proxy=urlsplit(os.environ['ACTIONS_RESULTS_URL']);mapped={answer[4][0] for answer in socket.getaddrinfo('celesto-cache.blob.core.windows.net',8448,type=socket.SOCK_STREAM)}
+ assert proxy.scheme=='http' and proxy.port==8448 and proxy.hostname in mapped|{'127.0.0.1','localhost','celesto-cache.blob.core.windows.net'},'real cache proxy unavailable'
+ os.chdir(os.environ['GITHUB_WORKSPACE'])
+ write('parent-progress.json',parent);write('runtime.json',{'real_cache_host_mapping_verified':True,'proxy_port':8448,'runtime_token_present':True,'parent_sha256':hashlib.sha256(raw).hexdigest()})
+ coarse={mib:parent_profile(parent,mib) for mib in SIZES};profiles={mib:refinement_profiles(mib,coarse[mib]) for mib in SIZES}
+ write('coarse-policy.json',coarse);write('refinement-profiles.json',profiles)
+ write('method.json',{'sizes_mib':SIZES,'first_download_only':True,'sequential':True,'single_vm_this_phase':True,'machine_relation':'New runner, with both main and the prior validated configuration retested on it','source_commit':'5d45dbebc1fe680355af35cb5ab9ba911b09bb51','refinement_rounds':2,'blind_rounds':3,'new_range_mib':2,'higher_concurrency':[128,256],'candidates':'Prior validated range and half that range at 128/256 requests, plus 2 MiB ranges; duplicate effective geometries removed','selection':'New profile frozen after two refinement rounds, >=5% lower median and both round wins against main','validation':'Three independent rounds against main and the prior validated profile; retain coarse unless a new candidate passes gates against both','action_pin':PIN,'parent_sha256':hashlib.sha256(raw).hexdigest(),'private_source_excluded':True})
+ checkpoint('refinement_ready',coarse_policy=coarse,profile_count=sum(len(v) for v in profiles.values()))
+ assert trial(20,MAIN,'qualification',0)['success'],'pipeline qualification failed'
+ for block in [1,2]:
+  order=[(mib,p,role) for mib in SIZES for p,role in profiles[mib]];random.Random(161640+block).shuffle(order)
+  for mib,p,role in order:trial(mib,p,'refinement',block,role)
+ policy=[];blind={}
+ for mib in SIZES:
+  winner=choose_refinement(mib,profiles[mib]);entry={'payload_mib':mib,'profile':winner,'coarse_profile':coarse[mib]};policy.append(entry)
+  seen=set();order=[]
+  for p,role in [(MAIN,'main'),(coarse[mib],'coarse'),(winner,'refined')]:
+   identity=shape_identity(mib,p)
+   if identity in seen:continue
+   seen.add(identity);order.append((p,role))
+  blind[mib]=order
+ write('policy.json',policy);write('blind-profiles.json',blind);checkpoint('refinement_complete',policy=policy)
+ for block in [1,2,3]:
+  order=[(mib,p,role) for mib in SIZES for p,role in blind[mib]];random.Random(161650+block).shuffle(order)
+  for mib,p,role in order:trial(mib,p,'blind',block,role)
+ parent_hashes={r['source_sha256'] for r in parent['trials']};new_hashes=[r['source_sha256'] for r in trials if r.get('source_sha256')]
+ assert len(set(new_hashes))==len(new_hashes) and not parent_hashes.intersection(new_hashes),'payload reused'
+ checkpoint('complete',policy=policy)
+ assert all(r['success'] for r in trials if r['role']=='main'),'baseline trial failed'
+
 if __name__=='__main__':
  try:
   if sys.argv[1]=='setup':setup()
   elif sys.argv[1]=='run':run()
   elif sys.argv[1]=='cleanup':cleanup()
+  elif sys.argv[1]=='refine':refine()
   else:raise ValueError('unsupported mode')
  except Exception as error:
   write('failure.json',{'error_type':type(error).__name__,'reason':str(error) if isinstance(error,(AssertionError,RuntimeError)) else 'owned_matrix_operation_failed'})
