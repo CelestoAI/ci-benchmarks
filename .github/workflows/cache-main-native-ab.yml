@@ -1,0 +1,84 @@
+name: Large cache download branch smoke
+on:
+  push:
+    branches: [codex/large-cache-download-validation-20261116]
+permissions:
+  contents: read
+concurrency:
+  group: large-cache-download-validation-20261116
+  cancel-in-progress: false
+jobs:
+  smoke:
+    runs-on: celesto-large
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: .harness
+      - name: Test Linux guest and build the exact branch helper
+        env:
+          MATRIX_SOURCE_URL: ${{ secrets.LARGE_DOWNLOAD_PR_SOURCE_74D09D337CDB }}
+          MATRIX_SOURCE_SHA256: e42fc17e7d216266e8afbb1ca5f9e6beac8b47bb45150be97010f59dd2bcbfc6
+          MATRIX_CANDIDATE_SHA: 12e0b5d93ab0c8d62300a6964ff4dd45f9dc3cc2
+        run: python3 .harness/scripts/large-download-smoke.py setup
+      - name: 'run1: generate'
+        run: python3 .harness/scripts/large-download-smoke.py generate 1
+      - name: 'run1: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: large-download-${{ github.run_id }}-${{ github.run_attempt }}-1
+      - name: 'run1: remove'
+        run: rm cache-file
+      - name: 'run1: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: large-download-${{ github.run_id }}-${{ github.run_attempt }}-1
+          fail-on-cache-miss: true
+      - name: 'run1: verify'
+        run: python3 .harness/scripts/large-download-smoke.py verify 1
+      - name: 'run2: generate'
+        run: python3 .harness/scripts/large-download-smoke.py generate 2
+      - name: 'run2: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: large-download-${{ github.run_id }}-${{ github.run_attempt }}-2
+      - name: 'run2: remove'
+        run: rm cache-file
+      - name: 'run2: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: large-download-${{ github.run_id }}-${{ github.run_attempt }}-2
+          fail-on-cache-miss: true
+      - name: 'run2: verify'
+        run: python3 .harness/scripts/large-download-smoke.py verify 2
+      - name: 'run3: generate'
+        run: python3 .harness/scripts/large-download-smoke.py generate 3
+      - name: 'run3: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: large-download-${{ github.run_id }}-${{ github.run_attempt }}-3
+      - name: 'run3: remove'
+        run: rm cache-file
+      - name: 'run3: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: large-download-${{ github.run_id }}-${{ github.run_attempt }}-3
+          fail-on-cache-miss: true
+      - name: 'run3: verify'
+        run: python3 .harness/scripts/large-download-smoke.py verify 3
+      - name: Restore the published helper
+        if: always()
+        run: python3 .harness/scripts/large-download-smoke.py cleanup
+      - name: Publish branch smoke receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: large-download-branch-smoke-receipts
+          path: /tmp/large-download-smoke-${{ github.run_id }}-${{ github.run_attempt }}/results
+          if-no-files-found: warn
