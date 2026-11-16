@@ -121,14 +121,18 @@ const COLUMNS = [
 ];
 // Published USD per running minute for a 4 vCPU x64 runner. Not each job's cost.
 const RATES = {
-  GitHub: '$0.0120',
-  Celesto: '$0.0013',
-  'RunsOn m8a.xlarge': '$0.0044',
-  Blacksmith: '$0.0080',
-  Namespace: '$0.0120*',
-  Ubicloud: '$0.0025',
-  WarpBuild: '$0.0080',
+  GitHub: 0.012,
+  Celesto: 0.0013,
+  'RunsOn m8a.xlarge': 0.0044,
+  Blacksmith: 0.008,
+  Namespace: 0.012,
+  Ubicloud: 0.0025,
+  WarpBuild: 0.008,
 };
+const RATE_NOTE = { Namespace: '*' }; // overage rate
+const rateText = (p) => (RATES[p] == null ? '–' : `$${RATES[p].toFixed(4)}${RATE_NOTE[p] ?? ''}`);
+// Estimated cost of one run: published rate x p50 workload minutes (not rounded up to whole minutes).
+const runCost = (p, seconds) => (RATES[p] == null || seconds == null ? '–' : `$${((RATES[p] * seconds) / 60).toFixed(4)}`);
 const p50 = {};
 for (const p of providers) {
   p50[p] = COLUMNS.map(([, suite, get]) => med(suite, p, get));
@@ -185,7 +189,7 @@ function summarySvg(theme) {
     });
     const pcx = left + COLUMNS.length * cw;
     s += `<rect x="${pcx + gap / 2}" y="${y + 6}" width="${cw - gap}" height="${rh - 12}" rx="6" class="n"/>`;
-    s += `<text x="${pcx + cw / 2}" y="${y + rh / 2 + 6}" text-anchor="middle" font-size="16" font-weight="400" ${MONO} class="t">${RATES[p] ?? '–'}</text>`;
+    s += `<text x="${pcx + cw / 2}" y="${y + rh / 2 + 6}" text-anchor="middle" font-size="16" font-weight="400" ${MONO} class="t">${rateText(p)}</text>`;
   });
   s += `<text x="16" y="${H - 8}" font-size="13" class="m">p50 times (median), lower is faster. 4 vCPU x64. Price: published USD per running minute; *Namespace overage rate.</text>`;
   return s + `</svg>\n`;
@@ -253,6 +257,14 @@ const md = [
   `- **Other providers:** [runs-on.com public benchmark data](${SOURCE}), last ${days} days. Same workloads and settings, measured by runs-on.com on their accounts.`,
   '',
   ...themed('p50 workload and queue times by provider; lower is faster', 'summary'),
+  '',
+  '## Cost per run',
+  '',
+  'Estimated cost of one run: the provider’s published price per running minute times its p50 workload time. Lower is cheaper. Billing rounding, queue time and runner overhead are not included, so real invoices differ. *Namespace is its overage rate.',
+  '',
+  `| Provider | Price / min | ${COLUMNS.slice(0, 4).map(([l]) => l).join(' | ')} |`,
+  `| --- | ---: |${COLUMNS.slice(0, 4).map(() => ' ---: |').join('')}`,
+  ...rows.map((p) => `| ${p === 'Celesto' ? '**Celesto**' : p} | ${rateText(p)} | ${p50[p].slice(0, 4).map((x) => runCost(p, x)).join(' | ')} |`),
   '',
 ];
 

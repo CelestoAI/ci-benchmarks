@@ -13,6 +13,20 @@ RunsOn’s [public dashboard](https://runs-on.com/benchmarks/runners/) lets read
 ![p50 workload and queue times by provider; lower is faster](summary-light.svg#gh-light-mode-only)
 ![p50 workload and queue times by provider; lower is faster](summary-dark.svg#gh-dark-mode-only)
 
+## Cost per run
+
+Estimated cost of one run: the provider’s published price per running minute times its p50 workload time. Lower is cheaper. Billing rounding, queue time and runner overhead are not included, so real invoices differ. *Namespace is its overage rate.
+
+| Provider | Price / min | Rust | Node | Docker | Cache |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| GitHub | $0.0120 | $0.0436 | $0.0208 | $0.1562 | $0.0148 |
+| **Celesto** | $0.0013 | $0.0039 | $0.0017 | $0.0117 | $0.0005 |
+| Blacksmith | $0.0080 | $0.0146 | $0.0105 | $0.0422 | $0.0024 |
+| Namespace | $0.0120* | $0.0190 | $0.0090 | $0.0568 | $0.0076 |
+| RunsOn m8a.xlarge | $0.0044 | $0.0079 | $0.0046 | $0.0396 | $0.0024 |
+| Ubicloud | $0.0025 | $0.0063 | $0.0040 | $0.0300 | $0.0051 |
+| WarpBuild | $0.0080 | $0.0184 | $0.0097 | $0.0595 | $0.0053 |
+
 ## Rust
 
 Build and test spotify-player.
