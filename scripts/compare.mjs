@@ -122,7 +122,7 @@ const COLUMNS = [
 // Published USD per running minute for a 4 vCPU x64 runner. Not each job's cost.
 const RATES = {
   GitHub: 0.012,
-  Celesto: 0.0013,
+  Celesto: 0.00133333, // $0.08 per hour; shown as $0.0013
   'RunsOn m8a.xlarge': 0.0044,
   Blacksmith: 0.008,
   Namespace: 0.012,
@@ -183,7 +183,7 @@ function summarySvg(theme) {
   const W = 1000, left = 175, top = 90, rh = 52, gap = 8, pad = 50;
   const cols = COLUMNS.length + 2; // suites, price per minute, cost per run
   const cw = (W - left - pad) / cols;
-  const H = top + rows.length * rh + 80;
+  const H = top + rows.length * rh + 96;
   let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" ${FONT}>`;
   s += `<rect width="${W}" height="${H}" fill="${c.bg}"/>`;
   // Column headers.
@@ -210,7 +210,8 @@ function summarySvg(theme) {
       s += `<text x="${cx + cw / 2}" y="${y + rh / 2 + 6}" text-anchor="middle" font-size="${last ? 18 : 17}" font-weight="${last ? 700 : 400}" ${MONO} fill="${color}">${text}</text>`;
     });
   });
-  s += `<text x="${pad}" y="${H - 28}" font-size="11" fill="${c.muted}">4 vCPU Linux x64, list prices (Namespace overage). Cost per run = (Rust + Node + Docker time) × price per minute. Excludes free minutes and credits.</text>`;
+  s += `<text x="${pad}" y="${H - 28}" font-size="11" fill="${c.muted}">4 vCPU Linux x64, list prices: Namespace at its overage rate, RunsOn at the on-demand rate.</text>`;
+  s += `<text x="${pad}" y="${H - 14}" font-size="11" fill="${c.muted}">Cost per run = (Rust + Node + Docker time) × price per minute. Excludes free minutes and credits.</text>`;
   return s + `</svg>\n`;
 }
 
@@ -279,7 +280,7 @@ const md = [
   '',
   '## Cost per run',
   '',
-  'Estimated cost of one run: the provider’s published price per running minute times its p50 workload time. Lower is cheaper. Billing rounding, queue time and runner overhead are not included, so real invoices differ. *Namespace is its overage rate.',
+  'Estimated cost of one run: the provider’s published price per running minute times its p50 workload time. Lower is cheaper. Billing rounding, queue time and runner overhead are not included, so real invoices differ. *Namespace is its overage rate. RunsOn is its on-demand rate; its benchmark jobs mostly run on cheaper spot instances.',
   '',
   `| Provider | Price / min | ${COLUMNS.slice(0, 4).map(([l]) => l).join(' | ')} |`,
   `| --- | ---: |${COLUMNS.slice(0, 4).map(() => ' ---: |').join('')}`,
