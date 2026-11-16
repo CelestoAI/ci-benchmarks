@@ -25,7 +25,6 @@
       "phase": "warm",
       "sample": 1,
       "provider": "celesto-large",
-      "host_provider": "ovh",
       "cpu_model": "AMD EPYC-Milan Processor",
       "cache_hit": true,
       "restore_ms": 5621
@@ -35,7 +34,6 @@
       "phase": "warm",
       "sample": 2,
       "provider": "celesto-large",
-      "host_provider": "aws",
       "cpu_model": "Intel(R) Xeon(R) 6975P-C",
       "cache_hit": true,
       "restore_ms": 2490
@@ -45,7 +43,6 @@
       "phase": "warm",
       "sample": 3,
       "provider": "celesto-large",
-      "host_provider": "ovh",
       "cpu_model": "AMD EPYC-Milan Processor",
       "cache_hit": true,
       "restore_ms": 5576
@@ -55,7 +52,6 @@
       "phase": "warm",
       "sample": 4,
       "provider": "celesto-large",
-      "host_provider": "ovh",
       "cpu_model": "AMD EPYC-Milan Processor",
       "cache_hit": true,
       "restore_ms": 4979
@@ -65,7 +61,6 @@
       "phase": "warm",
       "sample": 5,
       "provider": "celesto-large",
-      "host_provider": "ovh",
       "cpu_model": "AMD EPYC-Milan Processor",
       "cache_hit": true,
       "restore_ms": 5333
@@ -75,7 +70,6 @@
       "phase": "warm",
       "sample": 1,
       "provider": "github-hosted",
-      "host_provider": null,
       "cpu_model": "AMD EPYC 9V74 80-Core Processor",
       "cache_hit": true,
       "restore_ms": 5635
@@ -85,7 +79,6 @@
       "phase": "warm",
       "sample": 2,
       "provider": "github-hosted",
-      "host_provider": null,
       "cpu_model": "AMD EPYC 7763 64-Core Processor",
       "cache_hit": true,
       "restore_ms": 6965
@@ -95,7 +88,6 @@
       "phase": "warm",
       "sample": 3,
       "provider": "github-hosted",
-      "host_provider": null,
       "cpu_model": "AMD EPYC 9V74 80-Core Processor",
       "cache_hit": true,
       "restore_ms": 3049
@@ -105,7 +97,6 @@
       "phase": "warm",
       "sample": 4,
       "provider": "github-hosted",
-      "host_provider": null,
       "cpu_model": "AMD EPYC 7763 64-Core Processor",
       "cache_hit": true,
       "restore_ms": 3377
@@ -115,7 +106,6 @@
       "phase": "warm",
       "sample": 5,
       "provider": "github-hosted",
-      "host_provider": null,
       "cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
       "cache_hit": true,
       "restore_ms": 3930

@@ -51,7 +51,7 @@ Server:
  ID: dc198c79-5940-4b18-9828-6ae09e786024
  Docker Root Dir: /home/runner/setup-docker-action/run-bb27b52d/data
  Debug Mode: false
- Username: aniketmaurya
+ Username: [redacted]
  Experimental: false
  Insecure Registries:
   ::1/128
