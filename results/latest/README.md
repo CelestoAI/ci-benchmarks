@@ -15,7 +15,7 @@ RunsOn’s [public dashboard](https://runs-on.com/benchmarks/runners/) lets read
 
 ## Cost per run
 
-Estimated cost of one run: the provider’s published price per running minute times its p50 workload time. Lower is cheaper. Billing rounding, queue time and runner overhead are not included, so real invoices differ. *Namespace is its overage rate.
+Estimated cost of one run: the provider’s published price per running minute times its p50 workload time. Lower is cheaper. Billing rounding, queue time and runner overhead are not included, so real invoices differ. *Namespace is its overage rate. RunsOn is its on-demand rate; its benchmark jobs mostly run on cheaper spot instances.
 
 | Provider | Price / min | Rust | Node | Docker | Cache |
 | --- | ---: | ---: | ---: | ---: | ---: |
