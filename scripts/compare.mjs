@@ -180,34 +180,19 @@ const SUMMARY = {
 
 function summarySvg(theme) {
   const c = SUMMARY[theme];
-  const W = 1000, left = 175, top = 150, rh = 52, gap = 8, pad = 50;
+  const W = 1000, left = 175, top = 90, rh = 52, gap = 8, pad = 50;
   const cols = COLUMNS.length + 2; // suites, price per minute, cost per run
   const cw = (W - left - pad) / cols;
   const H = top + rows.length * rh + 80;
-  const gh = costPerRun('GitHub'), me = costPerRun('Celesto');
-  const saving = gh && me ? Math.round((1 - me / gh) * 100) : null;
-  const ghTime = [0, 1, 2].reduce((a, i) => a + (p50.GitHub?.[i] ?? 0), 0);
-  const meTime = [0, 1, 2].reduce((a, i) => a + (p50.Celesto?.[i] ?? 0), 0);
-  const faster = ghTime && meTime && meTime < ghTime;
   let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" ${FONT}>`;
   s += `<rect width="${W}" height="${H}" fill="${c.bg}"/>`;
-  // Headline.
-  const head = faster ? 'Faster than GitHub.' : 'Compared with GitHub.';
-  s += `<text x="${pad}" y="76" font-size="40" font-weight="700" letter-spacing="-1" fill="${c.text}">${head}</text>`;
-  if (saving != null && saving > 0) {
-    const hx = pad + head.length * 18.1 + 10;
-    const label = `${saving}% cheaper per run.`;
-    const lw = label.length * 19 + 24;
-    s += `<rect x="${hx}" y="36" width="${lw}" height="52" rx="6" fill="${ORANGE}"/>`;
-    s += `<text x="${hx + 12}" y="76" font-size="40" font-weight="700" letter-spacing="-1" fill="#ffffff">${label}</text>`;
-  }
   // Column headers.
   const sub = { Rust: 'spotify-player', Node: 'opencode', Docker: 'PostHog image', Cache: '4 GiB', Queue: '15 jobs at once' };
   const heads = [...COLUMNS.map(([label]) => [label, sub[label]]), ['Price / min', 'USD'], ['Cost per run', 'Rust + Node + Docker']];
   heads.forEach(([label, subtitle], i) => {
     const cx = left + i * cw + cw / 2;
-    s += `<text x="${cx}" y="116" text-anchor="middle" font-size="16" font-weight="600" fill="${c.text}">${label}</text>`;
-    s += `<text x="${cx}" y="135" text-anchor="middle" font-size="11" fill="${c.muted}">${subtitle}</text>`;
+    s += `<text x="${cx}" y="56" text-anchor="middle" font-size="16" font-weight="600" fill="${c.text}">${label}</text>`;
+    s += `<text x="${cx}" y="75" text-anchor="middle" font-size="11" fill="${c.muted}">${subtitle}</text>`;
   });
   // Rows.
   rows.forEach((p, j) => {
