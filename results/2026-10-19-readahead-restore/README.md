@@ -18,18 +18,18 @@ GitHub restored 1.36× faster, down from 1.89× on October 17. Celesto's median 
 
 ## Per-job evidence
 
-| Provider | Sample | CPU | Restore s | Job |
-| --- | ---: | --- | ---: | --- |
-| celesto-large | 1 | AMD EPYC-Milan Processor | 5.621 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118181010558) |
-| github-hosted | 1 | AMD EPYC 9V74 80-Core Processor | 5.635 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118181010382) |
-| celesto-large | 2 | Intel(R) Xeon(R) 6975P-C | 2.490 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118181754941) |
-| github-hosted | 2 | AMD EPYC 7763 64-Core Processor | 6.965 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118181562156) |
-| celesto-large | 3 | AMD EPYC-Milan Processor | 5.576 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118182421858) |
-| github-hosted | 3 | AMD EPYC 9V74 80-Core Processor | 3.049 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118182019838) |
-| celesto-large | 4 | AMD EPYC-Milan Processor | 4.979 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118183182439) |
-| github-hosted | 4 | AMD EPYC 7763 64-Core Processor | 3.377 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118182847042) |
-| celesto-large | 5 | AMD EPYC-Milan Processor | 5.333 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118183775576) |
-| github-hosted | 5 | Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz | 3.930 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118183252497) |
+| Provider | Sample | Restore s | Job |
+| --- | ---: | ---: | --- |
+| celesto-large | 1 | 5.621 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118181010558) |
+| github-hosted | 1 | 5.635 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118181010382) |
+| celesto-large | 2 | 2.490 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118181754941) |
+| github-hosted | 2 | 6.965 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118181562156) |
+| celesto-large | 3 | 5.576 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118182421858) |
+| github-hosted | 3 | 3.049 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118182019838) |
+| celesto-large | 4 | 4.979 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118183182439) |
+| github-hosted | 4 | 3.377 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118182847042) |
+| celesto-large | 5 | 5.333 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118183775576) |
+| github-hosted | 5 | 3.930 | [logs](https://github.com/CelestoAI/ci-benchmarks/actions/runs/39287129433/job/118183252497) |
 
 Raw values: [restore.json](restore.json).
 
