@@ -6,7 +6,7 @@ MIB=1048576
 SIZES=[20,24,32,64,96,400,1024,2048,3072,4096]
 RANGES=[1,4,8,16,32,64]
 PIN='55cc8345863c7cc4c66a329aec7e433d2d1c52a9'
-ROOT=Path('/tmp/cache-concurrency-paired-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHUB_RUN_ATTEMPT'])
+ROOT=Path('/tmp/cache-proxy-r2-timing-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHUB_RUN_ATTEMPT'])
 RESULTS=ROOT/'results'
 trials=[]
 progress_url=None
@@ -54,6 +54,9 @@ def setup():
    with urllib.request.urlopen('https://sh.rustup.rs',timeout=90) as response:(ROOT/'rustup-init.sh').write_bytes(response.read())
    subprocess.run(['sh',str(ROOT/'rustup-init.sh'),'-y','--profile','minimal','--no-modify-path'],check=True,stdout=log,stderr=subprocess.STDOUT)
   subprocess.run(['rustup','target','add','x86_64-unknown-linux-musl'],check=True,stdout=log,stderr=subprocess.STDOUT)
+  with open(ROOT/'linux-tests.private.log','w') as tests:
+   subprocess.run(['cargo','test','--locked','--manifest-path',str(source/'guest/Cargo.toml'),'--test','ci_cache_proxy','download::'],check=True,env={**os.environ,'RUST_LOG':'info'},stdout=tests,stderr=subprocess.STDOUT)
+  write('linux-tests.json',{'passed':True,'command':'cargo test --locked --test ci_cache_proxy download::','summary':[line for line in (ROOT/'linux-tests.private.log').read_text().splitlines() if line.startswith('test result:')]})
   subprocess.run(['cargo','build','--locked','--release','--target','x86_64-unknown-linux-musl','--manifest-path',str(source/'guest/Cargo.toml'),'--bin','celesto-ci-cache-proxy'],check=True,stdout=log,stderr=subprocess.STDOUT)
   subprocess.run(['sudo','-n','docker','run','--rm','-v',str(source/'prep')+':/src','-w','/src','mcr.microsoft.com/dotnet/sdk:8.0','dotnet','build','Prepare.csproj','-o','/src/build','-v','quiet'],check=True,stdout=log,stderr=subprocess.STDOUT)
  binary=source/'guest/target/x86_64-unknown-linux-musl/release/celesto-ci-cache-proxy'
@@ -65,9 +68,10 @@ def setup():
   command=['sudo','-n','docker','run','--rm','--network','none','-v',str(source/'prep')+':/prep','-v',str(folder)+':/action','mcr.microsoft.com/dotnet/sdk:8.0','dotnet','/prep/build/Prepare.dll','/action/index.js','/action/matrix-prepared.js']
   r=subprocess.run(command,capture_output=True,text=True);assert r.returncode==0,'action preparation failed'
   proof=json.loads(r.stdout.strip().splitlines()[-1]);assert proof['prepared'],'official action not recognized';preparations.append({'action':action,**proof})
- write('build.json',{'binary_sha256':digest(binary),'rustc':subprocess.check_output(['rustc','--version'],text=True).strip(),'lock_sha256':digest(source/'guest/Cargo.lock'),'writer_batch_bytes':262144,'action_pin':PIN,'preparations':preparations,'range_overrides':'explicit bytes; no cap-induced duplicate geometries','geometry_receipt':True,'released_commit':'e81b6a77ec58853556c40eda528c9b4715852bba','instrumented_module_sha256':digest(source/'guest/src/cache_download.rs'),'full_locked_guest_crate':True})
+ write('build.json',{'binary_sha256':digest(binary),'rustc':subprocess.check_output(['rustc','--version'],text=True).strip(),'lock_sha256':digest(source/'guest/Cargo.lock'),'writer_batch_bytes':262144,'action_pin':PIN,'preparations':preparations,'range_overrides':False,'concurrency_override':'32 or64; adaptive range formula unchanged','geometry_receipt':True,'released_commit':'e81b6a77ec58853556c40eda528c9b4715852bba','instrumented_module_sha256':digest(source/'guest/src/cache_download.rs'),'full_locked_guest_crate':True})
  sudo('install','-m','0755',binary,helper)
- print('Built the full released guest crate with a 32/64 knob and diagnostics; real proxy and exact action preparation retained.')
+ subprocess.run(['python3',str(Path(os.environ['GITHUB_WORKSPACE'])/'.harness/scripts/qualify-proxy-r2-timing.py'),str(ROOT)],check=True)
+ print('Full locked guest built; focused Linux contracts and controlled per-hop timing qualification passed.')
 
 def snapshot():
  result={};missing=[]
@@ -103,7 +107,7 @@ def timing(log,phase):
  return None
 
 def trial(concurrency,pair,position):
- index=len(trials)+1;key=f'paired-concurrency-{os.environ["GITHUB_RUN_ID"]}-{os.environ["GITHUB_RUN_ATTEMPT"]}-{index}'
+ index=len(trials)+1;key=f'proxy-r2-paired-{os.environ["GITHUB_RUN_ID"]}-{os.environ["GITHUB_RUN_ATTEMPT"]}-{index}'
  row={'index':index,'pair':pair,'position':position,'concurrency':concurrency,'key':key,'success':False,'started_unix':time.time()}
  output=Path(os.environ['GITHUB_WORKSPACE'])/'cache-file';receipt=RESULTS/f'native-{index}.json';save_log=RESULTS/f'{index}-save.log';restore_log=RESULTS/f'{index}-restore.log'
  try:
@@ -125,7 +129,20 @@ def trial(concurrency,pair,position):
   row['restore_s'],row['restore_resources']=run_action('restore',env,restore_log,f'system-{index}.json');row['after_restore']=snapshot()
   save=save_log.read_text();restore=restore_log.read_text()
   assert receipt.exists() and 'Celesto cache native download:' in restore and 'native unavailable' not in restore,'native path not used'
-  native=json.loads(receipt.read_text());assert native['bytes']>=4096*MIB and native['range_bytes']==16*MIB and native['concurrency']==concurrency,'geometry mismatch'
+  native=json.loads(receipt.read_text())
+  proxy_dir=Path(json.loads((RESULTS/'proxy-setup.json').read_text())['trace_dir']);proxy_ranges=[];joined=[]
+  for request in native['requests']:
+   trace_path=proxy_dir/('range-'+request['id']+'.json');deadline=time.monotonic()+3
+   while not trace_path.exists() and time.monotonic()<deadline:time.sleep(.01)
+   assert trace_path.is_file(),'Proxy timing missing: live instrumented proxy not reached'
+   trace=json.loads(trace_path.read_text());assert trace['id']==request['id'] and (trace['range_start'],trace['range_end'])==(request['start'],request['end'])
+   if request['error'] is None:assert trace['body']['bytes']==request['end']-request['start']+1,'Proxy body trace incomplete'
+   proxy_ranges.append(trace)
+   joined.append({'id':request['id'],'native_s':request['seconds'],'proxy_s':trace['total_ns']/1e9,'dispatch_to_handler_s':(trace['begin_mono_ns']-request['begin_mono_ns'])/1e9,'r2_headers_s':sum(x['headers_wait_ns'] for x in trace['upstream_requests'])/1e9,'link_lock_s':trace.get('link_lock_wait_ns',0)/1e9,'refresh_s':trace.get('refresh_ns',0)/1e9,'r2_body_pending_s':trace['body']['pending_wait_ns']/1e9,'max_r2_body_pending_s':trace['body']['max_pending_wait_ns']/1e9,'consumer_gap_s':trace['body']['consumer_gap_ns']/1e9,'max_consumer_gap_s':trace['body']['max_consumer_gap_ns']/1e9,'client_write_s':request['write_ns']/1e9,'max_client_write_s':request['max_write_ns']/1e9})
+  write(f'proxy-{index}.json',{'ranges':proxy_ranges,'joined':joined})
+  row['proxy_summary']={'range_receipts':len(proxy_ranges),'r2_attempts':sum(len(t['upstream_requests']) for t in proxy_ranges),'refresh_count':sum(t.get('refresh_count',0) for t in proxy_ranges),'max_r2_headers_s':max(j['r2_headers_s'] for j in joined),'max_r2_body_pending_s':max(j['max_r2_body_pending_s'] for j in joined),'max_consumer_gap_s':max(j['max_consumer_gap_s'] for j in joined),'max_link_lock_s':max(j['link_lock_s'] for j in joined)}
+  row['slow_ranges']=sorted(joined,key=lambda x:x['native_s'],reverse=True)[:5]
+  assert native['bytes']>=4096*MIB and native['range_bytes']==16*MIB and native['concurrency']==concurrency,'geometry mismatch'
   assert native['peak_active']==concurrency,'requested concurrency not reached'
   rates=re.findall(r'Sent [0-9]+ of [0-9]+ \(100\.0%\), ([0-9.]+) MBs/sec',save)
   row.update(archive_bytes=native['bytes'],native_s=native['seconds'],download_mib_s=native['bytes']/MIB/native['seconds'],range_bytes=native['range_bytes'],peak_active=native['peak_active'],recovery_used=native['recovery_used'],download_function_s=timing(restore,'download_total'),upload_function_s=timing(save,'upload_total'),upload_mib_s=float(rates[-1]) if rates else None,archive_create_s=timing(save,'archive_create'),archive_extract_s=timing(restore,'archive_extract'),cache_total_s=row['save_s']+row['restore_s'],native_fallback=False,diagnostics={k:v for k,v in native.items() if k!='requests'})
@@ -148,13 +165,26 @@ def run():
  assert proxy.scheme=='http' and proxy.port==8448 and proxy.hostname in mapped|{'127.0.0.1','localhost','celesto-cache.blob.core.windows.net'},'real cache proxy unavailable'
  write('runtime.json',{'real_cache_host_mapping_verified':True,'proxy_port':proxy.port,'runtime_token_present':True,'node':os.environ['MATRIX_NODE']})
  os.chdir(os.environ['GITHUB_WORKSPACE'])
- write('method.json',{'released_commit':'e81b6a77ec58853556c40eda528c9b4715852bba','pairs':10,'trials':20,'payload_mib':4096,'concurrency':[32,64],'range_mib':16,'writer_batch_bytes':262144,'order':'32,64 on odd pairs; 64,32 on even pairs. Fixed before measurement.','first_download_only':True,'unique_random_payload_and_cache_key_per_trial':True,'same_vm_same_helper_binary':True,'action_pin':PIN,'proxy':'actual released CI proxy, real backend metadata, real R2','upload':'same pinned official save bundle, exact released C# preparation, default adaptive upload','between_trial_sync':True,'sync_between_upload_and_restore':False,'hash_verification':'full SHA-256 source vs restored payload for every trial','limits':['Only concurrency changes; one instrumented released helper is used for both values. Diagnostic timing overhead is shared.','New cache object on every restore; no repeat reads. The VM and proxy process remain alive across trials, so this does not reproduce a fresh VM for each configuration.','sync runs before generating each new payload, outside measured phases, to reduce dirty writeback carryover.','Header/body wait sums overlap across requests and include runtime scheduling; they are not pure wire latency. Write sums can also overlap across runtime threads.','Shared physical host load and R2 internal state remain unobservable/uncontrolled.']})
+ subprocess.run(['sudo','-n','python3',str(Path(os.environ['GITHUB_WORKSPACE'])/'.harness/scripts/manage-cache-proxy-timing.py'),'start',str(ROOT)],check=True)
+ write('method.json',{'released_commit':'e81b6a77ec58853556c40eda528c9b4715852bba','pairs':10,'trials':20,'payload_mib':4096,'concurrency':[32,64],'range_mib':16,'writer_batch_bytes':262144,'order':'32,64 on odd pairs; 64,32 on even pairs. Fixed before measurement.','first_download_only':True,'unique_random_payload_and_cache_key_per_trial':True,'same_vm_same_helper_binary':True,'same_instrumented_proxy_for_all_trials':True,'proxy_restarted_once_before_measurement':True,'timing_receipts_in_tmpfs':True,'correlation':'helper and proxy share request IDs and Linux CLOCK_MONOTONIC timestamps','action_pin':PIN,'proxy':'instrumented released CI proxy, original startup arguments/environment, real backend metadata and R2','upload':'same pinned official save bundle, exact released C# preparation, default adaptive upload','between_trial_sync':True,'sync_between_upload_and_restore':False,'hash_verification':'full SHA-256 source vs restored payload for every trial','limits':['Only concurrency changes; one instrumented released helper is used for both values. Diagnostic timing overhead is shared.','New cache object on every restore; no repeat reads. The VM and proxy process remain alive across trials, so this does not reproduce a fresh VM for each configuration.','sync runs before generating each new payload, outside measured phases, to reduce dirty writeback carryover.','Header/body wait sums overlap across requests and include runtime scheduling; they are not pure wire latency. Write sums can also overlap across runtime threads.','Shared physical host load and R2 internal state remain unobservable/uncontrolled.','Upstream Pending time includes readiness scheduling; consumer gaps include downstream backpressure and scheduling.100ms proxy heartbeat helps identify broad runtime stalls.','Header wait includes client pooling, DNS/connect/TLS and R2 first-response latency; it does not isolate those lower-level components.']})
  for pair in range(1,11):
   for position,concurrency in enumerate([32,64] if pair%2 else [64,32],1):trial(concurrency,pair,position)
  assert len(trials)==20 and len({r['source_sha256'] for r in trials})==20 and len({r['key'] for r in trials})==20
  checkpoint('complete')
 
 def cleanup():
+ manager=Path(os.environ['GITHUB_WORKSPACE'])/'.harness/scripts/manage-cache-proxy-timing.py'
+ subprocess.run(['sudo','-n','python3',str(manager),'restore',str(ROOT)],check=True)
+ if (RESULTS/'proxy-setup.json').exists():
+  trace_dir=Path(json.loads((RESULTS/'proxy-setup.json').read_text())['trace_dir'])
+  if (trace_dir/'runtime-lag.jsonl').exists():shutil.copy2(trace_dir/'runtime-lag.jsonl',RESULTS/'proxy-runtime-lag.jsonl')
+  known=set()
+  for file in RESULTS.glob('proxy-[0-9]*.json'):
+   known.update(t['id'] for t in json.loads(file.read_text())['ranges'])
+  orphan=RESULTS/'unjoined-ranges'
+  for file in trace_dir.glob('range-*.json'):
+   if file.stem.removeprefix('range-') not in known:orphan.mkdir(exist_ok=True);shutil.copy2(file,orphan/file.name)
+  write('proxy-coverage.json',{'joined_range_receipts':len(known),'total_range_receipts':len(list(trace_dir.glob('range-*.json'))),'unjoined':len(list(orphan.glob('*.json'))) if orphan.exists() else 0})
  if (ROOT/'helper-path').exists() and (ROOT/'original-helper').exists():
   helper=Path((ROOT/'helper-path').read_text());sudo('install','-m','0755',ROOT/'original-helper',helper);assert digest(helper)==digest(ROOT/'original-helper');write('cleanup.json',{'original_helper_restored':True,'sha256':digest(helper)})
  (Path(os.environ['GITHUB_WORKSPACE'])/'cache-file').unlink(missing_ok=True)

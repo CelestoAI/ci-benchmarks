@@ -1,11 +1,11 @@
-name: Paired 32 vs 64 first downloads
+name: Proxy to R2 timed first downloads
 on:
   push:
-    branches: [codex/cache-concurrency-paired-20261117]
+    branches: [codex/cache-proxy-r2-timing-20261117]
 permissions:
   contents: read
 concurrency:
-  group: cache-concurrency-paired-20261117
+  group: cache-proxy-r2-timing-20261117
   cancel-in-progress: false
 jobs:
   benchmark:
@@ -17,13 +17,13 @@ jobs:
           path: .harness
       - name: Build instrumented released helper
         env:
-          MATRIX_SOURCE_URL: ${{ secrets.CACHE_CONCURRENCY_PAIRED_SOURCE_20261117 }}
-          MATRIX_SOURCE_SHA256: 8e07f3db1fa04faf461405b67f11674c02ab412accc6a8d432b7e73e0f84d545
+          MATRIX_SOURCE_URL: ${{ secrets.PROXY_R2_TIMING_SOURCE_20261117 }}
+          MATRIX_SOURCE_SHA256: 9ba9a751f99fb021a2572604541aec45b59ef60f6379aebe5427bff9292e4356
         run: python3 .harness/scripts/cache-concurrency-paired.py setup
       - name: Run ten alternating first-download pairs
         uses: ./.harness/.github/actions/cache-concurrency-paired
         env:
-          MATRIX_PROGRESS_PUT_URL: ${{ secrets.CACHE_CONCURRENCY_PAIRED_PROGRESS_20261117 }}
+          MATRIX_PROGRESS_PUT_URL: ${{ secrets.PROXY_R2_TIMING_PROGRESS_20261117 }}
       - name: Restore published helper
         if: always()
         run: python3 .harness/scripts/cache-concurrency-paired.py cleanup
@@ -31,6 +31,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cache-concurrency-paired-receipts
-          path: /tmp/cache-concurrency-paired-${{ github.run_id }}-${{ github.run_attempt }}/results
+          name: cache-proxy-r2-timing-receipts
+          path: /tmp/cache-proxy-r2-timing-${{ github.run_id }}-${{ github.run_attempt }}/results
           if-no-files-found: warn
