@@ -20,7 +20,7 @@ Estimated cost of one run: the provider’s published price per running minute t
 | Provider | Price / min | Rust | Node | Docker | Cache |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | GitHub | $0.0120 | $0.0436 | $0.0208 | $0.1562 | $0.0148 |
-| **Celesto** | $0.0013 | $0.0039 | $0.0017 | $0.0117 | $0.0005 |
+| **Celesto** | $0.0013 | $0.0040 | $0.0018 | $0.0120 | $0.0006 |
 | Blacksmith | $0.0080 | $0.0146 | $0.0105 | $0.0422 | $0.0024 |
 | Namespace | $0.0120* | $0.0190 | $0.0090 | $0.0568 | $0.0076 |
 | RunsOn m8a.xlarge | $0.0044 | $0.0079 | $0.0046 | $0.0396 | $0.0024 |
