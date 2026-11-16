@@ -18,7 +18,7 @@ Revision: e28d207d03baffc37ce90c5d3399bac638484d16. Cache payload: 512 MiB crypt
 
 Celesto single-core throughput was 17.9% higher on the cold sample and 31.2% higher on the warm sample. GitHub's four-core total throughput exceeded Celesto Micro's one-core total throughput. The 512 MiB cache hit restore took 2.96 times as long on Celesto; its cache save took 2.13 times as long.
 
-Celesto's total durations include queue/provisioning and runner reassignment: the runner initially created for the cold run served another eligible job, its replacement served an older defective benchmark, and the next benchmark's runner served the corrected cold run. The warm run then received replacement capacity. Do not attribute these total durations to CPU execution.
+Celesto's total durations include queue and runner provisioning time. Do not attribute these total durations to CPU execution.
 
 These are one cold and one warm sample per provider, not medians or a general performance conclusion. CPU is a short synthetic JavaScript integer workload. Cache boundaries include action overhead, compression and extraction. This incompressible synthetic cache differs from the blog's dependency workload. Matching cache keys use separate provider cache stores; both cold misses and warm hits were verified.
 

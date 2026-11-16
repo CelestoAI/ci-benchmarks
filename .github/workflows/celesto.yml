@@ -37,9 +37,8 @@ jobs:
           python3 - <<'PY'
           import base64, json, os, urllib.request, urllib.parse, urllib.error
           username, token = os.environ['DOCKERHUB_USERNAME'], os.environ['DOCKERHUB_TOKEN']
-          print(json.dumps({'username_matches_expected_account':username=='aniketmaurya',
-                            'token_character_count':len(token), 'token_has_surrounding_whitespace':token!=token.strip()}))
-          assert username == 'aniketmaurya' and token and token == token.strip()
+          print(json.dumps({'token_character_count':len(token), 'token_has_surrounding_whitespace':token!=token.strip()}))
+          assert username and token and token == token.strip()
           query = urllib.parse.urlencode({'service':'registry.docker.io','scope':'repository:library/python:pull','account':username})
           request = urllib.request.Request('https://auth.docker.io/token?'+query,
               headers={'Authorization':'Basic '+base64.b64encode((username+':'+token).encode()).decode()})

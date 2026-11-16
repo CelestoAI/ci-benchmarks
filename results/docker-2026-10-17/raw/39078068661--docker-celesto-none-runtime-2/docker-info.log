@@ -53,7 +53,7 @@ Server:
  ID: dd93683e-ac09-45a5-a8f8-03ad9eaf10a3
  Docker Root Dir: /var/lib/docker
  Debug Mode: false
- Username: aniketmaurya
+ Username: [redacted]
  Experimental: false
  Insecure Registries:
   ::1/128
