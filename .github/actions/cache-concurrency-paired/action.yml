@@ -1,0 +1,5 @@
+name: Paired first-download benchmark
+description: Sequential 32 vs 64 comparison on one VM
+runs:
+  using: node24
+  main: index.js
