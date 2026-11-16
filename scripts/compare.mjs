@@ -122,7 +122,7 @@ const COLUMNS = [
 // Published USD per running minute for a 4 vCPU x64 runner. Not each job's cost.
 const RATES = {
   GitHub: 0.012,
-  Celesto: 0.0013,
+  Celesto: 0.00133333, // $0.08 per hour; shown as $0.0013
   'RunsOn m8a.xlarge': 0.0044,
   Blacksmith: 0.008,
   Namespace: 0.012,
