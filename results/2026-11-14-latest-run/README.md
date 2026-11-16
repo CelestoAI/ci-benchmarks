@@ -16,7 +16,7 @@ RunsOn’s current cache bug window and obsolete Node typecheck samples are excl
 | Provider | Rust | Node | Docker | Cache save + restore | Burst queue p50 | Rate per minute |
 |---|---:|---:|---:|---:|---:|---:|
 | GitHub | 3m 35s | 1m 38s | 12m 59s | 1m 20s | 3s | $0.0120 |
-| Celesto | 2m 54s | 1m 19s | 9m 14s† | 41s | 15s | $0.00133333 |
+| Celesto | 2m 54s | 1m 19s | 9m 14s† | 41s | 15s | $0.0013 |
 | Blacksmith | 2m 02s | 50s | 5m 52s | 17s | 11s | $0.0080 |
 | Namespace | 1m 31s | 44s | 4m 38s | 47s | 9s | $0.0120* |
 | RunsOn | 1m 48s | 1m 03s | 9m 00s | 33s | 17s | $0.0044 on-demand |
@@ -31,7 +31,7 @@ The burst p50 is computed over 15 jobs in that provider’s linked burst run. Ot
 
 | Provider | Published rate used | Source/method |
 |---|---:|---|
-| Celesto Large | $0.00133333/min | Large CI runner, 4 vCPU / 16 GB, on [Celesto CI pricing](https://celesto.ai/ci). |
+| Celesto Large | $0.0013/min | Large CI runner, 4 vCPU / 16 GB, on [Celesto CI pricing](https://celesto.ai/ci). |
 | GitHub | $0.0120/min | 4 vCPU / 16 GB x64 on the [RunsOn provider price list](https://runs-on.com/benchmarks/?by=cost). |
 | Blacksmith | $0.0080/min | 4 vCPU / 16 GB x64 on the RunsOn provider price list. |
 | Namespace | $0.0120/min* | 4 vCPU x64 overage rate on the RunsOn provider price list. |
@@ -39,7 +39,7 @@ The burst p50 is computed over 15 jobs in that provider’s linked burst run. Ot
 | Ubicloud | $0.0025/min | 4 vCPU / 16 GB x64 on the RunsOn provider price list. |
 | WarpBuild | $0.0080/min | 4 vCPU / 16 GB x64 on the RunsOn provider price list. |
 
-The m8a.xlarge-specific on-demand rate is `$0.0044/min`; `$0.0037/min` is RunsOn’s generic 4-vCPU x64 provider rate, not the price for this runner. Celesto Large is `$0.00133333/min` (equivalent to `$0.08/hour`). `*` Namespace is priced at its overage rate.
+The m8a.xlarge-specific on-demand rate is `$0.0044/min`; `$0.0037/min` is RunsOn’s generic 4-vCPU x64 provider rate, not the price for this runner. Celesto Large is `$0.0013/min` (equivalent to `$0.08/hour`). `*` Namespace is priced at its overage rate.
 
 ## Hardware: latest measurements
 
