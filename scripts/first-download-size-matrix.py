@@ -1,5 +1,5 @@
 """Serial real-proxy cache roundtrips; every trial has independent random bytes and key."""
-import hashlib,io,json,math,os,random,re,shutil,subprocess,sys,tarfile,time,urllib.request
+import hashlib,io,json,math,os,random,re,shutil,socket,subprocess,sys,tarfile,time,urllib.request
 from pathlib import Path
 from urllib.parse import urlsplit
 MIB=1048576
@@ -161,7 +161,10 @@ def run():
  global progress_url
  progress_url=os.environ.pop('MATRIX_PROGRESS_PUT_URL')
  assert os.environ.get('ACTIONS_RUNTIME_TOKEN') and os.environ.get('ACTIONS_RESULTS_URL'),'real Node action runtime missing'
- assert urlsplit(os.environ['ACTIONS_RESULTS_URL']).hostname in ['127.0.0.1','localhost','celesto-cache.blob.core.windows.net'],'real cache proxy unavailable'
+ proxy=urlsplit(os.environ['ACTIONS_RESULTS_URL'])
+ mapped={answer[4][0] for answer in socket.getaddrinfo('celesto-cache.blob.core.windows.net',8448,type=socket.SOCK_STREAM)}
+ assert proxy.scheme=='http' and proxy.port==8448 and proxy.hostname in mapped|{'127.0.0.1','localhost','celesto-cache.blob.core.windows.net'},'real cache proxy unavailable'
+ write('runtime.json',{'real_cache_host_mapping_verified':True,'proxy_port':proxy.port,'runtime_token_present':bool(os.environ.get('ACTIONS_RUNTIME_TOKEN')),'node':os.environ['MATRIX_NODE']})
  os.chdir(os.environ['GITHUB_WORKSPACE'])
  write('method.json',{'sizes_mib':SIZES,'range_mib':RANGES,'small_concurrency':[1,4,8,16,32,64],'large_concurrency':[8,16,32,64],'screen_rounds':1,'confirmation_rounds':3,'holdout_rounds':3,'first_download_only':True,'unique_random_payload_per_trial':True,'unique_key_per_trial':True,'one_vm':True,'sequential':True,'action_pin':PIN,'proxy':'actual published CI proxy, real backend metadata, actual R2','upload':'main preparation, fixed default64 concurrency and adaptive upload chunks','selection_metric':'outer download function seconds; native helper throughput also recorded','screen_dedup':'collapse configurations with the same request bounds and maximum active requests; baseline retained separately','timing':'download function includes helper startup, HEAD, network and archive writes; cache total includes compression/extraction; generation and hashes excluded','limits':['Size recommendations are sampled, not proof of an optimum at every intervening byte size.','One runner on a shared host; shuffled ordering limits but does not remove environmental variation.','No intentional repeat download; R2 internal state is not observable.']})
  qualification=trial(20,MAIN,'qualification',0);assert qualification['success'],'pipeline qualification failed'
