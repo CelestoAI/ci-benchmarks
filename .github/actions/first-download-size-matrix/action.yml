@@ -1,0 +1,5 @@
+name: First-download size matrix
+description: Serial fresh-object cache roundtrips on this runner
+runs:
+  using: node24
+  main: index.js

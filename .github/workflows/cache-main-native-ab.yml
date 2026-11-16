@@ -1,0 +1,36 @@
+name: First-download adaptive size matrix
+on:
+  push:
+    branches: [codex/first-download-size-matrix-20261116]
+permissions:
+  contents: read
+concurrency:
+  group: first-download-size-matrix-20261116
+  cancel-in-progress: false
+jobs:
+  benchmark:
+    runs-on: celesto-large
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: .harness
+      - name: Build released cache components for size matrix
+        env:
+          MATRIX_SOURCE_URL: ${{ secrets.FIRST_DOWNLOAD_SIZE_SOURCE_20261116 }}
+          MATRIX_SOURCE_SHA256: af0ced4132b465fe974f1b4853e1675aecf78602e92d862029b957c9b53eeace
+        run: python3 .harness/scripts/first-download-size-matrix.py setup
+      - name: Screen, confirm and validate fresh-object downloads
+        uses: ./.harness/.github/actions/first-download-size-matrix
+        env:
+          MATRIX_PROGRESS_PUT_URL: ${{ secrets.FIRST_DOWNLOAD_SIZE_PROGRESS_20261116 }}
+      - name: Restore original helper
+        if: always()
+        run: python3 .harness/scripts/first-download-size-matrix.py cleanup
+      - name: Publish verified size-matrix receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: first-download-size-matrix-receipts
+          path: /tmp/first-download-size-matrix-${{ github.run_id }}-${{ github.run_attempt }}/results
+          if-no-files-found: warn
