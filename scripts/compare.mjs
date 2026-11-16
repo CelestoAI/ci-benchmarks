@@ -138,10 +138,11 @@ for (const p of providers) {
   p50[p] = COLUMNS.map(([, suite, get]) => med(suite, p, get));
 }
 // Keep GitHub's baseline next to Celesto; other providers follow alphabetically.
-const referenceOrder = ['GitHub', 'Celesto', 'RunsOn m8a.xlarge'];
+const SHORT = { 'RunsOn m8a.xlarge': 'RunsOn' }; // display names for the summary chart
+const referenceOrder = ['GitHub', 'Celesto'];
 const rows = providers.filter((p) => p50[p].some((x) => x != null)).sort((a, b) =>
   (referenceOrder.indexOf(a) < 0 ? 2 : referenceOrder.indexOf(a)) -
-  (referenceOrder.indexOf(b) < 0 ? 2 : referenceOrder.indexOf(b)) || a.localeCompare(b));
+  (referenceOrder.indexOf(b) < 0 ? 2 : referenceOrder.indexOf(b)) || (SHORT[a] ?? a).localeCompare(SHORT[b] ?? b));
 
 // Charts are drawn for GitHub's README view: transparent background, colours
 // that work in light and dark mode, and a wide viewBox so they fill the page.
@@ -164,34 +165,67 @@ const duration = (seconds) => {
   return rounded < 60 ? `${rounded}s` : `${Math.floor(rounded / 60)}m ${String(rounded % 60).padStart(2, '0')}s`;
 };
 
+const shortName = (p) => SHORT[p] ?? p;
+const COST_SUITES = [0, 1, 2]; // Rust + Node + Docker
+const costPerRun = (p) => {
+  const secs = COST_SUITES.map((i) => p50[p][i]);
+  return RATES[p] == null || secs.some((x) => x == null) ? null : (RATES[p] * secs.reduce((a, b) => a + b, 0)) / 60;
+};
+const costText = (c) => (c == null ? '–' : `$${c.toFixed(3)}`);
+const ORANGE = '#ff7f3f';
+const SUMMARY = {
+  light: { bg: '#ffffff', text: '#171717', muted: '#6b6b6b', cell: '#f1f1f2', cellMine: '#fff1e8', last: '#ffffff' },
+  dark: { bg: '#0a0a0a', text: '#ffffff', muted: '#8f8f8f', cell: '#1a1a1e', cellMine: '#2a1a12', last: '#ffffff' },
+};
+
 function summarySvg(theme) {
-  const W = 960, left = 170, top = 64, rh = 46, gap = 8;
-  const cw = (W - left - 8) / (COLUMNS.length + 1);
-  const H = top + rows.length * rh + 34;
-  let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" ${FONT}>${style(theme)}`;
-  // Column headers: suite name and what it runs.
+  const c = SUMMARY[theme];
+  const W = 1000, left = 175, top = 150, rh = 52, gap = 8, pad = 50;
+  const cols = COLUMNS.length + 2; // suites, price per minute, cost per run
+  const cw = (W - left - pad) / cols;
+  const H = top + rows.length * rh + 80;
+  const gh = costPerRun('GitHub'), me = costPerRun('Celesto');
+  const saving = gh && me ? Math.round((1 - me / gh) * 100) : null;
+  const ghTime = [0, 1, 2].reduce((a, i) => a + (p50.GitHub?.[i] ?? 0), 0);
+  const meTime = [0, 1, 2].reduce((a, i) => a + (p50.Celesto?.[i] ?? 0), 0);
+  const faster = ghTime && meTime && meTime < ghTime;
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" ${FONT}>`;
+  s += `<rect width="${W}" height="${H}" fill="${c.bg}"/>`;
+  // Headline.
+  const head = faster ? 'Faster than GitHub.' : 'Compared with GitHub.';
+  s += `<text x="${pad}" y="76" font-size="40" font-weight="700" letter-spacing="-1" fill="${c.text}">${head}</text>`;
+  if (saving != null && saving > 0) {
+    const hx = pad + head.length * 18.1 + 10;
+    const label = `${saving}% cheaper per run.`;
+    const lw = label.length * 19 + 24;
+    s += `<rect x="${hx}" y="36" width="${lw}" height="52" rx="6" fill="${ORANGE}"/>`;
+    s += `<text x="${hx + 12}" y="76" font-size="40" font-weight="700" letter-spacing="-1" fill="#ffffff">${label}</text>`;
+  }
+  // Column headers.
   const sub = { Rust: 'spotify-player', Node: 'opencode', Docker: 'PostHog image', Cache: '4 GiB', Queue: '15 jobs at once' };
-  COLUMNS.forEach(([label], i) => {
+  const heads = [...COLUMNS.map(([label]) => [label, sub[label]]), ['Price / min', 'USD'], ['Cost per run', 'Rust + Node + Docker']];
+  heads.forEach(([label, subtitle], i) => {
     const cx = left + i * cw + cw / 2;
-    s += `<text x="${cx}" y="24" text-anchor="middle" font-size="17" font-weight="600" class="t">${label}</text>`;
-    s += `<text x="${cx}" y="44" text-anchor="middle" font-size="13" class="m">${sub[label]}</text>`;
+    s += `<text x="${cx}" y="116" text-anchor="middle" font-size="16" font-weight="600" fill="${c.text}">${label}</text>`;
+    s += `<text x="${cx}" y="135" text-anchor="middle" font-size="11" fill="${c.muted}">${subtitle}</text>`;
   });
-  const px = left + COLUMNS.length * cw + cw / 2;
-  s += `<text x="${px}" y="24" text-anchor="middle" font-size="17" font-weight="600" class="t">Price / min</text>`;
-  s += `<text x="${px}" y="44" text-anchor="middle" font-size="13" class="m">USD</text>`;
+  // Rows.
   rows.forEach((p, j) => {
     const y = top + j * rh;
-    s += `<text x="16" y="${y + rh / 2 + 6}" font-size="17" font-weight="500" class="t">${p}</text>`;
-    p50[p].forEach((x, i) => {
+    const mine = p === 'Celesto';
+    s += `<text x="${pad}" y="${y + rh / 2 + 6}" font-size="18" font-weight="600" fill="${mine ? ORANGE : c.text}">${shortName(p)}</text>`;
+    const cells = [...p50[p].map(duration), rateText(p).replace('*', ''), costText(costPerRun(p))];
+    cells.forEach((text, i) => {
       const cx = left + i * cw;
-      s += `<rect x="${cx + gap / 2}" y="${y + 6}" width="${cw - gap}" height="${rh - 12}" rx="6" class="n"/>`;
-      s += `<text x="${cx + cw / 2}" y="${y + rh / 2 + 6}" text-anchor="middle" font-size="16" font-weight="400" ${MONO} class="t">${duration(x)}</text>`;
+      const last = i === cells.length - 1;
+      const fill = mine ? (last ? ORANGE : c.cellMine) : c.cell;
+      const stroke = mine && !last ? ` stroke="${ORANGE}" stroke-width="1"` : '';
+      s += `<rect x="${cx + gap / 2}" y="${y + 6}" width="${cw - gap}" height="${rh - 8}" rx="6" fill="${fill}"${stroke}/>`;
+      const color = mine ? (last ? '#ffffff' : ORANGE) : c.text;
+      s += `<text x="${cx + cw / 2}" y="${y + rh / 2 + 6}" text-anchor="middle" font-size="${last ? 18 : 17}" font-weight="${last ? 700 : 400}" ${MONO} fill="${color}">${text}</text>`;
     });
-    const pcx = left + COLUMNS.length * cw;
-    s += `<rect x="${pcx + gap / 2}" y="${y + 6}" width="${cw - gap}" height="${rh - 12}" rx="6" class="n"/>`;
-    s += `<text x="${pcx + cw / 2}" y="${y + rh / 2 + 6}" text-anchor="middle" font-size="16" font-weight="400" ${MONO} class="t">${rateText(p)}</text>`;
   });
-  s += `<text x="16" y="${H - 8}" font-size="13" class="m">p50 times (median), lower is faster. 4 vCPU x64. Price: published USD per running minute; *Namespace overage rate.</text>`;
+  s += `<text x="${pad}" y="${H - 28}" font-size="11" fill="${c.muted}">4 vCPU Linux x64, list prices (Namespace overage). Cost per run = (Rust + Node + Docker time) × price per minute. Excludes free minutes and credits.</text>`;
   return s + `</svg>\n`;
 }
 
