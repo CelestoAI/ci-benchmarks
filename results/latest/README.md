@@ -2,7 +2,7 @@
 
 Updated 2026-11-16. All runners: 4 vCPU, x64. Values are p50 (medians).
 
-The summary shows p50 times across successful jobs, in minutes and seconds. Lower is faster. Cache time includes save and restore. Workload times exclude queue time and runner overhead. Queue shows the wait from job creation to runner start for a burst of 15 jobs.
+The summary shows p50 times across successful jobs, in minutes and seconds. Lower is faster. Cache time includes save and restore. Workload times exclude queue time and runner overhead. Queue shows the wait from job creation to runner start for a burst of 15 jobs. Price / min is each provider’s published USD rate per running minute for a 4 vCPU x64 runner, not the cost of a job; Namespace is its overage rate.
 
 RunsOn’s [public dashboard](https://runs-on.com/benchmarks/runners/) lets readers choose build-step, whole-job, or wait-plus-job timing. These build columns use workload phases only; they exclude queue time and runner overhead.
 

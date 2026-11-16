@@ -119,6 +119,16 @@ const COLUMNS = [
   ['Cache', 'cache', (r) => r.workloadSeconds],
   ['Queue', 'burst', (r) => r.queueSeconds],
 ];
+// Published USD per running minute for a 4 vCPU x64 runner. Not each job's cost.
+const RATES = {
+  GitHub: '$0.0120',
+  Celesto: '$0.0013',
+  'RunsOn m8a.xlarge': '$0.0044',
+  Blacksmith: '$0.0080',
+  Namespace: '$0.0120*',
+  Ubicloud: '$0.0025',
+  WarpBuild: '$0.0080',
+};
 const p50 = {};
 for (const p of providers) {
   p50[p] = COLUMNS.map(([, suite, get]) => med(suite, p, get));
@@ -152,7 +162,7 @@ const duration = (seconds) => {
 
 function summarySvg(theme) {
   const W = 960, left = 170, top = 64, rh = 46, gap = 8;
-  const cw = (W - left - 8) / COLUMNS.length;
+  const cw = (W - left - 8) / (COLUMNS.length + 1);
   const H = top + rows.length * rh + 34;
   let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" ${FONT}>${style(theme)}`;
   // Column headers: suite name and what it runs.
@@ -162,6 +172,9 @@ function summarySvg(theme) {
     s += `<text x="${cx}" y="24" text-anchor="middle" font-size="17" font-weight="600" class="t">${label}</text>`;
     s += `<text x="${cx}" y="44" text-anchor="middle" font-size="13" class="m">${sub[label]}</text>`;
   });
+  const px = left + COLUMNS.length * cw + cw / 2;
+  s += `<text x="${px}" y="24" text-anchor="middle" font-size="17" font-weight="600" class="t">Price / min</text>`;
+  s += `<text x="${px}" y="44" text-anchor="middle" font-size="13" class="m">USD</text>`;
   rows.forEach((p, j) => {
     const y = top + j * rh;
     s += `<text x="16" y="${y + rh / 2 + 6}" font-size="17" font-weight="500" class="t">${p}</text>`;
@@ -170,8 +183,11 @@ function summarySvg(theme) {
       s += `<rect x="${cx + gap / 2}" y="${y + 6}" width="${cw - gap}" height="${rh - 12}" rx="6" class="n"/>`;
       s += `<text x="${cx + cw / 2}" y="${y + rh / 2 + 6}" text-anchor="middle" font-size="16" font-weight="400" ${MONO} class="t">${duration(x)}</text>`;
     });
+    const pcx = left + COLUMNS.length * cw;
+    s += `<rect x="${pcx + gap / 2}" y="${y + 6}" width="${cw - gap}" height="${rh - 12}" rx="6" class="n"/>`;
+    s += `<text x="${pcx + cw / 2}" y="${y + rh / 2 + 6}" text-anchor="middle" font-size="16" font-weight="400" ${MONO} class="t">${RATES[p] ?? '–'}</text>`;
   });
-  s += `<text x="16" y="${H - 8}" font-size="13" class="m">p50 times (median). Lower is faster. 4 vCPU x64. GitHub baseline, then Celesto and RunsOn m8a.xlarge; others alphabetical.</text>`;
+  s += `<text x="16" y="${H - 8}" font-size="13" class="m">p50 times (median), lower is faster. 4 vCPU x64. Price: published USD per running minute; *Namespace overage rate.</text>`;
   return s + `</svg>\n`;
 }
 
@@ -228,7 +244,7 @@ const md = [
   '',
   `Updated ${today}. All runners: 4 vCPU, x64. Values are p50 (medians).`,
   '',
-  'The summary shows p50 times across successful jobs, in minutes and seconds. Lower is faster. Cache time includes save and restore. Workload times exclude queue time and runner overhead. Queue shows the wait from job creation to runner start for a burst of 15 jobs.',
+  'The summary shows p50 times across successful jobs, in minutes and seconds. Lower is faster. Cache time includes save and restore. Workload times exclude queue time and runner overhead. Queue shows the wait from job creation to runner start for a burst of 15 jobs. Price / min is each provider’s published USD rate per running minute for a 4 vCPU x64 runner, not the cost of a job; Namespace is its overage rate.',
   '',
   'RunsOn’s [public dashboard](https://runs-on.com/benchmarks/runners/) lets readers choose build-step, whole-job, or wait-plus-job timing. These build columns use workload phases only; they exclude queue time and runner overhead.',
   '',
