@@ -1,0 +1,572 @@
+name: First-download range matrix
+on:
+  push:
+    branches: [codex/first-download-range-matrix-20261116]
+permissions:
+  contents: read
+concurrency:
+  group: first-download-range-matrix-20261116
+  cancel-in-progress: false
+jobs:
+  benchmark:
+    runs-on: celesto-large
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: .harness
+      - name: Build download geometry experiment
+        env:
+          MATRIX_SOURCE_URL: ${{ secrets.FIRST_DOWNLOAD_MATRIX_SOURCE_20261116 }}
+          MATRIX_SOURCE_SHA256: d129cb49115ef969ebde0795389c70772734e172a40081f8f5fcc33d4986c8c9
+        run: python3 .harness/scripts/first-download-matrix.py setup
+      - name: 'b1-r16-c64: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 1 16 64
+      - name: 'b1-r16-c64: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b1-r16-c64
+      - name: 'b1-r16-c64: remove'
+        run: rm cache-file
+      - name: 'b1-r16-c64: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '16'
+          CELESTO_EXPERIMENT_CONCURRENCY: '64'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b1-r16-c64
+          fail-on-cache-miss: true
+      - name: 'b1-r16-c64: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 1
+      - name: 'b1-r32-c64: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 2 32 64
+      - name: 'b1-r32-c64: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b1-r32-c64
+      - name: 'b1-r32-c64: remove'
+        run: rm cache-file
+      - name: 'b1-r32-c64: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '32'
+          CELESTO_EXPERIMENT_CONCURRENCY: '64'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b1-r32-c64
+          fail-on-cache-miss: true
+      - name: 'b1-r32-c64: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 2
+      - name: 'b1-r32-c16: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 3 32 16
+      - name: 'b1-r32-c16: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b1-r32-c16
+      - name: 'b1-r32-c16: remove'
+        run: rm cache-file
+      - name: 'b1-r32-c16: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '32'
+          CELESTO_EXPERIMENT_CONCURRENCY: '16'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b1-r32-c16
+          fail-on-cache-miss: true
+      - name: 'b1-r32-c16: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 3
+      - name: 'b1-r16-c32: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 4 16 32
+      - name: 'b1-r16-c32: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b1-r16-c32
+      - name: 'b1-r16-c32: remove'
+        run: rm cache-file
+      - name: 'b1-r16-c32: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '16'
+          CELESTO_EXPERIMENT_CONCURRENCY: '32'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b1-r16-c32
+          fail-on-cache-miss: true
+      - name: 'b1-r16-c32: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 4
+      - name: 'b1-r64-c64: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 5 64 64
+      - name: 'b1-r64-c64: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b1-r64-c64
+      - name: 'b1-r64-c64: remove'
+        run: rm cache-file
+      - name: 'b1-r64-c64: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '64'
+          CELESTO_EXPERIMENT_CONCURRENCY: '64'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b1-r64-c64
+          fail-on-cache-miss: true
+      - name: 'b1-r64-c64: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 5
+      - name: 'b1-r64-c32: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 6 64 32
+      - name: 'b1-r64-c32: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b1-r64-c32
+      - name: 'b1-r64-c32: remove'
+        run: rm cache-file
+      - name: 'b1-r64-c32: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '64'
+          CELESTO_EXPERIMENT_CONCURRENCY: '32'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b1-r64-c32
+          fail-on-cache-miss: true
+      - name: 'b1-r64-c32: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 6
+      - name: 'b1-r16-c16: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 7 16 16
+      - name: 'b1-r16-c16: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b1-r16-c16
+      - name: 'b1-r16-c16: remove'
+        run: rm cache-file
+      - name: 'b1-r16-c16: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '16'
+          CELESTO_EXPERIMENT_CONCURRENCY: '16'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b1-r16-c16
+          fail-on-cache-miss: true
+      - name: 'b1-r16-c16: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 7
+      - name: 'b1-r32-c32: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 8 32 32
+      - name: 'b1-r32-c32: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b1-r32-c32
+      - name: 'b1-r32-c32: remove'
+        run: rm cache-file
+      - name: 'b1-r32-c32: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '32'
+          CELESTO_EXPERIMENT_CONCURRENCY: '32'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b1-r32-c32
+          fail-on-cache-miss: true
+      - name: 'b1-r32-c32: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 8
+      - name: 'b1-r64-c16: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 9 64 16
+      - name: 'b1-r64-c16: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b1-r64-c16
+      - name: 'b1-r64-c16: remove'
+        run: rm cache-file
+      - name: 'b1-r64-c16: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '64'
+          CELESTO_EXPERIMENT_CONCURRENCY: '16'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b1-r64-c16
+          fail-on-cache-miss: true
+      - name: 'b1-r64-c16: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 9
+      - name: 'b2-r64-c32: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 10 64 32
+      - name: 'b2-r64-c32: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b2-r64-c32
+      - name: 'b2-r64-c32: remove'
+        run: rm cache-file
+      - name: 'b2-r64-c32: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '64'
+          CELESTO_EXPERIMENT_CONCURRENCY: '32'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b2-r64-c32
+          fail-on-cache-miss: true
+      - name: 'b2-r64-c32: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 10
+      - name: 'b2-r32-c16: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 11 32 16
+      - name: 'b2-r32-c16: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b2-r32-c16
+      - name: 'b2-r32-c16: remove'
+        run: rm cache-file
+      - name: 'b2-r32-c16: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '32'
+          CELESTO_EXPERIMENT_CONCURRENCY: '16'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b2-r32-c16
+          fail-on-cache-miss: true
+      - name: 'b2-r32-c16: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 11
+      - name: 'b2-r64-c16: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 12 64 16
+      - name: 'b2-r64-c16: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b2-r64-c16
+      - name: 'b2-r64-c16: remove'
+        run: rm cache-file
+      - name: 'b2-r64-c16: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '64'
+          CELESTO_EXPERIMENT_CONCURRENCY: '16'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b2-r64-c16
+          fail-on-cache-miss: true
+      - name: 'b2-r64-c16: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 12
+      - name: 'b2-r64-c64: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 13 64 64
+      - name: 'b2-r64-c64: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b2-r64-c64
+      - name: 'b2-r64-c64: remove'
+        run: rm cache-file
+      - name: 'b2-r64-c64: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '64'
+          CELESTO_EXPERIMENT_CONCURRENCY: '64'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b2-r64-c64
+          fail-on-cache-miss: true
+      - name: 'b2-r64-c64: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 13
+      - name: 'b2-r32-c32: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 14 32 32
+      - name: 'b2-r32-c32: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b2-r32-c32
+      - name: 'b2-r32-c32: remove'
+        run: rm cache-file
+      - name: 'b2-r32-c32: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '32'
+          CELESTO_EXPERIMENT_CONCURRENCY: '32'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b2-r32-c32
+          fail-on-cache-miss: true
+      - name: 'b2-r32-c32: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 14
+      - name: 'b2-r16-c32: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 15 16 32
+      - name: 'b2-r16-c32: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b2-r16-c32
+      - name: 'b2-r16-c32: remove'
+        run: rm cache-file
+      - name: 'b2-r16-c32: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '16'
+          CELESTO_EXPERIMENT_CONCURRENCY: '32'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b2-r16-c32
+          fail-on-cache-miss: true
+      - name: 'b2-r16-c32: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 15
+      - name: 'b2-r32-c64: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 16 32 64
+      - name: 'b2-r32-c64: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b2-r32-c64
+      - name: 'b2-r32-c64: remove'
+        run: rm cache-file
+      - name: 'b2-r32-c64: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '32'
+          CELESTO_EXPERIMENT_CONCURRENCY: '64'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b2-r32-c64
+          fail-on-cache-miss: true
+      - name: 'b2-r32-c64: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 16
+      - name: 'b2-r16-c16: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 17 16 16
+      - name: 'b2-r16-c16: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b2-r16-c16
+      - name: 'b2-r16-c16: remove'
+        run: rm cache-file
+      - name: 'b2-r16-c16: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '16'
+          CELESTO_EXPERIMENT_CONCURRENCY: '16'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b2-r16-c16
+          fail-on-cache-miss: true
+      - name: 'b2-r16-c16: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 17
+      - name: 'b2-r16-c64: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 18 16 64
+      - name: 'b2-r16-c64: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b2-r16-c64
+      - name: 'b2-r16-c64: remove'
+        run: rm cache-file
+      - name: 'b2-r16-c64: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '16'
+          CELESTO_EXPERIMENT_CONCURRENCY: '64'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b2-r16-c64
+          fail-on-cache-miss: true
+      - name: 'b2-r16-c64: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 18
+      - name: 'b3-r32-c32: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 19 32 32
+      - name: 'b3-r32-c32: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b3-r32-c32
+      - name: 'b3-r32-c32: remove'
+        run: rm cache-file
+      - name: 'b3-r32-c32: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '32'
+          CELESTO_EXPERIMENT_CONCURRENCY: '32'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b3-r32-c32
+          fail-on-cache-miss: true
+      - name: 'b3-r32-c32: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 19
+      - name: 'b3-r16-c64: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 20 16 64
+      - name: 'b3-r16-c64: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b3-r16-c64
+      - name: 'b3-r16-c64: remove'
+        run: rm cache-file
+      - name: 'b3-r16-c64: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '16'
+          CELESTO_EXPERIMENT_CONCURRENCY: '64'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b3-r16-c64
+          fail-on-cache-miss: true
+      - name: 'b3-r16-c64: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 20
+      - name: 'b3-r32-c16: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 21 32 16
+      - name: 'b3-r32-c16: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b3-r32-c16
+      - name: 'b3-r32-c16: remove'
+        run: rm cache-file
+      - name: 'b3-r32-c16: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '32'
+          CELESTO_EXPERIMENT_CONCURRENCY: '16'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b3-r32-c16
+          fail-on-cache-miss: true
+      - name: 'b3-r32-c16: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 21
+      - name: 'b3-r64-c32: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 22 64 32
+      - name: 'b3-r64-c32: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b3-r64-c32
+      - name: 'b3-r64-c32: remove'
+        run: rm cache-file
+      - name: 'b3-r64-c32: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '64'
+          CELESTO_EXPERIMENT_CONCURRENCY: '32'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b3-r64-c32
+          fail-on-cache-miss: true
+      - name: 'b3-r64-c32: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 22
+      - name: 'b3-r16-c32: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 23 16 32
+      - name: 'b3-r16-c32: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b3-r16-c32
+      - name: 'b3-r16-c32: remove'
+        run: rm cache-file
+      - name: 'b3-r16-c32: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '16'
+          CELESTO_EXPERIMENT_CONCURRENCY: '32'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b3-r16-c32
+          fail-on-cache-miss: true
+      - name: 'b3-r16-c32: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 23
+      - name: 'b3-r16-c16: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 24 16 16
+      - name: 'b3-r16-c16: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b3-r16-c16
+      - name: 'b3-r16-c16: remove'
+        run: rm cache-file
+      - name: 'b3-r16-c16: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '16'
+          CELESTO_EXPERIMENT_CONCURRENCY: '16'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b3-r16-c16
+          fail-on-cache-miss: true
+      - name: 'b3-r16-c16: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 24
+      - name: 'b3-r64-c16: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 25 64 16
+      - name: 'b3-r64-c16: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b3-r64-c16
+      - name: 'b3-r64-c16: remove'
+        run: rm cache-file
+      - name: 'b3-r64-c16: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '64'
+          CELESTO_EXPERIMENT_CONCURRENCY: '16'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b3-r64-c16
+          fail-on-cache-miss: true
+      - name: 'b3-r64-c16: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 25
+      - name: 'b3-r64-c64: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 26 64 64
+      - name: 'b3-r64-c64: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b3-r64-c64
+      - name: 'b3-r64-c64: remove'
+        run: rm cache-file
+      - name: 'b3-r64-c64: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '64'
+          CELESTO_EXPERIMENT_CONCURRENCY: '64'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b3-r64-c64
+          fail-on-cache-miss: true
+      - name: 'b3-r64-c64: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 26
+      - name: 'b3-r32-c64: generate and select'
+        run: python3 .harness/scripts/first-download-matrix.py generate 27 32 64
+      - name: 'b3-r32-c64: save'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b3-r32-c64
+      - name: 'b3-r32-c64: remove'
+        run: rm cache-file
+      - name: 'b3-r32-c64: restore'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        env:
+          CELESTO_EXPERIMENT_RANGE_MIB: '32'
+          CELESTO_EXPERIMENT_CONCURRENCY: '64'
+        with:
+          path: cache-file
+          key: first-dl-${{ github.run_id }}-${{ github.run_attempt }}-b3-r32-c64
+          fail-on-cache-miss: true
+      - name: 'b3-r32-c64: verify'
+        run: python3 .harness/scripts/first-download-matrix.py verify 27
+      - name: Restore original helper
+        if: always()
+        run: python3 .harness/scripts/first-download-matrix.py cleanup
+      - name: Publish experiment receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: first-download-matrix-receipts
+          path: /tmp/first-download-matrix-${{ github.run_id }}-${{ github.run_attempt }}/results
+          if-no-files-found: warn
