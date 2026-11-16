@@ -38,6 +38,7 @@ def checkpoint(stage,**extra):
 
 def setup():
  ROOT.mkdir(mode=0o700);RESULTS.mkdir();source=ROOT/'source';source.mkdir()
+ write('telemetry-availability.json',{name:Path('/proc/'+name).is_file() for name in ['stat','diskstats','meminfo','vmstat','pressure/io','pressure/cpu','pressure/memory']})
  url=os.environ.pop('MATRIX_SOURCE_URL')
  with urllib.request.urlopen(url,timeout=90) as response:data=response.read()
  assert hashlib.sha256(data).hexdigest()==os.environ['MATRIX_SOURCE_SHA256'],'source checksum'
@@ -69,7 +70,12 @@ def setup():
  print('Built the full released guest crate with a 32/64 knob and diagnostics; real proxy and exact action preparation retained.')
 
 def snapshot():
- return {name:Path('/proc/'+name).read_text() for name in ['stat','diskstats','meminfo','vmstat','pressure/io','pressure/cpu','pressure/memory']}
+ result={};missing=[]
+ for name in ['stat','diskstats','meminfo','vmstat','pressure/io','pressure/cpu','pressure/memory']:
+  try:result[name]=Path('/proc/'+name).read_text()
+  except FileNotFoundError:result[name]=None;missing.append(name)
+ result['unavailable']=missing
+ return result
 
 def run_action(action,env,log_path,sample_path=None):
  import threading,resource
