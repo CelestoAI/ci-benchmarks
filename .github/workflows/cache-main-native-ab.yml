@@ -1,7 +1,7 @@
-name: First-download concurrency refinement
+name: First-download adaptive profile validation
 on:
   push:
-    branches: [codex/first-download-refinement-20261116]
+    branches: [codex/first-download-2m-ceiling-20261116]
 permissions:
   contents: read
 concurrency:
@@ -17,14 +17,13 @@ jobs:
           path: .harness
       - name: Build released cache components for size matrix
         env:
-          MATRIX_SOURCE_URL: ${{ secrets.FIRST_DOWNLOAD_REFINE_SOURCE_20261116 }}
-          MATRIX_SOURCE_SHA256: af0ced4132b465fe974f1b4853e1675aecf78602e92d862029b957c9b53eeace
+          MATRIX_SOURCE_URL: ${{ secrets.FIRST_DOWNLOAD_CEILING_SOURCE_20261116 }}
+          MATRIX_SOURCE_SHA256: 93e36801af415a93ce5355c4203989f1f33a5c5ecb0b03ac70e2752901c3e4e2
         run: python3 .harness/scripts/first-download-size-matrix.py setup
-      - name: Refine range size and concurrency with fresh objects
+      - name: Validate the adaptive profile and final ceiling
         uses: ./.harness/.github/actions/first-download-size-matrix
         env:
-          MATRIX_PARENT_PROGRESS_URL: ${{ secrets.FIRST_DOWNLOAD_REFINE_PARENT_20261116 }}
-          MATRIX_PROGRESS_PUT_URL: ${{ secrets.FIRST_DOWNLOAD_REFINE_PROGRESS_20261116 }}
+          MATRIX_PROGRESS_PUT_URL: ${{ secrets.FIRST_DOWNLOAD_CEILING_PROGRESS_20261116 }}
       - name: Restore original helper
         if: always()
         run: python3 .harness/scripts/first-download-size-matrix.py cleanup
@@ -32,6 +31,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: first-download-refinement-receipts
+          name: first-download-ceiling-receipts
           path: /tmp/first-download-size-matrix-${{ github.run_id }}-${{ github.run_attempt }}/results
           if-no-files-found: warn

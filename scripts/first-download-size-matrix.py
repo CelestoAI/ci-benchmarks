@@ -110,13 +110,14 @@ def trial(mib,profile,stage,block,role=None):
     data=source.read(min(8*MIB,remaining));assert data;target.write(data);h.update(data);remaining-=len(data)
   row.update(source_sha256=h.hexdigest(),generation_seconds=time.monotonic()-before,boot_id=machine['boot_id'])
   env={**os.environ,'ACTIONS_CACHE_SERVICE_V2':'true','INPUT_PATH':'cache-file','INPUT_KEY':key,'INPUT_RESTORE-KEYS':'','INPUT_FAIL-ON-CACHE-MISS':'true','INPUT_LOOKUP-ONLY':'false','INPUT_ENABLECROSSOSARCHIVE':'false'}
-  for name in ['CELESTO_EXPERIMENT_RANGE_MIB','CELESTO_EXPERIMENT_CONCURRENCY','CELESTO_EXPERIMENT_RECEIPT_PATH','CACHE_UPLOAD_CHUNK_SIZE','CACHE_UPLOAD_CONCURRENCY']:env.pop(name,None)
+  for name in ['CELESTO_EXPERIMENT_RANGE_MIB','CELESTO_EXPERIMENT_CONCURRENCY','CELESTO_EXPERIMENT_RECEIPT_PATH','CELESTO_EXPERIMENT_SIZE_PROFILE','CACHE_UPLOAD_CHUNK_SIZE','CACHE_UPLOAD_CONCURRENCY']:env.pop(name,None)
   row['save_s']=run_action('save',env,save_log);output.unlink();env['CELESTO_EXPERIMENT_RECEIPT_PATH']=str(receipt)
+  if profile['mode']=='adaptive':env['CELESTO_EXPERIMENT_SIZE_PROFILE']='1'
   if profile['mode']=='fixed':env.update(CELESTO_EXPERIMENT_RANGE_MIB=str(profile['range_mib']),CELESTO_EXPERIMENT_CONCURRENCY=str(profile['concurrency']))
   row['restore_s']=run_action('restore',env,restore_log);save=save_log.read_text();restore=restore_log.read_text()
   assert receipt.exists() and 'Celesto cache native download:' in restore and 'native unavailable' not in restore,'native path not used'
   native=json.loads(receipt.read_text());assert native['bytes']>=mib*MIB,'archive too small'
-  expected=main_geometry(native['bytes']) if profile['mode']=='main' else (profile['range_mib']*MIB,profile['concurrency'])
+  expected=adaptive_geometry(native['bytes']) if profile['mode']=='adaptive' else (main_geometry(native['bytes']) if profile['mode']=='main' else (profile['range_mib']*MIB,profile['concurrency']))
   assert (native['range_bytes'],native['concurrency'])==expected,'geometry override missing'
   rates=re.findall(r'Sent [0-9]+ of [0-9]+ \(100\.0%\), ([0-9.]+) MBs/sec',save)
   row.update(archive_bytes=native['bytes'],native_seconds=native['seconds'],download_mib_s=native['bytes']/MIB/native['seconds'],range_bytes=native['range_bytes'],configured_concurrency=native['concurrency'],maximum_active_requests=min(native['concurrency'],math.ceil(native['bytes']/native['range_bytes'])),recovery_used=native['recovery_used'],download_function_s=timing(restore,'download_total'),upload_function_s=timing(save,'upload_total'),upload_reported_mib_s=float(rates[-1]) if rates else None,archive_create_s=timing(save,'archive_create'),archive_extract_s=timing(restore,'archive_extract'),cache_total_s=row['save_s']+row['restore_s'],native_fallback=False)
@@ -267,12 +268,35 @@ def refine():
  checkpoint('complete',policy=policy)
  assert all(r['success'] for r in trials if r['role']=='main'),'baseline trial failed'
 
+def adaptive_geometry(size):
+ c,cap=(32,16*MIB) if size<=64*MIB else ((64,2*MIB) if size<=128*MIB else ((64,32*MIB) if size<=2*1024**3 else (64,16*MIB)))
+ target=(size+c-1)//c
+ return min(max(1<<(target-1).bit_length(),MIB),cap),c
+
+def ceiling():
+ global progress_url
+ progress_url=os.environ.pop('MATRIX_PROGRESS_PUT_URL')
+ assert os.environ.get('ACTIONS_RUNTIME_TOKEN') and os.environ.get('ACTIONS_RESULTS_URL'),'real Node action runtime missing'
+ proxy=urlsplit(os.environ['ACTIONS_RESULTS_URL']);mapped={answer[4][0] for answer in socket.getaddrinfo('celesto-cache.blob.core.windows.net',8448,type=socket.SOCK_STREAM)}
+ assert proxy.scheme=='http' and proxy.port==8448 and proxy.hostname in mapped|{'127.0.0.1','localhost','celesto-cache.blob.core.windows.net'},'real cache proxy unavailable'
+ os.chdir(os.environ['GITHUB_WORKSPACE'])
+ profiles={size:[(MAIN,'main'),({'mode':'adaptive'},'adaptive')]+([(shape(2,256),'c256')] if size>=400 else []) for size in SIZES}
+ write('method.json',{'purpose':'Independent actual-archive-size selector validation across20 MiB to4GiB, plus final2MiB x256 point on five larger sizes','archive_size_policy':[{'through_mib':64,'concurrency':32,'range_cap_mib':16},{'through_mib':128,'concurrency':64,'range_cap_mib':2},{'through_mib':2048,'concurrency':64,'range_cap_mib':32},{'above_mib':2048,'concurrency':64,'range_cap_mib':16}],'range_selection':'same main formula:next power of two of ceiling(archive bytes/concurrency), clamp1MiB..cap','rounds':3,'first_download_only':True,'one_vm':True,'sequential':True,'fresh_random_payload_and_key_per_trial':True,'source_commit':'5d45dbebc1fe680355af35cb5ab9ba911b09bb51','acceptance':'Each changed sampled size needs >=5% lower median and >=2/3 paired wins versus main. The256 point must beat both main and the candidate by those gates. Unchanged negative-control geometries do not count as speedups.'})
+ write('profiles.json',profiles)
+ assert trial(20,MAIN,'qualification',0)['success'],'pipeline qualification failed'
+ for block in [1,2,3]:
+  order=[(size,profile,role) for size,items in profiles.items() for profile,role in items];random.Random(161680+block).shuffle(order)
+  for size,profile,role in order:trial(size,profile,'final',block,role)
+ checkpoint('complete')
+ assert all(row['success'] for row in trials if row['role']=='main'),'baseline trial failed'
+
 if __name__=='__main__':
  try:
   if sys.argv[1]=='setup':setup()
   elif sys.argv[1]=='run':run()
   elif sys.argv[1]=='cleanup':cleanup()
   elif sys.argv[1]=='refine':refine()
+  elif sys.argv[1]=='ceiling':ceiling()
   else:raise ValueError('unsupported mode')
  except Exception as error:
   write('failure.json',{'error_type':type(error).__name__,'reason':str(error) if isinstance(error,(AssertionError,RuntimeError)) else 'owned_matrix_operation_failed'})
