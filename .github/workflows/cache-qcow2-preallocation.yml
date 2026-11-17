@@ -1,0 +1,71 @@
+name: Cache qcow2 preallocation comparison
+on:
+  push:
+    branches: [codex/qcow2-preallocation-ab-20261117]
+    paths: [.github/workflows/cache-qcow2-preallocation.yml, scripts/qcow2-preallocation-gate.py]
+  workflow_dispatch:
+    inputs:
+      arm:
+        type: choice
+        options: [current, sparse_control, preallocated]
+        default: current
+      case:
+        type: string
+        default: manual
+permissions:
+  contents: read
+concurrency:
+  group: qcow2-preallocation-ab-20261117
+  cancel-in-progress: false
+jobs:
+  bench:
+    name: qcow2 benchmark
+    runs-on: celesto-large
+    timeout-minutes: 25
+    env:
+      EXPERIMENT_ARM: ${{ inputs.arm || 'current' }}
+      EXPERIMENT_CASE: ${{ inputs.case || 'pilot-current' }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: .harness
+      - name: Host check
+        run: node .harness/scripts/record-event.mjs host_fingerprint '{}'
+        env:
+          BENCHMARK_PROVIDER: celesto
+          BENCHMARK_EVENT_FILE: ${{ runner.temp }}/events.jsonl
+      - name: Wait for host disk preparation
+        id: gate
+        run: python3 .harness/scripts/qcow2-preallocation-gate.py wait
+      - name: Generate 4 GiB file
+        if: steps.gate.outputs.selected == 'true'
+        run: head -c 4G /dev/urandom > cache-file
+      - name: Hash generated payload outside cache timing
+        if: steps.gate.outputs.selected == 'true'
+        run: python3 .harness/scripts/qcow2-preallocation-gate.py hash
+      - name: 'phase: cache save'
+        if: steps.gate.outputs.selected == 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: qcow2-${{ github.run_id }}-${{ github.run_attempt }}-${{ env.EXPERIMENT_ARM }}
+      - name: Remove file
+        if: steps.gate.outputs.selected == 'true'
+        run: rm cache-file
+      - name: 'phase: cache restore'
+        if: steps.gate.outputs.selected == 'true'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: cache-file
+          key: qcow2-${{ github.run_id }}-${{ github.run_attempt }}-${{ env.EXPERIMENT_ARM }}
+          fail-on-cache-miss: true
+      - name: 'phase: verify'
+        if: steps.gate.outputs.selected == 'true'
+        run: python3 .harness/scripts/qcow2-preallocation-gate.py verify
+      - name: Publish experiment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qcow2-preallocation-evidence
+          path: ${{ runner.temp }}/qcow2-preallocation-evidence
+          if-no-files-found: warn
