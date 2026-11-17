@@ -63,9 +63,25 @@ if mode=='start':
   raise
  public={'original_proxy_sha256':record['original_sha256'],'instrumented_binary_sha256':digest(binary),'same_original_arguments_and_environment':True,'instrumented_pid':record['instrumented_pid'],'trace_dir':str(trace_dir),'proxy_restarted_once_before_measurement':True}
  (root/'results/proxy-setup.json').write_text(json.dumps(public,indent=2));print('Owned VM proxy is instrumented and ready; original startup configuration retained privately.')
+ observer=str(Path(__file__).with_name('tcp-observer.py'))
+ with open(root/'tcp-observer.private.log','ab') as log:
+  child=subprocess.Popen(['python3',observer,'collect',str(root),str(record['instrumented_pid'])],stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
+ record['tcp_observer_pid']=child.pid;record['tcp_observer_script']=observer;save(record)
+ for _ in range(100):
+  assert child.poll() is None,'TCP observer exited'
+  if (root/'results/tcp-collector-ready.json').exists():break
+  time.sleep(.05)
+ else:raise RuntimeError('TCP observer readiness deadline')
 elif mode=='restore':
  if not state_path.exists():sys.exit(0)
  record=json.loads(state_path.read_text())
+ if record.get('tcp_observer_pid') and alive(record['tcp_observer_pid']):
+  arguments=[os.fsdecode(x) for x in args_for(record['tcp_observer_pid'])];assert record['tcp_observer_script'] in arguments and 'collect' in arguments
+  os.kill(record['tcp_observer_pid'],signal.SIGTERM)
+  for _ in range(100):
+   if (root/'results/tcp-collector-summary.json').exists():break
+   time.sleep(.05)
+  assert (root/'results/tcp-collector-summary.json').exists(),'TCP observer did not finish'
  if record['status']=='instrumented':
   stop(record['instrumented_pid'],record['instrumented_binary']);record['restored_pid']=launch(record['original_argv'],record['original_env'],root/'proxy-restored.private.log');record['status']='restored';save(record)
  assert record['status'].startswith('restored')

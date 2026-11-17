@@ -6,7 +6,7 @@ MIB=1048576
 SIZES=[20,24,32,64,96,400,1024,2048,3072,4096]
 RANGES=[1,4,8,16,32,64]
 PIN='55cc8345863c7cc4c66a329aec7e433d2d1c52a9'
-ROOT=Path('/tmp/cache-proxy-r2-timing-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHUB_RUN_ATTEMPT'])
+ROOT=Path('/tmp/cache-tcp-r2-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHUB_RUN_ATTEMPT'])
 RESULTS=ROOT/'results'
 trials=[]
 progress_url=None
@@ -47,7 +47,8 @@ def setup():
  runner=Path(os.environ['RUNNER_TEMP']).parent.parent;helper=runner/'externals/celesto-ci-cache-download';assert helper.is_file()
  shutil.copy2(helper,ROOT/'original-helper');(ROOT/'helper-path').write_text(str(helper))
  write('machine.json',{'boot_id':Path('/proc/sys/kernel/random/boot_id').read_text().strip(),'cpus':os.cpu_count(),'memory':[s for s in Path('/proc/meminfo').read_text().splitlines() if s.startswith('MemTotal:')],'original_helper_sha256':digest(helper),'kernel':os.uname().release,'runner_name':os.environ.get('RUNNER_NAME'),'source_archive_sha256':os.environ['MATRIX_SOURCE_SHA256']})
- sudo('apt-get','update','-qq');sudo('apt-get','install','-y','-qq','--no-install-recommends','musl-tools','build-essential')
+ sudo('apt-get','update','-qq');sudo('apt-get','install','-y','-qq','--no-install-recommends','musl-tools','build-essential','iproute2')
+ subprocess.run(['sudo','-n','python3',str(Path(os.environ['GITHUB_WORKSPACE'])/'.harness/scripts/qualify-tcp.py'),str(ROOT)],check=True)
  os.environ['PATH']=str(Path.home()/'.cargo/bin')+':'+os.environ['PATH']
  with open(ROOT/'build.log','w') as log:
   if not shutil.which('rustup'):
@@ -107,7 +108,7 @@ def timing(log,phase):
  return None
 
 def trial(concurrency,pair,position):
- index=len(trials)+1;key=f'proxy-r2-paired-{os.environ["GITHUB_RUN_ID"]}-{os.environ["GITHUB_RUN_ATTEMPT"]}-{index}'
+ index=len(trials)+1;key=f'tcp-r2-paired-{os.environ["GITHUB_RUN_ID"]}-{os.environ["GITHUB_RUN_ATTEMPT"]}-{index}'
  row={'index':index,'pair':pair,'position':position,'concurrency':concurrency,'key':key,'success':False,'started_unix':time.time()}
  output=Path(os.environ['GITHUB_WORKSPACE'])/'cache-file';receipt=RESULTS/f'native-{index}.json';save_log=RESULTS/f'{index}-save.log';restore_log=RESULTS/f'{index}-restore.log'
  try:
@@ -126,7 +127,15 @@ def trial(concurrency,pair,position):
    if name.startswith('CELESTO_EXPERIMENT_') or name in ['CACHE_UPLOAD_CHUNK_SIZE','CACHE_UPLOAD_CONCURRENCY']:env.pop(name)
   row['save_s'],row['save_resources']=run_action('save',env,save_log);output.unlink()
   row['before_restore']=snapshot();env.update(CELESTO_EXPERIMENT_CONCURRENCY=str(concurrency),CELESTO_EXPERIMENT_RECEIPT_PATH=str(receipt))
+  control=ROOT/'tcp-control.json';temporary=ROOT/'tcp-control.tmp';temporary.write_text(json.dumps({'active':True,'trial':index}));temporary.replace(control)
+  deadline=time.monotonic()+5
+  while not (RESULTS/f'tcp-window-{index}.json').exists() and time.monotonic()<deadline:time.sleep(.02)
+  assert (RESULTS/f'tcp-window-{index}.json').exists(),'TCP collector did not acknowledge the restore window'
   row['restore_s'],row['restore_resources']=run_action('restore',env,restore_log,f'system-{index}.json');row['after_restore']=snapshot()
+  temporary.write_text(json.dumps({'active':False,'trial':index}));temporary.replace(control);deadline=time.monotonic()+5
+  while not (RESULTS/f'tcp-window-end-{index}.json').exists() and time.monotonic()<deadline:time.sleep(.02)
+  assert (RESULTS/f'tcp-window-end-{index}.json').exists(),'TCP collector did not close the restore window'
+  tcp_window=json.loads((RESULTS/f'tcp-window-end-{index}.json').read_text());shutil.copy2(tcp_window['output'],RESULTS/f'tcp-{index}.jsonl.gz')
   save=save_log.read_text();restore=restore_log.read_text()
   assert receipt.exists() and 'Celesto cache native download:' in restore and 'native unavailable' not in restore,'native path not used'
   native=json.loads(receipt.read_text())
@@ -142,6 +151,15 @@ def trial(concurrency,pair,position):
   write(f'proxy-{index}.json',{'ranges':proxy_ranges,'joined':joined})
   row['proxy_summary']={'range_receipts':len(proxy_ranges),'r2_attempts':sum(len(t['upstream_requests']) for t in proxy_ranges),'refresh_count':sum(t.get('refresh_count',0) for t in proxy_ranges),'max_r2_headers_s':max(j['r2_headers_s'] for j in joined),'max_r2_body_pending_s':max(j['max_r2_body_pending_s'] for j in joined),'max_consumer_gap_s':max(j['max_consumer_gap_s'] for j in joined),'max_link_lock_s':max(j['link_lock_s'] for j in joined)}
   row['slow_ranges']=sorted(joined,key=lambda x:x['native_s'],reverse=True)[:5]
+  import gzip,statistics
+  peers={t['upstream_requests'][-1]['peer'] for t in proxy_ranges};samples=[json.loads(line) for line in gzip.open(RESULTS/f'tcp-{index}.jsonl.gz','rt')];connections={};rtts=[];receiver=[]
+  for sample in samples:
+   for tcp in sample.get('sockets',[]):
+    if tcp['peer'] in peers and 'tcp' in tcp:
+     key=tuple(tcp['cookie']);connections.setdefault(key,[]).append(tcp);rtts.append(tcp['tcp'].get('rtt',0))
+  assert connections and rtts,'No TCP_INFO for actual R2 sockets'
+  delta=lambda field:sum(max(x['tcp'].get(field,0) for x in group)-min(x['tcp'].get(field,0) for x in group) for group in connections.values())
+  row['tcp_summary']={'samples':len(samples),'r2_connections':len(connections),'rtt_median_us':statistics.median(rtts),'rtt_max_us':max(rtts),'local_send_retrans_delta':delta('total_retrans'),'receiver_ooo_delta':delta('rcv_ooopack'),'local_rto_delta':delta('total_rto'),'query_max_ms':max(x.get('query_ns',0) for x in samples)/1e6}
   assert native['bytes']>=4096*MIB and native['range_bytes']==16*MIB and native['concurrency']==concurrency,'geometry mismatch'
   assert native['peak_active']==concurrency,'requested concurrency not reached'
   rates=re.findall(r'Sent [0-9]+ of [0-9]+ \(100\.0%\), ([0-9.]+) MBs/sec',save)
@@ -153,6 +171,8 @@ def trial(concurrency,pair,position):
  except Exception as error:
   row.update(error_type=type(error).__name__,reason=str(error) if isinstance(error,(AssertionError,RuntimeError)) else 'owned_trial_operation_failed')
  finally:
+  if (ROOT/'tcp-control.json').exists():
+   temporary=ROOT/'tcp-control.tmp';temporary.write_text(json.dumps({'active':False,'trial':index}));temporary.replace(ROOT/'tcp-control.json')
   output.unlink(missing_ok=True);row['completed_unix']=time.time();trials.append(row);write('trials.json',trials)
  checkpoint('running',last_trial={k:row.get(k) for k in ['index','pair','position','concurrency','success','download_mib_s','upload_mib_s','cache_total_s','recovery_used','reason']})
  assert row['success'],'Trial failed; preserve failure and stop without replacement.'
@@ -166,7 +186,7 @@ def run():
  write('runtime.json',{'real_cache_host_mapping_verified':True,'proxy_port':proxy.port,'runtime_token_present':True,'node':os.environ['MATRIX_NODE']})
  os.chdir(os.environ['GITHUB_WORKSPACE'])
  subprocess.run(['sudo','-n','python3',str(Path(os.environ['GITHUB_WORKSPACE'])/'.harness/scripts/manage-cache-proxy-timing.py'),'start',str(ROOT)],check=True)
- write('method.json',{'released_commit':'e81b6a77ec58853556c40eda528c9b4715852bba','pairs':10,'trials':20,'payload_mib':4096,'concurrency':[32,64],'range_mib':16,'writer_batch_bytes':262144,'order':'32,64 on odd pairs; 64,32 on even pairs. Fixed before measurement.','first_download_only':True,'unique_random_payload_and_cache_key_per_trial':True,'same_vm_same_helper_binary':True,'same_instrumented_proxy_for_all_trials':True,'proxy_restarted_once_before_measurement':True,'timing_receipts_in_tmpfs':True,'correlation':'helper and proxy share request IDs and Linux CLOCK_MONOTONIC timestamps','action_pin':PIN,'proxy':'instrumented released CI proxy, original startup arguments/environment, real backend metadata and R2','upload':'same pinned official save bundle, exact released C# preparation, default adaptive upload','between_trial_sync':True,'sync_between_upload_and_restore':False,'hash_verification':'full SHA-256 source vs restored payload for every trial','limits':['Only concurrency changes; one instrumented released helper is used for both values. Diagnostic timing overhead is shared.','New cache object on every restore; no repeat reads. The VM and proxy process remain alive across trials, so this does not reproduce a fresh VM for each configuration.','sync runs before generating each new payload, outside measured phases, to reduce dirty writeback carryover.','Header/body wait sums overlap across requests and include runtime scheduling; they are not pure wire latency. Write sums can also overlap across runtime threads.','Shared physical host load and R2 internal state remain unobservable/uncontrolled.','Upstream Pending time includes readiness scheduling; consumer gaps include downstream backpressure and scheduling.100ms proxy heartbeat helps identify broad runtime stalls.','Header wait includes client pooling, DNS/connect/TLS and R2 first-response latency; it does not isolate those lower-level components.']})
+ write('method.json',{'released_commit':'e81b6a77ec58853556c40eda528c9b4715852bba','pairs':10,'trials':20,'payload_mib':4096,'concurrency':[32,64],'range_mib':16,'writer_batch_bytes':262144,'order':'32,64 on odd pairs; 64,32 on even pairs. Fixed before measurement.','first_download_only':True,'unique_random_payload_and_cache_key_per_trial':True,'same_vm_same_helper_binary':True,'same_instrumented_proxy_for_all_trials':True,'proxy_restarted_once_before_measurement':True,'timing_receipts_in_tmpfs':True,'correlation':'helper/proxy IDs, CLOCK_MONOTONIC and per-range R2 local/remote socket tuples; kernel inode/cookie identity','tcp_sample_interval_ms':100,'tcp_payload_captured':False,'action_pin':PIN,'proxy':'instrumented released CI proxy, original startup arguments/environment, real backend metadata and R2','upload':'same pinned official save bundle, exact released C# preparation, default adaptive upload','between_trial_sync':True,'sync_between_upload_and_restore':False,'hash_verification':'full SHA-256 source vs restored payload for every trial','limits':['Only concurrency changes; one instrumented released helper is used for both values. Diagnostic timing overhead is shared.','New cache object on every restore; no repeat reads. The VM and proxy process remain alive across trials, so this does not reproduce a fresh VM for each configuration.','sync runs before generating each new payload, outside measured phases, to reduce dirty writeback carryover.','Header/body wait sums overlap across requests and include runtime scheduling; they are not pure wire latency. Write sums can also overlap across runtime threads.','Shared physical host load and R2 internal state remain unobservable/uncontrolled.','Upstream Pending time includes readiness scheduling; consumer gaps include downstream backpressure and scheduling.100ms proxy heartbeat helps identify broad runtime stalls.','Header wait includes client pooling, DNS/connect/TLS and R2 first-response latency; it does not isolate those lower-level components.','TCP_INFO retransmission/cwnd/RTT statistics describe the local sender; they do not directly expose the R2 sender congestion window or total incoming retransmissions. Receiver out-of-order and global receive/DSACK/drop counters are recorded separately.','Sampling is100ms, so very brief connection events can be missed. Socket cookies and exact four-tuples disambiguate keepalive reuse; range attribution near sampling boundaries can include neighboring requests.']})
  for pair in range(1,11):
   for position,concurrency in enumerate([32,64] if pair%2 else [64,32],1):trial(concurrency,pair,position)
  assert len(trials)==20 and len({r['source_sha256'] for r in trials})==20 and len({r['key'] for r in trials})==20
