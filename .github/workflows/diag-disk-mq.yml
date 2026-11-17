@@ -1,0 +1,27 @@
+name: Diag disk multiqueue
+on:
+  push:
+    branches: ['diag/disk-mq']
+permissions:
+  contents: read
+jobs:
+  probe:
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [celesto, github]
+    runs-on: ${{ matrix.provider == 'github' && 'ubuntu-24.04' || 'celesto-large' }}
+    steps:
+      - run: |
+          set -x
+          nproc
+          lsblk -o NAME,TYPE,SIZE,MOUNTPOINT,ROTA,SCHED
+          for d in /sys/block/vd* /sys/block/nvme*n1 /sys/block/sd*; do
+            [ -e "$d" ] || continue
+            echo "== $d"
+            echo "hw queues: $(ls $d/mq 2>/dev/null | wc -l)"
+            ls $d/mq 2>/dev/null | tr '\n' ' '; echo
+            for k in scheduler nr_requests rotational write_cache; do echo "$k=$(cat $d/queue/$k 2>/dev/null)"; done
+            for q in $d/mq/*; do echo "$(basename $q) cpus=$(cat $q/cpu_list 2>/dev/null)"; done
+          done
+          grep -E "virtio[0-9]+" /proc/interrupts | head -20 || true
