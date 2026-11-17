@@ -24,7 +24,7 @@ listener=socket.socket();listener.bind(('127.0.0.1',0));listener.listen();port=l
 def serve():
  c,_=listener.accept();c.sendall(payload*64);time.sleep(.4);c.sendall(payload*(amount//len(payload)-64));time.sleep(.15);c.close();listener.close()
 threading.Thread(target=serve,daemon=True).start();clean=receive(socket.create_connection(('127.0.0.1',port),timeout=15))
-report={'basic_passed':True,'known_bytes_and_sha256_verified':True,'netlink_exact_socket_tuple_verified':True,'clean_rtt_us_max':max(r['tcp']['rtt'] for r in clean),'clean_bytes_received_max':max(r['tcp']['bytes_received'] for r in clean),'clean_samples':clean,'loss_test':{}}
+report={'basic_passed':True,'known_bytes_and_sha256_verified':True,'exact_socket_tuple_verified':True,'clean_rtt_us_max':max(r['tcp']['rtt'] for r in clean),'clean_bytes_received_max':max(r['tcp']['bytes_received'] for r in clean),'clean_samples':clean,'loss_test':{}}
 label='ctcp'+str(os.getpid());host='cth'+str(os.getpid());peer='ctp'+str(os.getpid());server=None;netem=False
 def cmd(*args):
  r=subprocess.run(list(args),capture_output=True,text=True)

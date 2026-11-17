@@ -56,7 +56,7 @@ if mode=='start':
  record={'original_argv':argv,'original_env':environment,'original_exe':original_exe,'original_sha256':digest(original_exe),'original_pid':pid,'instrumented_binary':str(binary),'trace_dir':str(trace_dir),'status':'recorded'};save(record)
  try:
   stop(pid,argv[0]);record['status']='original_stopped';save(record)
-  new_argv=[str(binary),*argv[1:]];new_env={**environment,'CELESTO_EXPERIMENT_PROXY_TIMING_DIR':str(trace_dir)}
+  new_argv=[str(binary),*argv[1:]];new_env={**environment,'CELESTO_EXPERIMENT_PROXY_TIMING_DIR':str(trace_dir),'CELESTO_EXPERIMENT_TCP_SOCKET':str(root/'tcp-info.sock')}
   record['instrumented_pid']=launch(new_argv,new_env,root/'proxy-debug.private.log');record['status']='instrumented';save(record)
  except Exception:
   if record['status']=='original_stopped':record['restored_pid']=launch(argv,environment,root/'proxy-restored.private.log');record['status']='restored_after_setup_error';save(record)

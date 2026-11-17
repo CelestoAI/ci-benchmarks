@@ -28,7 +28,7 @@ class Handler(BaseHTTPRequestHandler):
 server=ThreadingHTTPServer(('127.0.0.1',0),Handler);server.daemon_threads=True
 threading.Thread(target=server.serve_forever,daemon=True).start()
 with socket.socket() as s:s.bind(('127.0.0.1',0));port=s.getsockname()[1]
-env={**os.environ,'CELESTO_EXPERIMENT_PROXY_TIMING_DIR':str(traces)}
+env={**os.environ,'CELESTO_EXPERIMENT_PROXY_TIMING_DIR':str(traces),'CELESTO_EXPERIMENT_TCP_SOCKET':str(root/'qualification-tcp.sock')}
 log=open(root/'qualification.private.log','w')
 proxy=subprocess.Popen([str(binary),'--listen',f'127.0.0.1:{port}','--api-url',f'http://127.0.0.1:{server.server_port}/cache','--host-provider','qualification','--entitlement-file',str(root/'absent-proof'),'--results-url-file',str(root/'absent-results-url')],env=env,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT)
 def connection():return http.client.HTTPConnection('127.0.0.1',port,timeout=10)
@@ -69,7 +69,12 @@ try:
  assert all(r['body']['bytes']==size for r in receipts)
  raw=json.dumps(receipts)
  assert all(secret not in raw for secret in ['fake-signed-url-secret','fake-ticket-secret','fake-credential-secret'])
- report={'passed':True,'cases':['delayed_headers','delayed_body','paused_consumer','shared_link_refresh'],'all_payload_bytes_and_sha256_verified':True,'no_capabilities_in_receipts':True,'receipts':receipts}
+ import importlib.util
+ spec=importlib.util.spec_from_file_location('observer',Path(__file__).with_name('tcp-observer.py'));observer=importlib.util.module_from_spec(spec);spec.loader.exec_module(observer)
+ fields=json.loads((root/'results/tcp-layout.json').read_text())['fields'];network=observer.Diag(fields,root/'qualification-tcp.sock');sockets,_=network.snapshot(proxy.pid)
+ observed={(r['local'],r['peer']):r for r in sockets};mapped=[observed[(r['upstream_requests'][-1]['local'],r['upstream_requests'][-1]['peer'])] for r in receipts if (r['upstream_requests'][-1]['local'],r['upstream_requests'][-1]['peer']) in observed]
+ assert mapped and max(r['tcp'].get('bytes_received',0) for r in mapped)>=size,'Proxy in-process TCP_INFO/HTTP tuple correlation failed'
+ report={'passed':True,'proxy_tcp_info_tuple_verified':True,'cases':['delayed_headers','delayed_body','paused_consumer','shared_link_refresh'],'all_payload_bytes_and_sha256_verified':True,'no_capabilities_in_receipts':True,'receipts':receipts}
  (root/'results/timing-qualification.json').write_text(json.dumps(report,indent=2))
  print('Proxy timing qualification passed: header/body/downstream/refresh-lock delays separated through real HTTP; bytes and SHA-256 unchanged.')
 finally:

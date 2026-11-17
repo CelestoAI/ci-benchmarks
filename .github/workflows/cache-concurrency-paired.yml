@@ -18,7 +18,7 @@ jobs:
       - name: Build instrumented released helper
         env:
           MATRIX_SOURCE_URL: ${{ secrets.TCP_R2_SOURCE_20261117 }}
-          MATRIX_SOURCE_SHA256: b05af0a507fa9394b2a3fffcb4cf44aa25a8eb46583c388b2fccc675cc622b6c
+          MATRIX_SOURCE_SHA256: 0e240ce4acd06d805b189c039e945f64b2b6ca46f5a70b10eaa8eb4f5e774e74
         run: python3 .harness/scripts/cache-concurrency-paired.py setup
       - name: Run ten alternating first-download pairs
         uses: ./.harness/.github/actions/cache-concurrency-paired

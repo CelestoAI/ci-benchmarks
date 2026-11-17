@@ -21,38 +21,32 @@ def inodes(pid):
  return result
 
 class Diag:
- def __init__(self,fields):
-  self.fields=fields;self.sequence=0;self.socket=socket.socket(socket.AF_NETLINK,socket.SOCK_DGRAM,4);self.socket.bind((0,0));self.socket.settimeout(2)
+ def __init__(self,fields,unix_path=None):self.fields=fields;self.unix_path=unix_path
+ def decode(self,row):
+  raw=bytes.fromhex(row.pop('info_hex'));row['info_len']=len(raw);row['tcp']={name:int.from_bytes(raw[o:o+n],sys.byteorder) for name,(o,n) in self.fields.items() if o+n<=len(raw)};return row
  def snapshot(self,pid):
-  owned=inodes(pid);self.sequence+=1
-  request=struct.pack('=BBBBI',socket.AF_INET,socket.IPPROTO_TCP,1|2|8|64,0,0xffffffff)+b'\0'*40+struct.pack('=II',0xffffffff,0xffffffff)
-  self.socket.sendto(struct.pack('=IHHII',16+len(request),20,1|0x300,self.sequence,0)+request,(0,0))
-  rows=[];interrupted=False
-  while True:
-   data=self.socket.recv(1024*1024);pos=0
-   while pos+16<=len(data):
-    length,kind,flags,seq,_=struct.unpack_from('=IHHII',data,pos);assert length>=16;payload=data[pos+16:pos+length];pos+=(length+3)&~3
-    if seq!=self.sequence:continue
-    interrupted|=bool(flags&16)
-    if kind==3:return rows,interrupted
-    if kind==2:
-     error=struct.unpack_from('=i',payload)[0]
-     if error:raise OSError(-error,os.strerror(-error))
-     continue
-    if kind!=20 or len(payload)<72:continue
-    inode=struct.unpack_from('=I',payload,68)[0]
-    if inode not in owned:continue
-    sport,dport=struct.unpack_from('!HH',payload,4)
-    if not dport:continue
-    row={'inode':inode,'cookie':list(struct.unpack_from('=II',payload,44)),'local':socket.inet_ntop(socket.AF_INET,payload[8:12])+':'+str(sport),'peer':socket.inet_ntop(socket.AF_INET,payload[24:28])+':'+str(dport),'state':payload[1],'timer':payload[2],'timer_retrans':payload[3],'expires_ms':struct.unpack_from('=I',payload,52)[0],'recv_q':struct.unpack_from('=I',payload,56)[0],'send_q':struct.unpack_from('=I',payload,60)[0]}
-    offset=72
-    while offset+4<=len(payload):
-     size,attribute=struct.unpack_from('=HH',payload,offset);assert size>=4;value=payload[offset+4:offset+size];offset+=(size+3)&~3
-     if attribute==2:
-      row['info_len']=len(value);row['tcp']={name:int.from_bytes(value[o:o+n],sys.byteorder) for name,(o,n) in self.fields.items() if o+n<=len(value)}
-     elif attribute==4:row['congestion']=value.rstrip(b'\0').decode('ascii','replace')
-     elif attribute==7:row['skmem']=list(struct.unpack('='+str(len(value)//4)+'I',value))
-    rows.append(row)
+  if pid!=os.getpid():
+   assert self.unix_path is not None
+   with socket.socket(socket.AF_UNIX,socket.SOCK_STREAM) as sock:
+    sock.settimeout(2);sock.connect(str(self.unix_path));pieces=[]
+    while data:=sock.recv(262144):pieces.append(data)
+   result=json.loads(b''.join(pieces));return [self.decode(row) for row in result['sockets']],False
+  rows=[]
+  for fd in (Path('/proc')/str(pid)/'fd').iterdir():
+   try:
+    link=os.readlink(fd)
+    if not link.startswith('socket:['):continue
+    copied=os.dup(int(fd.name))
+    with socket.socket(fileno=copied) as sock:
+     if sock.family!=socket.AF_INET:continue
+     local=sock.getsockname();peer=sock.getpeername();raw=sock.getsockopt(socket.IPPROTO_TCP,socket.TCP_INFO,1024)
+     cookie=int.from_bytes(sock.getsockopt(socket.SOL_SOCKET,57,8),sys.byteorder)
+     import fcntl
+     recv_q=struct.unpack('=i',fcntl.ioctl(sock,0x541B,struct.pack('=i',0)))[0];send_q=struct.unpack('=i',fcntl.ioctl(sock,0x5411,struct.pack('=i',0)))[0]
+     row={'inode':os.fstat(sock.fileno()).st_ino,'cookie':[cookie&0xffffffff,cookie>>32],'local':'%s:%s'%local,'peer':'%s:%s'%peer,'recv_q':recv_q,'send_q':send_q,'info_hex':raw.hex()}
+     rows.append(self.decode(row))
+   except (OSError,ValueError):continue
+  return rows,False
 
 def global_counters():
  result={}
@@ -70,13 +64,13 @@ def global_counters():
  return result
 
 def collect(root,pid):
- fields=json.loads((root/'results/tcp-layout.json').read_text())['fields'];diag=Diag(fields);stop=False
+ fields=json.loads((root/'results/tcp-layout.json').read_text())['fields'];diag=Diag(fields,root/'tcp-info.sock');stop=False
  def halt(*_):
   nonlocal stop;stop=True
  signal.signal(signal.SIGTERM,halt);signal.signal(signal.SIGINT,halt)
  control=root/'tcp-control.json';trace_dir=Path(json.loads((root/'results/proxy-setup.json').read_text())['trace_dir'])
  output=trace_dir/'tcp-samples.jsonl.gz';samples=0;errors=0;max_lag=0;first=time.monotonic_ns();start_cpu=resource.getrusage(resource.RUSAGE_SELF);windows=set()
- ready=root/'results/tcp-collector-ready.json';ready.write_text(json.dumps({'pid':os.getpid(),'proxy_pid':pid,'sample_interval_ms':100,'output_dir':str(trace_dir),'method':'INET_DIAG_INFO for proxy-owned socket inodes, exact tuple/cookie; no packet payload.'}));os.chmod(ready,0o644)
+ ready=root/'results/tcp-collector-ready.json';ready.write_text(json.dumps({'pid':os.getpid(),'proxy_pid':pid,'sample_interval_ms':100,'output_dir':str(trace_dir),'method':'TCP_INFO read inside the proxy, private Unix IPC, exact tuple/cookie; no packet payload.'}));os.chmod(ready,0o644)
  stream=None;current_trial=None;window_count=0;path=None
  def close_window():
   nonlocal stream,current_trial,window_count
