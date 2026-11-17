@@ -24,6 +24,7 @@ jobs:
         uses: ./.harness/.github/actions/cache-concurrency-paired
         env:
           MATRIX_PROGRESS_PUT_URL: ${{ secrets.TCP_R2_PROGRESS_20261117 }}
+          MATRIX_RECEIPTS_PUT_URL: ${{ secrets.TCP_R2_RECEIPTS_20261117 }}
       - name: Restore published helper
         if: always()
         run: python3 .harness/scripts/cache-concurrency-paired.py cleanup

@@ -10,6 +10,7 @@ ROOT=Path('/tmp/cache-tcp-r2-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHU
 RESULTS=ROOT/'results'
 trials=[]
 progress_url=None
+backup_url=None
 
 def digest(p):
  h=hashlib.sha256()
@@ -35,6 +36,24 @@ def checkpoint(stage,**extra):
     if attempt==2:print(json.dumps({'stage':'progress_publish_delayed'}),flush=True)
     else:time.sleep(1)
  print(json.dumps({k:v for k,v in value.items() if k!='trials'}),flush=True)
+
+def backup_receipts():
+ import io
+ secret=ROOT/'receipts-put.private'
+ if not secret.exists():return
+ buffer=io.BytesIO()
+ with tarfile.open(fileobj=buffer,mode='w:gz',compresslevel=1) as archive:
+  for path in RESULTS.rglob('*'):
+   if path.is_file():archive.add(path,arcname=str(path.relative_to(RESULTS)),recursive=False)
+ for attempt in range(3):
+  try:
+   request=urllib.request.Request(secret.read_text(),data=buffer.getvalue(),method='PUT')
+   with urllib.request.urlopen(request,timeout=60) as response:response.read()
+   print(json.dumps({'direct_receipt_backup_bytes':buffer.tell()}),flush=True);return
+  except Exception:
+   if attempt==2:print('Direct receipt backup delayed; retained for cleanup retry.',flush=True)
+   else:time.sleep(1)
+
 
 def setup():
  ROOT.mkdir(mode=0o700);RESULTS.mkdir();source=ROOT/'source';source.mkdir()
@@ -145,6 +164,11 @@ def trial(concurrency,pair,position):
    while not trace_path.exists() and time.monotonic()<deadline:time.sleep(.01)
    assert trace_path.is_file(),'Proxy timing missing: live instrumented proxy not reached'
    trace=json.loads(trace_path.read_text());assert trace['id']==request['id'] and (trace['range_start'],trace['range_end'])==(request['start'],request['end'])
+   if 'body' not in trace:
+    trace['body_observed']=False
+    trace['body']={'bytes':0,'first_poll_mono_ns':0,'first_byte_mono_ns':0,'last_byte_mono_ns':0,'pending_wait_ns':0,'max_pending_wait_ns':0,'consumer_gap_ns':0,'max_consumer_gap_ns':0,'eof_observed':False,'upstream_error':False,'milestones':[]}
+   else:trace['body_observed']=True
+
    if request['error'] is None:assert trace['body']['bytes']==request['end']-request['start']+1,'Proxy body trace incomplete'
    proxy_ranges.append(trace)
    joined.append({'id':request['id'],'native_s':request['seconds'],'proxy_s':trace['total_ns']/1e9,'dispatch_to_handler_s':(trace['begin_mono_ns']-request['begin_mono_ns'])/1e9,'r2_headers_s':sum(x['headers_wait_ns'] for x in trace['upstream_requests'])/1e9,'link_lock_s':trace.get('link_lock_wait_ns',0)/1e9,'refresh_s':trace.get('refresh_ns',0)/1e9,'r2_body_pending_s':trace['body']['pending_wait_ns']/1e9,'max_r2_body_pending_s':trace['body']['max_pending_wait_ns']/1e9,'consumer_gap_s':trace['body']['consumer_gap_ns']/1e9,'max_consumer_gap_s':trace['body']['max_consumer_gap_ns']/1e9,'client_write_s':request['write_ns']/1e9,'max_client_write_s':request['max_write_ns']/1e9})
@@ -152,7 +176,7 @@ def trial(concurrency,pair,position):
   row['proxy_summary']={'range_receipts':len(proxy_ranges),'r2_attempts':sum(len(t['upstream_requests']) for t in proxy_ranges),'refresh_count':sum(t.get('refresh_count',0) for t in proxy_ranges),'max_r2_headers_s':max(j['r2_headers_s'] for j in joined),'max_r2_body_pending_s':max(j['max_r2_body_pending_s'] for j in joined),'max_consumer_gap_s':max(j['max_consumer_gap_s'] for j in joined),'max_link_lock_s':max(j['link_lock_s'] for j in joined)}
   row['slow_ranges']=sorted(joined,key=lambda x:x['native_s'],reverse=True)[:5]
   import gzip,statistics
-  peers={t['upstream_requests'][-1]['peer'] for t in proxy_ranges};samples=[json.loads(line) for line in gzip.open(RESULTS/f'tcp-{index}.jsonl.gz','rt')];connections={};rtts=[];receiver=[]
+  peers={t['upstream_requests'][-1].get('peer') for t in proxy_ranges if t['upstream_requests']};samples=[json.loads(line) for line in gzip.open(RESULTS/f'tcp-{index}.jsonl.gz','rt')];connections={};rtts=[];receiver=[]
   for sample in samples:
    for tcp in sample.get('sockets',[]):
     if tcp['peer'] in peers and 'tcp' in tcp:
@@ -169,17 +193,19 @@ def trial(concurrency,pair,position):
   before=time.monotonic();actual=digest(output);assert output.stat().st_size==4096*MIB and actual==row['source_sha256'],'payload integrity mismatch'
   row.update(restored_sha256=actual,hash_s=time.monotonic()-before,success=True)
  except Exception as error:
-  row.update(error_type=type(error).__name__,reason=str(error) if isinstance(error,(AssertionError,RuntimeError)) else 'owned_trial_operation_failed')
+  row.update(error_type=type(error).__name__,reason=str(error) if isinstance(error,(AssertionError,RuntimeError,KeyError)) else 'owned_trial_operation_failed')
  finally:
   if (ROOT/'tcp-control.json').exists():
    temporary=ROOT/'tcp-control.tmp';temporary.write_text(json.dumps({'active':False,'trial':index}));temporary.replace(ROOT/'tcp-control.json')
   output.unlink(missing_ok=True);row['completed_unix']=time.time();trials.append(row);write('trials.json',trials)
+ backup_receipts()
  checkpoint('running',last_trial={k:row.get(k) for k in ['index','pair','position','concurrency','success','download_mib_s','upload_mib_s','cache_total_s','recovery_used','reason']})
  assert row['success'],'Trial failed; preserve failure and stop without replacement.'
 
 def run():
  global progress_url
  progress_url=os.environ.pop('MATRIX_PROGRESS_PUT_URL')
+ secret=ROOT/'receipts-put.private';secret.write_text(os.environ.pop('MATRIX_RECEIPTS_PUT_URL'));secret.chmod(0o600)
  assert os.environ.get('ACTIONS_RUNTIME_TOKEN') and os.environ.get('ACTIONS_RESULTS_URL'),'real Node action runtime missing'
  proxy=urlsplit(os.environ['ACTIONS_RESULTS_URL']);mapped={a[4][0] for a in socket.getaddrinfo('celesto-cache.blob.core.windows.net',8448,type=socket.SOCK_STREAM)}
  assert proxy.scheme=='http' and proxy.port==8448 and proxy.hostname in mapped|{'127.0.0.1','localhost','celesto-cache.blob.core.windows.net'},'real cache proxy unavailable'
@@ -193,21 +219,29 @@ def run():
  checkpoint('complete')
 
 def cleanup():
- manager=Path(os.environ['GITHUB_WORKSPACE'])/'.harness/scripts/manage-cache-proxy-timing.py'
- subprocess.run(['sudo','-n','python3',str(manager),'restore',str(ROOT)],check=True)
- if (RESULTS/'proxy-setup.json').exists():
-  trace_dir=Path(json.loads((RESULTS/'proxy-setup.json').read_text())['trace_dir'])
-  if (trace_dir/'runtime-lag.jsonl').exists():shutil.copy2(trace_dir/'runtime-lag.jsonl',RESULTS/'proxy-runtime-lag.jsonl')
-  known=set()
-  for file in RESULTS.glob('proxy-[0-9]*.json'):
-   known.update(t['id'] for t in json.loads(file.read_text())['ranges'])
-  orphan=RESULTS/'unjoined-ranges'
-  for file in trace_dir.glob('range-*.json'):
-   if file.stem.removeprefix('range-') not in known:orphan.mkdir(exist_ok=True);shutil.copy2(file,orphan/file.name)
-  write('proxy-coverage.json',{'joined_range_receipts':len(known),'total_range_receipts':len(list(trace_dir.glob('range-*.json'))),'unjoined':len(list(orphan.glob('*.json'))) if orphan.exists() else 0})
- if (ROOT/'helper-path').exists() and (ROOT/'original-helper').exists():
-  helper=Path((ROOT/'helper-path').read_text());sudo('install','-m','0755',ROOT/'original-helper',helper);assert digest(helper)==digest(ROOT/'original-helper');write('cleanup.json',{'original_helper_restored':True,'sha256':digest(helper)})
- (Path(os.environ['GITHUB_WORKSPACE'])/'cache-file').unlink(missing_ok=True)
+ failure=None
+ try:
+  subprocess.run(['sudo','-n','python3',str(Path(os.environ['GITHUB_WORKSPACE'])/'.harness/scripts/manage-cache-proxy-timing.py'),'restore',str(ROOT)],check=True)
+ except Exception as error:failure=type(error).__name__
+ try:
+  if (RESULTS/'proxy-setup.json').exists():
+   trace_dir=Path(json.loads((RESULTS/'proxy-setup.json').read_text())['trace_dir'])
+   for path in trace_dir.glob('tcp-*.jsonl.gz'):
+    if not (RESULTS/path.name).exists():shutil.copy2(path,RESULTS/path.name)
+   if (trace_dir/'runtime-lag.jsonl').exists():shutil.copy2(trace_dir/'runtime-lag.jsonl',RESULTS/'proxy-runtime-lag.jsonl')
+   known=set()
+   for file in RESULTS.glob('proxy-[0-9]*.json'):
+    known.update(t['id'] for t in json.loads(file.read_text())['ranges'])
+   orphan=RESULTS/'unjoined-ranges'
+   for file in trace_dir.glob('range-*.json'):
+    if file.stem.removeprefix('range-') not in known:orphan.mkdir(exist_ok=True);shutil.copy2(file,orphan/file.name)
+   write('proxy-coverage.json',{'joined_range_receipts':len(known),'total_range_receipts':len(list(trace_dir.glob('range-*.json'))),'unjoined':len(list(orphan.glob('*.json'))) if orphan.exists() else 0})
+ finally:
+  if (ROOT/'helper-path').exists() and (ROOT/'original-helper').exists():
+   helper=Path((ROOT/'helper-path').read_text());sudo('install','-m','0755',ROOT/'original-helper',helper);assert digest(helper)==digest(ROOT/'original-helper');write('cleanup.json',{'original_helper_restored':True,'sha256':digest(helper),'proxy_cleanup_error':failure})
+  (Path(os.environ['GITHUB_WORKSPACE'])/'cache-file').unlink(missing_ok=True)
+  backup_receipts()
+ if failure:raise RuntimeError('Proxy cleanup failed; direct receipts backed up independently')
 
 if __name__=='__main__':
  try:

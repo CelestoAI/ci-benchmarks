@@ -83,7 +83,16 @@ elif mode=='restore':
    time.sleep(.05)
   assert (root/'results/tcp-collector-summary.json').exists(),'TCP observer did not finish'
  if record['status']=='instrumented':
-  stop(record['instrumented_pid'],record['instrumented_binary']);record['restored_pid']=launch(record['original_argv'],record['original_env'],root/'proxy-restored.private.log');record['status']='restored';save(record)
+  stop(record['instrumented_pid'],record['instrumented_binary'])
+  last=None
+  for attempt in range(10):
+   try:
+    record['restored_pid']=launch(record['original_argv'],record['original_env'],root/'proxy-restored.private.log');last=None;break
+   except Exception as error:last=type(error).__name__;time.sleep(.2)
+  if last:
+   raw=(root/'proxy-restored.private.log').read_text(errors='replace');safe={name:name.lower() in raw.lower() for name in ['Address already in use','invalid cache entitlement','No such file','cannot listen']}
+   (root/'results/proxy-restore-error.json').write_text(json.dumps({'error_type':last,'known_messages':safe}));raise RuntimeError('Original proxy restart failed')
+  record['status']='restored';save(record)
  assert record['status'].startswith('restored')
  assert digest(record['original_exe'])==record['original_sha256']
  (root/'results/proxy-cleanup.json').write_text(json.dumps({'original_proxy_restarted':True,'original_arguments_and_environment_restored':True,'original_proxy_sha256':record['original_sha256']},indent=2));print('Original owned VM cache proxy restored and ready.')

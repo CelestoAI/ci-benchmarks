@@ -20,6 +20,7 @@ class Handler(BaseHTTPRequestHandler):
   raw=json.dumps(answer).encode();self.send_response(200);self.send_header('Content-Length',str(len(raw)));self.send_header('Content-Type','application/json');self.end_headers();self.wfile.write(raw)
  def do_GET(self):
   mode=parse_qs(urlsplit(self.path).query)['mode'][0]
+  if mode=='failure':self.send_response(503);self.send_header('Content-Length','0');self.end_headers();return
   if mode=='headers':time.sleep(.4)
   self.send_response(206);self.send_header('Content-Length',str(size));self.send_header('Content-Range',f'bytes 0-{size-1}/{size}');self.send_header('ETag','"probe"');self.send_header('cf-ray','qualification-ray');self.end_headers()
   for index in range(size//len(chunk)):
@@ -60,6 +61,13 @@ try:
   if case=='headers':assert r['upstream_requests'][0]['headers_wait_ns']>=300_000_000,'Injected header delay not measured'
   if case=='body':assert r['body']['max_pending_wait_ns']>=300_000_000,'Injected R2 body delay not measured'
   if case=='consumer':assert r['body']['max_consumer_gap_ns']>=250_000_000,'Downstream pause not measured separately'
+ scenario='failure';path=lookup();c=connection();c.request('GET',path,headers={'Range':f'bytes=0-{size-1}','x-celesto-cache-native-download':'1','x-celesto-experiment-range-id':'probe-failed-header'});answer=c.getresponse();assert answer.status==502;answer.read();c.close()
+ for _ in range(150):
+  failed=traces/'range-probe-failed-header.json'
+  if failed.exists():break
+  time.sleep(.02)
+ failure=json.loads(failed.read_text());assert 'body' not in failure and failure['upstream_requests'][0]['status']==503
+ (root/'results/failed-header-qualification.json').write_text(json.dumps({'passed':True,'missing_body_expected_for_header_failure':True,'trace':failure},indent=2))
  scenario='refresh';path=lookup();time.sleep(.6)
  with ThreadPoolExecutor(max_workers=2) as pool:
   pair=list(pool.map(lambda name:download(path,name),['probe-refresh-a','probe-refresh-b']))
