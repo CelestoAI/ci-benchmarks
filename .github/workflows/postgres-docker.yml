@@ -1,66 +1,54 @@
-name: Postgres via Docker on Celesto runner
-# Reproduces the Docker-based Postgres setup commonly used in CI scripts.
-# Expected to FAIL on celesto-large until Docker support lands; re-run then.
+name: Postgres 17 native service smoke
+run-name: Postgres 17 on Celesto localhost port 5432
+
 on:
   workflow_dispatch:
-  push:
-    branches: [ci/postgres-docker]
-permissions:
-  contents: read
-jobs:
-  postgres-service:
-    name: postgres service container
-    runs-on: [self-hosted, celesto-large]
-    timeout-minutes: 10
-    steps:
-      - name: Docker is available
-        run: docker version
-      - name: Start Postgres
-        run: |
-          docker run -d --name celesto-runtime-events-pg \
-            -e POSTGRES_HOST_AUTH_METHOD=trust \
-            -e POSTGRES_DB=celesto_runtime_events_test \
-            -p 127.0.0.1:5432:5432 \
-            --health-cmd "pg_isready -U postgres" \
-            --health-interval 5s \
-            --health-timeout 5s \
-            --health-retries 10 \
-            postgres:17
-      - name: Wait until healthy
-        run: |
-          for i in $(seq 1 30); do
-            [ "$(docker inspect -f '{{.State.Health.Status}}' celesto-runtime-events-pg)" = healthy ] && exit 0
-            sleep 2
-          done
-          docker logs celesto-runtime-events-pg
-          exit 1
-      - name: Apply schema and dump it (host network)
-        run: |
-          echo 'create table t(id int);' > schema.sql
-          docker run --rm --network host -i postgres:17 \
-            psql postgresql://postgres@127.0.0.1:5432/celesto_runtime_events_test -XAt -v ON_ERROR_STOP=1 < schema.sql
-          docker run --rm --network host postgres:17 \
-            pg_dump postgresql://postgres@127.0.0.1:5432/celesto_runtime_events_test --schema-only --no-owner
-      - name: Cleanup
-        if: always()
-        run: docker rm -f celesto-runtime-events-pg
 
-  migration-roundtrip:
-    name: migration roundtrip in one container
+permissions: {}
+
+jobs:
+  postgres17:
+    name: Postgres 17 through localhost:5432
     runs-on: [self-hosted, celesto-large]
-    timeout-minutes: 10
-    env:
-      C: celesto-admin-removal-test-${{ github.run_id }}
+    timeout-minutes: 6
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: celesto_smoke
+          POSTGRES_PASSWORD: disposable-service-password
+          POSTGRES_DB: celesto_smoke
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd "pg_isready -U celesto_smoke -d celesto_smoke"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 20
     steps:
-      - run: docker run -d --name "$C" -e POSTGRES_HOST_AUTH_METHOD=trust postgres:17
-      - run: |
-          until docker exec "$C" pg_isready -h 127.0.0.1 -U postgres; do sleep 1; done
-      - run: |
-          echo 'create table t(id int);' | docker exec -i "$C" psql -U postgres -d postgres -XAt -v ON_ERROR_STOP=1
-          docker exec "$C" pg_dump -U postgres -d postgres --schema-only --no-owner
-          docker exec "$C" createdb -U postgres migration
-          echo 'create table t(id int);' | docker exec -i "$C" psql -U postgres -d migration -XAt -v ON_ERROR_STOP=1
-          docker exec "$C" pg_dump -U postgres -d migration --schema-only --no-owner
-      - name: Cleanup
-        if: always()
-        run: docker rm -f "$C"
+      - name: Connect from the runner VM and verify a SQL round trip
+        shell: bash
+        env:
+          PGHOST: localhost
+          PGPORT: "5432"
+          PGUSER: celesto_smoke
+          PGPASSWORD: disposable-service-password
+          PGDATABASE: celesto_smoke
+          PGCONNECT_TIMEOUT: "5"
+          SERVICE_PORT: ${{ job.services.postgres.ports[5432] }}
+        run: |
+          set -euo pipefail
+          [[ "$RUNNER_NAME" == celesto-rs-* ]]
+          [[ "$SERVICE_PORT" == "$PGPORT" ]]
+          version_num="$(psql -XAt -v ON_ERROR_STOP=1 -c 'SHOW server_version_num')"
+          [[ "$version_num" -ge 170000 && "$version_num" -lt 180000 ]]
+          result="$(psql -XqAt -v ON_ERROR_STOP=1 <<'SQL'
+          CREATE TEMP TABLE smoke (value integer NOT NULL);
+          INSERT INTO smoke VALUES (42);
+          SELECT value FROM smoke;
+          SQL
+          )"
+          [[ "$result" == 42 ]]
+          version="$(psql -XAt -v ON_ERROR_STOP=1 -c 'SHOW server_version')"
+          printf 'runner=%s endpoint=%s:%s postgres_version=%s server_version_num=%s sql_result=%s\n' \
+            "$RUNNER_NAME" "$PGHOST" "$PGPORT" "$version" "$version_num" "$result"
