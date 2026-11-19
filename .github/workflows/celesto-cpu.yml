@@ -1,31 +1,43 @@
-name: Benchmark on Celesto CI
+name: CI runner label rollout smoke
+run-name: CI runner label rollout smoke
 
 on:
   workflow_dispatch:
-    inputs:
-      cache_namespace:
-        description: New value for a cold run; reuse unchanged for a warm run.
-        required: true
-        default: run-1
-        type: string
-      cache_mb:
-        description: Incompressible cache payload in MiB.
-        required: true
-        default: '512'
-        type: choice
-        options: ['256', '512', '1024', '2304']
-      cpu_iterations:
-        description: Iterations per CPU worker; match the GitHub-hosted run.
-        required: true
-        default: '250000000'
-        type: string
+
+permissions: {}
 
 jobs:
-  benchmark:
-    uses: ./.github/workflows/benchmark.yml
-    with:
-      provider: celesto-ci
-      runs_on: '["self-hosted", "celesto-large"]'
-      cache_namespace: ${{ inputs.cache_namespace }}
-      cache_mb: ${{ inputs.cache_mb }}
-      cpu_iterations: ${{ inputs.cpu_iterations }}
+  bare:
+    runs-on: celesto
+    timeout-minutes: 4
+    steps:
+      - name: Verify Celesto runner
+        run: |
+          [[ "$RUNNER_NAME" == celesto-rs-* ]]
+          printf 'assigned=%s\n' "$RUNNER_NAME"
+          sleep 25
+
+  with-self-hosted:
+    runs-on: [self-hosted, celesto]
+    timeout-minutes: 4
+    steps:
+      - name: Verify Celesto runner
+        run: |
+          [[ "$RUNNER_NAME" == celesto-rs-* ]]
+          printf 'assigned=%s\n' "$RUNNER_NAME"
+          sleep 25
+
+  unsupported-explicit:
+    runs-on: [self-hosted, linux, x64, celesto]
+    timeout-minutes: 4
+    steps:
+      - run: exit 1
+
+  generic-only:
+    runs-on: [self-hosted, linux, x64]
+    timeout-minutes: 4
+    steps:
+      - name: Verify assignment stays off Celesto
+        run: |
+          [[ "$RUNNER_NAME" != celesto-* ]]
+          printf 'assigned=%s\n' "$RUNNER_NAME"
