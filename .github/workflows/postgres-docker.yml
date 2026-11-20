@@ -1,10 +1,15 @@
 name: Native single-job cancellation proof
 on:
   workflow_dispatch:
+    inputs:
+      runner_label:
+        description: One-off label for the isolated runner
+        required: true
+        type: string
 permissions: {}
 jobs:
   cancel-target:
-    runs-on: cancel-proof-4f10a8d3
+    runs-on: ${{ inputs.runner_label }}
     timeout-minutes: 4
     steps:
       - name: Wait for native cancellation
