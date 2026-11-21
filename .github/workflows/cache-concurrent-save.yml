@@ -1,0 +1,62 @@
+name: Concurrent cache save baseline
+
+on:
+  push:
+    branches: [bench/ci-cache-concurrent-save-20261121-1]
+    paths: [.github/workflows/cache-concurrent-save.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  start:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      deadline: ${{ steps.clock.outputs.deadline }}
+    steps:
+      - name: Set a shared save start time
+        id: clock
+        shell: bash
+        run: echo "deadline=$(( $(date +%s) + 120 ))" >> "$GITHUB_OUTPUT"
+
+  save:
+    name: Save and restore cache (${{ matrix.lane }})
+    needs: start
+    runs-on: celesto-small
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    env:
+      CACHE_KEY: cache-lock-burst-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+    steps:
+      - name: Prepare independent 8 MiB archive
+        run: |
+          head -c 8388608 /dev/urandom > concurrent-cache.bin
+          sha256sum concurrent-cache.bin > concurrent-cache.sha256
+      - name: Wait for the shared start time
+        env:
+          START_AT: ${{ needs.start.outputs.deadline }}
+        run: |
+          remaining=$((START_AT - $(date +%s)))
+          if (( remaining > 0 )); then
+            sleep "$remaining"
+          fi
+          echo "Save start offset: $(($(date +%s) - START_AT)) seconds"
+      - name: Save the cache
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: concurrent-cache.bin
+          key: ${{ env.CACHE_KEY }}
+      - name: Remove the local file
+        run: rm concurrent-cache.bin
+      - name: Restore the exact key
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: concurrent-cache.bin
+          key: ${{ env.CACHE_KEY }}
+          fail-on-cache-miss: true
+      - name: Verify restored bytes
+        run: sha256sum -c concurrent-cache.sha256
