@@ -1,8 +1,8 @@
-name: Go build cache baseline
+name: Go cache rollout benchmark
 
 on:
   push:
-    branches: [benchmark/go-cache-prod-baseline]
+    branches: [benchmark/go-cache-prod-rollout-20261123]
     paths: [.github/workflows/go-cache-baseline.yml]
 
 permissions:
@@ -16,10 +16,15 @@ env:
 
 jobs:
   seed:
-    name: Seed the Actions cache
+    name: Seed the Actions cache (${{ matrix.cache }})
     runs-on: celesto-large
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        cache: [actions, actions-plus-go]
     env:
+      CACHE_MODE: ${{ matrix.cache }}
       BENCHMARK_PHASE: seed
       EXPECTED_HIT: 'false'
     steps: &benchmark_steps
@@ -40,14 +45,14 @@ jobs:
             const route = url ? (routes.includes(new URL(url).origin) ? 'celesto' : 'upstream') : 'unset';
             core.info(`Actions cache route: ${route}`);
             core.exportVariable('BENCHMARK_CACHE_TRANSPORT', route);
-            if (process.env.GOCACHEPROG) core.setFailed('Expected the Go-specific cache to be off');
+            if (route !== 'celesto') core.setFailed('Expected the Celesto Actions cache route');
 
       - name: Prepare this build
         shell: bash
         run: |
           test "$RUNNER_ENVIRONMENT" = self-hosted
           test "$(nproc)" -eq 4
-          printf '%s-%s\n' "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" > work/.benchmark-cache-key
+          printf '%s-%s-%s\n' "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$CACHE_MODE" > work/.benchmark-cache-key
           if [[ "$BENCHMARK_PHASE" != seed ]]; then
             cat > work/internal/ghcmd/go_cache_benchmark_edit.go <<'GO'
           package ghcmd
@@ -85,10 +90,15 @@ jobs:
         run: |
           setup_end="$(date +%s%N)"
           test "$ACTUAL_HIT" = "$EXPECTED_HIT"
-          if [[ -n "$(go env GOCACHEPROG)" ]]; then
-            echo 'Expected the Go-specific cache to be off on this production runner'
-            exit 1
+          case "$(go env GOCACHEPROG)" in
+            *celesto-ci-cache-proxy*gocacheprog*) ;;
+            *) echo 'Expected the production runner to supply the Go cache helper'; exit 1 ;;
+          esac
+          if [[ "$CACHE_MODE" == actions ]]; then
+            export GOCACHEPROG=""
           fi
+          test ! -e /var/tmp/celesto-go-cache/a || test -z "$(find /var/tmp/celesto-go-cache/a -type f -print -quit)"
+          test ! -e /var/tmp/celesto-go-cache/remote-disabled
           start="$(date +%s%N)"
           go build -trimpath -buildvcs=false -p 4 -o "$RUNNER_TEMP/gh-benchmark" ./cmd/gh
           end="$(date +%s%N)"
@@ -100,12 +110,26 @@ jobs:
           read -r digest _ < <(sha256sum "$RUNNER_TEMP/gh-benchmark")
           go_version="$(go env GOVERSION)"
           gcc_enabled="$(go env CGO_ENABLED)"
+          remote_entries=0
+          remote_bytes=0
+          if [[ "$CACHE_MODE" == actions-plus-go ]]; then
+            test -d /var/tmp/celesto-go-cache/a
+            read -r remote_entries remote_bytes < <(
+              find /var/tmp/celesto-go-cache/a -type f -exec cat {} + |
+                awk '$3 == "1970-01-01T00:00:00Z" {count++; bytes+=$2} END {printf "%d %.0f\n", count, bytes}'
+            )
+            if [[ "$BENCHMARK_PHASE" != seed ]]; then
+              test "$remote_entries" -gt 0
+            fi
+          fi
           {
             printf 'Phase: %s\n' "$BENCHMARK_PHASE"
             printf 'Source: %s\n' "$BENCHMARK_SOURCE"
             printf 'Go: %s\n' "$go_version"
             printf 'CGO: %s\n' "$gcc_enabled"
-            printf 'Go-specific cache: off\n'
+            printf 'Cache mode: %s\n' "$CACHE_MODE"
+            printf 'Go entries fetched from remote: %s\n' "$remote_entries"
+            printf 'Go entry bytes fetched from remote: %s\n' "$remote_bytes"
             printf 'Actions cache route: %s\n' "$BENCHMARK_CACHE_TRANSPORT"
             printf 'Actions archive hit: %s\n' "$ACTUAL_HIT"
             printf 'Setup Go and cache restore (ms): %s\n' "$(((setup_end - BENCHMARK_SETUP_START) / 1000000))"
@@ -116,27 +140,37 @@ jobs:
       - name: Upload benchmark receipt
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: go-baseline-${{ env.BENCHMARK_PHASE }}
+          name: go-rollout-${{ env.CACHE_MODE }}-${{ env.BENCHMARK_PHASE }}
           path: ${{ runner.temp }}/go-baseline.txt
           if-no-files-found: error
           retention-days: 30
 
   edited:
-    name: Build the code edit on a fresh runner
+    name: Build the code edit on a fresh runner (${{ matrix.cache }})
     needs: seed
     runs-on: celesto-large
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        cache: [actions, actions-plus-go]
     env:
+      CACHE_MODE: ${{ matrix.cache }}
       BENCHMARK_PHASE: edited
       EXPECTED_HIT: 'true'
     steps: *benchmark_steps
 
   repeat:
-    name: Repeat the edit on another fresh runner
+    name: Repeat the edit on another fresh runner (${{ matrix.cache }})
     needs: edited
     runs-on: celesto-large
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        cache: [actions, actions-plus-go]
     env:
+      CACHE_MODE: ${{ matrix.cache }}
       BENCHMARK_PHASE: repeat
       EXPECTED_HIT: 'true'
     steps: *benchmark_steps
