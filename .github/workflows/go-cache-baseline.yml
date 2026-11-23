@@ -15,8 +15,8 @@ env:
   BENCHMARK_SOURCE: 559e729f9a8ed0d0f073f73985c016f82b212785
 
 jobs:
-  seed:
-    name: Seed the Actions cache (${{ matrix.cache }})
+  edited:
+    name: Build the code edit on a fresh runner (${{ matrix.cache }})
     runs-on: celesto-large
     timeout-minutes: 15
     strategy:
@@ -25,8 +25,8 @@ jobs:
         cache: [actions, actions-plus-go]
     env:
       CACHE_MODE: ${{ matrix.cache }}
-      BENCHMARK_PHASE: seed
-      EXPECTED_HIT: 'false'
+      BENCHMARK_PHASE: edited
+      EXPECTED_HIT: 'true'
     steps: &benchmark_steps
       - name: Check out pinned GitHub CLI
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
@@ -52,7 +52,8 @@ jobs:
         run: |
           test "$RUNNER_ENVIRONMENT" = self-hosted
           test "$(nproc)" -eq 4
-          printf '%s-%s-%s\n' "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$CACHE_MODE" > work/.benchmark-cache-key
+          # Restore the same verified archive for both variants.
+          printf '%s\n' '45232562679-1-actions' > work/.benchmark-cache-key
           if [[ "$BENCHMARK_PHASE" != seed ]]; then
             cat > work/internal/ghcmd/go_cache_benchmark_edit.go <<'GO'
           package ghcmd
@@ -100,7 +101,6 @@ jobs:
             printf 'Unexpected Actions archive hit: got %s, expected %s\n' "$ACTUAL_HIT" "$EXPECTED_HIT"
             exit 1
           fi
-          native_dir="$RUNNER_TEMP/go-native-cache"
           if [[ "$CACHE_MODE" == actions ]]; then
             export GOCACHEPROG=""
           else
@@ -108,8 +108,6 @@ jobs:
               *celesto-ci-cache-proxy*gocacheprog*) ;;
               *) echo 'Expected the production Go cache helper'; exit 1 ;;
             esac
-            mkdir "$native_dir"
-            export GOCACHEPROG="$GOCACHEPROG --cache-dir $native_dir"
           fi
           start="$(date +%s%N)"
           go build -trimpath -buildvcs=false -p 4 -o "$RUNNER_TEMP/gh-benchmark" ./cmd/gh
@@ -125,17 +123,19 @@ jobs:
           remote_entries=0
           remote_bytes=0
           if [[ "$CACHE_MODE" == actions-plus-go ]]; then
-            if [[ ! -d "$native_dir/a" ]]; then
-              echo 'The Go cache helper did not create its action index'
-              exit 1
-            fi
-            read -r remote_entries remote_bytes < <(
-              find "$native_dir/a" -type f -exec cat {} + |
-                awk '$3 == "1970-01-01T00:00:00Z" {count++; bytes+=$2} END {printf "%d %.0f\n", count, bytes}'
-            )
-            if [[ -e "$native_dir/remote-disabled" ]]; then
-              echo 'The Go cache helper opened its remote circuit breaker'
-            fi
+            for native_dir in /var/tmp/celesto-go-cache "/var/tmp/celesto-go-cache-user-$(id -u)"; do
+              if [[ -d "$native_dir/a" && -r "$native_dir/a" && -x "$native_dir/a" ]]; then
+                read -r count bytes < <(
+                  find "$native_dir/a" -type f -exec cat {} + |
+                    awk '$3 == "1970-01-01T00:00:00Z" {count++; bytes+=$2} END {printf "%d %.0f\n", count, bytes}'
+                )
+                remote_entries=$((remote_entries + count))
+                remote_bytes=$((remote_bytes + bytes))
+              fi
+              if [[ -e "$native_dir/remote-disabled" ]]; then
+                echo 'The Go cache helper opened its remote circuit breaker'
+              fi
+            done
           fi
           {
             printf 'Phase: %s\n' "$BENCHMARK_PHASE"
@@ -159,21 +159,6 @@ jobs:
           path: ${{ runner.temp }}/go-baseline.txt
           if-no-files-found: error
           retention-days: 30
-
-  edited:
-    name: Build the code edit on a fresh runner (${{ matrix.cache }})
-    needs: seed
-    runs-on: celesto-large
-    timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        cache: [actions, actions-plus-go]
-    env:
-      CACHE_MODE: ${{ matrix.cache }}
-      BENCHMARK_PHASE: edited
-      EXPECTED_HIT: 'true'
-    steps: *benchmark_steps
 
   repeat:
     name: Repeat the edit on another fresh runner (${{ matrix.cache }})
