@@ -31,15 +31,22 @@ jobs:
           path: work
           persist-credentials: false
 
-      - name: Prepare this build and assert the production cache route
+      - name: Record the JavaScript action cache route
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          script: |
+            const url = process.env.ACTIONS_RESULTS_URL;
+            const routes = ['http://127.0.0.1:8448', 'http://169.254.77.1:8448'];
+            const route = url ? (routes.includes(new URL(url).origin) ? 'celesto' : 'upstream') : 'unset';
+            core.info(`Actions cache route: ${route}`);
+            core.exportVariable('BENCHMARK_CACHE_TRANSPORT', route);
+            if (process.env.GOCACHEPROG) core.setFailed('Expected the Go-specific cache to be off');
+
+      - name: Prepare this build
         shell: bash
         run: |
           test "$RUNNER_ENVIRONMENT" = self-hosted
           test "$(nproc)" -eq 4
-          case "${ACTIONS_RESULTS_URL:-}" in
-            http://127.0.0.1:8448/*|http://169.254.77.1:8448/*) ;;
-            *) echo "Celesto Actions cache proxy is unavailable"; exit 1 ;;
-          esac
           printf '%s-%s\n' "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" > work/.benchmark-cache-key
           if [[ "$BENCHMARK_PHASE" != seed ]]; then
             cat > work/internal/ghcmd/go_cache_benchmark_edit.go <<'GO'
@@ -99,6 +106,7 @@ jobs:
             printf 'Go: %s\n' "$go_version"
             printf 'CGO: %s\n' "$gcc_enabled"
             printf 'Go-specific cache: off\n'
+            printf 'Actions cache route: %s\n' "$BENCHMARK_CACHE_TRANSPORT"
             printf 'Actions archive hit: %s\n' "$ACTUAL_HIT"
             printf 'Setup Go and cache restore (ms): %s\n' "$(((setup_end - BENCHMARK_SETUP_START) / 1000000))"
             printf 'Build (ms): %s\n' "$(((end - start) / 1000000))"
