@@ -15,8 +15,8 @@ env:
   BENCHMARK_SOURCE: 559e729f9a8ed0d0f073f73985c016f82b212785
 
 jobs:
-  edited:
-    name: Build the code edit on a fresh runner (${{ matrix.cache }})
+  repeat:
+    name: Repeat the code edit on a fresh runner (${{ matrix.cache }})
     runs-on: celesto-large
     timeout-minutes: 15
     strategy:
@@ -25,9 +25,9 @@ jobs:
         cache: [actions, actions-plus-go]
     env:
       CACHE_MODE: ${{ matrix.cache }}
-      BENCHMARK_PHASE: edited
+      BENCHMARK_PHASE: repeat
       EXPECTED_HIT: 'true'
-    steps: &benchmark_steps
+    steps:
       - name: Check out pinned GitHub CLI
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
@@ -81,6 +81,7 @@ jobs:
 
       - name: Set up Go and restore the Actions cache
         id: setup
+        timeout-minutes: 4
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
         with:
           go-version: ${{ env.BENCHMARK_GO_VERSION }}
@@ -152,6 +153,38 @@ jobs:
             printf 'Binary SHA-256: %s\n' "$digest"
           } | tee "$RUNNER_TEMP/go-baseline.txt" >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Count Go proxy diagnostics
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PYLOG'
+          from collections import Counter
+          from pathlib import Path
+
+          log = Path("/tmp/celesto-ci-cache-proxy.log")
+          if not log.is_file():
+              print("Cache proxy log unavailable")
+              raise SystemExit()
+          counts = Counter()
+          for line in log.read_text(errors="replace").splitlines():
+              line = line.lower()
+              for event in ("go cache lookup failed", "go cache object not readable", "go cache reserve failed", "go cache finalize failed"):
+                  if event not in line:
+                      continue
+                  reason = next((category for category, needles in (
+                      ("timeout", ("timeout", "timed out")),
+                      ("throttled", ("429", "too many requests")),
+                      ("range", ("content-range", "range response")),
+                      ("server response", ("http 500", "http 502", "http 503", "http 504")),
+                      ("connection", ("connection", "connect error")),
+                  ) if any(needle in line for needle in needles)), "other")
+                  counts[f"{event} ({reason})"] += 1
+          for event, count in sorted(counts.items()):
+              print(f"{event}: {count}")
+          if not counts:
+              print("No matching Go proxy warnings")
+          PYLOG
+
       - name: Upload benchmark receipt
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -160,17 +193,3 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-  repeat:
-    name: Repeat the edit on another fresh runner (${{ matrix.cache }})
-    needs: edited
-    runs-on: celesto-large
-    timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        cache: [actions, actions-plus-go]
-    env:
-      CACHE_MODE: ${{ matrix.cache }}
-      BENCHMARK_PHASE: repeat
-      EXPECTED_HIT: 'true'
-    steps: *benchmark_steps
