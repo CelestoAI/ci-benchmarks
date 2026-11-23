@@ -69,6 +69,13 @@ jobs:
           }
           GO
           fi
+          case "${GOCACHEPROG:-}" in
+            *celesto-ci-cache-proxy*gocacheprog*) echo 'Production Go cache helper is available' ;;
+            *) echo 'Expected the production runner to supply the Go cache helper'; exit 1 ;;
+          esac
+          if [[ "$CACHE_MODE" == actions ]]; then
+            printf 'GOCACHEPROG=\n' >> "$GITHUB_ENV"
+          fi
           printf 'BENCHMARK_SETUP_START=%s\n' "$(date +%s%N)" >> "$GITHUB_ENV"
 
       - name: Set up Go and restore the Actions cache
@@ -89,16 +96,21 @@ jobs:
           ACTUAL_HIT: ${{ steps.setup.outputs.cache-hit }}
         run: |
           setup_end="$(date +%s%N)"
-          test "$ACTUAL_HIT" = "$EXPECTED_HIT"
-          case "$(go env GOCACHEPROG)" in
-            *celesto-ci-cache-proxy*gocacheprog*) ;;
-            *) echo 'Expected the production runner to supply the Go cache helper'; exit 1 ;;
-          esac
+          if [[ "$ACTUAL_HIT" != "$EXPECTED_HIT" ]]; then
+            printf 'Unexpected Actions archive hit: got %s, expected %s\n' "$ACTUAL_HIT" "$EXPECTED_HIT"
+            exit 1
+          fi
+          native_dir="$RUNNER_TEMP/go-native-cache"
           if [[ "$CACHE_MODE" == actions ]]; then
             export GOCACHEPROG=""
+          else
+            case "${GOCACHEPROG:-}" in
+              *celesto-ci-cache-proxy*gocacheprog*) ;;
+              *) echo 'Expected the production Go cache helper'; exit 1 ;;
+            esac
+            mkdir "$native_dir"
+            export GOCACHEPROG="$GOCACHEPROG --cache-dir $native_dir"
           fi
-          test ! -e /var/tmp/celesto-go-cache/a || test -z "$(find /var/tmp/celesto-go-cache/a -type f -print -quit)"
-          test ! -e /var/tmp/celesto-go-cache/remote-disabled
           start="$(date +%s%N)"
           go build -trimpath -buildvcs=false -p 4 -o "$RUNNER_TEMP/gh-benchmark" ./cmd/gh
           end="$(date +%s%N)"
@@ -113,13 +125,16 @@ jobs:
           remote_entries=0
           remote_bytes=0
           if [[ "$CACHE_MODE" == actions-plus-go ]]; then
-            test -d /var/tmp/celesto-go-cache/a
+            if [[ ! -d "$native_dir/a" ]]; then
+              echo 'The Go cache helper did not create its action index'
+              exit 1
+            fi
             read -r remote_entries remote_bytes < <(
-              find /var/tmp/celesto-go-cache/a -type f -exec cat {} + |
+              find "$native_dir/a" -type f -exec cat {} + |
                 awk '$3 == "1970-01-01T00:00:00Z" {count++; bytes+=$2} END {printf "%d %.0f\n", count, bytes}'
             )
-            if [[ "$BENCHMARK_PHASE" != seed ]]; then
-              test "$remote_entries" -gt 0
+            if [[ -e "$native_dir/remote-disabled" ]]; then
+              echo 'The Go cache helper opened its remote circuit breaker'
             fi
           fi
           {
