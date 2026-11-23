@@ -1,0 +1,134 @@
+name: Go build cache baseline
+
+on:
+  push:
+    branches: [benchmark/go-cache-prod-baseline]
+    paths: [.github/workflows/go-cache-baseline.yml]
+
+permissions:
+  contents: read
+
+env:
+  GOTOOLCHAIN: local
+  GOMAXPROCS: '4'
+  BENCHMARK_GO_VERSION: '1.27.4'
+  BENCHMARK_SOURCE: 559e729f9a8ed0d0f073f73985c016f82b212785
+
+jobs:
+  seed:
+    name: Seed the Actions cache
+    runs-on: celesto-large
+    timeout-minutes: 15
+    env:
+      BENCHMARK_PHASE: seed
+      EXPECTED_HIT: 'false'
+    steps: &benchmark_steps
+      - name: Check out pinned GitHub CLI
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          repository: cli/cli
+          ref: ${{ env.BENCHMARK_SOURCE }}
+          path: work
+          persist-credentials: false
+
+      - name: Prepare this build and assert the production cache route
+        shell: bash
+        run: |
+          test "$RUNNER_ENVIRONMENT" = self-hosted
+          test "$(nproc)" -eq 4
+          case "${ACTIONS_RESULTS_URL:-}" in
+            http://127.0.0.1:8448/*|http://169.254.77.1:8448/*) ;;
+            *) echo "Celesto Actions cache proxy is unavailable"; exit 1 ;;
+          esac
+          printf '%s-%s\n' "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" > work/.benchmark-cache-key
+          if [[ "$BENCHMARK_PHASE" != seed ]]; then
+            cat > work/internal/ghcmd/go_cache_benchmark_edit.go <<'GO'
+          package ghcmd
+
+          import (
+              "fmt"
+              "os"
+          )
+
+          func init() {
+              if os.Getenv("GO_CACHE_BENCHMARK_MARKER") == "1" {
+                  fmt.Println("go-cache-benchmark-edit")
+              }
+          }
+          GO
+          fi
+          printf 'BENCHMARK_SETUP_START=%s\n' "$(date +%s%N)" >> "$GITHUB_ENV"
+
+      - name: Set up Go and restore the Actions cache
+        id: setup
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version: ${{ env.BENCHMARK_GO_VERSION }}
+          cache: true
+          cache-dependency-path: |
+            work/go.mod
+            work/go.sum
+            work/.benchmark-cache-key
+
+      - name: Measure the build and verify the binary
+        shell: bash
+        working-directory: work
+        env:
+          ACTUAL_HIT: ${{ steps.setup.outputs.cache-hit }}
+        run: |
+          setup_end="$(date +%s%N)"
+          test "$ACTUAL_HIT" = "$EXPECTED_HIT"
+          if [[ -n "$(go env GOCACHEPROG)" ]]; then
+            echo 'Expected the Go-specific cache to be off on this production runner'
+            exit 1
+          fi
+          start="$(date +%s%N)"
+          go build -trimpath -buildvcs=false -p 4 -o "$RUNNER_TEMP/gh-benchmark" ./cmd/gh
+          end="$(date +%s%N)"
+          version="$(GO_CACHE_BENCHMARK_MARKER=1 "$RUNNER_TEMP/gh-benchmark" --version)"
+          grep -q '^gh version ' <<< "$version"
+          if [[ "$BENCHMARK_PHASE" != seed ]]; then
+            grep -qx 'go-cache-benchmark-edit' <<< "$version"
+          fi
+          read -r digest _ < <(sha256sum "$RUNNER_TEMP/gh-benchmark")
+          go_version="$(go env GOVERSION)"
+          gcc_enabled="$(go env CGO_ENABLED)"
+          {
+            printf 'Phase: %s\n' "$BENCHMARK_PHASE"
+            printf 'Source: %s\n' "$BENCHMARK_SOURCE"
+            printf 'Go: %s\n' "$go_version"
+            printf 'CGO: %s\n' "$gcc_enabled"
+            printf 'Go-specific cache: off\n'
+            printf 'Actions archive hit: %s\n' "$ACTUAL_HIT"
+            printf 'Setup Go and cache restore (ms): %s\n' "$(((setup_end - BENCHMARK_SETUP_START) / 1000000))"
+            printf 'Build (ms): %s\n' "$(((end - start) / 1000000))"
+            printf 'Binary SHA-256: %s\n' "$digest"
+          } | tee "$RUNNER_TEMP/go-baseline.txt" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload benchmark receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: go-baseline-${{ env.BENCHMARK_PHASE }}
+          path: ${{ runner.temp }}/go-baseline.txt
+          if-no-files-found: error
+          retention-days: 30
+
+  edited:
+    name: Build the code edit on a fresh runner
+    needs: seed
+    runs-on: celesto-large
+    timeout-minutes: 15
+    env:
+      BENCHMARK_PHASE: edited
+      EXPECTED_HIT: 'true'
+    steps: *benchmark_steps
+
+  repeat:
+    name: Repeat the edit on another fresh runner
+    needs: edited
+    runs-on: celesto-large
+    timeout-minutes: 15
+    env:
+      BENCHMARK_PHASE: repeat
+      EXPECTED_HIT: 'true'
+    steps: *benchmark_steps
