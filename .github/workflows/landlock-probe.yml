@@ -12,9 +12,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [celesto-large]
-        n: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        runner: [celesto-micro]
+        n: [1, 2, 3, 4, 5, 6, 7, 8]
         include:
+          - {runner: celesto-large, n: 9}
+          - {runner: celesto-large, n: 10}
+          - {runner: celesto-large, n: 11}
+          - {runner: celesto-large, n: 12}
           - {runner: celesto-xl, n: 13}
           - {runner: celesto-xl, n: 14}
           - {runner: celesto-xl, n: 15}
