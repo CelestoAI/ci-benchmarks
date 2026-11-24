@@ -19,7 +19,9 @@ jobs:
       - name: Kernel and LSMs
         run: |
           uname -a
-          cat /sys/kernel/security/lsm; echo
+          if [ -r /sys/kernel/security/lsm ]; then echo "securityfs: mounted at boot"
+          else echo "securityfs: NOT mounted at boot"; sudo mount -t securityfs securityfs /sys/kernel/security; fi
+          echo "LSMs: $(cat /sys/kernel/security/lsm)"
 
       - name: Build setpriv from util-linux 2.41.3
         run: |
