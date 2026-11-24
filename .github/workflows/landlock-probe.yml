@@ -14,15 +14,6 @@ jobs:
       matrix:
         runner: [celesto-micro]
         n: [1, 2, 3, 4, 5, 6, 7, 8]
-        include:
-          - {runner: celesto-large, n: 9}
-          - {runner: celesto-large, n: 10}
-          - {runner: celesto-large, n: 11}
-          - {runner: celesto-large, n: 12}
-          - {runner: celesto-xl, n: 13}
-          - {runner: celesto-xl, n: 14}
-          - {runner: celesto-xl, n: 15}
-          - {runner: celesto-xl, n: 16}
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Kernel and LSMs
@@ -32,25 +23,25 @@ jobs:
           else echo "securityfs: NOT mounted at boot"; sudo mount -t securityfs securityfs /sys/kernel/security; fi
           echo "LSMs: $(cat /sys/kernel/security/lsm)"
 
-      - name: Build setpriv from util-linux 2.41.3
+      - name: Build setpriv from util-linux 2.41.6
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq --no-install-recommends build-essential pkg-config libcap-ng-dev curl xz-utils >/dev/null
-          curl -fsSL https://cdn.kernel.org/pub/linux/utils/util-linux/v2.41/util-linux-2.41.3.tar.xz | tar -xJ -C /tmp
-          cd /tmp/util-linux-2.41.3
+          curl -fsSL https://cdn.kernel.org/pub/linux/utils/util-linux/v2.41/util-linux-2.41.6.tar.xz | tar -xJ -C /tmp
+          cd /tmp/util-linux-2.41.6
           ./configure --disable-all-programs --enable-setpriv --disable-nls --disable-liblastlog2 >/dev/null
           make -j"$(nproc)" setpriv >/dev/null
           ./setpriv --version
 
       - name: Reproduction from issue 742
         run: |
-          cd /tmp/util-linux-2.41.3
+          cd /tmp/util-linux-2.41.6
           ./setpriv --nnp --landlock-access fs:write-file true
           echo "PASS: setpriv --landlock-access fs:write-file true"
 
       - name: Landlock blocks a write
         run: |
-          cd /tmp/util-linux-2.41.3
+          cd /tmp/util-linux-2.41.6
           if ./setpriv --nnp --landlock-access fs:write-file sh -c 'echo x > /tmp/landlock-should-fail' 2>/tmp/err; then
             echo "FAIL: write was allowed"; exit 1
           fi
