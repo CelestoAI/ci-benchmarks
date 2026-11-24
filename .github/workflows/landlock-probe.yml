@@ -1,5 +1,5 @@
-# Checks whether Landlock works on GitHub-hosted runners and Celesto runners.
-# Context: CelestoAI/celesto#742.
+# Checks that Landlock works on Celesto runners, using the exact reproduction
+# from CelestoAI/celesto#742 (setpriv from util-linux 2.41).
 name: landlock-probe
 
 on:
@@ -8,69 +8,40 @@ on:
   workflow_dispatch:
 
 jobs:
-  probe:
+  repro:
     strategy:
       fail-fast: false
       matrix:
-        runner: [ubuntu-latest, ubuntu-24.04, ubuntu-24.04-arm, celesto-micro]
+        runner: [celesto-micro]
+        n: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     runs-on: ${{ matrix.runner }}
     steps:
-      - name: Kernel
+      - name: Kernel and LSMs
         run: |
           uname -a
-          . /etc/os-release && echo "$PRETTY_NAME"
+          cat /sys/kernel/security/lsm; echo
 
-      - name: Kernel config
+      - name: Build setpriv from util-linux 2.41.3
         run: |
-          cfg=/boot/config-$(uname -r)
-          if [ -r "$cfg" ]; then src="$cfg"; cat_cmd=cat
-          elif [ -r /proc/config.gz ]; then src=/proc/config.gz; cat_cmd=zcat
-          else echo "No kernel config available"; exit 0; fi
-          echo "source: $src"
-          $cat_cmd "$src" | grep -E '^(# )?CONFIG_(SECURITY|SECURITYFS|SECURITY_LANDLOCK|SECURITY_APPARMOR|SECURITY_YAMA|SECURITY_SELINUX|LSM)[ =]'
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends build-essential pkg-config libcap-ng-dev curl xz-utils >/dev/null
+          curl -fsSL https://cdn.kernel.org/pub/linux/utils/util-linux/v2.41/util-linux-2.41.3.tar.xz | tar -xJ -C /tmp
+          cd /tmp/util-linux-2.41.3
+          ./configure --disable-all-programs --enable-setpriv --disable-nls --disable-liblastlog2 >/dev/null
+          make -j"$(nproc)" setpriv >/dev/null
+          ./setpriv --version
 
-      - name: Active LSMs
+      - name: Reproduction from issue 742
         run: |
-          if [ ! -r /sys/kernel/security/lsm ]; then
-            sudo mount -t securityfs securityfs /sys/kernel/security 2>&1 || true
+          cd /tmp/util-linux-2.41.3
+          ./setpriv --nnp --landlock-access fs:write-file true
+          echo "PASS: setpriv --landlock-access fs:write-file true"
+
+      - name: Landlock blocks a write
+        run: |
+          cd /tmp/util-linux-2.41.3
+          if ./setpriv --nnp --landlock-access fs:write-file sh -c 'echo x > /tmp/landlock-should-fail' 2>/tmp/err; then
+            echo "FAIL: write was allowed"; exit 1
           fi
-          cat /sys/kernel/security/lsm 2>&1 || echo "/sys/kernel/security/lsm missing"
-          echo
-          sudo dmesg 2>/dev/null | grep -i landlock || echo "no landlock lines in dmesg"
-
-      - name: Landlock ABI (syscall 444)
-        run: |
-          perl -e 'my $r = syscall(444, 0, 0, 1); if ($r < 0) { print "landlock_create_ruleset failed: errno=", $! + 0, " ($!)\n"; exit 0 } print "Landlock ABI version: $r\n"'
-
-      - name: Landlock enforcement
-        run: |
-          cat > /tmp/ll.c <<'C'
-          #define _GNU_SOURCE
-          #include <linux/landlock.h>
-          #include <sys/prctl.h>
-          #include <sys/syscall.h>
-          #include <unistd.h>
-          #include <fcntl.h>
-          #include <errno.h>
-          #include <stdio.h>
-          #include <string.h>
-          int main(void) {
-            struct landlock_ruleset_attr attr = { .handled_access_fs = LANDLOCK_ACCESS_FS_WRITE_FILE };
-            int fd = syscall(SYS_landlock_create_ruleset, &attr, sizeof attr, 0);
-            if (fd < 0) { printf("create_ruleset: %s\n", strerror(errno)); return 0; }
-            if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0)) { perror("no_new_privs"); return 1; }
-            if (syscall(SYS_landlock_restrict_self, fd, 0)) { printf("restrict_self: %s\n", strerror(errno)); return 1; }
-            int out = open("/tmp/landlock-probe-write", O_WRONLY | O_CREAT | O_TRUNC, 0600);
-            if (out >= 0) { printf("FAIL: write allowed after restrict_self\n"); return 1; }
-            printf("PASS: write blocked after restrict_self (%s)\n", strerror(errno));
-            return 0;
-          }
-          C
-          sed -i 's/^          //' /tmp/ll.c
-          if ! command -v gcc >/dev/null; then echo "gcc missing; skipping"; exit 0; fi
-          gcc -O2 -o /tmp/ll /tmp/ll.c && /tmp/ll
-
-      - name: setpriv
-        run: |
-          setpriv --version
-          setpriv --help | grep -i landlock || echo "this setpriv has no --landlock-access option"
+          echo "PASS: write blocked: $(cat /tmp/err)"
+          ./setpriv --nnp --landlock-access fs:write-file --landlock-rule path-beneath:write-file:/tmp sh -c 'echo ok > /tmp/landlock-allowed' && echo "PASS: write allowed under granted /tmp rule"
