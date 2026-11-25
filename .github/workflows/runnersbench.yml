@@ -1,0 +1,63 @@
+# Runs the runnersbench.com workload (https://github.com/lockyer-labs/runnersbench)
+# on our runner and a GitHub-hosted baseline. Results stay in this repository's
+# artifacts; nothing is sent to the runnersbench site.
+name: runnersbench
+
+on:
+  workflow_dispatch:
+    inputs:
+      repetitions:
+        description: Samples per runner
+        default: '3'
+
+permissions:
+  contents: read
+
+env:
+  # Pinned so the workload does not change under us.
+  RUNNERSBENCH_REF: b464018ae5dd5acb1802929fc4f8c37c55c226b1
+
+jobs:
+  setup:
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.m.outputs.matrix }}
+    steps:
+      - id: m
+        env:
+          REPS: ${{ inputs.repetitions }}
+        run: |
+          jq -nc --argjson reps "${REPS:-3}" '
+            [range(1; $reps + 1)] as $r
+            | {include: [$r[] as $rep | (
+                {provider:"celesto", name:"Celesto", label:"celesto-large", arch:"x64", vcpu:4, memory_gb:16, price_per_minute:0.00133, rep:$rep},
+                {provider:"github",  name:"GitHub",  label:"ubuntu-24.04",  arch:"x64", vcpu:4, memory_gb:16, price_per_minute:0.012,   rep:$rep}
+              )]}' > matrix.json
+          echo "matrix=$(cat matrix.json)" >> "$GITHUB_OUTPUT"
+
+  bench:
+    needs: setup
+    # Same name format as upstream so analyze.py can match jobs for queue times.
+    name: ${{ matrix.label }} (${{ matrix.rep }})
+    runs-on: ${{ matrix.label }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 1 # one runner at a time, so samples don't compete for capacity
+      matrix: ${{ fromJSON(needs.setup.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          repository: lockyer-labs/runnersbench
+          ref: ${{ env.RUNNERSBENCH_REF }}
+          persist-credentials: false
+      - run: python3 --version
+      - name: Benchmark
+        env:
+          RUNNER_SPEC: ${{ toJSON(matrix) }}
+        run: python3 bench/run.py --output "$RUNNER_TEMP/result.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: result-${{ matrix.label }}-${{ matrix.rep }}
+          path: ${{ runner.temp }}/result.json
+          if-no-files-found: error
