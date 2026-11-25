@@ -4,6 +4,8 @@
 name: runnersbench
 
 on:
+  push:
+    branches: [bench/runnersbench-20261125]
   workflow_dispatch:
     inputs:
       repetitions:
@@ -25,7 +27,7 @@ jobs:
     steps:
       - id: m
         env:
-          REPS: ${{ inputs.repetitions }}
+          REPS: ${{ inputs.repetitions || '3' }}
         run: |
           jq -nc --argjson reps "${REPS:-3}" '
             [range(1; $reps + 1)] as $r
