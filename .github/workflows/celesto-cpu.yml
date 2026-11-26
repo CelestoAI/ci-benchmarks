@@ -1,31 +1,22 @@
-name: Benchmark on Celesto CI
+name: CI metrics calibration
+run-name: CI metrics calibration
 
 on:
   workflow_dispatch:
-    inputs:
-      cache_namespace:
-        description: New value for a cold run; reuse unchanged for a warm run.
-        required: true
-        default: run-1
-        type: string
-      cache_mb:
-        description: Incompressible cache payload in MiB.
-        required: true
-        default: '512'
-        type: choice
-        options: ['256', '512', '1024', '2304']
-      cpu_iterations:
-        description: Iterations per CPU worker; match the GitHub-hosted run.
-        required: true
-        default: '250000000'
-        type: string
+
+permissions:
+  contents: read
 
 jobs:
-  benchmark:
-    uses: ./.github/workflows/benchmark.yml
-    with:
-      provider: celesto-ci
-      runs_on: '["self-hosted", "celesto-large"]'
-      cache_namespace: ${{ inputs.cache_namespace }}
-      cache_mb: ${{ inputs.cache_mb }}
-      cpu_iterations: ${{ inputs.cpu_iterations }}
+  calibration:
+    runs-on: celesto-large
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run calibrated phases and independently sample the VM
+        run: python3 scripts/ci-usage-calibration.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-usage-reference
+          path: ci-usage-reference.jsonl
